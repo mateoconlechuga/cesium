@@ -64,4 +64,4 @@ To uninstall Cesium, just press [2ND],[+],[2],[1] and delete the following files
 Licensed under BSD 3 Clause.
 
 ### BUGS ###
-As Cesium is still in beta stage. Please make an issue here on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
+Cesium is still in beta stage... if you encounter an unexpected behaviour, please make an issue here on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
