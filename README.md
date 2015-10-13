@@ -7,7 +7,7 @@ Cesium is the first *shell* for the TI-84 Plus CE / TI-83 Premium CE calculators
 * Running ASM, C, and Basic programs directly, and they can be archived or not
 * [Un]Archiving, deleting, hiding programs
 * Catalog-like searching for programs for quick lookup
-* Ability to remove then run indicator when running Basic programs
+* Ability to hide then run indicator when running Basic programs
 * Support implemented for relocatable shared C and ASM libraries
 * Customizable icons for all file types (DoorsCS format)
 * Battery indicator and clock
@@ -52,12 +52,11 @@ To reload, simply go to the program menu and run with the `Asm(` command, findab
 Press [Enter]. Now, Cesium recreated `prgmA` for you, so use that on your next load.
 
 ### UNINSTALLING ###
-To uninstall Cesium, press [2ND],[+],[2],[1]. Delete the following files:
+To uninstall Cesium, just press [2ND],[+],[2],[1] and delete the following files:
 * A
 * CESIUM
 * CeOS
 * Cesium
-Now Cesium has been removed from your calculator.
 
 ### CREDITS ###
 (C) October 2015 Matt Waltz  
