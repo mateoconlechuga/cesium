@@ -61,7 +61,7 @@ PROGRAM_HEADER:									; Signifies a CesiumOS program (haha)
  .db 255,255,000,000,000,000,000,000,255,255,255,000,000,000,000,000
  .db 255,255,255,255,000,000,000,000,255,255,255,255,255,000,000,000
 VersionStr:
- .db "Cesium Version 1.1",0
+ .db "Cesium Version 1.1.2",0
 CesiumEnd:
 
  .echo "Prgm Loader Size:\t",CesiumLoader_End-cesiumLoader_Start

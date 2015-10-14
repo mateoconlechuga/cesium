@@ -30,12 +30,14 @@ GetName:
  ret
  
 RELOAD_CESIUM:				; reload the shell after execution
+ di							; in case the launched program enabled interrupts... (fixes propatating keypresses)
  call DeletePgrmFromUserMem		; shouldn't do anything if reloading from a basic prgm,
  ld hl,CesiumAppVarName_2		; because TI was nice when they made the _delmem routine.
  call _mov9toop1			
  call MovePgrmToUserMem
  xor a,a 
  ld (kbdGetKy),a			; flush keys
+ ei
  jp RELOADED_FROM_PRGM
  
 ArchiveCesium:				; archive function
