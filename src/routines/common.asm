@@ -37,7 +37,7 @@ RELOAD_CESIUM:				; reload the shell after execution
  call MovePgrmToUserMem
  xor a,a 
  ld (kbdGetKy),a			; flush keys
- call _RunIndicOff		; in case the launched program re-enabled it
+ call _RunIndicOff			; in case the launched program re-enabled it
  ei
  jp RELOADED_FROM_PRGM
  
