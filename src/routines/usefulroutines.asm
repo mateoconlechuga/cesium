@@ -64,10 +64,12 @@ batterystatus: =$+1
  ld a,0
  or a,a
  ret z
- ld hl,320*6+vBuf2+5
+ ld hl,4
  ld (RectWidth_SMC),hl
- call DrawRectLoop
- ret
+ ld hl,320*8+vBuf2+7
+ ld b,a
+ push af
+ jp DrawRectLoop
  
 ClearLowerBar:
  push bc

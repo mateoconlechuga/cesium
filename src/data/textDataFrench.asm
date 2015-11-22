@@ -5,7 +5,7 @@ GenSettingsStr:
 ColorStr:
  .db "Couleur de Cesium (Touches <>)",0
 OnBreakStr:
- .db "D",$82,"sactiver le indicateur BASIC",0
+ .db "Cacher l'indicateur de calcul en BASIC",0
 ProgramCountStr:
  .db "Afficher le nombre de programmes",0
 ClockStr:
