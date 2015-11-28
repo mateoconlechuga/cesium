@@ -54,12 +54,9 @@ CheckNextASMbyte:
   ld (AsmCBasic_SMC),a			; reset the default to an ASM prgm
   inc hl
   ld a,(hl)
-  cp $C9				; RET byte for C programs so they don't get accidentally executed
+  or a,a				; NOP byte for C programs
   jr nz,RegularAsmType
-  inc hl
-  ld a,(hl)
-  cp $CE				; C program
-  jr nz,RegularAsmType
+  ld a,$CE
 GotPrgmType:
   ld (AsmCBasic_SMC),a			; $CE=CPrgm,$BB=BasicPrgm,$00=ASMPrgm
 RegularAsmType:

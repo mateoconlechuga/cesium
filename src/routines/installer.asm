@@ -12,6 +12,27 @@
  call _runindicoff 			; turn off the indicator
  call _chkfindsym
  call _delvararc			; delete ourselves
+ 
+ ld hl,LoadLibName
+ call _mov9toop1
+ call _pushop1
+  call _chkfindsym
+  call nc,_delvararc
+ call _popop1
+ ld hl,libloadend-libloadstart
+ push hl
+  call _createappvar
+ pop bc
+ ld hl,libloadstart
+ inc de
+ inc de
+ ldir
+ jp libloadend
+libloadstart:
+relocate($0000)
+#include "routines\libload.asm"		; include the library loader -- Technically now it is no longer a part of Cesium
+endrelocate()
+libloadend:
  ld hl,CesiumAppVarName_Install
  call _mov9toop1
  call _pushop1
@@ -50,6 +71,8 @@ CesiumAppVarName_Install:
  .db appVarObj,"CeOS",0
 CesiumPrgmName_Install:
  .db protprogObj,"CESIUM",0
+LoadLibName:
+ .db appVarObj,"LibLoad",0
 CesiumInstalledStr:
  .db "Cesium "
 #ifdef ENGLISH

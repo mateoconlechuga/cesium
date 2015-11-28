@@ -1,23 +1,16 @@
 #define HIGHLIGHT_COLOR 230
 #define BG_COlOR_INDEX  107
-#define RED_SKIN        192
-#define BLUE_SKIN       016
-#define BLACK_SKIN      000
-#define GRAY_SKIN       074
-#define PURPLE_SKIN     072
-#define PINK_SKIN       232
 #define CESIUM_VERSION	001h
 #define CESIUM_BYTE	0CEh
-#define LIBRARY_BYTE	0CEh
 
 #define vbuf1			vram
 #define vbuf2			vram+(320*240)
-#define libraryLocations	plotsscreen
 #define relocDependentLib	00h
 #define previouslyExtracted	01h
 #define scrollDown		02h
 #define drawingSelected		03h
 #define drawPrgmCnt		05h
+#define iscprog			06h
 #define asmFlag			22h
 
 #define clockIsOff		04h
@@ -36,7 +29,7 @@
 #define tmpPgrmStatus		21h
 
 
-#define PutMapFlags $4a 
+#define PutMapFlags $4A 
 #define PutMapUseColor 4
 
 _GetBatteryStatus equ 0003B0h

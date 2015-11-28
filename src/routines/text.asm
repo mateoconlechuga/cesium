@@ -50,9 +50,8 @@ _iloop2:
 _i2loop2:
    ld a,d
    rlc c
-   jr nc,+_
+   jr nc,$+1
    ld a,e
-_:
    ld (hl),a
    inc hl
    ld (hl),a

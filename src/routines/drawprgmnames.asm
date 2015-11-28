@@ -149,6 +149,7 @@ NotHiddenHere:
   inc hl
   inc hl
   inc hl
+  res iscprog,(iy+asmFlag)
   ld a,(hl)
   bit drawingSelected,(iy+asmFlag)
   jr z,NotHighlighted
@@ -159,11 +160,12 @@ NotHighlighted:
    ld de,ez80Str
    ld hl,asmFileSprite
    or a,a
-   jp z,AsmFile						; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
+   jp z,AsmOrCFile					; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
+   set iscprog,(iy+asmFlag)
    ld de,CStr
    ld hl,cFileSprite
    cp $CE
-   jr z,DrawIcon
+   jp z,AsmOrCFile					; Well... technically an ASM file could be a C file? :)
    set tmpIsBasic,(iy+tmpPgrmStatus)
    call checkIfIconAvailableBASIC
 DrawIcon:
@@ -262,7 +264,7 @@ setOverflowFlag:
  set scrollDown,(iy+asmFlag)
  ret
  
-AsmFile:
+AsmOrCFile:
  bit drawingSelected,(iy+asmFlag)
  push hl \ push de \ push bc
   call CheckIfCurrentTmpProgramIsUs
@@ -273,8 +275,12 @@ tmpPrgmDataPtr: =$+1
   ld hl,0					; HL->pointer to data for program
   inc hl					; $EF
   inc hl					; $7B
+  bit iscprog,(iy+asmFlag)
+  jr z,notc
+  inc hl					; SMC byte to 'inc hl' if C program -- remember the nop magic byte?
+notc:
   ld a,(hl)					; is it a $C3 byte? (JP)
-  cp $c3
+  cp $C3
   jr nz,NoIcon
   inc hl
   inc hl
@@ -318,6 +324,9 @@ Icon:
  pop de
 GoBack:
  ld de,ez80Str
+ bit iscprog,(iy+asmFlag)
+ jp z,DrawIcon
+ ld de,CStr
  jp DrawIcon					; now draw the right icon :)
 NoIcon:
  pop hl
