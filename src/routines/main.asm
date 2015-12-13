@@ -43,6 +43,10 @@ RELOADED_FROM_PRGM:
  neg
  ld (batterystatus),a
 MAIN_START_LOOP_1:
+ ld hl,ZTGPPrgmName
+ call _mov9toop1
+ call _chkfindsym
+ call nc,_delvararc
  ld hl,pixelshadow2
  ld (programNameLocationsPtr),hl
 
@@ -105,6 +109,9 @@ BootPrgm:
  jp z,DrawSettingsMenu
  jp cesiumLoader
 
+ZTGPPrgmName:
+ .db tempprogobj,"ZTGP",0
+ 
 DecrementAPD:
 APDtmmr: =$+1
  ld hl,0
