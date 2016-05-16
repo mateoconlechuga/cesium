@@ -4,7 +4,7 @@ GenSettingsStr:
  .db "Options g",$82,'n',$82,"rales",0
 ColorStr:
  .db "Couleur de Cesium (Touches <>)",0
-OnBreakStr:
+RunIndicStr:
  .db "Cacher l'indicateur de calcul en BASIC",0
 ProgramCountStr:
  .db "Afficher le nombre de programmes",0
@@ -16,14 +16,20 @@ LibStr:
  .db "ERREUR : Biblioth",$8A,"que",0
 LibNameStr:
  .db "Nom de la biblioth",$8A,"que : ",0
-RenameStr:
- .db "Suppr-[SUPPR]",0
-SettingsStr:
- .db "Options-[MODE]",0
-AttributesStr:
- .db "Attrib-[ALPHA]",0
 DeleteStr:
- .db "Supprimer ? [ZOOM]-Oui [GRAPH]-Non",0
+ .db "Suppr",0
+ .db 126,"SUPPR]",0
+SettingsStr:
+ .db "Options",0
+ .db 126,"MODE]",0
+AttributesStr:
+ .db "Attrib",0
+ .db 126,"ALPHA]",0
+RenameStr:
+ .db "Nom",0
+ .db 126,"GRAPHE]",0
+DeleteConfirmStr:
+ .db "Supprimer ? ",126,"ZOOM]-Oui ",126,"GRAPH]-Non",0
 LanguageStr:
  .db "Langage : ",0
 ez80Str:
@@ -45,7 +51,9 @@ RAMFreeStr:
 ROMFreeStr:
  .db "ROM Libre : ",0
 FileInforamtionStr:
- .db "Infos fichier",0
+ .db "    Infos fichier",0
+NewNameStr:
+ .db "Nouveau Nom -",0
 CheckIconBASICStr:
  .db $3E,$44,$43,$53,$3F,$2A
 CesiumAppVarName:
