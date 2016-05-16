@@ -29,16 +29,8 @@
 #define tmpPgrmStatus		21h
 
 
-#define PutMapFlags $4A 
-#define PutMapUseColor 4
-
-_GetBatteryStatus equ 0003B0h
 IntEnableMask	equ	0F00004h
 IntLatchBits	equ	0F0000Ch
-cmdExec equ 6
-ProgExecuting  equ  1	; Equates.
-_ArcChk equ 022040h 
-tempFreeArc equ  0D02655h
 
 firstprog				equ 0 ;flag in asm_Flag1
 hideFlag				equ asm_Flag1
@@ -53,14 +45,16 @@ vatentrytempend				equ savesscreen+12+15
 
 tmpSpriteLoc	equ cursorImage
 
-currSel		equ appdata+200		; you have 200 bytes in which to place your reloader. DO NOT go over.
+stubLocation	equ $D1987E+6
+
+currSel		equ $D1987E+6+118	; 118 bytes in which to place the reloader
 currSelAbs	equ currSel+3
 scrollamt	equ currSelAbs+3
 tmpSettings	equ scrollamt+3
 
 skinColor	equ tmpSettings
-OnBreak	equ tmpSettings+1
-programCnt	equ tmpSettings+2
+RunIndic	equ tmpSettings+1
+PrgmCountDisp	equ tmpSettings+2
 clockDisp	equ tmpSettings+3
 
 prgmNamePtr	equ tmpSettings+10
@@ -74,10 +68,7 @@ PgrmOptions	equ tmpPrgmNamePtr+3
 ArchiveSet	equ PgrmOptions
 LockSet		equ ArchiveSet+1
 HideSet		equ LockSet+1
-curMenuSel	equ HideSet+1
-posX		equ curMenuSel+1
-posY		equ posX+3
-errorSP		equ posY+1
+currMenuSel	equ HideSet+1
 
 #macro relocateNest(newlocation)
  #ifdef oldlocation

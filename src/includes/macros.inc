@@ -1,81 +1,87 @@
 #define popCall() pop hl
 
 #macro drawSpr255(sprite, posX, posY)
- ld hl,sprite
- ld bc,(posY)+(256*(posX))
- call drawSprite8bpp255
+	ld	hl,sprite
+	ld	bc,(posY)+(256*(posX))
+	call	_Sprite8bpp
 #endmacro
 
-#define IsHLZero add hl,de \ or a,a  \ sbc hl,de
-
 #macro drawRectOutlineDouble(LposX, TposY, RposX, BposY)
- drawRectOutline(LposX, TposY, RposX, BposY)
- drawRectOutline(LposX+1, TposY+1, RposX-1, BposY-1)
+	drawRectOutline(LposX, TposY, RposX, BposY)
+	drawRectOutline(LposX+1, TposY+1, RposX-1, BposY-1)
 #endmacro
 
 #macro drawRectFilled(LposX, TposY, RposX, BposY)
- ld bc,RposX-LposX
- ld (RectWidth_SMC),bc
- ld hl,(320*TposY)+vBuf2+LposX
- ld b,BposY-TposY
- call DrawRect
+	ld	bc,RposX-LposX
+	ld	de,(lcdWidth*TposY)+LposX
+	ld	a,BposY-TposY
+	call	FillRectangle_Computed
+#endmacro
+
+#macro drawRectFilledColor(LposX, TposY, RposX, BposY, color)
+	ld	bc,RposX-LposX
+	ld	de,(lcdWidth*TposY)+LposX
+	ld	a,BposY-TposY
+	call	FillRectangle_Computed
 #endmacro
 
 #macro drawRectOutline(LposX, TposY, RposX, BposY)
- drawHLine(LposX, TposY, RposX-LposX)
- drawHLine(LposX, BposY, RposX-LposX)
- drawVLine(LposX, TposY, BposY-TposY)
- drawVLine(RposX, TposY, BposY-TposY+1)
+	ld	bc,RposX-LposX+1
+	ld	d,BposY-TposY+1
+	ld	e,TposY
+	ld	hl,LposX
+	call	RectangleOutline
 #endmacro
 
 #macro drawHLine(posX, posY, length)
- ld hl,320*posY+vBuf2+posX
- ld bc,length
- call drawHLine8
+	ld	hl,320*posY+vBuf2+posX
+	ld	bc,length
+	ld	a,(cIndex)
+	call	_MemSet
 #endmacro
 
 #macro drawVLine(posX, posY, length)
- ld hl,320*posY+vBuf2+posX
- ld b,length
- call drawVLine8
+	ld	hl,320*posY+vBuf2+posX
+	ld	b,length
+	call	drawVLine8
 #endmacro
 
 #macro print(string, pos1, pos2)
- ld hl,string
- ld bc,pos1
- ld (posX),bc
- ld a,pos2
- ld (posY),a
- call drawString
+	ld hl,string
+	ld bc,pos1
+	ld (posX),bc
+	ld a,pos2
+	ld (posY),a
+	call DrawString
 #endmacro
 
 #macro changeFGColor(index)
 #if index=0
- xor a
+	xor a
 #else
- ld a,index
+	ld a,index
 #endif
- ld (ForeColor),a
+	ld (ForeColor),a
 #endmacro
 
 #macro SetDefaultTextColor()
- changeFGColor(BG_COlOR_INDEX)
- changeBGColor(255)
+	changeFGColor(BG_COlOR_INDEX)
+	changeBGColor(255)
 #endmacro
 
 #macro SetInvertedTextColor()
- changeFGColor(255)
- ld a,(skinColor)
- ld (BackColor),a
+	changeFGColor(255)
+	ld a,(skinColor)
+	ld (BackColor),a
 #endmacro
 
 #macro changeBGColor(index)
 #if index=0
- xor a
+	xor a
 #else
- ld a,index
+	ld a,index
 #endif
- ld (BackColor),a
+	ld (BackColor),a
 #endmacro
 
 #macro relocate(new_location)

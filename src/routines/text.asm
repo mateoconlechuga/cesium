@@ -1,213 +1,128 @@
-;Text routines by Matt waltz
+DrawString:
+	ld	a,(hl)
+	or	a,a
+	ret	z
+	call	DrawChar
+	push	hl
+	ld	de,320-10
+	ld	hl,(posX)
+	call	_CpHLDE
+	pop	hl
+	ret	nc
+	inc	hl
+	jr	DrawString
 
-drawString:
- ld a,(hl)
- or a
- ret z
- call DrawChar
- push hl
-  ld de,320-10
-  ld hl,(posX)
-  call _cphlde
- pop hl
- ret nc
- inc hl
- jr drawString
+DrawChar:
+posX =$+1
+	ld	bc,0
+	push	hl
+	push	af
+	push	de
+	push	bc
+posY =$+1
+	ld	l,0
+	ld	h,lcdWidth/2
+	mlt	hl
+	add	hl,hl
+	ld	de,vBuf2
+	add	hl,de
+	add	hl,bc			; Add X
+	push	hl
+	sbc	hl,hl
+	ld	l,a
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl
+	ex	de,hl
+	ld	hl,char000
+	add	hl,de			; hl -> Correct Character
+	pop	de			; de -> correct place to draw
+	ld	a,8
+_iloop:
+	ld	c,(hl)
+	ld	b,8
+	ex	de,hl
+	push	de
+ForeColor =$+1
+BackColor =$+2
+	ld	de,$00FF00
+_i2loop:
+	ld	(hl),d
+	rlc	c
+	jr	nc,+_
+	ld	(hl),e
+_:	inc	hl
+	djnz	_i2loop
+	ld	(hl),d
+NextL:
+	ld	bc,320-8
+	add	hl,bc
+	pop	de
+	ex	de,hl
+	inc	hl
+	dec	a
+	jr	nz,_iloop
+	pop	bc
+	pop	de
+	pop	af			; character
+	cp	a,128
+	jr	c,+_
+	xor	a,a
+_:	ld	hl,CharSpacing
+	call	_AddHLAndA
+	ld	a,(hl)			; A holds the amount to increment per character
+AddToPosistion:
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	add	hl,bc
+	push	hl
+	pop	bc
+	inc	bc
+	ld	(posX),bc
+	pop	hl
+	ret
 
-DrawBigChar:
- ld bc,(posX)
- push hl
- push af
- push de
- push bc
- push af
-  ld a,(posY)
-  push bc	; Save X
-   call compute8bpp
-  pop de	; de = Y
-  add hl,de	; Add X
- pop af
- push hl
-  or a
-  sbc hl,hl
-  ld l,a
-  add hl,hl
-  add hl,hl
-  add hl,hl
-  ex de,hl
-  ld hl,char000
-  add hl,de	; hl -> Correct Character
- pop de		; de -> correct place to draw
- ld b,8
-_iloop2:
- push bc
-  ld c,(hl)
-  ld b,8
-  ex de,hl
-  push de
-  push hl
-   ld de,(ForeColor)
-_i2loop2:
-   ld a,d
-   rlc c
-   jr nc,$+1
-   ld a,e
-   ld (hl),a
-   inc hl
-   ld (hl),a
-   inc hl
-   djnz _i2loop2
-   ld bc,320-16
-   add hl,bc	; next line
-   ex de,hl
-   pop hl
-   ld bc,16
-   ldir
-   ex de,hl
-   ld bc,320-16
-   add hl,bc	; next line
-  pop de
-  ex de,hl
-  inc hl
- pop bc
- djnz _iloop2
- pop bc
- pop de
- pop af		; character
- cp 128
- jr c,+_
- xor a
-_:
- ld hl,CharSpacing
- call _AddHLAndA
- ld a,(hl)	; A holds the amount to increment per character
- add a,a
- jp AddToPosistion
- 
-DispHL:     ; hl = 8-bit score
-  push de
-   push bc
-    ld de,tmpStr  ; de = converted string loc
-    push de
-     call str
-     xor a,a
-     ld (de),a
-    pop hl ; hl points to converted string
-   pop bc
-  pop de
- ret
- 
+ConvHL:    				; hl = 8-bit score
+	push	de
+	push	bc
+	ld	de,tmpStr		; de = converted string loc
+	push	de
+	call	str
+	xor	a,a
+	ld	(de),a
+	pop	hl			; hl points to converted string
+	pop	bc
+	pop	de
+	ret
+
 tmpStr:
  .dl 0,0,0,0,0,0,0,0,0,0
- 
 str:
- ld bc,-1000000
- call Num13
- ld bc,-100000
- call Num13
- ld bc,-10000
- call Num13
- ld bc, -1000
- call Num13
- ld bc, -100
- call Num13
- ld c, -10
- call Num13
- ld c, b
+	ld	bc,-1000000
+	call	Num13
+	ld	bc,-100000
+	call	Num13
+	ld	bc,-10000
+	call	Num13
+	ld	bc, -1000
+	call	Num13
+	ld	bc, -100
+	call	Num13
+	ld	c, -10
+	call	Num13
+	ld	c, b
 Num13:
- ld a, '0'-1
+	ld	a, '0'-1
 Num21:
- inc a
- add hl, bc
- jr c, Num21
- sbc hl, bc
- ld (de), a
- inc de
- ret
- 
-DrawChar:
- ld bc,(posX)
- push hl
- push af
- push de
- push bc
- push af
-  ld a,(posY)
-  push bc	; Save X
-   call compute8bpp
-  pop de	; de = Y
-  add hl,de	; Add X
- pop af
- push hl
-  or a
-  sbc hl,hl
-  ld l,a
-  add hl,hl
-  add hl,hl
-  add hl,hl
-  ex de,hl
-  ld hl,char000
-  add hl,de	; hl -> Correct Character
- pop de		; de -> correct place to draw
- ld b,8
-_iloop:
- push bc
-  ld c,(hl)
-  ld b,8
-  ex de,hl
-  push de
-   ld de,(ForeColor)
-_i2loop:
-   ld (hl),d
-   rlc c
-   jr nc,+_
-   ld (hl),e
-_:
-   inc hl
-   djnz _i2loop
-   ld (hl),d
-NextL:
-   ld bc,320-8
-   add hl,bc
-  pop de
-  ex de,hl
-  inc hl
- pop bc
- djnz _iloop
- pop bc
- pop de
- pop af		; character
- cp 128
- jr c,+_
- xor a
-_:
- ld hl,CharSpacing
- call _AddHLAndA
- ld a,(hl)	; A holds the amount to increment per character
-AddToPosistion:
- or a,a
- sbc hl,hl
- ld l,a
- add hl,bc
- push hl
- pop bc
- inc bc
- ld (posX),bc
- pop hl
- ret
- 
-ForeColor:
- .db 0
-BackColor:
- .db 255
- 
-compute8bpp:
- ld de,320
- call $000348				; MultDEA
- ld de,vbuf2
- add hl,de
- ret
- 
+	inc	a
+	add	hl, bc
+	jr	c, Num21
+	sbc	hl, bc
+	ld	(de), a
+	inc	de
+	ret
+
 CharSpacing:
  ;   0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F
  .db 8,8,8,7,7,7,8,8,8,8,8,8,8,1,8,8
@@ -215,10 +130,9 @@ CharSpacing:
  .db 2,3,5,7,7,7,7,4,4,4,8,6,3,6,2,7
  .db 7,6,7,7,7,7,7,7,7,7,2,3,5,6,5,6
  .db 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7
- .db 7,7,7,7,8,7,7,7,7,7,7,4,7,4,7,8
+ .db 7,7,7,7,8,7,7,7,7,7,8,7,7,4,7,8
  .db 3,7,7,7,7,7,7,7,7,4,7,7,4,7,7,7
- .db 7,7,7,7,6,7,7,7,7,7,7,6,2,6,7,7
- .db 7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7
+ .db 7,7,7,7,6,7,7,7,7,7,7,6,2,6,4,7
  
 Char000: .db $00,$00,$00,$00,$00,$00,$00,$00	; .
 Char001: .db $7E,$81,$A5,$81,$BD,$BD,$81,$7E	; .
@@ -311,7 +225,7 @@ Char087: .db $C6,$C6,$C6,$C6,$D6,$FE,$6C,$00	; W
 Char088: .db $C6,$C6,$6C,$38,$6C,$C6,$C6,$00	; X
 Char089: .db $C6,$C6,$C6,$7C,$18,$30,$E0,$00	; Y
 Char090: .db $FE,$06,$0C,$18,$30,$60,$FE,$00	; Z
-Char091: .db $F0,$C0,$C0,$C0,$C0,$C0,$F0,$00	; [
+Char091: .db $7C,$C6,$C6,$FE,$C6,$C6,$7C,$00	; Theta
 Char092: .db $C0,$60,$30,$18,$0C,$06,$02,$00	; \
 Char093: .db $F0,$30,$30,$30,$30,$30,$F0,$00	; ]
 Char094: .db $10,$38,$6C,$C6,$00,$00,$00,$00	; ^
@@ -346,7 +260,7 @@ Char122: .db $00,$00,$FE,$0C,$38,$60,$FE,$00	; z
 Char123: .db $1C,$30,$30,$E0,$30,$30,$1C,$00	; {
 Char124: .db $C0,$C0,$C0,$00,$C0,$C0,$C0,$00	; |
 Char125: .db $E0,$30,$30,$1C,$30,$30,$E0,$00	; }
-Char126: .db $76,$DC,$00,$00,$00,$00,$00,$00	; ~
+Char126: .db $F0,$C0,$C0,$C0,$C0,$C0,$F0,$00	; [
 Char127: .db $00,$10,$38,$6C,$C6,$C6,$FE,$00	; .
 Char128: .db $7C,$C6,$C0,$C0,$C0,$D6,$7C,$30	; .
 Char129: .db $C6,$00,$C6,$C6,$C6,$C6,$7E,$00	; .
@@ -474,5 +388,5 @@ Char250: .db $00,$00,$00,$00,$18,$00,$00,$00	; .
 Char251: .db $0F,$0C,$0C,$0C,$EC,$6C,$3C,$1C	; .
 Char252: .db $78,$6C,$6C,$6C,$6C,$00,$00,$00	; .
 Char253: .db $7C,$0C,$7C,$60,$7C,$00,$00,$00	; .
-Char254: .db $00,$00,$3C,$3C,$3C,$3C,$00,$00	; .
-Char255: .db $00,$10,$00,$00,$00,$00,$00,$00	; NULL
+Char254: .db $FF,$E7,$D7,$F7,$F7,$F7,$C3,$FF	; (1)
+Char255: .db $FF,$E7,$DB,$DB,$C3,$DB,$DB,$FF	; (A)

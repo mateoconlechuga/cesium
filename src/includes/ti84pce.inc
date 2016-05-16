@@ -3,2135 +3,2554 @@
 ;Various Parts Contributed by
 ;- BrandonW
 ;- calc84
-;- tr1p1ea
 ;- MateoConLechuga
+;- Runer112
+;- tr1p1ea
+;- Kerm Martian
 ;- Texas Instruments (ti83plus.inc)
 .nolist
 
 #ifndef TI84PCE
 #define TI84PCE
 
-;Included for Assembler Compatibility
+; Included for Assembler Compatibility
 ;------------------------------------
 #define equ .equ
 #define EQU .equ
 #define end .end
 #define END .end
 
-;Hardware Defines
+; Hardware Defines
 ;------------------------------
 lcdWidth		equ 320
 lcdHeight		equ 240
 
-;System Calls
-;Jump Table located at 020104h
+; System Calls
+; Jump Table located at 020104h
 ;--------------------------------
-_BootOS			equ 0020108h
-_InterruptHandler	equ 002010Ch
-_Rst10Handler		equ 0020110h
-_Rst18Handler		equ 0020114h
-_Rst20Handler		equ 0020118h
-_Rst28Handler		equ 002011Ch
-_Rst30Handler		equ 0020120h
-;0020124h
-;0020128h
-_JErrorNo		equ 002012Ch
-_CallFontHook		equ 0020130h
-_CallLocalizeHook	equ 0020134h
-_LoadHLInd_s		equ 0020138h
-_CpHLDE			equ 002013Ch
-_DivHLBy10_s		equ 0020140h
-_DivHLByA_s		equ 0020144h
-_KbdScan		equ 0020148h
-_GetCSC			equ 002014Ch
-_CoorMon		equ 0020150h
-_Mon			equ 0020154h
-_MonForceKey		equ 0020158h
-_SendKPress		equ 002015Ch
-_JForceCmdNoChar	equ 0020160h
-_JForceCmd		equ 0020164h
-_SysErrHandler		equ 0020168h
-_NewContext		equ 002016Ch
-_NewContext0		equ 0020170h
-_PPutawayPrompt		equ 0020174h
-_PPutAway		equ 0020178h
-_PutAway		equ 002017Ch
-_SizeWind		equ 0020180h
-_ErrorEP		equ 0020184h
-_CallMain		equ 0020188h
-_MonErrHand		equ 002018Ch
-_AppInit		equ 0020190h
-_Initialize		equ 0020194h
-_Min			equ 0020198h
-_Max			equ 002019Ch
-_AbsO1PAbsO2		equ 00201A0h
-_Intgr			equ 00201A4h
-_TRunc			equ 00201A8h
-_InvSub			equ 00201ACh
-_Times2String		equ 00201B0h
-_Plus1			equ 00201B4h
-_Minus1			equ 00201B8h
-_FPSub			equ 00201BCh
-_FPAdd			equ 00201C0h
-_DToR			equ 00201C4h
-_RToD			equ 00201C8h
-_Cube			equ 00201CCh
-_TimesPT5		equ 00201D0h
-_FPSquare		equ 00201D4h
-_FPMult			equ 00201D8h
-_LJRnd			equ 00201DCh
-_InvOP1Sc		equ 00201E0h
-_InvOP1S		equ 00201E4h
-_InvOP2S		equ 00201E8h
-_Frac			equ 00201ECh
-_FPRecip		equ 00201F0h
-_FPDiv			equ 00201F4h
-_SqRoot			equ 00201F8h
-_RndGuard		equ 00201FCh
-_Rnfx			equ 0020200h
-_Int			equ 0020204h
-_Round			equ 0020208h
-_LnX			equ 002020Ch
-_LogX			equ 0020210h
-_LJNoRnd		equ 0020214h
-_EToX			equ 0020218h
-_TenX			equ 002021Ch
-_SinCosRad		equ 0020220h
-_Sin			equ 0020224h
-_Cos			equ 0020228h
-_Tan			equ 002022Ch
-_SinhCosh		equ 0020230h
-_Tanh			equ 0020234h
-_Cosh			equ 0020238h
-_Sinh			equ 002023Ch
-_AcosRad		equ 0020240h
-_AtanRad		equ 0020244h
-_Atan2Rad		equ 0020248h
-_AsinRad		equ 002024Ch
-_Acos			equ 0020250h
-_Atan			equ 0020254h
-_Asin			equ 0020258h
-_Atan2			equ 002025Ch
-_Atanh			equ 0020260h
-_Asinh			equ 0020264h
-_Acosh			equ 0020268h
-_PToR			equ 002026Ch
-_RToP			equ 0020270h
-_HLTimes9		equ 0020274h
-_CkOP1Cplx		equ 0020278h
-_CkOP1Real		equ 002027Ch
-_Angle			equ 0020280h
-_COP1Set0		equ 0020284h
-_Cpop4OP3		equ 0020288h
-_Mov9OP2Cp		equ 002028Ch
-_AbsO1O2Cp		equ 0020290h
-_cpop1OP2		equ 0020294h
-_OP3ToOP4		equ 0020298h
-_OP1ToOP4		equ 002029Ch
-_OP2ToOP4		equ 00202A0h
-_OP4ToOP2		equ 00202A4h
-_OP3ToOP2		equ 00202A8h
-_OP1ToOP3		equ 00202ACh
-_OP5ToOP2		equ 00202B0h
-_OP5ToOP6		equ 00202B4h
-_OP5ToOP4		equ 00202B8h
-_OP1ToOP2		equ 00202BCh
-_OP6ToOP2		equ 00202C0h
-_OP6ToOP1		equ 00202C4h
-_OP4toOP1		equ 00202C8h
-_OP5ToOP1		equ 00202CCh
-_OP3ToOP1		equ 00202D0h
-_OP6ToOP5		equ 00202D4h
-_OP4ToOP5		equ 00202D8h
-_OP3ToOP5		equ 00202DCh
-_OP2ToOP5		equ 00202E0h
-_OP2ToOP6		equ 00202E4h
-_OP1ToOP6		equ 00202E8h
-_OP1ToOP5		equ 00202ECh
-_OP2ToOP1		equ 00202F0h
-_Mov11b			equ 00202F4h
-_Mov10b			equ 00202F8h
-_Mov9b			equ 00202FCh
-_Mov9b_Dup		equ 0020300h
-_Mov8b			equ 0020304h
-_Mov7b			equ 0020308h
-_Mov7b_Dup		equ 002030Ch
-_OP2ToOP3		equ 0020310h
-_OP4ToOP3		equ 0020314h
-_OP5ToOP3		equ 0020318h
-_OP4ToOP6		equ 002031Ch
-_Mov9ToOP1		equ 0020320h
-_Mov9OP1OP2		equ 0020324h
-_Mov9ToOP2		equ 0020328h
-_MovFROP1		equ 002032Ch
-_OP4Set1		equ 0020330h
-_OP3Set1		equ 0020334h
-_OP2Set8		equ 0020338h
-_OP2Set5		equ 002033Ch
-_OP2Seta		equ 0020340h
-_OP2Set4		equ 0020344h
-_OP2Set3		equ 0020348h
-_OP1Set1		equ 002034Ch
-_OP1Set4		equ 0020350h
-_OP1Set3		equ 0020354h
-_OP3Set2		equ 0020358h
-_OP1Set2		equ 002035Ch
-_OP2Set2		equ 0020360h
-_OP2Set1		equ 0020364h
-_Zero16d		equ 0020368h
-_OP5Set0		equ 002036Ch
-_OP4Set0		equ 0020370h
-_OP3Set0		equ 0020374h
-_OP2Set0		equ 0020378h
-_OP1Set0		equ 002037Ch
-_SetNum0		equ 0020380h
-_ZeroOP1		equ 0020384h
-_ZeroOP2		equ 0020388h
-_ZeroOP3		equ 002038Ch
-_ZeroOP			equ 0020390h
-_ClrLP			equ 0020394h
-_ShrACC			equ 0020398h
-_ShlACC			equ 002039Ch
-_Shr18			equ 00203A0h
-_Shr18a			equ 00203A4h
-_Shr16			equ 00203A8h
-_Shr14			equ 00203ACh
-_Shl16			equ 00203B0h
-_Shl14			equ 00203B4h
-_Srdo1			equ 00203B8h
-_ShrdRnd		equ 00203BCh
-_MantPa			equ 00203C0h
-_AddPrOP		equ 00203C4h
-_AddPrOPlP		equ 00203C8h
-_Add16d			equ 00203CCh
-_Add14d			equ 00203D0h
-_Sub16d			equ 00203D4h
-_Sub14d			equ 00203D8h
-_OP2ExOP6		equ 00203DCh
-_OP5ExOP6		equ 00203E0h
-_OP1ExOP5		equ 00203E4h
-_OP1ExOP6		equ 00203E8h
-_OP2ExOP4		equ 00203ECh
-_OP2ExOP5		equ 00203F0h
-_OP1ExOP3		equ 00203F4h
-_OP1ExOP4		equ 00203F8h
-_OP1ExOP2		equ 00203FCh
-_ExLP			equ 0020400h
-_CkOP1c0		equ 0020404h
-_CkOP1FP0		equ 0020408h
-_CkOP2fp0		equ 002040Ch
-_PosNo0Int		equ 0020410h
-_CkPosInt		equ 0020414h
-_CkInt			equ 0020418h
-_CkOdd			equ 002041Ch
-_CkOP1EX		equ 0020420h
-_GetCon1		equ 0020424h
-_GetCon			equ 0020428h
-_PiDiv2			equ 002042Ch
-_PiDiv4			equ 0020430h
-_TwoPi			equ 0020434h
-_PiCon			equ 0020438h
-_ExpToHex		equ 002043Ch
-_OP1ExpToDec		equ 0020440h
-_CkOP2Pos		equ 0020444h
-_CkOP1Pos		equ 0020448h
-_ClrOP2S		equ 002044Ch
-_ClrOP1S		equ 0020450h
-_FDiv100		equ 0020454h
-_FDiv10			equ 0020458h
-_DecO1exp		equ 002045Ch
-_IncO1exp		equ 0020460h
-_IncExp			equ 0020464h
-_CkValidNum		equ 0020468h
-_GetExp			equ 002046Ch
-_HtimesL		equ 0020470h
-_EOP1NotReal		equ 0020474h
-_ThetaName		equ 0020478h
-_RName			equ 002047Ch
-_RegEqName		equ 0020480h
-_ReCurnName		equ 0020484h
-_XName			equ 0020488h
-_YName			equ 002048Ch
-_TName			equ 0020490h
-_RealName		equ 0020494h
-_SetEStoFPS		equ 0020498h
-_ChkTempDirt		equ 002049Ch
-_OP1ExOP2Exp		equ 00204A0h
-_OP1ExpmDE		equ 00204A4h
-_ChkErrBreak		equ 00204A8h
-_Isa2ByteTok		equ 00204ACh
-_GetLastEntry		equ 00204B0h
-_GetLastEntryPtr	equ 00204B4h
-_RegRclrChng		equ 00204B8h
-_ResetWinTop		equ 00204BCh
-_IsO1NonTLstOrProg	equ 00204C0h
-_IsO1NonTempLst		equ 00204C4h
-_Is_A_LstOrCLst		equ 00204C8h
-_Chk_HL_999		equ 00204CCh
-_Equ_Or_NewEqu		equ 00204D0h
-_Errd_OP1NotPos		equ 00204D4h
-_Errd_OP1Not_R		equ 00204D8h
-_Errd_OP1NotPosInt	equ 00204DCh
-_Errd_OP1_le_0		equ 00204E0h
-_Errd_OP1_0		equ 00204E4h
-_ChkFindSym_Get_Size	equ 00204E8h
-_Sto_StatVar		equ 00204ECh
-_Rcl_StatVar		equ 00204F0h
-_CkOP2Real		equ 00204F4h
-_Get_X_Indirect		equ 00204F8h
-_MemChk			equ 00204FCh
-_CmpPrgNamLen1		equ 0020500h
-_CmpPrgNamLen		equ 0020504h
-_FindProgSym		equ 0020508h
-_ChkFindSym		equ 002050Ch
-_FindSym		equ 0020510h
-_InsertMem		equ 0020514h
-_InsertMemA		equ 0020518h
-_EnoughMem		equ 002051Ch
-_CmpMemNeed		equ 0020520h
-_CreatePVar4		equ 0020524h
-_CreatePVar3		equ 0020528h
-_CreateVar3		equ 002052Ch
-_CreateCplx		equ 0020530h
-_CreateReal		equ 0020534h
-_CreateTRList		equ 0020538h
-_CreateRList		equ 002053Ch
-_CreateTCList		equ 0020540h
-_CreateCList		equ 0020544h
-_CreateTRMat		equ 0020548h
-_CreateRMat		equ 002054Ch
-_CreateTStrng		equ 0020550h
-_CreateStrng		equ 0020554h
-_Create0Equ		equ 0020558h
-_CreatetEqu		equ 002055Ch
-_CreateEqu		equ 0020560h
-_CreateGDB		equ 0020564h
-_CreateProg		equ 0020568h
-_ChkDel			equ 002056Ch
-_ChkDelA		equ 0020570h
-_AdjParser		equ 0020574h
-_AdjMath		equ 0020578h
-_AdjM7			equ 002057Ch
-_DelMemA		equ 0020580h
-_Get_Form_Num		equ 0020584h
-_DelVar			equ 0020588h
-_DelVarIO		equ 002058Ch
-_DelMem			equ 0020590h
-_DelVar3D		equ 0020594h
-_DelVar3C		equ 0020598h
-_DelVar3DC		equ 002059Ch
-_Sym_Prog_non_t_Lst	equ 00205A0h
-_AdjSymPtrs		equ 00205A4h
-_DataSizeA		equ 00205A8h
-_DataSize		equ 00205ACh
-_PopMCplxO1		equ 00205B0h
-_PopMCplx		equ 00205B4h
-_MovCplx		equ 00205B8h
-_PopOP5			equ 00205BCh
-_PopOP3			equ 00205C0h
-_PopOP1			equ 00205C4h
-_PopRealO6		equ 00205C8h
-_PopRealO5		equ 00205CCh
-_PopRealO4		equ 00205D0h
-_PopRealO3		equ 00205D4h
-_PopRealO2		equ 00205D8h
-_PopRealO1		equ 00205DCh
-_PopReal		equ 00205E0h
-_FPopCplx		equ 00205E4h
-_FPopReal		equ 00205E8h
-_FPopFPS		equ 00205ECh
-_DeallocFPS		equ 00205F0h
-_DeallocFPS1		equ 00205F4h
-_AllocFPS		equ 00205F8h
-_AllocFPS1		equ 00205FCh
-_PushRealO6		equ 0020600h
-_PushRealO5		equ 0020604h
-_PushRealO4		equ 0020608h
-_PushRealO3		equ 002060Ch
-_PushRealO2		equ 0020610h
-_PushRealO1		equ 0020614h
-_PushReal		equ 0020618h
-_PushOP5		equ 002061Ch
-_PushOP3		equ 0020620h
-_PushMCplxO3		equ 0020624h
-_PushOP1		equ 0020628h
-_PushMCplxO1		equ 002062Ch
-_PushMCplx		equ 0020630h
-_ExMCplxO1		equ 0020634h
-_Exch9			equ 0020638h
-_CpyTo1FPS11		equ 002063Ch
-_CpyTo2FPS5		equ 0020640h
-_CpyTo1FPS5		equ 0020644h
-_CpyTo2FPS6		equ 0020648h
-_CpyTo1FPS6		equ 002064Ch
-_CpyTo2FPS7		equ 0020650h
-_CpyTo1FPS7		equ 0020654h
-_CpyTo1FPS8		equ 0020658h
-_CpyTo2FPS8		equ 002065Ch
-_CpyTo1FPS10		equ 0020660h
-_CpyTo1FPS9		equ 0020664h
-_CpyTo2FPS4		equ 0020668h
-_CpyTo6FPS3		equ 002066Ch
-_CpyTo6FPS2		equ 0020670h
-_CpyTo2FPS3		equ 0020674h
-_Cpycto1FPS3		equ 0020678h
-_CpyTo1FPS3		equ 002067Ch
-_CpyFPS3		equ 0020680h
-_CpyTo1FPS4		equ 0020684h
-_CpyTo3FPS2		equ 0020688h
-_CpyTo5FPSt		equ 002068Ch
-_CpyTo6FPSt		equ 0020690h
-_CpyTo4FPSt		equ 0020694h
-_CpyTo3FPSt		equ 0020698h
-_CpyTo2FPSt		equ 002069Ch
-_CpyTo1FPSt		equ 00206A0h
-_CpyFPSt		equ 00206A4h
-_CpyStack		equ 00206A8h
-_CpyTo3FPS1		equ 00206ACh
-_CpyTo2FPS1		equ 00206B0h
-_CpyTo1FPS1		equ 00206B4h
-_CpyFPS1		equ 00206B8h
-_CpyTo2FPS2		equ 00206BCh
-_CpyTo1FPS2		equ 00206C0h
-_CpyFPS2		equ 00206C4h
-_CpyO3ToFPSt		equ 00206C8h
-_CpyO2ToFPSt		equ 00206CCh
-_CpyO6ToFPSt		equ 00206D0h
-_CpyO1ToFPSt		equ 00206D4h
-_CpyToFPSt		equ 00206D8h
-_CpyToStack		equ 00206DCh
-_CpyO3ToFPS1		equ 00206E0h
-_CpyO5ToFPS1		equ 00206E4h
-_CpyO2ToFPS1		equ 00206E8h
-_CpyO1ToFPS1		equ 00206ECh
-_CpyToFPS1		equ 00206F0h
-_CpyO2ToFPS2		equ 00206F4h
-_CpyO3ToFPS2		equ 00206F8h
-_CpyO6ToFPS2		equ 00206FCh
-_CpyO1ToFPS2		equ 0020700h
-_CpyToFPS2		equ 0020704h
-_CpyO5ToFPS3		equ 0020708h
-_CpyO2ToFPS3		equ 002070Ch
-_CpyO1ToFPS3		equ 0020710h
-_CpyToFPS3		equ 0020714h
-_CpyO1ToFPS6		equ 0020718h
-_CpyO1ToFPS7		equ 002071Ch
-_CpyO1ToFPS5		equ 0020720h
-_CpyO2ToFPS4		equ 0020724h
-_CpyO1ToFPS4		equ 0020728h
-_ErrNotEnoughMem	equ 002072Ch
-_FPSMinus9		equ 0020730h
-_HLMinus9		equ 0020734h
-_ErrOverflow		equ 0020738h
-_ErrDivBy0		equ 002073Ch
-_ErrSingularMat		equ 0020740h
-_ErrDomain		equ 0020744h
-_ErrIncrement		equ 0020748h
-_ErrNon_Real		equ 002074Ch
-_ErrSyntax		equ 0020750h
-_ErrDataType		equ 0020754h
-_ErrArgument		equ 0020758h
-_ErrDimMismatch		equ 002075Ch
-_ErrDimension		equ 0020760h
-_ErrUndefined		equ 0020764h
-_ErrMemory		equ 0020768h
-_ErrInvalid		equ 002076Ch
-_ErrBreak		equ 0020770h
-_ErrStat		equ 0020774h
-_ErrSignchange		equ 0020778h
-_ErrIterations		equ 002077Ch
-_ErrBadGuess		equ 0020780h
-_ErrTolTooSmall		equ 0020784h
-_ErrStatPlot		equ 0020788h
-_ErrLinkXmit		equ 002078Ch
-_JError			equ 0020790h
-_NoErrorEntry		equ 0020794h
-_PushErrorHandler	equ 0020798h
-_PopErrorHandler	equ 002079Ch
-_StrCopy		equ 00207A0h
-_StrngCat		equ 00207A4h
-_IsInSet		equ 00207A8h
-_GeqNameA		equ 00207ACh
-_RecName		equ 00207B0h
-_PutMap			equ 00207B4h
-_PutC			equ 00207B8h
-_DispHL_s		equ 00207BCh
-_PutS			equ 00207C0h
-_PutPSB			equ 00207C4h
-_PutPS			equ 00207C8h
-_WPutPS			equ 00207CCh
-_PutBuf			equ 00207D0h
-_PutBuf1		equ 00207D4h
-_WPutC			equ 00207D8h
-_WPutS			equ 00207DCh
-_WPutSEOL		equ 00207E0h
-_WDispEOL		equ 00207E4h
-_WHomeUp		equ 00207E8h
-_SetNumWindow		equ 00207ECh
-_NewLine		equ 00207F0h
-_MoveDown		equ 00207F4h
-_ScrollUp		equ 00207F8h
-_ShrinkWindow		equ 00207FCh
-_MoveUp			equ 0020800h
-_ScrollDown		equ 0020804h
-_ClrLCDFull		equ 0020808h
-_ClrLCD			equ 002080Ch
-_ClrScrnFull		equ 0020810h
-_ClrScrn		equ 0020814h
-_ClrTxtShd		equ 0020818h
-_ClrWindow		equ 002081Ch
-_EraseEOL		equ 0020820h
-_EraseEOW		equ 0020824h
-_HomeUp			equ 0020828h
-_GetCurloc		equ 002082Ch
-_VPutmap		equ 0020830h
-_VPutS			equ 0020834h
-_VPutSN			equ 0020838h
-_VPutSNG		equ 002083Ch
-_VPutSNT		equ 0020840h
-_RunIndicOn		equ 0020844h
-_RunIndicOff		equ 0020848h
-_SaveCmdShadow		equ 002084Ch
-_SaveShadow		equ 0020850h
-_RStrShadow		equ 0020854h
-_RStrPartial		equ 0020858h
-_RStrCurRow		equ 002085Ch
-_RStrUnderMenu		equ 0020860h
-_RStrbotRow		equ 0020864h
-_GetKeypress		equ 0020868h
-_GetTokLen		equ 002086Ch
-_Get_Tok_Strng		equ 0020870h
-_GetTokString		equ 0020874h
-_PutBPatBuf2		equ 0020878h
-_PutBPatBuf		equ 002087Ch
-_PutBPat		equ 0020880h
-_PutcChkScroll		equ 0020884h
-_DispEOL		equ 0020888h
-_FDispEOL		equ 002088Ch
-_MakeRowCmd		equ 0020890h
-_ToToStrp		equ 0020894h
-_SetVarName		equ 0020898h
-_DispDone		equ 002089Ch
-_FinishOutput		equ 00208A0h
-_CurBlink		equ 00208A4h
-_CursorOff		equ 00208A8h
-_HideCursor		equ 00208ACh
-_CursorOn		equ 00208B0h
-_ShowCursor		equ 00208B4h
-_KeyToString		equ 00208B8h
-_PullDownChk		equ 00208BCh
-_MenuCatCommon		equ 00208C0h
-_LoadCurcat		equ 00208C4h
-_NCIFPrgmedMode		equ 00208C8h
-_LoadMenuNum		equ 00208CCh
-_LoadMenuNuml		equ 00208D0h
-_MenuEdKey		equ 00208D4h
-_MenCatRet		equ 00208D8h
-_NotAlphNum		equ 00208DCh
-;00208E0h
-;00208E4h
-;00208E8h
-;00208ECh
-_DispLIstName		equ 00208F0h
-_DispLAlphaName		equ 00208F4h
-_AbortPrgmode		equ 00208F8h
-_IsFullCntx		equ 00208FCh
-_AdrMRow		equ 0020900h
-_AdrmeLE		equ 0020904h
-_GetmatOP1A		equ 0020908h
-_Getm1toOP1		equ 002090Ch
-_Getm1tOP1A		equ 0020910h
-_GetmtoOP1		equ 0020914h
-_Puttom1a		equ 0020918h
-_Puttoma1		equ 002091Ch
-_PutToMat		equ 0020920h
-_MatELDiv		equ 0020924h
-_CMatFun		equ 0020928h
-_RowEchPoly		equ 002092Ch
-_RowEchelon		equ 0020930h
-_AdrLELE		equ 0020934h
-_Getl1ToOP1		equ 0020938h
-_Getl1TOP1A		equ 002093Ch
-_GetlToOP1		equ 0020940h
-_Getl1ToOP2		equ 0020944h
-_Getl1TOP2A		equ 0020948h
-_Getl2TOP1A		equ 002094Ch
-_PutTola1		equ 0020950h
-_PutToL			equ 0020954h
-_MaxMinLst		equ 0020958h
-_LLow			equ 002095Ch
-_LHigh			equ 0020960h
-_LSum			equ 0020964h
-_CumSum			equ 0020968h
-_ToFrac			equ 002096Ch
-_SeqSet			equ 0020970h
-_SeqSolve		equ 0020974h
-_CmpNumInit		equ 0020978h
-_BinopExec		equ 002097Ch
-_ExMeanL		equ 0020980h
-_Set2MVLPtrs		equ 0020984h
-_SetMat1		equ 0020988h
-_CreateTLIst		equ 002098Ch
-_UnopExec		equ 0020990h
-_ThreeExec		equ 0020994h
-_RestoreErrNo		equ 0020998h
-_FourExec		equ 002099Ch
-_FiveExec		equ 00209A0h
-_CpyTo2ES1		equ 00209A4h
-_CpyTo6ES1		equ 00209A8h
-_CpyTo1ES1		equ 00209ACh
-_CpyTo3ES1		equ 00209B0h
-_CpyTo3ES2		equ 00209B4h
-_CpyTo2ES2		equ 00209B8h
-_CpyTo1ES2		equ 00209BCh
-_CpyTo2ES3		equ 00209C0h
-_CpyTo1ES3		equ 00209C4h
-_CpyTo3ES4		equ 00209C8h
-_CpyTo6ES3		equ 00209CCh
-_CpyTo2ES4		equ 00209D0h
-_CpyTo1ES4		equ 00209D4h
-_CpyTo2ES5		equ 00209D8h
-_CpyTo1ES5		equ 00209DCh
-_CpyTo4ESt		equ 00209E0h
-_CpyTo2ESt		equ 00209E4h
-_CpyTo1ESt		equ 00209E8h
-_CpyTo2ES6		equ 00209ECh
-_CpyTo1ES6		equ 00209F0h
-_CpyTo2ES7		equ 00209F4h
-_CpyTo1ES7		equ 00209F8h
-_CpyTo2ES8		equ 00209FCh
-_CpyTo1ES8		equ 0020A00h
-_CpyTo1ES9		equ 0020A04h
-_CpyTo2ES9		equ 0020A08h
-_CpyTo2ES10		equ 0020A0Ch
-_CpyTo1ES10		equ 0020A10h
-_CpyTo2ES11		equ 0020A14h
-_CpyTo1ES11		equ 0020A18h
-_CpyTo2ES12		equ 0020A1Ch
-_CpyTo1ES12		equ 0020A20h
-_CpyTo2ES13		equ 0020A24h
-_CpyTo1ES13		equ 0020A28h
-_CpyTo1ES14		equ 0020A2Ch
-_CpyTo1ES16		equ 0020A30h
-_CpyTo1ES17		equ 0020A34h
-_CpyTo1ES18		equ 0020A38h
-_CpyTo1ES15		equ 0020A3Ch
-_CpyTo2ES15		equ 0020A40h
-_CpyO1ToESt		equ 0020A44h
-_CpyO1ToES1		equ 0020A48h
-_CpyO6ToES1		equ 0020A4Ch
-_CpyO6ToES3		equ 0020A50h
-_CpyO1ToES2		equ 0020A54h
-_CpyO2ToES2		equ 0020A58h
-_CpyO1ToES3		equ 0020A5Ch
-_CpyO1ToES4		equ 0020A60h
-_CpyO1ToES5		equ 0020A64h
-_CpyO1ToES6		equ 0020A68h
-_CpyO1ToES7		equ 0020A6Ch
-_CpyO2ToES4		equ 0020A70h
-_CpyO2ToES5		equ 0020A74h
-_CpyO2ToES6		equ 0020A78h
-_CpyO2ToES7		equ 0020A7Ch
-_CpyO2ToES8		equ 0020A80h
-_CpyO2ToES9		equ 0020A84h
-_CpyO1ToES8		equ 0020A88h
-_CpyO1ToES9		equ 0020A8Ch
-_CpyO1ToES10		equ 0020A90h
-_CpyO1ToES11		equ 0020A94h
-_CpyO1ToES12		equ 0020A98h
-_CpyO1ToES13		equ 0020A9Ch
-_CpyO1ToES14		equ 0020AA0h
-_EvalF3A		equ 0020AA4h
-_GetK			equ 0020AA8h
-_SetTitle		equ 0020AACh
-_DispVarVal		equ 0020AB0h
-_RecallEd		equ 0020AB4h
-_SetUpBuffer		equ 0020AB8h
-_CreateNumEditBuf	equ 0020ABCh
-_CallCommon		equ 0020AC0h
-_CommonKeys		equ 0020AC4h
-_LeftMore		equ 0020AC8h
-_FDel			equ 0020ACCh
-_FClear			equ 0020AD0h
-_FInsDisp		equ 0020AD4h
-_FInsDisp02		equ 0020AD8h
-_SetIndicator		equ 0020ADCh
-_DspLstsNor		equ 0020AE0h
-_ReleaseBuffer		equ 0020AE4h
-_VarNameToOP1HL		equ 0020AE8h
-_NameToOP1		equ 0020AECh
-_NumpPutAway		equ 0020AF0h
-_NumReDisp		equ 0020AF4h
-_NumError02		equ 0020AF8h
-_Load_Sfont		equ 0020AFCh
-_Sfont_Len		equ 0020B00h
-_InitNumVec		equ 0020B04h
-_SetxxOP1		equ 0020B08h
-_SetxxOP2		equ 0020B0Ch
-_SetxxxxOP2		equ 0020B10h
-_UCLines		equ 0020B14h
-_CLine			equ 0020B18h
-_CLines			equ 0020B1Ch
-_XrootY			equ 0020B20h
-_YtoX			equ 0020B24h
-;0020B28h
-;0020B2Ch
-;0020B30h
-;0020B34h
-;0020B38h
-;0020B3Ch
-;0020B40h
-;0020B44h
-;0020B48h
-;0020B4Ch
-;0020B50h
-;0020B54h
-;0020B58h
-;0020B5Ch
-;0020B60h
-;0020B64h
-;0020B68h
-;0020B6Ch
-_Mov18b			equ 0020B70h
-_DarkLine		equ 0020B74h
-_ILine			equ 0020B78h
-_IPoint			equ 0020B7Ch
-_XYRndBoth		equ 0020B80h
-_XYRnd			equ 0020B84h
-_CheckTOP		equ 0020B88h
-_CheckXY		equ 0020B8Ch
-_DarkPnt		equ 0020B90h
-_CPointS		equ 0020B94h
-_WToV			equ 0020B98h
-_VtoWHLDE		equ 0020B9Ch
-_Xitof			equ 0020BA0h
-_YftoI			equ 0020BA4h
-_XftoI			equ 0020BA8h
-_TraceOff		equ 0020BACh
-_GrRedisp		equ 0020BB0h
-_GDispToken		equ 0020BB4h
-_GrdeCoda		equ 0020BB8h
-_LabCoor		equ 0020BBCh
-_CoorDisp		equ 0020BC0h
-_TmpEquNoSrc		equ 0020BC4h
-_GrLabels		equ 0020BC8h
-_YPixSet		equ 0020BCCh
-_XPixSet		equ 0020BD0h
-_CopyRng		equ 0020BD4h
-_ValCur			equ 0020BD8h
-_GrPutAway		equ 0020BDCh
-_RstGFlags		equ 0020BE0h
-_GrReset		equ 0020BE4h
-_XYCent			equ 0020BE8h
-_ZoomXYCmd		equ 0020BECh
-_CptDelY		equ 0020BF0h
-_CptDelX		equ 0020BF4h
-_SetFuncM		equ 0020BF8h
-_SetSeqM		equ 0020BFCh
-_SetPolM		equ 0020C00h
-_SetParM		equ 0020C04h
-_ZmInt			equ 0020C08h
-_ZmDecml		equ 0020C0Ch
-_ZmPrev			equ 0020C10h
-_ZmUsr			equ 0020C14h
-_SetuZM			equ 0020C18h
-_ZmFit			equ 0020C1Ch
-_ZmSquare		equ 0020C20h
-_ZmTrig			equ 0020C24h
-_SetXMinMax		equ 0020C28h
-_ZooDefault		equ 0020C2Ch
-;0020C30h
-;0020C34h
-;0020C38h
-;0020C3Ch
-;0020C40h
-;0020C44h
-;0020C48h
-;0020C4Ch
-;0020C50h
-;0020C54h
-_ChkTextCurs		equ 0020C58h
-;0020C5Ch
-_DoRefFlags02		equ 0020C60h
-_InitNSeq		equ 0020C64h
-_YRes			equ 0020C68h
-_Ceiling		equ 0020C6Ch
-_PutXY			equ 0020C70h
-_PutEquNo		equ 0020C74h
-_PDspGrph		equ 0020C78h
-_HorizCmd		equ 0020C7Ch
-_VertCmd		equ 0020C80h
-_LineCmd		equ 0020C84h
-_UnLineCmd		equ 0020C88h
-_PointCmd		equ 0020C8Ch
-_PixelTest  		equ 0020C90h
-_PixelCmd		equ 0020C94h
-_TanLnF			equ 0020C98h
-_DrawCmdInit		equ 0020C9Ch
-_DrawCmd		equ 0020CA0h
-_ShadeCmd		equ 0020CA4h
-_InvCmd			equ 0020CA8h
-_StatShade		equ 0020CACh
-_DspMatTable		equ 0020CB0h
-_DspLsts		equ 0020CB4h
-_CloseEditBuf		equ 0020CB8h
-_ParseEditBuf		equ 0020CBCh
-_PutSM			equ 0020CC0h
-_DspCurTbl		equ 0020CC4h
-_DspGrTbl		equ 0020CC8h
-_ZeroTemplate		equ 0020CCCh
-_SetTblRefs		equ 0020CD0h
-_DispTblBot		equ 0020CD4h
-_DispTblTop		equ 0020CD8h
-_DispTblBody		equ 0020CDCh
-_VPutBlank		equ 0020CE0h
-_TblTrace		equ 0020CE4h
-_DispListNameY		equ 0020CE8h
-_CurNameLength		equ 0020CECh
-_NameToBuf		equ 0020CF0h
-_JPromptCursor		equ 0020CF4h
-_BufLeft		equ 0020CF8h
-_BufRight		equ 0020CFCh
-_BufInsert		equ 0020D00h
-_BufQueueChar		equ 0020D04h
-_BufReplace		equ 0020D08h
-_BufDelete		equ 0020D0Ch
-_BufPeek		equ 0020D10h
-_BufPeek1		equ 0020D14h
-_BufPeek2		equ 0020D18h
-_BufPeek3		equ 0020D1Ch
-_BufToBtm		equ 0020D20h
-_SetupEditEqu		equ 0020D24h
-_BufToTop		equ 0020D28h
-_IsEditFull		equ 0020D2Ch
-_IsEditEmpty		equ 0020D30h
-_IsAtTOP		equ 0020D34h
-_IsAtBtm		equ 0020D38h
-;0020D3Ch
-_JCursorFirst		equ 0020D40h
-_JCursorLast		equ 0020D44h
-_JursorLeft		equ 0020D48h
-_JCursorRight		equ 0020D4Ch
-_JCursorUp		equ 0020D50h
-_JursorDown		equ 0020D54h
-_CursorToOffset		equ 0020D58h
-_InsDisp		equ 0020D5Ch
-_FDispBOL1		equ 0020D60h
-_FDispBOL		equ 0020D64h
-_DispEOW		equ 0020D68h
-_DispHead		equ 0020D6Ch
-_DispTail		equ 0020D70h
-_PutTokString		equ 0020D74h
-_SetUpEditCmd		equ 0020D78h
-_SetEmptyeditEqu	equ 0020D7Ch
-_SetEmptyEditPtr	equ 0020D80h
-_CloseEditEqu		equ 0020D84h
-_GetPrevTok		equ 0020D88h
-_GetKey			equ 0020D8Ch
-_CanIndic		equ 0020D90h
-_FormDisp		equ 0020D94h
-_FormMatrix		equ 0020D98h
-_WScrollLeft		equ 0020D9Ch
-_WScrollUp		equ 0020DA0h
-_WScrollDown		equ 0020DA4h
-_WScrollRight		equ 0020DA8h
-_FormEReal		equ 0020DACh
-_FormERealTok		equ 0020DB0h
-_FormDCplx		equ 0020DB4h
-_FormReal		equ 0020DB8h
-_FormScrollUp		equ 0020DBCh
-_SetWinAbove		equ 0020DC0h
-_DisarmScroll		equ 0020DC4h
-_MinToEdit		equ 0020DC8h
-_RclVarToEdit		equ 0020DCCh
-_RclVarToEditPtr	equ 0020DD0h
-_RclEntryToEdit		equ 0020DD4h
-_RclToQueue		equ 0020DD8h
-_FormToTok		equ 0020DDCh
-_DispInterval		equ 0020DE0h
-_DispLstName		equ 0020DE4h
-_DispSLstNameHL		equ 0020DE8h
-;0020DECh
-;0020DF0h
-;0020DF4h
-;0020DF8h
-;0020DFCh
-;0020E00h
-_DispForward		equ 0020E04h
-_DispYPrompt2		equ 0020E08h
-_StringWidth		equ 0020E0Ch
-_DispErrorScreen	equ 0020E10h
-_PopCX			equ 0020E14h
-_LoadNoEEntry		equ 0020E18h
-_SaveScreen		equ 0020E1Ch
-_RetScreen		equ 0020E20h
-_RetScreenErr		equ 0020E24h
-_CheckSplitFlag		equ 0020E28h
-_SolveRedisp		equ 0020E2Ch
-_SolveDisp		equ 0020E30h
-_ItemName		equ 0020E34h
-_SetNorm_Vals		equ 0020E38h
-_SetYOffset		equ 0020E3Ch
-_ConvKeyToTok		equ 0020E40h
-_ConvFCKeyToTok		equ 0020E44h
-_ConvFEKeyToTok		equ 0020E48h
-_TokToKey		equ 0020E4Ch
-;0020E50h
-;0020E54h
-;0020E58h
-_DelRes			equ 0020E5Ch
-;0020E60h
-;0020E64h
-;0020E68h
-;0020E6Ch
-;0020E70h
-;0020E74h
-;0020E78h
-;0020E7Ch
-;0020E80h
-;0020E84h
-;0020E88h
-;0020E8Ch
-;0020E90h
-;0020E94h
-;0020E98h
-;0020E9Ch
-;0020EA0h
-;0020EA4h
-;0020EA8h
-;0020EACh
-;0020EB0h
-;0020EB4h
-;0020EB8h
-;0020EBCh
-;0020EC0h
-;0020EC4h
-;0020EC8h
-;0020ECCh
-;0020ED0h
-;0020ED4h
-;0020ED8h
-;0020EDCh
-;0020EE0h
-;0020EE4h
-;0020EE8h
-;0020EECh
-;0020EF0h
-;0020EF4h
-;0020EF8h
-;0020EFCh
-_ParseInp		equ 0020F00h
-_ParseOn		equ 0020F04h
-_ParseScan		equ 0020F08h
-_GetParse		equ 0020F0Ch
-_SaveParse		equ 0020F10h
-_InitPFlgs		equ 0020F14h
-_CkEndLineRR		equ 0020F18h
-_OP2Set60		equ 0020F1Ch
-_GetStatPtr		equ 0020F20h
-_CmpStatPtr		equ 0020F24h
-_VarSysAdr		equ 0020F28h
-_StoSyStok		equ 0020F2Ch
-_StoAns			equ 0020F30h
-_StoTheta		equ 0020F34h
-_StoR			equ 0020F38h
-_StoY			equ 0020F3Ch
-_StoN			equ 0020F40h
-_StoT			equ 0020F44h
-_StoX			equ 0020F48h
-_StoOther		equ 0020F4Ch
-_RclAns			equ 0020F50h
-_RclY			equ 0020F54h
-_RclN			equ 0020F58h
-_RclX			equ 0020F5Ch
-_RclVarSym		equ 0020F60h
-_RclsyStok		equ 0020F64h
-_StMatel		equ 0020F68h
-_StLstvecel		equ 0020F6Ch
-_ConvOP1		equ 0020F70h
-_FindParseFormula	equ 0020F74h
-_ParseFormula		equ 0020F78h
-_StrngEnt1		equ 0020F7Ch
-_Prgrdlp		equ 0020F80h
-_VarEnt			equ 0020F84h
-_ParseOnc		equ 0020F88h
-_ParseOn_Dup		equ 0020F8Ch
-_ParseCmd		equ 0020F90h
-_StoType		equ 0020F94h
-_CreatePair		equ 0020F98h
-_PushNum		equ 0020F9Ch
-_IncCurPCErrEnd		equ 0020FA0h
-_ErrEnd			equ 0020FA4h
-_CommaErrF		equ 0020FA8h
-_CommaErr		equ 0020FACh
-_StEQArg2		equ 0020FB0h
-_StEQArg		equ 0020FB4h
-_InpArg			equ 0020FB8h
-_StEQArg3		equ 0020FBCh
-_NxtFetch		equ 0020FC0h
-_CkFetchVar		equ 0020FC4h
-_FetchVarA		equ 0020FC8h
-_FetchVar		equ 0020FCCh
-_CkEndLin		equ 0020FD0h
-_CkEndExp		equ 0020FD4h
-_CkParsEnd		equ 0020FD8h
-_StoTypeArg		equ 0020FDCh
-_ConvDim		equ 0020FE0h
-_ConvDim00		equ 0020FE4h
-_AheadEqual		equ 0020FE8h
-_ParsaHeads		equ 0020FECh
-_ParsaHead 		equ 0020FF0h
-_AnsName		equ 0020FF4h
-_StoCmpReals		equ 0020FF8h
-_GetDEPtr		equ 0020FFCh
-_Push2BOper		equ 0021000h
-_Push3BOper		equ 0021004h
-_Pop2BOper		equ 0021008h
-_Pop3BOper		equ 002100Ch
-_PushOper		equ 0021010h
-_PopOper		equ 0021014h
-_FindEUndef		equ 0021018h
-_SttmpEQ		equ 002101Ch
-_FindEOL		equ 0021020h
-_BrkInc			equ 0021024h
-_IncFetch		equ 0021028h
-_CurFetch		equ 002102Ch
-_Random			equ 0021030h
-_StoRand		equ 0021034h
-_RandInit		equ 0021038h
-_ResetStacks		equ 002103Ch
-;0021040h
-;0021044h
-;0021048h
-;002104Ch
-;0021050h
-;0021054h
-;0021058h
-;002105Ch
-;0021060h
-;0021064h
-;0021068h
-;002106Ch
-;0021070h
-;0021074h
-;0021078h
-;002107Ch
-;0021080h
-;0021084h
-;0021088h
-;002108Ch
-;0021090h
-;0021094h
-;0021098h
-_GrBufClr		equ 002109Ch
-_GrBufCpyV		equ 00210A0h
-_FndSelEQ		equ 00210A4h
-_ClrGraphXY		equ 00210A8h
-_NEDXTYStyle		equ 00210ACh
-_PlotPt			equ 00210B0h
-_NewWindEP		equ 00210B4h
-_DrawAxes		equ 00210B8h
-_SetPenX		equ 00210BCh
-_SetPenY		equ 00210C0h
-_SetPenT		equ 00210C4h
-_TanEquDisp		equ 00210C8h
-_PutAns			equ 00210CCh
-_DispOP1A		equ 00210D0h
-;00210D4h
-_SetTblGraphDraw	equ 00210D8h
-_MemClear		equ 00210DCh
-_MemSet			equ 00210E0h
-_PointOn		equ 00210E4h
-_ExecuteNewPrgm		equ 00210E8h
-_StrLength		equ 00210ECh
-_VPutMapRec		equ 00210F0h
-;00210F4h
-;00210F8h
-;00210FCh
-;0021100h
-_AddHL259		equ 0021104h
-;0021108h
-_IBounds		equ 002110Ch
-_IOffset		equ 0021110h
-;0021114h
-_CanAlphIns		equ 0021118h
-;002111Ch
-_GetBaseVer		equ 0021120h
-_OPSet0DES		equ 0021124h
-;0021128h
-_SetIgnoreKey		equ 002112Ch
-_SetSendThisKeyBack	equ 0021130h
-_DisableAPD		equ 0021134h
-_EnableAPD		equ 0021138h
-_Set2IY34		equ 002113Ch
-_ForceCmd		equ 0021140h
-_ApdSetup		equ 0021144h
-_Get_NumKey		equ 0021148h
-_AppSetup		equ 002114Ch
-_ReleaseSedit		equ 0021150h
-_InitSmallEditLine	equ 0021154h
-_StartSmallEdit		equ 0021158h
-;002115Ch
-_SGetTokString		equ 0021160h
-_LoadPattern		equ 0021164h
-_SStringLength		equ 0021168h
-_RestorePenCol		equ 002116Ch
-;0021170h
-_EmptyHook		equ 0021174h
-_ForceSmallEditReturn2	equ 0021178h
-;002117Ch
-;0021180h
-_ClearRow		equ 0021184h
-;0021188h
-;002118Ch
-;0021190h
-;0021194h
-;0021198h
-;002119Ch
-;00211A0h
-;00211A4h
-;00211A8h
-;00211ACh
-;00211B0h
-;00211B4h
-;00211B8h
-;00211BCh
-;00211C0h
-;00211C4h
-;00211C8h
-;00211CCh
-;00211D0h
-;00211D4h
-;00211D8h
-;00211DCh
-;00211E0h
-;00211E4h
-;00211E8h
-;00211ECh
-;00211F0h
-;00211F4h
-;00211F8h
-;00211FCh
-;0021200h
-;0021204h
-;0021208h
-_ErrCustom1		equ 002120Ch
-_ErrCustom2		equ 0021210h
-_Ret_1			equ 0021214h
-_ClearRect		equ 0021218h
-_InvertRect		equ 002121Ch
-_FillRect		equ 0021220h
-;0021224h
-;0021228h
-;002122Ch
-;0021230h
-;0021234h
-;0021238h
-_DrawRectBorder		equ 002123Ch
-;0021240h
-;0021244h
-_EraseRectBorder	equ 0021248h
-_FillRectPattern	equ 002124Ch
-_DrawRectBorderClear	equ 0021250h
-;0021254h
-;0021258h
-;002125Ch
-;0021260h
-;0021264h
-;0021268h
-;002126Ch
-;0021270h
-;0021274h
-;0021278h
-;002127Ch
-;0021280h
-;0021284h
-;0021288h
-;002128Ch
-;0021290h
-;0021294h
-;0021298h
-;002129Ch
-;00212A0h
-;00212A4h
-;00212A8h
-;00212ACh
-;00212B0h
-;00212B4h
-;00212B8h
-;00212BCh
-;00212C0h
-;00212C4h
-;00212C8h
-;00212CCh
-;00212D0h
-;00212D4h
-;00212D8h
-;00212DCh
-;00212E0h
-;00212E4h
-;00212E8h
-;00212ECh
-;00212F0h
-;00212F4h
-;00212F8h
-;00212FCh
-;0021300h
-;0021304h
-;0021308h
-;002130Ch
-;0021310h
-;0021314h
-;0021318h
-;002131Ch
-_GetStringInput		equ 0021320h
-_GetStringInput2	equ 0021324h
-_WaitEnterKeyValue	equ 0021328h
-_HorizontalLine		equ 002132Ch
-_CreateAppVar		equ 0021330h
-_CreateProtProg		equ 0021334h
-_CreateVar		equ 0021338h
-_AsmComp		equ 002133Ch
-_GetAsmSize		equ 0021340h
-_SquishPrgm		equ 0021344h
-_ExecutePrgm		equ 0021348h
-_ChkFindSymAsm		equ 002134Ch
-_ParsePrgmName		equ 0021350h
-_CAdd			equ 0021354h
-_CSqaure		equ 0021358h
-_CMult			equ 002135Ch
-_CRecip			equ 0021360h
-_CDiv			equ 0021364h
-_CAbs			equ 0021368h
-_AddSquares		equ 002136Ch
-_CSqroot		equ 0021370h
-_CLn			equ 0021374h
-_CLog			equ 0021378h
-_CTenX			equ 002137Ch
-_CEtoX			equ 0021380h
-_CXrootY		equ 0021384h
-;0021388h
-_CYtoX			equ 002138Ch
-_InvertNonReal		equ 0021390h
-_CplxMult		equ 0021394h
-_CplxDiv		equ 0021398h
-_CplxTrunc		equ 002139Ch
-_CplxFrac		equ 00213A0h
-_CplxFloor		equ 00213A4h
-;00213A8h
-_FlashWriteDisable	equ 00213ACh
-_Disp			equ 00213B0h
-_GetBytePaged_Unpaged	equ 00213B4h
-_RunCursorHook		equ 00213B8h
-_RunLibraryHook		equ 00213BCh
-_RunRawkeyHook		equ 00213C0h
-_SetCursorHook		equ 00213C4h
-_SetLibraryHook		equ 00213C8h
-_SetGetKeyHook		equ 00213CCh
-_ClrCursorHook		equ 00213D0h
-_ClrLibraryHook		equ 00213D4h
-_ClrRawKeyHook		equ 00213D8h
-_GetKeyHook		equ 00213DCh
-_SetGetCSCHook		equ 00213E0h
-_ClrGetKeyHook		equ 00213E4h
-_SetCatalog2Hook	equ 00213E8h
-_ClrCatalog2Hook	equ 00213ECh
-_SetLocalizeHook	equ 00213F0h
-_ClrLocalizeHook	equ 00213F4h
-_SetTokenHook		equ 00213F8h
-_ClrTokenHook		equ 00213FCh
-;0021400h
-;0021404h
-_DispListElementOffLA	equ 0021408h
-_Bit_VertSplit		equ 002140Ch
-_SetHomescreenHook	equ 0021410h
-_ClrHomescreenHook	equ 0021414h
-_SetWIndowHook		equ 0021418h
-_ClrWindowHook		equ 002141Ch
-_SetGraphModeHook	equ 0021420h
-_ClrGraphModeHook	equ 0021424h
-_ParseAndStoreSysVar	equ 0021428h
-_DisplayEditSysVar	equ 002142Ch
-_JForceWIndowSettings	equ 0021430h
-_DelVarArc		equ 0021434h
-_DelVarNoArc		equ 0021438h
-_SetAllPlots		equ 002143Ch
-_SetYeditHook		equ 0021440h
-_ClrYeditHook		equ 0021444h
-_Arc_Unarc		equ 0021448h
+_OSSize                    equ 0020104h ; not a routine; jump location is end of OS
+_BootOS                    equ 0020108h
+_InterruptHandler          equ 002010Ch
+_Rst10Handler              equ 0020110h
+_Rst18Handler              equ 0020114h
+_Rst20Handler              equ 0020118h
+_Rst28Handler              equ 002011Ch
+_Rst30Handler              equ 0020120h
+;                          equ 0020124h
+;                          equ 0020128h
+_JErrorNo                  equ 002012Ch
+_CallFontHook              equ 0020130h
+_CallLocalizeHook          equ 0020134h
+_LoadHLInd_s               equ 0020138h
+_CpHLDE                    equ 002013Ch
+_DivHLBy10_s               equ 0020140h
+_DivHLByA_s                equ 0020144h
+_KbdScan                   equ 0020148h
+_GetCSC                    equ 002014Ch
+_CoorMon                   equ 0020150h
+_Mon                       equ 0020154h
+_MonForceKey               equ 0020158h
+_SendKPress                equ 002015Ch
+_JForceCmdNoChar           equ 0020160h
+_JForceCmd                 equ 0020164h
+_SysErrHandler             equ 0020168h
+_NewContext                equ 002016Ch
+_NewContext0               equ 0020170h
+_PPutawayPrompt            equ 0020174h
+_PPutAway                  equ 0020178h
+_PutAway                   equ 002017Ch
+_SizeWind                  equ 0020180h
+_ErrorEP                   equ 0020184h
+_CallMain                  equ 0020188h
+_MonErrHand                equ 002018Ch
+_AppInit                   equ 0020190h
+_Initialize                equ 0020194h
+_Min                       equ 0020198h
+_Max                       equ 002019Ch
+_AbsO1PAbsO2               equ 00201A0h
+_Intgr                     equ 00201A4h
+_TRunc                     equ 00201A8h
+_InvSub                    equ 00201ACh
+_Times2                    equ 00201B0h
+_Plus1                     equ 00201B4h
+_Minus1                    equ 00201B8h
+_FPSub                     equ 00201BCh
+_FPAdd                     equ 00201C0h
+_DToR                      equ 00201C4h
+_RToD                      equ 00201C8h
+_Cube                      equ 00201CCh
+_TimesPT5                  equ 00201D0h
+_FPSquare                  equ 00201D4h
+_FPMult                    equ 00201D8h
+_LJRnd                     equ 00201DCh
+_InvOP1Sc                  equ 00201E0h
+_InvOP1S                   equ 00201E4h
+_InvOP2S                   equ 00201E8h
+_Frac                      equ 00201ECh
+_FPRecip                   equ 00201F0h
+_FPDiv                     equ 00201F4h
+_SqRoot                    equ 00201F8h
+_RndGuard                  equ 00201FCh
+_Rnfx                      equ 0020200h
+_Int                       equ 0020204h
+_Round                     equ 0020208h
+_LnX                       equ 002020Ch
+_LogX                      equ 0020210h
+_LJNoRnd                   equ 0020214h
+_EToX                      equ 0020218h
+_TenX                      equ 002021Ch
+_SinCosRad                 equ 0020220h
+_Sin                       equ 0020224h
+_Cos                       equ 0020228h
+_Tan                       equ 002022Ch
+_SinhCosh                  equ 0020230h
+_Tanh                      equ 0020234h
+_Cosh                      equ 0020238h
+_Sinh                      equ 002023Ch
+_ACosRad                   equ 0020240h
+_ATanRad                   equ 0020244h
+_ATan2Rad                  equ 0020248h
+_ASinRad                   equ 002024Ch
+_ACos                      equ 0020250h
+_ATan                      equ 0020254h
+_ASin                      equ 0020258h
+_ATan2                     equ 002025Ch
+_ATanh                     equ 0020260h
+_ASinh                     equ 0020264h
+_ACosh                     equ 0020268h
+_PToR                      equ 002026Ch
+_RToP                      equ 0020270h
+_HLTimes9                  equ 0020274h
+_CkOP1Cplx                 equ 0020278h
+_CkOP1Real                 equ 002027Ch
+_Angle                     equ 0020280h
+_COP1Set0                  equ 0020284h
+_Cpop4OP3                  equ 0020288h
+_Mov9OP2Cp                 equ 002028Ch
+_AbsO1O2Cp                 equ 0020290h
+_CpOP1OP2                  equ 0020294h
+_OP3ToOP4                  equ 0020298h
+_OP1ToOP4                  equ 002029Ch
+_OP2ToOP4                  equ 00202A0h
+_OP4ToOP2                  equ 00202A4h
+_OP3ToOP2                  equ 00202A8h
+_OP1ToOP3                  equ 00202ACh
+_OP5ToOP2                  equ 00202B0h
+_OP5ToOP6                  equ 00202B4h
+_OP5ToOP4                  equ 00202B8h
+_OP1ToOP2                  equ 00202BCh
+_OP6ToOP2                  equ 00202C0h
+_OP6ToOP1                  equ 00202C4h
+_OP4ToOP1                  equ 00202C8h
+_OP5ToOP1                  equ 00202CCh
+_OP3ToOP1                  equ 00202D0h
+_OP6ToOP5                  equ 00202D4h
+_OP4ToOP5                  equ 00202D8h
+_OP3ToOP5                  equ 00202DCh
+_OP2ToOP5                  equ 00202E0h
+_OP2ToOP6                  equ 00202E4h
+_OP1ToOP6                  equ 00202E8h
+_OP1ToOP5                  equ 00202ECh
+_OP2ToOP1                  equ 00202F0h
+_Mov11b                    equ 00202F4h
+_Mov10b                    equ 00202F8h
+_Mov9b                     equ 00202FCh
+_Mov9b_                    equ 0020300h
+_Mov8b                     equ 0020304h
+_Mov7b                     equ 0020308h
+_Mov7b_                    equ 002030Ch
+_OP2ToOP3                  equ 0020310h
+_OP4ToOP3                  equ 0020314h
+_OP5ToOP3                  equ 0020318h
+_OP4ToOP6                  equ 002031Ch
+_Mov9ToOP1                 equ 0020320h
+_Mov9OP1OP2                equ 0020324h
+_Mov9ToOP2                 equ 0020328h
+_MovFROP1                  equ 002032Ch
+_OP4Set1                   equ 0020330h
+_OP3Set1                   equ 0020334h
+_OP2Set8                   equ 0020338h
+_OP2Set5                   equ 002033Ch
+_OP2SetA                   equ 0020340h
+_OP2Set4                   equ 0020344h
+_OP2Set3                   equ 0020348h
+_OP1Set1                   equ 002034Ch
+_OP1Set4                   equ 0020350h
+_OP1Set3                   equ 0020354h
+_OP3Set2                   equ 0020358h
+_OP1Set2                   equ 002035Ch
+_OP2Set2                   equ 0020360h
+_OP2Set1                   equ 0020364h
+_Zero16D                   equ 0020368h
+_OP5Set0                   equ 002036Ch
+_OP4Set0                   equ 0020370h
+_OP3Set0                   equ 0020374h
+_OP2Set0                   equ 0020378h
+_OP1Set0                   equ 002037Ch
+_SetNum0                   equ 0020380h
+_ZeroOP1                   equ 0020384h
+_ZeroOP2                   equ 0020388h
+_ZeroOP3                   equ 002038Ch
+_ZeroOP                    equ 0020390h
+_ClrLP                     equ 0020394h
+_ShrACC                    equ 0020398h
+_ShlACC                    equ 002039Ch
+_Shr18                     equ 00203A0h
+_Shr18a                    equ 00203A4h
+_Shr16                     equ 00203A8h
+_Shr14                     equ 00203ACh
+_Shl16                     equ 00203B0h
+_Shl14                     equ 00203B4h
+_Srdo1                     equ 00203B8h
+_ShrdRnd                   equ 00203BCh
+_MantPa                    equ 00203C0h
+_AddPrOP                   equ 00203C4h
+_AddPrOPlP                 equ 00203C8h
+;                          equ 00203CCh
+;                          equ 00203D0h
+_Sub16d                    equ 00203D4h
+_Sub14d                    equ 00203D8h
+_OP2ExOP6                  equ 00203DCh
+_OP5ExOP6                  equ 00203E0h
+_OP1ExOP5                  equ 00203E4h
+_OP1ExOP6                  equ 00203E8h
+_OP2ExOP4                  equ 00203ECh
+_OP2ExOP5                  equ 00203F0h
+_OP1ExOP3                  equ 00203F4h
+_OP1ExOP4                  equ 00203F8h
+_OP1ExOP2                  equ 00203FCh
+_ExLP                      equ 0020400h
+_CkOP1c0                   equ 0020404h
+_CkOP1FP0                  equ 0020408h
+_CkOP2FP0                  equ 002040Ch
+_PosNo0Int                 equ 0020410h
+_CkPosInt                  equ 0020414h
+_CkInt                     equ 0020418h
+_CkOdd                     equ 002041Ch
+_CkOP1EX                   equ 0020420h
+_GetCon1                   equ 0020424h
+_GetCon                    equ 0020428h
+_PiDiv2                    equ 002042Ch
+_PiDiv4                    equ 0020430h
+_TwoPi                     equ 0020434h
+_PiCon                     equ 0020438h
+_ExpToHex                  equ 002043Ch
+_OP1ExpToDec               equ 0020440h
+_CkOP2Pos                  equ 0020444h
+_CkOP1Pos                  equ 0020448h
+_ClrOP2S                   equ 002044Ch
+_ClrOP1S                   equ 0020450h
+_FDiv100                   equ 0020454h
+_FDiv10                    equ 0020458h
+_DecO1Exp                  equ 002045Ch
+_IncO1exp                  equ 0020460h
+_IncExp                    equ 0020464h
+_CkValidNum                equ 0020468h
+_GetExp                    equ 002046Ch
+_HtimesL                   equ 0020470h
+_EOP1NotReal               equ 0020474h
+_ThetaName                 equ 0020478h
+_RName                     equ 002047Ch
+_RegEqName                 equ 0020480h
+_RecurNName                equ 0020484h
+_XName                     equ 0020488h
+_YName                     equ 002048Ch
+_TName                     equ 0020490h
+_RealName                  equ 0020494h
+_SetEStoFPS                equ 0020498h
+_ChkTempDirt               equ 002049Ch
+_OP1ExOP2Exp               equ 00204A0h
+_OP1ExpmDE                 equ 00204A4h
+_ChkErrBreak               equ 00204A8h
+_Isa2ByteTok               equ 00204ACh
+_GetLastEntry              equ 00204B0h
+_GetLastEntryPtr           equ 00204B4h
+_RegRclrChng               equ 00204B8h
+_ResetWinTop               equ 00204BCh
+_IsO1NonTLstOrProg         equ 00204C0h
+_IsO1NonTempLst            equ 00204C4h
+_Is_A_LstOrCLst            equ 00204C8h
+_Chk_HL_999                equ 00204CCh
+_Equ_Or_NewEqu             equ 00204D0h
+_Errd_OP1NotPos            equ 00204D4h
+_Errd_OP1Not_R             equ 00204D8h
+_Errd_OP1NotPosInt         equ 00204DCh
+_Errd_OP1_le_0             equ 00204E0h
+_Errd_OP1_0                equ 00204E4h
+_ChkFindSym_Get_Size       equ 00204E8h
+_Sto_StatVar               equ 00204ECh
+_Rcl_StatVar               equ 00204F0h
+_CkOP2Real                 equ 00204F4h
+_Get_X_Indirect            equ 00204F8h
+_MemChk                    equ 00204FCh
+_CmpPrgNamLen1             equ 0020500h
+_CmpPrgNamLen              equ 0020504h
+_FindProgSym               equ 0020508h
+_ChkFindSym                equ 002050Ch
+_FindSym                   equ 0020510h
+_InsertMem                 equ 0020514h
+_InsertMemA                equ 0020518h
+_EnoughMem                 equ 002051Ch
+_CmpMemNeed                equ 0020520h
+_CreatePVar4               equ 0020524h
+_CreatePVar3               equ 0020528h
+_CreateVar3                equ 002052Ch
+_CreateCplx                equ 0020530h
+_CreateReal                equ 0020534h
+_CreateTRList              equ 0020538h
+_CreateRList               equ 002053Ch
+_CreateTCList              equ 0020540h
+_CreateCList               equ 0020544h
+_CreateTRMat               equ 0020548h
+_CreateRMat                equ 002054Ch
+_CreateTStrng              equ 0020550h
+_CreateStrng               equ 0020554h
+_Create0Equ                equ 0020558h
+_CreatetEqu                equ 002055Ch
+_CreateEqu                 equ 0020560h
+_CreateGDB                 equ 0020564h
+_CreateProg                equ 0020568h
+_ChkDel                    equ 002056Ch
+_ChkDelA                   equ 0020570h
+_AdjParser                 equ 0020574h
+_AdjMath                   equ 0020578h
+_AdjM7                     equ 002057Ch
+_DelMemA                   equ 0020580h
+_Get_Form_Num              equ 0020584h
+_DelVar                    equ 0020588h
+_DelVarIO                  equ 002058Ch
+_DelMem                    equ 0020590h
+_DelVar3D                  equ 0020594h
+_DelVar3C                  equ 0020598h
+_DelVar3DC                 equ 002059Ch
+_Sym_Prog_non_t_Lst        equ 00205A0h
+_AdjSymPtrs                equ 00205A4h
+_DataSizeA                 equ 00205A8h
+_DataSize                  equ 00205ACh
+_PopMCplxO1                equ 00205B0h
+_PopMCplx                  equ 00205B4h
+_MovCplx                   equ 00205B8h
+_PopOP5                    equ 00205BCh
+_PopOP3                    equ 00205C0h
+_PopOP1                    equ 00205C4h
+_PopRealO6                 equ 00205C8h
+_PopRealO5                 equ 00205CCh
+_PopRealO4                 equ 00205D0h
+_PopRealO3                 equ 00205D4h
+_PopRealO2                 equ 00205D8h
+_PopRealO1                 equ 00205DCh
+_PopReal                   equ 00205E0h
+_FPopCplx                  equ 00205E4h
+_FPopReal                  equ 00205E8h
+_FPopFPS                   equ 00205ECh
+_DeallocFPS                equ 00205F0h
+_DeallocFPS1               equ 00205F4h
+_AllocFPS                  equ 00205F8h
+_AllocFPS1                 equ 00205FCh
+_PushRealO6                equ 0020600h
+_PushRealO5                equ 0020604h
+_PushRealO4                equ 0020608h
+_PushRealO3                equ 002060Ch
+_PushRealO2                equ 0020610h
+_PushRealO1                equ 0020614h
+_PushReal                  equ 0020618h
+_PushOP5                   equ 002061Ch
+_PushOP3                   equ 0020620h
+_PushMCplxO3               equ 0020624h
+_PushOP1                   equ 0020628h
+_PushMCplxO1               equ 002062Ch
+_PushMCplx                 equ 0020630h
+_ExMCplxO1                 equ 0020634h
+_Exch9                     equ 0020638h
+_CpyTo1FPS11               equ 002063Ch
+_CpyTo2FPS5                equ 0020640h
+_CpyTo1FPS5                equ 0020644h
+_CpyTo2FPS6                equ 0020648h
+_CpyTo1FPS6                equ 002064Ch
+_CpyTo2FPS7                equ 0020650h
+_CpyTo1FPS7                equ 0020654h
+_CpyTo1FPS8                equ 0020658h
+_CpyTo2FPS8                equ 002065Ch
+_CpyTo1FPS10               equ 0020660h
+_CpyTo1FPS9                equ 0020664h
+_CpyTo2FPS4                equ 0020668h
+_CpyTo6FPS3                equ 002066Ch
+_CpyTo6FPS2                equ 0020670h
+_CpyTo2FPS3                equ 0020674h
+_Cpycto1FPS3               equ 0020678h
+_CpyTo1FPS3                equ 002067Ch
+_CpyFPS3                   equ 0020680h
+_CpyTo1FPS4                equ 0020684h
+_CpyTo3FPS2                equ 0020688h
+_CpyTo5FPSt                equ 002068Ch
+_CpyTo6FPSt                equ 0020690h
+_CpyTo4FPSt                equ 0020694h
+_CpyTo3FPSt                equ 0020698h
+_CpyTo2FPSt                equ 002069Ch
+_CpyTo1FPSt                equ 00206A0h
+_CpyFPSt                   equ 00206A4h
+_CpyStack                  equ 00206A8h
+_CpyTo3FPS1                equ 00206ACh
+_CpyTo2FPS1                equ 00206B0h
+_CpyTo1FPS1                equ 00206B4h
+_CpyFPS1                   equ 00206B8h
+_CpyTo2FPS2                equ 00206BCh
+_CpyTo1FPS2                equ 00206C0h
+_CpyFPS2                   equ 00206C4h
+_CpyO3ToFPSt               equ 00206C8h
+_CpyO2ToFPSt               equ 00206CCh
+_CpyO6ToFPSt               equ 00206D0h
+_CpyO1ToFPSt               equ 00206D4h
+_CpyToFPSt                 equ 00206D8h
+_CpyToStack                equ 00206DCh
+_CpyO3ToFPS1               equ 00206E0h
+_CpyO5ToFPS1               equ 00206E4h
+_CpyO2ToFPS1               equ 00206E8h
+_CpyO1ToFPS1               equ 00206ECh
+_CpyToFPS1                 equ 00206F0h
+_CpyO2ToFPS2               equ 00206F4h
+_CpyO3ToFPS2               equ 00206F8h
+_CpyO6ToFPS2               equ 00206FCh
+_CpyO1ToFPS2               equ 0020700h
+_CpyToFPS2                 equ 0020704h
+_CpyO5ToFPS3               equ 0020708h
+_CpyO2ToFPS3               equ 002070Ch
+_CpyO1ToFPS3               equ 0020710h
+_CpyToFPS3                 equ 0020714h
+_CpyO1ToFPS6               equ 0020718h
+_CpyO1ToFPS7               equ 002071Ch
+_CpyO1ToFPS5               equ 0020720h
+_CpyO2ToFPS4               equ 0020724h
+_CpyO1ToFPS4               equ 0020728h
+_ErrNotEnoughMem           equ 002072Ch
+_FPSMinus9                 equ 0020730h
+_HLMinus9                  equ 0020734h
+_ErrOverflow               equ 0020738h
+_ErrDivBy0                 equ 002073Ch
+_ErrSingularMat            equ 0020740h
+_ErrDomain                 equ 0020744h
+_ErrIncrement              equ 0020748h
+_ErrNon_Real               equ 002074Ch
+_ErrSyntax                 equ 0020750h
+_ErrDataType               equ 0020754h
+_ErrArgument               equ 0020758h
+_ErrDimMismatch            equ 002075Ch
+_ErrDimension              equ 0020760h
+_ErrUndefined              equ 0020764h
+_ErrMemory                 equ 0020768h
+_ErrInvalid                equ 002076Ch
+_ErrBreak                  equ 0020770h
+_ErrStat                   equ 0020774h
+_ErrSignchange             equ 0020778h
+_ErrIterations             equ 002077Ch
+_ErrBadGuess               equ 0020780h
+_ErrTolTooSmall            equ 0020784h
+_ErrStatPlot               equ 0020788h
+_ErrLinkXmit               equ 002078Ch
+_JError                    equ 0020790h
+_NoErrorEntry              equ 0020794h
+_PushErrorHandler          equ 0020798h
+_PopErrorHandler           equ 002079Ch
+_StrCopy                   equ 00207A0h
+_StrngCat                  equ 00207A4h
+_IsInSet                   equ 00207A8h
+_GEQNameA                  equ 00207ACh
+_RecName                   equ 00207B0h
+_PutMap                    equ 00207B4h
+_PutC                      equ 00207B8h
+_DispHL_s                  equ 00207BCh
+_PutS                      equ 00207C0h
+_PutPSB                    equ 00207C4h
+_PutPS                     equ 00207C8h
+_WPutPS                    equ 00207CCh
+_PutBuf                    equ 00207D0h
+_PutBuf1                   equ 00207D4h
+_WPutC                     equ 00207D8h
+_WPutS                     equ 00207DCh
+_WPutSEOL                  equ 00207E0h
+_WDispEOL                  equ 00207E4h
+_WHomeUp                   equ 00207E8h
+_SetNumWindow              equ 00207ECh
+_NewLine                   equ 00207F0h
+_MoveDown                  equ 00207F4h
+_ScrollUp                  equ 00207F8h
+_ShrinkWindow              equ 00207FCh
+_MoveUp                    equ 0020800h
+_ScrollDown                equ 0020804h
+_ClrLCDFull                equ 0020808h
+_ClrLCD                    equ 002080Ch
+_ClrScrnFull               equ 0020810h
+_ClrScrn                   equ 0020814h
+_ClrTxtShd                 equ 0020818h
+_ClrWindow                 equ 002081Ch
+_EraseEOL                  equ 0020820h
+_EraseEOW                  equ 0020824h
+_HomeUp                    equ 0020828h
+_GetCurloc                 equ 002082Ch
+_VPutmap                   equ 0020830h
+_VPutS                     equ 0020834h
+_VPutSN                    equ 0020838h
+_VPutSNG                   equ 002083Ch
+_VPutSNT                   equ 0020840h
+_RunIndicOn                equ 0020844h
+_RunIndicOff               equ 0020848h
+_SaveCmdShadow             equ 002084Ch
+_SaveShadow                equ 0020850h
+_RStrShadow                equ 0020854h
+_RStrPartial               equ 0020858h
+_RStrCurRow                equ 002085Ch
+_RStrUnderMenu             equ 0020860h
+_RStrbotRow                equ 0020864h
+_GetKeypress               equ 0020868h
+_GetTokLen                 equ 002086Ch
+_Get_Tok_Strng             equ 0020870h
+_GetTokString              equ 0020874h
+_PutBPatBuf2               equ 0020878h
+_PutBPatBuf                equ 002087Ch
+_PutBPat                   equ 0020880h
+_PutcChkScroll             equ 0020884h
+_DispEOL                   equ 0020888h
+_FDispEOL                  equ 002088Ch
+_MakeRowCmd                equ 0020890h
+_ToToStrp                  equ 0020894h
+_SetVarName                equ 0020898h
+_DispDone                  equ 002089Ch
+_FinishOutput              equ 00208A0h
+_CurBlink                  equ 00208A4h
+_CursorOff                 equ 00208A8h
+_HideCursor                equ 00208ACh
+_CursorOn                  equ 00208B0h
+_ShowCursor                equ 00208B4h
+_KeyToString               equ 00208B8h
+_PullDownChk               equ 00208BCh
+_MenuCatCommon             equ 00208C0h
+_LoadCurCat                equ 00208C4h
+_NCIFPrgmedMode            equ 00208C8h
+_LoadMenuNum               equ 00208CCh
+_LoadMenuNuml              equ 00208D0h
+_MenuEdKey                 equ 00208D4h
+_MenCatRet                 equ 00208D8h
+_NotAlphNum                equ 00208DCh
+_SetMenuFlags              equ 00208E0h
+_ResetSomeFlags            equ 00208E4h
+;                          equ 00208E8h
+;                          equ 00208ECh
+_DispListName              equ 00208F0h
+_DispLAlphaName            equ 00208F4h
+_AbortPrgmode              equ 00208F8h
+_IsFullCntx                equ 00208FCh
+_AdrMRow                   equ 0020900h
+_AdrmeLE                   equ 0020904h
+_GetmatOP1A                equ 0020908h
+_Getm1toOP1                equ 002090Ch
+_Getm1tOP1A                equ 0020910h
+_GetMToOP1                 equ 0020914h
+_PutToM1A                  equ 0020918h
+_PutToMA1                  equ 002091Ch
+_PutToMat                  equ 0020920h
+_MatELDiv                  equ 0020924h
+_CMatFun                   equ 0020928h
+_RowEchPoly                equ 002092Ch
+_RowEchelon                equ 0020930h
+_AdrLELE                   equ 0020934h
+_Getl1ToOP1                equ 0020938h
+_Getl1TOP1A                equ 002093Ch
+_GetlToOP1                 equ 0020940h
+_Getl1ToOP2                equ 0020944h
+_Getl1TOP2A                equ 0020948h
+_Getl2TOP1A                equ 002094Ch
+_PutTola1                  equ 0020950h
+_PutToL                    equ 0020954h
+_MaxMinLst                 equ 0020958h
+_LLow                      equ 002095Ch
+_LHigh                     equ 0020960h
+_LSum                      equ 0020964h
+_CumSum                    equ 0020968h
+_ToFrac                    equ 002096Ch
+_SeqSet                    equ 0020970h
+_SeqSolve                  equ 0020974h
+_CmpNumInit                equ 0020978h
+_BinopExec                 equ 002097Ch
+_ExMeanL                   equ 0020980h
+_Set2MVLPtrs               equ 0020984h
+_SetMat1                   equ 0020988h
+_CreateTLIst               equ 002098Ch
+_UnopExec                  equ 0020990h
+_ThreeExec                 equ 0020994h
+_RestoreErrNo              equ 0020998h
+_FourExec                  equ 002099Ch
+_FiveExec                  equ 00209A0h
+_CpyTo2ES1                 equ 00209A4h
+_CpyTo6ES1                 equ 00209A8h
+_CpyTo1ES1                 equ 00209ACh
+_CpyTo3ES1                 equ 00209B0h
+_CpyTo3ES2                 equ 00209B4h
+_CpyTo2ES2                 equ 00209B8h
+_CpyTo1ES2                 equ 00209BCh
+_CpyTo2ES3                 equ 00209C0h
+_CpyTo1ES3                 equ 00209C4h
+_CpyTo3ES4                 equ 00209C8h
+_CpyTo6ES3                 equ 00209CCh
+_CpyTo2ES4                 equ 00209D0h
+_CpyTo1ES4                 equ 00209D4h
+_CpyTo2ES5                 equ 00209D8h
+_CpyTo1ES5                 equ 00209DCh
+_CpyTo4ESt                 equ 00209E0h
+_CpyTo2ESt                 equ 00209E4h
+_CpyTo1ESt                 equ 00209E8h
+_CpyTo2ES6                 equ 00209ECh
+_CpyTo1ES6                 equ 00209F0h
+_CpyTo2ES7                 equ 00209F4h
+_CpyTo1ES7                 equ 00209F8h
+_CpyTo2ES8                 equ 00209FCh
+_CpyTo1ES8                 equ 0020A00h
+_CpyTo1ES9                 equ 0020A04h
+_CpyTo2ES9                 equ 0020A08h
+_CpyTo2ES10                equ 0020A0Ch
+_CpyTo1ES10                equ 0020A10h
+_CpyTo2ES11                equ 0020A14h
+_CpyTo1ES11                equ 0020A18h
+_CpyTo2ES12                equ 0020A1Ch
+_CpyTo1ES12                equ 0020A20h
+_CpyTo2ES13                equ 0020A24h
+_CpyTo1ES13                equ 0020A28h
+_CpyTo1ES14                equ 0020A2Ch
+_CpyTo1ES16                equ 0020A30h
+_CpyTo1ES17                equ 0020A34h
+_CpyTo1ES18                equ 0020A38h
+_CpyTo1ES15                equ 0020A3Ch
+_CpyTo2ES15                equ 0020A40h
+_CpyO1ToESt                equ 0020A44h
+_CpyO1ToES1                equ 0020A48h
+_CpyO6ToES1                equ 0020A4Ch
+_CpyO6ToES3                equ 0020A50h
+_CpyO1ToES2                equ 0020A54h
+_CpyO2ToES2                equ 0020A58h
+_CpyO1ToES3                equ 0020A5Ch
+_CpyO1ToES4                equ 0020A60h
+_CpyO1ToES5                equ 0020A64h
+_CpyO1ToES6                equ 0020A68h
+_CpyO1ToES7                equ 0020A6Ch
+_CpyO2ToES4                equ 0020A70h
+_CpyO2ToES5                equ 0020A74h
+_CpyO2ToES6                equ 0020A78h
+_CpyO2ToES7                equ 0020A7Ch
+_CpyO2ToES8                equ 0020A80h
+_CpyO2ToES9                equ 0020A84h
+_CpyO1ToES8                equ 0020A88h
+_CpyO1ToES9                equ 0020A8Ch
+_CpyO1ToES10               equ 0020A90h
+_CpyO1ToES11               equ 0020A94h
+_CpyO1ToES12               equ 0020A98h
+_CpyO1ToES13               equ 0020A9Ch
+_CpyO1ToES14               equ 0020AA0h
+_EvalF3A                   equ 0020AA4h
+_GetK                      equ 0020AA8h
+_SetTitle                  equ 0020AACh
+_DispVarVal                equ 0020AB0h
+_RecallEd                  equ 0020AB4h
+_SetUpBuffer               equ 0020AB8h
+_CreateNumEditBuf          equ 0020ABCh
+_CallCommon                equ 0020AC0h
+_CommonKeys                equ 0020AC4h
+_LeftMore                  equ 0020AC8h
+_FDel                      equ 0020ACCh
+_FClear                    equ 0020AD0h
+_FInsDisp                  equ 0020AD4h
+_FInsDispNoConv            equ 0020AD8h
+_SetIndicator              equ 0020ADCh
+_CloseEditBufNoR           equ 0020AE0h
+_ReleaseBuffer             equ 0020AE4h
+_VarNameToOP1HL            equ 0020AE8h
+_NameToOP1                 equ 0020AECh
+_NumpPutAway               equ 0020AF0h
+_NumReDisp                 equ 0020AF4h
+_NumError02                equ 0020AF8h
+_Load_Sfont                equ 0020AFCh
+_Sfont_Len                 equ 0020B00h
+_InitNumVec                equ 0020B04h
+_SetxxOP1                  equ 0020B08h
+_SetxxOP2                  equ 0020B0Ch
+_SetxxxxOP2                equ 0020B10h
+_UCLines                   equ 0020B14h
+_CLine                     equ 0020B18h
+_CLines                    equ 0020B1Ch
+_XrootY                    equ 0020B20h
+_YtoX                      equ 0020B24h
+_ZmStats                   equ 0020B28h
+_PointStatHelp             equ 0020B2Ch
+_DrawSPlot                 equ 0020B30h
+_InitNewTraceP             equ 0020B34h
+_SPlotCoord                equ 0020B38h
+_SPlotRight                equ 0020B3Ch
+_SPlotLeft                 equ 0020B40h
+_CmpBoxInfo                equ 0020B44h
+_NextPlot                  equ 0020B48h
+_PrevPlot                  equ 0020B4Ch
+_ClrPrevPlot               equ 0020B50h
+_PutIndexList              equ 0020B54h
+_GetIndexList              equ 0020B58h
+_HeapSort                  equ 0020B5Ch
+_StoGDB2                   equ 0020B60h
+_RclGDB2                   equ 0020B64h
+_CircCmd                   equ 0020B68h
+_GrphCirc                  equ 0020B6Ch
+_Mov18b                    equ 0020B70h
+_DarkLine                  equ 0020B74h
+_ILine                     equ 0020B78h
+_IPoint                    equ 0020B7Ch
+_XYRndBoth                 equ 0020B80h
+_XYRnd                     equ 0020B84h
+_CheckTOP                  equ 0020B88h
+_CheckXY                   equ 0020B8Ch
+_DarkPnt                   equ 0020B90h
+_CPointS                   equ 0020B94h
+_WToV                      equ 0020B98h
+_VtoWHLDE                  equ 0020B9Ch
+_Xitof                     equ 0020BA0h
+_YftoI                     equ 0020BA4h
+_XftoI                     equ 0020BA8h
+_TraceOff                  equ 0020BACh
+_GrRedisp                  equ 0020BB0h
+_GDispToken                equ 0020BB4h
+_GrdeCoda                  equ 0020BB8h
+_LabCoor                   equ 0020BBCh
+_CoorDisp                  equ 0020BC0h
+_TmpEquNoSrc               equ 0020BC4h
+_GrLabels                  equ 0020BC8h
+_YPixSet                   equ 0020BCCh
+_XPixSet                   equ 0020BD0h
+_CopyRng                   equ 0020BD4h
+_ValCur                    equ 0020BD8h
+_GrPutAway                 equ 0020BDCh
+_RstGFlags                 equ 0020BE0h
+_GrReset                   equ 0020BE4h
+_XYCent                    equ 0020BE8h
+_ZoomXYCmd                 equ 0020BECh
+_CptDelY                   equ 0020BF0h
+_CptDelX                   equ 0020BF4h
+_SetFuncM                  equ 0020BF8h
+_SetSeqM                   equ 0020BFCh
+_SetPolM                   equ 0020C00h
+_SetParM                   equ 0020C04h
+_ZmInt                     equ 0020C08h
+_ZmDecml                   equ 0020C0Ch
+_ZmPrev                    equ 0020C10h
+_ZmUsr                     equ 0020C14h
+_SetUZM                    equ 0020C18h
+_ZmFit                     equ 0020C1Ch
+_ZmSquare                  equ 0020C20h
+_ZmTrig                    equ 0020C24h
+_SetXMinMax                equ 0020C28h
+_ZooDefault                equ 0020C2Ch
+_GrBufCpy                  equ 0020C30h
+_DrawSplitLine             equ 0020C34h
+;                          equ 0020C38h
+;                          equ 0020C3Ch
+;                          equ 0020C40h
+;                          equ 0020C44h
+;                          equ 0020C48h
+;                          equ 0020C4Ch
+;                          equ 0020C50h
+;                          equ 0020C54h
+_ChkTextCurs               equ 0020C58h
+_Regraph                   equ 0020C5Ch
+_DoRefFlags02              equ 0020C60h
+_InitNSeq                  equ 0020C64h
+_YRes                      equ 0020C68h
+_Ceiling                   equ 0020C6Ch
+_PutXY                     equ 0020C70h
+_PutEquNo                  equ 0020C74h
+_PDspGrph                  equ 0020C78h
+_HorizCmd                  equ 0020C7Ch
+_VertCmd                   equ 0020C80h
+_LineCmd                   equ 0020C84h
+_UnLineCmd                 equ 0020C88h
+_PointCmd                  equ 0020C8Ch
+_PixelTest                 equ 0020C90h
+_PixelCmd                  equ 0020C94h
+_TanLnF                    equ 0020C98h
+_DrawCmdInit               equ 0020C9Ch
+_DrawCmd                   equ 0020CA0h
+_ShadeCmd                  equ 0020CA4h
+_InvCmd                    equ 0020CA8h
+_StatShade                 equ 0020CACh
+_DspMatTable               equ 0020CB0h
+_DspLsts                   equ 0020CB4h
+_CloseEditBuf              equ 0020CB8h
+_ParseEditBuf              equ 0020CBCh
+_PutSM                     equ 0020CC0h
+_DspCurTbl                 equ 0020CC4h
+_DspGrTbl                  equ 0020CC8h
+_ZeroTemplate              equ 0020CCCh
+_SetTblRefs                equ 0020CD0h
+_DispTblBot                equ 0020CD4h
+_DispTblTop                equ 0020CD8h
+_DispTblBody               equ 0020CDCh
+_VPutBlank                 equ 0020CE0h
+_TblTrace                  equ 0020CE4h
+_DispListNameY             equ 0020CE8h
+_CurNameLength             equ 0020CECh
+_NameToBuf                 equ 0020CF0h
+_JPromptCursor             equ 0020CF4h
+_BufLeft                   equ 0020CF8h
+_BufRight                  equ 0020CFCh
+_BufInsert                 equ 0020D00h
+_BufQueueChar              equ 0020D04h
+_BufReplace                equ 0020D08h
+_BufDelete                 equ 0020D0Ch
+_BufPeek                   equ 0020D10h
+_BufPeek1                  equ 0020D14h
+_BufPeek2                  equ 0020D18h
+_BufPeek3                  equ 0020D1Ch
+_BufToBtm                  equ 0020D20h
+_SetupEditEqu              equ 0020D24h
+_BufToTop                  equ 0020D28h
+_IsEditFull                equ 0020D2Ch
+_IsEditEmpty               equ 0020D30h
+_IsAtTop                   equ 0020D34h
+_IsAtBtm                   equ 0020D38h
+_BufClear                  equ 0020D3Ch
+_JCursorFirst              equ 0020D40h
+_JCursorLast               equ 0020D44h
+_CursorLeft                equ 0020D48h
+_CursorRight               equ 0020D4Ch
+_CursorUp                  equ 0020D50h
+_CursorDown                equ 0020D54h
+_CursorToOffset            equ 0020D58h
+_InsDisp                   equ 0020D5Ch
+_FDispBOL1                 equ 0020D60h
+_FDispBOL                  equ 0020D64h
+_DispEOW                   equ 0020D68h
+_DispHead                  equ 0020D6Ch
+_DispTail                  equ 0020D70h
+_PutTokString              equ 0020D74h
+_SetUpEditCmd              equ 0020D78h
+_SetEmptyeditEqu           equ 0020D7Ch
+_SetEmptyEditPtr           equ 0020D80h
+_CloseEditEqu              equ 0020D84h
+_GetPrevTok                equ 0020D88h
+_GetKey                    equ 0020D8Ch
+_CanIndic                  equ 0020D90h
+_DFMin                     equ 0020D94h
+_FormDisp                  equ 0020D98h
+_FormMatrix                equ 0020D9Ch
+_WScrollLeft               equ 0020DA0h
+_WScrollUp                 equ 0020DA4h
+_WScrollDown               equ 0020DA8h
+_WScrollRight              equ 0020DACh
+_FormEReal                 equ 0020DB0h
+_FormERealTok              equ 0020DB4h
+_FormDCplx                 equ 0020DB8h
+_FormReal                  equ 0020DBCh
+_SetWinAbove               equ 0020DC0h
+_DisarmScroll              equ 0020DC4h
+_MinToEdit                 equ 0020DC8h
+_RclVarToEdit              equ 0020DCCh
+_RclVarToEditPtr           equ 0020DD0h
+_RclEntryToEdit            equ 0020DD4h
+_RclToQueue                equ 0020DD8h
+_FormToTok                 equ 0020DDCh
+_DispInterval              equ 0020DE0h
+_DispLstName               equ 0020DE4h
+_DispSLstNameHL            equ 0020DE8h
+_EditEqu                   equ 0020DECh
+_CloseEquField             equ 0020DF0h
+_AutoSelect                equ 0020DF4h
+_DispYEOS                  equ 0020DF8h
+_DispNumEOS                equ 0020DFCh
+_SetupDispEq               equ 0020E00h
+_DispForward               equ 0020E04h
+_DispYPrompt2              equ 0020E08h
+_StringWidth               equ 0020E0Ch
+_DispErrorScreen           equ 0020E10h
+_PopCX                     equ 0020E14h
+_LoadNoEEntry              equ 0020E18h
+_SaveScreen                equ 0020E1Ch
+_RetScreen                 equ 0020E20h
+_RetScreenErr              equ 0020E24h
+_CheckSplitFlag            equ 0020E28h
+_SolveRedisp               equ 0020E2Ch
+_SolveDisp                 equ 0020E30h
+_ItemName                  equ 0020E34h
+_SetNorm_Vals              equ 0020E38h
+_SetYOffset                equ 0020E3Ch
+_ConvKeyToTok              equ 0020E40h
+_ConvFCKeyToTok            equ 0020E44h
+_ConvFEKeyToTok            equ 0020E48h
+_TokToKey                  equ 0020E4Ch
+_GetVarCmdUSB              equ 0020E50h
+;                          equ 0020E54h
+_DeselectAllVars           equ 0020E58h
+_DelRes                    equ 0020E5Ch
+_ConvLcToLr                equ 0020E60h
+_RedimMat                  equ 0020E64h
+_IncLstSize                equ 0020E68h
+_InsertList                equ 0020E6Ch
+_DelListEl                 equ 0020E70h
+_EditProg                  equ 0020E74h
+_CloseProg                 equ 0020E78h
+_ClrGraphRef               equ 0020E7Ch
+_FixTempCnt                equ 0020E80h
+_SaveData                  equ 0020E84h
+_RestoreData               equ 0020E88h
+_FindAlphaUp               equ 0020E8Ch
+_FindAlphaDn               equ 0020E90h
+_CmpSyms                   equ 0020E94h
+_CreateTemp                equ 0020E98h
+_CleanAll                  equ 0020E9Ch
+_MoveToNextSym             equ 0020EA0h
+_ConvLrToLc                equ 0020EA4h
+_TblScreenDown             equ 0020EA8h
+_TblScreenUp               equ 0020EACh
+_ScreenScrollPixelsUp      equ 0020EB0h
+;_ret                      equ 0020EB4h
+_ZIfRclHandler             equ 0020EB8h
+_ZIfRclKApp                equ 0020EBCh
+;                          equ 0020EC0h
+;                          equ 0020EC4h
+_InitNamePrompt            equ 0020EC8h
+_InitNamePrompt_           equ 0020ECCh
+_CatalogChk                equ 0020ED0h
+_ClrTR                     equ 0020ED4h
+;                          equ 0020ED8h
+;                          equ 0020EDCh
+;                          equ 0020EE0h
+;                          equ 0020EE4h
+_ErrNonReal_FPST_FPS1      equ 0020EE8h
+_ErrNonReal                equ 0020EECh
+_WriteText                 equ 0020EF0h
+;                          equ 0020EF4h
+_GraphPars                 equ 0020EF8h
+_PlotPars                  equ 0020EFCh
+_ParseInp                  equ 0020F00h
+_ParseOn                   equ 0020F04h
+_ParseScan                 equ 0020F08h
+_GetParse                  equ 0020F0Ch
+_SaveParse                 equ 0020F10h
+_InitPFlgs                 equ 0020F14h
+_CkEndLineRR               equ 0020F18h
+_OP2Set60                  equ 0020F1Ch
+_GetStatPtr                equ 0020F20h
+_CmpStatPtr                equ 0020F24h
+_VarSysAdr                 equ 0020F28h
+_StoSysTok                 equ 0020F2Ch
+_StoAns                    equ 0020F30h
+_StoTheta                  equ 0020F34h
+_StoR                      equ 0020F38h
+_StoY                      equ 0020F3Ch
+_StoN                      equ 0020F40h
+_StoT                      equ 0020F44h
+_StoX                      equ 0020F48h
+_StoOther                  equ 0020F4Ch
+_RclAns                    equ 0020F50h
+_RclY                      equ 0020F54h
+_RclN                      equ 0020F58h
+_RclX                      equ 0020F5Ch
+_RclVarSym                 equ 0020F60h
+_RclsyStok                 equ 0020F64h
+_StMatel                   equ 0020F68h
+_StLstvecel                equ 0020F6Ch
+_ConvOP1                   equ 0020F70h
+_FindParseFormula          equ 0020F74h
+_ParseFormula              equ 0020F78h
+_StrngEnt1                 equ 0020F7Ch
+_Prgrdlp                   equ 0020F80h
+_VarEnt                    equ 0020F84h
+_ParseOnC                  equ 0020F88h
+_ParseOn_                  equ 0020F8Ch
+_ParseCmd                  equ 0020F90h
+_StoType                   equ 0020F94h
+_CreatePair                equ 0020F98h
+_PushNum                   equ 0020F9Ch
+_IncCurPCErrEnd            equ 0020FA0h
+_ErrEnd                    equ 0020FA4h
+_CommaErrF                 equ 0020FA8h
+_CommaErr                  equ 0020FACh
+_StEQArg2                  equ 0020FB0h
+_StEQArg                   equ 0020FB4h
+_InpArg                    equ 0020FB8h
+_StEQArg3                  equ 0020FBCh
+_NxtFetch                  equ 0020FC0h
+_CkFetchVar                equ 0020FC4h
+_FetchVarA                 equ 0020FC8h
+_FetchVar                  equ 0020FCCh
+_CkEndLin                  equ 0020FD0h
+_CkEndExp                  equ 0020FD4h
+_CkParsEnd                 equ 0020FD8h
+_StoTypeArg                equ 0020FDCh
+_ConvDim                   equ 0020FE0h
+_ConvDim00                 equ 0020FE4h
+_AheadEqual                equ 0020FE8h
+_ParsaHeads                equ 0020FECh
+_ParsaHead                 equ 0020FF0h
+_AnsName                   equ 0020FF4h
+_StoCmpReals               equ 0020FF8h
+_GetDEPtr                  equ 0020FFCh
+_Push2BOper                equ 0021000h
+_Push3BOper                equ 0021004h
+_Pop2BOper                 equ 0021008h
+_Pop3BOper                 equ 002100Ch
+_PushOper                  equ 0021010h
+_PopOper                   equ 0021014h
+_FindEUndef                equ 0021018h
+_SttmpEQ                   equ 002101Ch
+_FindEOL                   equ 0021020h
+_BrkInc                    equ 0021024h
+_IncFetch                  equ 0021028h
+_CurFetch                  equ 002102Ch
+_Random                    equ 0021030h
+_StoRand                   equ 0021034h
+_RandInit                  equ 0021038h
+_ResetStacks               equ 002103Ch
+_Factorial                 equ 0021040h
+_YEquOnOff                 equ 0021044h
+_EquSelUnsel               equ 0021048h
+_ITSolver                  equ 002104Ch
+_GRITSolver                equ 0021050h
+_ITSolverB                 equ 0021054h
+_ITSolverNB                equ 0021058h
+_ExTestInt                 equ 002105Ch
+_DistFun                   equ 0021060h
+_LogGamma                  equ 0021064h
+_OneVar                    equ 0021068h
+_OneVars0                  equ 002106Ch
+_OrdStat                   equ 0021070h
+_InitStatAns               equ 0021074h
+_AnovaSpec                 equ 0021078h
+_OutputExpr                equ 002107Ch
+_CentCursor                equ 0021080h
+;                          equ 0021084h
+;                          equ 0021088h
+;                          equ 002108Ch
+;                          equ 0021090h
+;                          equ 0021094h
+;                          equ 0021098h
+_GrBufClr                  equ 002109Ch
+_GrBufCpyV                 equ 00210A0h
+_FndSelEQ                  equ 00210A4h
+_ClrGraphXY                equ 00210A8h
+_NEDXTYStyle               equ 00210ACh
+_PlotPt                    equ 00210B0h
+_NewWindEP                 equ 00210B4h
+_DrawAxes                  equ 00210B8h
+_SetPenX                   equ 00210BCh
+_SetPenY                   equ 00210C0h
+_SetPenT                   equ 00210C4h
+_TanEquDisp                equ 00210C8h
+_PutAns                    equ 00210CCh
+_DispOP1A                  equ 00210D0h
+;                          equ 00210D4h
+_SetTblGraphDraw           equ 00210D8h
+_MemClear                  equ 00210DCh
+_MemSet                    equ 00210E0h
+_PointOn                   equ 00210E4h
+_ExecuteNewPrgm            equ 00210E8h
+_StrLength                 equ 00210ECh
+_VPutMapRec                equ 00210F0h
+_FindAppUp                 equ 00210F4h
+_FindAppDown               equ 00210F8h
+_FindApp                   equ 00210FCh
+;                          equ 0021100h
+_AddHL259                  equ 0021104h
+;                          equ 0021108h
+_IBounds                   equ 002110Ch
+_IOffset                   equ 0021110h
+_DrawCirc                  equ 0021114h
+_CanAlphIns                equ 0021118h
+_CxReDisp                  equ 002111Ch
+_GetBaseVer                equ 0021120h
+_OPSet0DES                 equ 0021124h
+_AppGetCBLUSB              equ 0021128h
+_SetIgnoreKey              equ 002112Ch
+_SetSendThisKeyBack        equ 0021130h
+_DisableAPD                equ 0021134h
+_EnableAPD                 equ 0021138h
+_Set2IY34                  equ 002113Ch
+_ForceCmd                  equ 0021140h
+_ApdSetup                  equ 0021144h
+_AppSetup                  equ 0021148h
+;                          equ 002114Ch
+_ReleaseSedit              equ 0021150h
+_InitSmallEditLine         equ 0021154h
+_StartSmallEdit            equ 0021158h
+;                          equ 002115Ch
+_SGetTokString             equ 0021160h
+_LoadPattern               equ 0021164h
+_SStringLength             equ 0021168h
+_RestorePenCol             equ 002116Ch
+;                          equ 0021170h
+_EmptyHook                 equ 0021174h
+_ForceSmallEditReturn      equ 0021178h
+_SaveContext               equ 002117Ch
+;                          equ 0021180h
+_ClearRow                  equ 0021184h
+;                          equ 0021188h
+;                          equ 002118Ch
+;                          equ 0021190h
+;                          equ 0021194h
+;                          equ 0021198h
+;                          equ 002119Ch
+;                          equ 00211A0h
+;                          equ 00211A4h
+;                          equ 00211A8h
+;                          equ 00211ACh
+;                          equ 00211B0h
+;                          equ 00211B4h
+;                          equ 00211B8h
+;                          equ 00211BCh
+;                          equ 00211C0h
+;                          equ 00211C4h
+;                          equ 00211C8h
+;                          equ 00211CCh
+;                          equ 00211D0h
+;                          equ 00211D4h
+;                          equ 00211D8h
+;                          equ 00211DCh
+;                          equ 00211E0h
+;                          equ 00211E4h
+;                          equ 00211E8h
+;                          equ 00211ECh
+;_ret                      equ 00211F0h
+;                          equ 00211F4h
+_InitSmallEditLineVar      equ 00211F8h
+_InitSmallEditLineOP1      equ 00211FCh
+_InitSmallEditBoxVar       equ 0021200h
+_InitSmallEditBoxOP1       equ 0021204h
+_RclEntryToEditA           equ 0021208h
+_ErrCustom1                equ 002120Ch
+_ErrCustom2                equ 0021210h
+;_ret                      equ 0021214h
+_ClearRect                 equ 0021218h
+_InvertRect                equ 002121Ch
+_FillRect                  equ 0021220h
+_RestoreTextFlags          equ 0021224h
+_InitCellBox               equ 0021228h
+_DrawCell                  equ 002122Ch
+;                          equ 0021230h
+_InvertCell                equ 0021234h
+_SetCellOverride           equ 0021238h
+_DrawRectBorder            equ 002123Ch
+_ClearCell                 equ 0021240h
+_CoverCell                 equ 0021244h
+_EraseRectBorder           equ 0021248h
+_FillRectPattern           equ 002124Ch
+_DrawRectBorderClear       equ 0021250h
+;                          equ 0021254h
+_VerticalLine              equ 0021258h
+_IBoundsFull               equ 002125Ch
+;                          equ 0021260h
+;                          equ 0021264h
+_CPoint                    equ 0021268h
+_DeleteApp                 equ 002126Ch
+_GetModeCellFlagOR         equ 0021270h
+_ResetModeCellFlag         equ 0021274h
+_IsModeCellSet             equ 0021278h
+_GetModeCellFlag           equ 002127Ch
+;                          equ 0021280h
+_SetCurCellBoxManager      equ 0021284h
+;                          equ 0021288h
+_CellBoxManager            equ 002128Ch
+_StartNewCell              equ 0021290h
+_RunInCellOveride          equ 0021294h
+_RunCellOveride            equ 0021298h
+_ClearCurCell              equ 002129Ch
+_DrawCurCell               equ 00212A0h
+_InvertCurCell             equ 00212A4h
+_CoverCurCell              equ 00212A8h
+_BlinkCell                 equ 00212ACh
+_BlinkCellNoLookUp         equ 00212B0h
+_BlinkCurCell              equ 00212B4h
+_BlinkCellToOn             equ 00212B8h
+_BlinkCellToOnNoLookUp     equ 00212BCh
+_BlinkCurCellToOn          equ 00212C0h
+_BlinkCellToOff            equ 00212C4h
+_BlinkCellToOffNoLookUp    equ 00212C8h
+_BlinkCurCellToOff         equ 00212CCh
+_GetCurModeCellFlag        equ 00212D0h
+;                          equ 00212D4h
+_StartSmallEditReturn      equ 00212D8h
+;                          equ 00212DCh
+;                          equ 00212E0h
+;                          equ 00212E4h
+;                          equ 00212E8h
+;                          equ 00212ECh
+;                          equ 00212F0h
+;                          equ 00212F4h
+;                          equ 00212F8h
+_EraseAllCells             equ 00212FCh
+_IsCurModeCellSet          equ 0021300h
+;                          equ 0021304h
+;                          equ 0021308h
+;                          equ 002130Ch
+;                          equ 0021310h
+_DrawBlnkCell              equ 0021314h
+_ClearBlnkCell             equ 0021318h
+_InvertBlnkCell            equ 002131Ch
+_GetStringInput            equ 0021320h
+_GetStringInput2           equ 0021324h
+_WaitEnterKeyValue         equ 0021328h
+_HorizontalLine            equ 002132Ch
+_CreateAppVar              equ 0021330h
+_CreateProtProg            equ 0021334h
+_CreateVar                 equ 0021338h
+_AsmComp                   equ 002133Ch
+_GetAsmSize                equ 0021340h
+_SquishPrgm                equ 0021344h
+_ExecutePrgm               equ 0021348h
+_ChkFindSymAsm             equ 002134Ch
+_ParsePrgmName             equ 0021350h
+_CAdd                      equ 0021354h
+_CSqaure                   equ 0021358h
+_CMult                     equ 002135Ch
+_CRecip                    equ 0021360h
+_CDiv                      equ 0021364h
+_CAbs                      equ 0021368h
+_AddSquares                equ 002136Ch
+_CSqroot                   equ 0021370h
+_CLn                       equ 0021374h
+_CLog                      equ 0021378h
+_CTenX                     equ 002137Ch
+_CEtoX                     equ 0021380h
+_CXrootY                   equ 0021384h
+_CYtoX                     equ 0021388h
+_InvertNonReal             equ 002138Ch
+_CplxMul                   equ 0021390h
+_CplxDiv                   equ 0021394h
+_CplxTrunc                 equ 0021398h
+_CplxFrac                  equ 002139Ch
+_CplxFloor                 equ 00213A0h
+_SrchVLstUp                equ 00213A4h
+_SrchVLstDn                equ 00213A8h
+_FlashWriteDisable         equ 00213ACh
+_Disp                      equ 00213B0h
+_GetBytePaged              equ 00213B4h
+_RunCursorHook             equ 00213B8h
+_RunLibraryHook            equ 00213BCh
+_RunRawKeyHook             equ 00213C0h
+_SetCursorHook             equ 00213C4h
+_SetLibraryHook            equ 00213C8h
+_SetGetKeyHook             equ 00213CCh
+_ClrCursorHook             equ 00213D0h
+_ClrLibraryHook            equ 00213D4h
+_ClrRawKeyHook             equ 00213D8h
+_GetKeyHook                equ 00213DCh
+_SetGetCSCHook             equ 00213E0h
+_ClrGetKeyHook             equ 00213E4h
+_SetCatalog2Hook           equ 00213E8h
+_ClrCatalog2Hook           equ 00213ECh
+_SetLocalizeHook           equ 00213F0h
+_ClrLocalizeHook           equ 00213F4h
+_SetTokenHook              equ 00213F8h
+_ClrTokenHook              equ 00213FCh
+;                          equ 0021400h
+;                          equ 0021404h
+_DispListElementOffLA      equ 0021408h
+_BitVertSplit              equ 002140Ch
+_SetHomescreenHook         equ 0021410h
+_ClrHomescreenHook         equ 0021414h
+_SetWindowHook             equ 0021418h
+_ClrWindowHook             equ 002141Ch
+_SetGraphModeHook          equ 0021420h
+_ClrGraphModeHook          equ 0021424h
+_ParseAndStoreSysVar       equ 0021428h
+_DisplayEditSysVar         equ 002142Ch
+_JForceWIndowSettings      equ 0021430h
+_DelVarArc                 equ 0021434h
+_DelVarNoArc               equ 0021438h
+_SetAllPlots               equ 002143Ch
+_SetYeditHook              equ 0021440h
+_ClrYeditHook              equ 0021444h
+_Arc_Unarc                 equ 0021448h
+_ArchiveVar                equ 002144Ch
+_UnarchiveVar              equ 0021450h
+_SetFontHook               equ 0021454h
+_ClrFontHook               equ 0021458h
+_SetRegraphHook            equ 002145Ch
+_ClrRegraphHook            equ 0021460h
+_RunGraphingHook           equ 0021464h
+_SetTraceHook              equ 0021468h
+_ClrTraceHook              equ 002146Ch
+_RunTraceHook              equ 0021470h
+_NDeriv                    equ 0021474h
+_PolarDerivative           equ 0021478h
+_JForceGraphNoKey          equ 002147Ch
+_JForceGraphKey            equ 0021480h
+_PowerOff                  equ 0021484h
+_GetKeyRetOff              equ 0021488h
+_FindGroupSym              equ 002148Ch
+_LoadDEIndPaged            equ 0021490h
+_SetUpPagedPtr             equ 0021494h
+_PagedGet                  equ 0021498h
+_SetParserHook             equ 002149Ch
+_ClrParserHook             equ 00214A0h
+_SetAppChangeHook          equ 00214A4h
+_ClrAppChangeHook          equ 00214A8h
+_SetGraphicsHook           equ 00214ACh
+_ClrGraphicsHook           equ 00214B0h
+_ILineNoGraphicsHook       equ 00214B4h
+_ILineNoHook               equ 00214B8h
+;                          equ 00214BCh
+_DeleteTempPrograms        equ 00214C0h
+_SetCatalog1Hook           equ 00214C4h
+_ClrCatalog1Hook           equ 00214C8h
+_SetHelpHook               equ 00214CCh
+_ClrHelpHook               equ 00214D0h
+_DispCatalogEnd            equ 00214D4h
+_GetMenuKeypress           equ 00214D8h
+_GetCatalogItem            equ 00214DCh
+_RunCatalog2Hook           equ 00214E0h
+_RunCatalog1Hook           equ 00214E4h
+;                          equ 00214E8h
+;                          equ 00214ECh
+_DispMenuTitle             equ 00214F0h
+;                          equ 00214F4h
+_SetCxReDispHook           equ 00214F8h
+_ClrCxReDispHook           equ 00214FCh
+_BufCpy                    equ 0021500h
+_BufClr                    equ 0021504h
+_UnOPExec2                 equ 0021508h
+_BinOPExec2                equ 002150Ch
+_LoadMenuB                 equ 0021510h
+_DisplayVarInfo            equ 0021514h
+_SetMenuHook               equ 0021518h
+_ClrMenuHook               equ 002151Ch
+_GetBCOffSetIX             equ 0021520h
+_GetBCOffSetIX_            equ 0021524h
+_ForceFullScreen           equ 0021528h
+_HLMinus5                  equ 002152Ch
+;_ret                      equ 0021530h
+;                          equ 0021534h
+;                          equ 0021538h
+_Arc_Unarc_                equ 002153Ch
+_RclExit                   equ 0021540h
+_SetSilentLinkHook         equ 0021544h
+_ClrSilentLinkHook         equ 0021548h
+_TwoVarSet                 equ 002154Ch
+_ExecClassCToken           equ 0021550h
+_ExecClass3Token           equ 0021554h
+_GetSysInfo                equ 0021558h
+_RunChkCTenX               equ 002155Ch
+_TenXNoClr                 equ 0021560h
+;                          equ 0021564h
+;                          equ 0021568h
+_GetVarVersion             equ 002156Ch
+_ParseGraphCmdToken        equ 0021570h
+;                          equ 0021574h
+_DeleteTempEditEqu         equ 0021578h
+_PromptMoveBackLeft        equ 002157Ch
+_WPutSEOLRes10E            equ 0021580h
+_InvertTextInsMode         equ 0021584h
+;                          equ 0021588h
+_ResetDefaults             equ 002158Ch
+_ZeroFinanceVars           equ 0021590h
+_DispHeader                equ 0021594h
+_JForceGroup               equ 0021598h
+;                          equ 002159Ch
+;                          equ 00215A0h
+_DispCoords                equ 00215A4h
+;                          equ 00215A8h
+;                          equ 00215ACh
+_ChkTmr                    equ 00215B0h
+_ClockOff                  equ 00215B4h
+_ClockOn                   equ 00215B8h
+;                          equ 00215BCh
+_GetDate                   equ 00215C0h
+_GetDateString             equ 00215C4h
+_GetDtFmt                  equ 00215C8h
+_GetDtStr                  equ 00215CCh
+_GetTime                   equ 00215D0h
+_FormTime                  equ 00215D4h
+_GetTmFmt                  equ 00215D8h
+_GetTmStr                  equ 00215DCh
+_SetZeroOne                equ 00215E0h
+_SetDate                   equ 00215E4h
+_IsOneTwoThree             equ 00215E8h
+_SetTime                   equ 00215ECh
+_IsOP112or24               equ 00215F0h
+_ChkTimer0                 equ 00215F4h
+_TimeCnv                   equ 00215F8h
+_ClrWindowAndFlags         equ 00215FCh
+_ResetAllLists             equ 0021600h
+_DispValue                 equ 0021604h
+;                          equ 0021608h
+;                          equ 002160Ch
+;                          equ 0021610h
+_CpOP1OP2Rounded           equ 0021614h
+_CpOP1OP2Rounded2          equ 0021618h
+;                          equ 002161Ch
+;                          equ 0021620h
+_ResetIOPrompt             equ 0021624h
+;                          equ 0021628h
+_SetUpEditor               equ 002162Ch
+_SortA                     equ 0021630h
+_SortD                     equ 0021634h
+;                          equ 0021638h
+_IsOP1ResID                equ 002163Ch
+;                          equ 0021640h
+;                          equ 0021644h
+;                          equ 0021648h
+_ForceModeKeypress         equ 002164Ch
+_DispAboutScreen           equ 0021650h
+_ChkHelpHookVer            equ 0021654h
+_Draw32                    equ 0021658h
+;                          equ 002165Ch
+;                          equ 0021660h
+;                          equ 0021664h
+_DrawPlotStatus            equ 0021668h
+_DrawTableEditor           equ 002166Ch
+_DisplayListNameEquals     equ 0021670h
+_DisplayListHeader         equ 0021674h
+_DispMatrixDimensions      equ 0021678h
+_HighlightListEdItem       equ 002167Ch
+;                          equ 0021680h
+;                          equ 0021684h
+_MatrixName                equ 0021688h
+;                          equ 002168Ch
+;                          equ 0021690h
+;                          equ 0021694h
+;                          equ 0021698h
+;                          equ 002169Ch
+_ChkCxMainPtr              equ 00216A0h
+_NumError02_               equ 00216A4h
+;                          equ 00216A8h
+_SetupEmptyEditTempEqu     equ 00216ACh
+_Res1IY0E                  equ 00216B0h
+_RestoreBuffer             equ 00216B4h
+;                          equ 00216B8h
+;                          equ 00216BCh
+;                          equ 00216C0h
+;                          equ 00216C4h
+;                          equ 00216C8h
+;                          equ 00216CCh
+_DisplayListEquals         equ 00216D0h
+_GetCurPlotListOffset      equ 00216D4h
+_GoToLastRow               equ 00216D8h
+_DrawRectBorder_           equ 00216DCh
+;                          equ 00216E0h
+;                          equ 00216E4h
+;                          equ 00216E8h
+;                          equ 00216ECh
+_NamedListToOP1            equ 00216F0h
+;                          equ 00216F4h
+;                          equ 00216F8h
+;                          equ 00216FCh
+_os_InitUSBDeviceCallback_ equ 0021700h
+_KillUSBDevice             equ 0021704h
+_SetUSBConfiguration       equ 0021708h
+_RequestUSBData            equ 002170Ch
+_StopReceivingUSBData      equ 0021710h
+_SetVertGraphActive        equ 0021714h
+_ClrVertGraphActive        equ 0021718h
+_SetUSBActivityHook        equ 002171Ch
+_ClrUSBActivityHook        equ 0021720h
+;_ret                      equ 0021724h
+_GetCurPlotOffsetPrev      equ 0021728h
+_SplitUpdateStatPlotLists  equ 002172Ch
+_GraphLine                 equ 0021730h
+;                          equ 0021734h
+;                          equ 0021738h
+;                          equ 002173Ch
+;                          equ 0021740h
+;                          equ 0021744h
+;                          equ 0021748h
+_ZIfInTblEditor            equ 002174Ch
+;                          equ 0021750h
+_GetCurPlotOffset          equ 0021754h
+;                          equ 0021758h
+;                          equ 002175Ch
+;                          equ 0021760h
+;                          equ 0021764h
+;                          equ 0021768h
+_UpdateStatPlotLists       equ 002176Ch
+_ChkSomethingElseFPS5      equ 0021770h
+_ChkSomethingFPS5          equ 0021774h
+_VDispRealOP1              equ 0021778h
+_DispXEqualsNum            equ 002177Ch
+_ResetGraphSettings        equ 0021780h
+_InitializeVariables       equ 0021784h
+;_ret                      equ 0021788h
+_DelVarSym                 equ 002178Ch
+_FindAppUpNoCase           equ 0021790h
+_FindAppDnNoCase           equ 0021794h
+_SetupHome                 equ 0021798h
+_GrPutawayFull             equ 002179Ch
+;_ret                      equ 00217A0h
+_ToggleUSBSmartPadInput    equ 00217A4h
+_IsUSBDeviceConnected      equ 00217A8h
+_PolarEquToOP1             equ 00217ACh
+_ParamXEquToOP1            equ 00217B0h
+_ParamYEquToOP1            equ 00217B4h
+_DispTestModeResetComplete equ 00217B8h
+_PTTReset                  equ 00217BCh
+_FindAppCustom             equ 00217C0h
+_ClearGraphStyles          equ 00217C4h
+_BufToNextBASICSeparator   equ 00217C8h
+;                          equ 00217CCh
+;                          equ 00217D0h
+_ZooStandard               equ 00217D4h
+;                          equ 00217D8h
+;                          equ 00217DCh
+;                          equ 00217E0h
+;                          equ 00217E4h
+;                          equ 00217E8h
+;                          equ 00217ECh
+;                          equ 00217F0h
+;                          equ 00217F4h
+;                          equ 00217F8h
+;                          equ 00217FCh
+;                          equ 0021800h
+;                          equ 0021804h
+;                          equ 0021808h
+;                          equ 002180Ch
+;                          equ 0021810h
+;                          equ 0021814h
+;                          equ 0021818h
+;                          equ 002181Ch
+;                          equ 0021820h
+;                          equ 0021824h
+;                          equ 0021828h
+;                          equ 002182Ch
+;                          equ 0021830h
+;                          equ 0021834h
+;                          equ 0021838h
+;                          equ 002183Ch
+;                          equ 0021840h
+;                          equ 0021844h
+;                          equ 0021848h
+;                          equ 002184Ch
+;                          equ 0021850h
+;                          equ 0021854h
+;                          equ 0021858h
+;                          equ 002185Ch
+;                          equ 0021860h
+;                          equ 0021864h
+;                          equ 0021868h
+;                          equ 002186Ch
+;                          equ 0021870h
+;                          equ 0021874h
+;                          equ 0021878h
+;                          equ 002187Ch
+;                          equ 0021880h
+;                          equ 0021884h
+;                          equ 0021888h
+;                          equ 002188Ch
+;                          equ 0021890h
+;                          equ 0021894h
+;                          equ 0021898h
+;                          equ 002189Ch
+;                          equ 00218A0h
+;                          equ 00218A4h
+;                          equ 00218A8h
+;                          equ 00218ACh
+;                          equ 00218B0h
+;                          equ 00218B4h
+;                          equ 00218B8h
+;                          equ 00218BCh
+;                          equ 00218C0h
+;                          equ 00218C4h
+;                          equ 00218C8h
+;                          equ 00218CCh
+;                          equ 00218D0h
+;                          equ 00218D4h
+;                          equ 00218D8h
+;                          equ 00218DCh
+;                          equ 00218E0h
+;                          equ 00218E4h
+;                          equ 00218E8h
+;                          equ 00218ECh
+_RunInitialBootMenu        equ 00218F0h
+;                          equ 00218F4h
+;                          equ 00218F8h
+;                          equ 00218FCh
+_Clr05RclFlags             equ 0021900h
+;                          equ 0021904h
+;                          equ 0021908h
+;                          equ 002190Ch
+;                          equ 0021910h
+;                          equ 0021914h
+;                          equ 0021918h
+;                          equ 002191Ch
+;                          equ 0021920h
+;                          equ 0021924h
+;                          equ 0021928h
+;                          equ 002192Ch
+;                          equ 0021930h
+;                          equ 0021934h
+;                          equ 0021938h
+;                          equ 002193Ch
+_CommonKeys_               equ 0021940h
+;                          equ 0021944h
+;                          equ 0021948h
+;                          equ 002194Ch
+;                          equ 0021950h
+;                          equ 0021954h
+;                          equ 0021958h
+;                          equ 002195Ch
+;                          equ 0021960h
+;                          equ 0021964h
+;                          equ 0021968h
+;                          equ 002196Ch
+;                          equ 0021970h
+;                          equ 0021974h
+;                          equ 0021978h
+;                          equ 002197Ch
+;                          equ 0021980h
+;                          equ 0021984h
+;                          equ 0021988h
+;                          equ 002198Ch
+;                          equ 0021990h
+;                          equ 0021994h
+_ResetLastEntryStack       equ 0021998h
+;                          equ 002199Ch
+;                          equ 00219A0h
+_jp_JForceCmdNoChar        equ 00219A4h
+_Load_LFont                equ 00219A8h
+;                          equ 00219ACh
+;                          equ 00219B0h
+;                          equ 00219B4h
+;                          equ 00219B8h
+;                          equ 00219BCh
+;                          equ 00219C0h
+;                          equ 00219C4h
+;                          equ 00219C8h
+;                          equ 00219CCh
+;                          equ 00219D0h
+;                          equ 00219D4h
+;                          equ 00219D8h
+_EnterSelfTest             equ 00219DCh
+;                          equ 00219E0h
+;                          equ 00219E4h
+_GetGraphModeProperties    equ 00219E8h
+;                          equ 00219ECh
+;                          equ 00219F0h
+;                          equ 00219F4h
+;                          equ 00219F8h
+;                          equ 00219FCh
+;                          equ 0021A00h
+;                          equ 0021A04h
+;                          equ 0021A08h
+;                          equ 0021A0Ch
+_ClrLCDAll                 equ 0021A10h
+_BufIPoint                 equ 0021A14h
+;                          equ 0021A18h
+;                          equ 0021A1Ch
+;                          equ 0021A20h
+;                          equ 0021A24h
+_SetDrawFGColorA           equ 0021A28h
+;                          equ 0021A2Ch
+;                          equ 0021A30h
+;                          equ 0021A34h
+_DrawGraphBackground       equ 0021A38h
+_DrawStatusBar             equ 0021A3Ch
+;                          equ 0021A40h
+;                          equ 0021A44h
+;                          equ 0021A48h
+;                          equ 0021A4Ch
+_DrawBatteryIndicator      equ 0021A50h
+_DrawBatteryStatus         equ 0021A54h
+;                          equ 0021A58h
+;                          equ 0021A5Ch
+;                          equ 0021A60h
+;                          equ 0021A64h
+;                          equ 0021A68h
+;                          equ 0021A6Ch
+;                          equ 0021A70h
+;                          equ 0021A74h
+;                          equ 0021A78h
+;                          equ 0021A7Ch
+;                          equ 0021A80h
+;                          equ 0021A84h
+;                          equ 0021A88h
+;                          equ 0021A8Ch
+;                          equ 0021A90h
+;                          equ 0021A94h
+;                          equ 0021A98h
+;                          equ 0021A9Ch
+;                          equ 0021AA0h
+;                          equ 0021AA4h
+;                          equ 0021AA8h
+;                          equ 0021AACh
+;                          equ 0021AB0h
+_DrawStatusBarInfo         equ 0021AB4h
+_RestoreLCDBrightness      equ 0021AB8h
+_RestoreLCDBrightness_     equ 0021ABCh
+_DimLCDSlow                equ 0021AC0h
+;                          equ 0021AC4h
+;                          equ 0021AC8h
+;                          equ 0021ACCh
+;                          equ 0021AD0h
+;                          equ 0021AD4h
+;                          equ 0021AD8h
+;                          equ 0021ADCh
+_SetTextFGBGcolors         equ 0021AE0h
+_SetTextFGBGcolors_        equ 0021AE4h
+_SetTextBGcolor            equ 0021AE8h
+_VPutPS                    equ 0021AECh
+;                          equ 0021AF0h
+;                          equ 0021AF4h
+;                          equ 0021AF8h
+;                          equ 0021AFCh
+_DrawTILogo                equ 0021B00h
+_DrawThickRectBorder       equ 0021B04h
+;                          equ 0021B08h
+_DrawStatusBarTextClr      equ 0021B0Ch
+;                          equ 0021B10h
+;                          equ 0021B14h
+;                          equ 0021B18h
+;                          equ 0021B1Ch
+_VPutPSN                   equ 0021B20h
+;                          equ 0021B24h
+;                          equ 0021B28h
+;                          equ 0021B2Ch
+;                          equ 0021B30h
+_RStrGraphFlags            equ 0021B34h
+;                          equ 0021B38h
+;                          equ 0021B3Ch
+;                          equ 0021B40h
+;                          equ 0021B44h
+;                          equ 0021B48h
+;                          equ 0021B4Ch
+;                          equ 0021B50h
+;                          equ 0021B54h
+;                          equ 0021B58h
+;                          equ 0021B5Ch
+;                          equ 0021B60h
+_DrawSprite16bpp           equ 0021B64h
+;                          equ 0021B68h
+;                          equ 0021B6Ch
+;                          equ 0021B70h
+;                          equ 0021B74h
+;                          equ 0021B78h
+;                          equ 0021B7Ch
+;                          equ 0021B80h
+;                          equ 0021B84h
+;                          equ 0021B88h
+;                          equ 0021B8Ch
+;                          equ 0021B90h
+;                          equ 0021B94h
+;                          equ 0021B98h
+;                          equ 0021B9Ch
+;                          equ 0021BA0h
+;                          equ 0021BA4h
+;                          equ 0021BA8h
+_GetColorValue             equ 0021BACh
+;                          equ 0021BB0h
+;                          equ 0021BB4h
+;                          equ 0021BB8h
+;                          equ 0021BBCh
+;                          equ 0021BC0h
+_GraphBGColorToDrawBGColor equ 0021BC4h
+_SetWhiteDrawBGColor       equ 0021BC8h
+;                          equ 0021BCCh
+_ChkResAppTextSave         equ 0021BD0h
+_ChkCxMain                 equ 0021BD4h
+;                          equ 0021BD8h
+;                          equ 0021BDCh
+_DrawRectBorder__          equ 0021BE0h
+;                          equ 0021BE4h
+;                          equ 0021BE8h
+;                          equ 0021BECh
+;                          equ 0021BF0h
+;                          equ 0021BF4h
+;                          equ 0021BF8h
+;                          equ 0021BFCh
+;                          equ 0021C00h
+;                          equ 0021C04h
+;                          equ 0021C08h
+;                          equ 0021C0Ch
+;                          equ 0021C10h
+;                          equ 0021C14h
+;                          equ 0021C18h
+;                          equ 0021C1Ch
+;                          equ 0021C20h
+;                          equ 0021C24h
+;                          equ 0021C28h
+;                          equ 0021C2Ch
+;                          equ 0021C30h
+;                          equ 0021C34h
+;                          equ 0021C38h
+;                          equ 0021C3Ch
+;                          equ 0021C40h
+;                          equ 0021C44h
+;                          equ 0021C48h
+;                          equ 0021C4Ch
+;                          equ 0021C50h
+;_ret                      equ 0021C54h
+;                          equ 0021C58h
+;                          equ 0021C5Ch
+;                          equ 0021C60h
+;                          equ 0021C64h
+;                          equ 0021C68h
+_BitGrfFuncM               equ 0021C6Ch
+;_ret                      equ 0021C70h
+_GetScrollPxlAmount        equ 0021C74h
+_os_PushErrorHandler       equ 0021C78h
+_os_PopErrorHandler        equ 0021C7Ch
+_os_ThrowError             equ 0021C80h
+_os_RealCopy               equ 0021C84h
+_os_RealAsinRad            equ 0021C88h
+_os_RealAcosRad            equ 0021C8Ch
+_os_RealAtanRad            equ 0021C90h
+_os_RealAdd                equ 0021C94h
+_os_CplxSquare             equ 0021C98h
+_os_RealCompare            equ 0021C9Ch
+_os_RealCosRad             equ 0021CA0h
+_os_RealRadToDeg           equ 0021CA4h
+_os_RealDiv                equ 0021CA8h
+_os_RealExp                equ 0021CACh
+_os_RealFloor              equ 0021CB0h
+_os_RealToStr              equ 0021CB4h
+_os_RealFrac               equ 0021CB8h
+_os_RealGcd                equ 0021CBCh
+_os_RealRoundInt           equ 0021CC0h
+_os_RealLcm                equ 0021CC4h
+_os_RealLog                equ 0021CC8h
+_os_RealMax                equ 0021CCCh
+_os_RealMin                equ 0021CD0h
+_os_RealMul                equ 0021CD4h
+_os_RealNcr                equ 0021CD8h
+_os_RealNeg                equ 0021CDCh
+_os_RealNpr                equ 0021CE0h
+_os_RealPow                equ 0021CE4h
+_os_RealDegToRad           equ 0021CE8h
+_os_RealRandInt            equ 0021CECh
+_os_RealInv                equ 0021CF0h
+_os_RealMod                equ 0021CF4h
+_os_RealRound              equ 0021CF8h
+_os_RealSinRad             equ 0021CFCh
+_os_RealSqrt               equ 0021D00h
+_os_RealSub                equ 0021D04h
+_os_RealTanRad             equ 0021D08h
+_os_StrToReal              equ 0021D0Ch
+_os_RealTrunc              equ 0021D10h
+_os_SetFlagBits            equ 0021D14h
+_os_ResetFlagBits          equ 0021D18h
+_os_TestFlagBits           equ 0021D1Ch
+_os_SetFlagByte            equ 0021D20h
+_os_GetFlagByte            equ 0021D24h
+_os_GetCursorPos           equ 0021D28h
+_os_PutStrFull             equ 0021D2Ch
+_os_PutStrLine             equ 0021D30h
+_os_SetCursorPos           equ 0021D34h
+_os_GetKey                 equ 0021D38h
+_os_GetCSC                 equ 0021D3Ch
+_os_AppInit                equ 0021D40h
+;                          equ 0021D44h
+_ChkBCIs0                  equ 0021D48h
+_ChkDEIs0                  equ 0021D4Ch
+_ChkHLIs0                  equ 0021D50h
+_SetAToBCU                 equ 0021D54h
+_SetAToDEU                 equ 0021D58h
+_SetAToHLU                 equ 0021D5Ch
+_SetBCUToA                 equ 0021D60h
+_SetBCUToB                 equ 0021D64h
+_SetDEUToA                 equ 0021D68h
+_SetDEUToB                 equ 0021D6Ch
+_SetHLUToA                 equ 0021D70h
+_SetHLUToB                 equ 0021D74h
+_SignExtendBC              equ 0021D78h
+_SignExtendDE              equ 0021D7Ch
+_SignExtendHL              equ 0021D80h
+_SetBCUTo0                 equ 0021D84h
+_SetDEUTo0                 equ 0021D88h
+_SetHLUTo0                 equ 0021D8Ch
+_DivHLByA                  equ 0021D90h
+_CpHLDE_s                  equ 0021D94h
+_CpHLDE_                   equ 0021D98h
+_LoadDEInd_s               equ 0021D9Ch
+_LoadDEInd                 equ 0021DA0h
+_CpHLDEBC                  equ 0021DA4h
+_NegBC                     equ 0021DA8h
+_NegDE                     equ 0021DACh
+_StrCmpre                  equ 0021DB0h
+_AddHLAndA                 equ 0021DB4h
+_NextFlashPage             equ 0021DB8h
+_PrevFlashPage             equ 0021DBCh
+_SwapEndianHL_s            equ 0021DC0h
+_ReloadAppEntryVecs        equ 0021DC4h
+;                          equ 0021DC8h
+;                          equ 0021DCCh
+;                          equ 0021DD0h
+;                          equ 0021DD4h
+;                          equ 0021DD8h
+;                          equ 0021DDCh
+_os_ClearVRAMLines         equ 0021DE0h
+_os_DisableCursor          equ 0021DE4h
+_os_EnableCursor           equ 0021DE8h
+;                          equ 0021DECh
+;                          equ 0021DF0h
+;                          equ 0021DF4h
+;                          equ 0021DF8h
+;                          equ 0021DFCh
+_os_FontDrawText           equ 0021E00h
+;                          equ 0021E04h
+;                          equ 0021E08h
+;                          equ 0021E0Ch
+;                          equ 0021E10h
+_os_FontGetHeight          equ 0021E14h
+_os_FontGetWidth           equ 0021E18h
+_os_InitDrawing            equ 0021E1Ch
+_os_SetDrawBGColor         equ 0021E20h
+_os_SetDrawFGColor         equ 0021E24h
+_os_FontSelect             equ 0021E28h
+;                          equ 0021E2Ch
+;                          equ 0021E30h
+_os_ReturnByte             equ 0021E34h
+_os_ReturnByteEvenBetter   equ 0021E38h
+;                          equ 0021E3Ch
+;                          equ 0021E40h
+;                          equ 0021E44h
+;                          equ 0021E48h
+;                          equ 0021E4Ch
+;                          equ 0021E50h
+;                          equ 0021E54h
+;                          equ 0021E58h
+;                          equ 0021E5Ch
+;                          equ 0021E60h
+;                          equ 0021E64h
+_ChkACplx                  equ 0021E68h
+;                          equ 0021E6Ch
+_os_AnsName                equ 0021E70h
+;                          equ 0021E74h
+;                          equ 0021E78h
+;                          equ 0021E7Ch
+;                          equ 0021E80h
+;                          equ 0021E84h
+;                          equ 0021E88h
+_SetPolarEquToOP1          equ 0021E8Ch
+;                          equ 0021E90h
+;                          equ 0021E94h
+;                          equ 0021E98h
+;                          equ 0021E9Ch
+;                          equ 0021EA0h
+;                          equ 0021EA4h
+;                          equ 0021EA8h
+;                          equ 0021EACh
+;                          equ 0021EB0h
+;                          equ 0021EB4h
+;                          equ 0021EB8h
+;                          equ 0021EBCh
+;                          equ 0021EC0h
+;                          equ 0021EC4h
+;                          equ 0021EC8h
+_os_DisableTimer1          equ 0021ECCh
+_os_SetKbdKey              equ 0021ED0h
+_os_GetSystemStats         equ 0021ED4h
+;                          equ 0021ED8h
+;                          equ 0021EDCh
+_DispHL                    equ 0021EE0h
+_os_GetDrawBGColor_BROKEN  equ 0021EE4h
+_os_GetDrawFGColor         equ 0021EE8h
+_os_FontGetID              equ 0021EECh
+;                          equ 0021EF0h
+;                          equ 0021EF4h
+;                          equ 0021EF8h
+;                          equ 0021EFCh
+_RestoreColCoordinates     equ 0021F00h
+;                          equ 0021F04h
+;                          equ 0021F08h
+;                          equ 0021F0Ch
+;                          equ 0021F10h
+;                          equ 0021F14h
+;                          equ 0021F18h
+;                          equ 0021F1Ch
+;                          equ 0021F20h
+;                          equ 0021F24h
+;                          equ 0021F28h
+;                          equ 0021F2Ch
+;                          equ 0021F30h
+;                          equ 0021F34h
+;                          equ 0021F38h
+;                          equ 0021F3Ch
+;                          equ 0021F40h
+_VPutmapNoReset0IY23       equ 0021F44h
+;                          equ 0021F48h
+;                          equ 0021F4Ch
+;                          equ 0021F50h
+;                          equ 0021F54h
+;                          equ 0021F58h
+;                          equ 0021F5Ch
+;                          equ 0021F60h
+;                          equ 0021F64h
+_DrawStatusBarText         equ 0021F68h
+;                          equ 0021F6Ch
+;                          equ 0021F70h
+;                          equ 0021F74h
+;                          equ 0021F78h
+;                          equ 0021F7Ch
+;                          equ 0021F80h
+;                          equ 0021F84h
+;                          equ 0021F88h
+;                          equ 0021F8Ch
+;                          equ 0021F90h
+;                          equ 0021F94h
+_ChkInRam                  equ 0021F98h
+;                          equ 0021F9Ch
+;                          equ 0021FA0h
+_FontGetWidth              equ 0021FA4h
+_os_ForceCmdNoChar         equ 0021FA8h
+_os_DelVarEntry            equ 0021FACh
+_os_GetSymTablePtr         equ 0021FB0h
+_os_NextSymEntry           equ 0021FB4h
+_os_ChkFindSym             equ 0021FB8h
+_os_GetVarSize             equ 0021FBCh
+_os_GetVarSizeBytes        equ 0021FC0h
+;                          equ 0021FC4h
+_os_GetRealListElement     equ 0021FC8h
+_os_GetRealVar             equ 0021FCCh
+_os_ResizeList             equ 0021FD0h
+_os_ResizeMatrix           equ 0021FD4h
+;                          equ 0021FD8h
+_os_SetRealListElement     equ 0021FDCh
+_os_SetRealVar             equ 0021FE0h
+;                          equ 0021FE4h
+;                          equ 0021FE8h
+;                          equ 0021FECh
+_os_MemChk                 equ 0021FF0h
+;                          equ 0021FF4h
+;                          equ 0021FF8h
+;                          equ 0021FFCh
+;                          equ 0022000h
+;                          equ 0022004h
+;                          equ 0022008h
+;                          equ 002200Ch
+;                          equ 0022010h
+;                          equ 0022014h
+;                          equ 0022018h
+;                          equ 002201Ch
+;                          equ 0022020h
+;                          equ 0022024h
+;                          equ 0022028h
+;                          equ 002202Ch
+;                          equ 0022030h
+;                          equ 0022034h
+;                          equ 0022038h
+;                          equ 002203Ch
+_ArcChk                    equ 0022040h
+_LoadDEIndFlash            equ 0022044h
+_ChkInRamB                 equ 0022048h
+;                          equ 002204Ch
+;                          equ 0022050h
+;                          equ 0022054h
+_os_InitUSBDeviceCallback  equ 0022058h
+_os_KillUSBDevice          equ 002205Ch
+_os_SetUSBConfiguration    equ 0022060h
+_os_RequestUSBData         equ 0022064h
+_os_StopReceivingUSBData   equ 0022068h
+;                          equ 002206Ch
+;                          equ 0022070h
+_Mov11ToOP1                equ 0022074h
+_FindFreeArcSpot           equ 0022078h
+;                          equ 002207Ch
+_os_SetTimer2              equ 0022080h
+_os_DisableTimer2          equ 0022084h
+;                          equ 0022088h
+;_ret                      equ 002208Ch
+_os_GetYDrawLocation       equ 0022090h
+_os_SetYDrawLocation       equ 0022094h
+_RunLocalizeHook           equ 0022098h
+_os_IntSize                equ 002209Ch
+_os_ClearStatusBarLow      equ 00220A0h
+;                          equ 00220A4h
+_NMIHandler                equ 00220A8h
+;                          equ 00220ACh
+;                          equ 00220B0h
+;                          equ 00220B4h
+;                          equ 00220B8h
+;                          equ 00220BCh
+;                          equ 00220C0h
+;                          equ 00220C4h
+;                          equ 00220C8h
+;                          equ 00220CCh
+;                          equ 00220D0h
+;                          equ 00220D4h
+;                          equ 00220D8h
+;                          equ 00220DCh
+;                          equ 00220E0h
+;                          equ 00220E4h
+;                          equ 00220E8h
+;                          equ 00220ECh
+;                          equ 00220F0h
+;                          equ 00220F4h
+;                          equ 00220F8h
+;                          equ 00220FCh
+;                          equ 0022100h
+;                          equ 0022104h
+;                          equ 0022108h
+;                          equ 002210Ch
+;                          equ 0022110h
+;                          equ 0022114h
+;                          equ 0022118h
+;                          equ 002211Ch
+;                          equ 0022120h
+;                          equ 0022124h
+;                          equ 0022128h
+;                          equ 002212Ch
+;                          equ 0022130h
+;                          equ 0022134h
+;                          equ 0022138h
+;                          equ 002213Ch
+;                          equ 0022140h
+;                          equ 0022144h
+;                          equ 0022148h
+;                          equ 002214Ch
+;                          equ 0022150h
+;                          equ 0022154h
+;                          equ 0022158h
+;                          equ 002215Ch
+;                          equ 0022160h
+_os_RToP                   equ 0022164h
+_os_PToR                   equ 0022168h
+_os_ResetEditOpen          equ 002216Ch
+;                          equ 0022170h
+;                          equ 0022174h
+_os_FontDrawTransText      equ 0022178h
+_os_DelAppVar              equ 002217Ch
+_os_GetAppVarDataPtr       equ 0022180h
+_os_CreateAppVar           equ 0022184h
+;                          equ 0022188h
+;                          equ 002218Ch
+;                          equ 0022190h
+;                          equ 0022194h
+_os_CreateString           equ 0022198h
+_os_GetStringDataPtr       equ 002219Ch
+;                          equ 00221A0h
+;                          equ 00221A4h
+;                          equ 00221A8h
+;                          equ 00221ACh
+;                          equ 00221B0h
+;                          equ 00221B4h
+;                          equ 00221B8h
+;                          equ 00221BCh
+;                          equ 00221C0h
+;                          equ 00221C4h
+;                          equ 00221C8h
+;                          equ 00221CCh
+;                          equ 00221D0h
+;                          equ 00221D4h
+;                          equ 00221D8h
+;                          equ 00221DCh
+;                          equ 00221E0h
+;                          equ 00221E4h
+;                          equ 00221E8h
+;                          equ 00221ECh
+;                          equ 00221F0h
+;                          equ 00221F4h
+;                          equ 00221F8h
 
-_ArchiveVar		equ 4FDBh ;set 0,(iy+24h) to check for low battery first
-_UnarchiveVar		equ 4FDEh
-
-;002144Ch
-;0021450h
-_SetFontHook		equ 0021454h
-_ClrFontHook		equ 0021458h
-_SetRegraphHook		equ 002145Ch
-_ClrRegraphHook		equ 0021460h
-_RunGraphingHook	equ 0021464h
-_SetTraceHook		equ 0021468h
-_ClrTraceHook		equ 002146Ch
-_RunTraceHook		equ 0021470h
-_NDeriv			equ 0021474h
-_PolarDerivative	equ 0021478h
-_JForceGraphNoKey	equ 002147Ch
-_JForceGraphKey		equ 0021480h
-_PowerOff		equ 0021484h
-_GetKeyRetOff		equ 0021488h
-_FindGroupSym		equ 002148Ch
-_LoadDEIndPaged_Unpaged	equ 0021490h
-_SetUpPagedPtr_Unpaged	equ 0021494h
-_PagedGet_Unpaged	equ 0021498h
-_SetParserHook		equ 002149Ch
-_ClrParserHook		equ 00214A0h
-_SetAppChangeHook	equ 00214A4h
-_ClrAppChangeHook	equ 00214A8h
-_SetGraphicsHook	equ 00214ACh
-_ClrGraphicsHook	equ 00214B0h
-_ILineNoGraphicsHook	equ 00214B4h
-_ILineNoHook		equ 00214B8h
-;00214BCh
-_DeleteTempPrograms	equ 00214C0h
-_SetCatalog1Hook	equ 00214C4h
-_ClrCatalog1Hook	equ 00214C8h
-_SetHelpHook		equ 00214CCh
-_ClrHelpHook		equ 00214D0h
-_DispCatalogEnd		equ 00214D4h
-_GetMenuKeypress	equ 00214D8h
-_GetCatalogItem		equ 00214DCh
-_RunCatalog2Hook	equ 00214E0h
-_RunCatalog1Hook	equ 00214E4h
-;00214E8h
-;00214ECh
-_DispMenuTitle		equ 00214F0h
-;00214F4h
-_SetcxReDispHook	equ 00214F8h
-_ClrcxReDispHook	equ 00214FCh
-;0021500h
-;0021504h
-;0021508h
-;002150Ch
-;0021510h
-;0021514h
-_SetMenuHook		equ 0021518h
-_ClrMenuHook		equ 002151Ch
-_GetBCOffSetIX		equ 0021520h
-_GetBCOffSetIX_Duplicate	equ 0021524h
-_ForceFullScreen	equ 0021528h
-_HLMinus5		equ 002152Ch
-_Ret_2			equ 0021530h
-;0021534h
-;0021538h
-_Arc_Unarc_Dup		equ 002153Ch
-;0021540h
-_SetSilentLinkHook	equ 0021544h
-_ClrSilentLinkHook	equ 0021548h
-;002154Ch
-_ExecClassCToken	equ 0021550h
-_ExecClass3Token	equ 0021554h
-_GetSysInfo		equ 0021558h
-;002155Ch
-_TenXNoClr		equ 0021560h
-;0021564h
-;0021568h
-;002156Ch
-;0021570h
-;0021574h
-;0021578h
-;002157Ch
-;0021580h
-;0021584h
-;0021588h
-;002158Ch
-;0021590h
-;0021594h
-;0021598h
-;002159Ch
-;00215A0h
-_DispCoords		equ 00215A4h
-;00215A8h
-;00215ACh
-_ChkTmr			equ 00215B0h
-_ClockOff		equ 00215B4h
-_ClockOn		equ 00215B8h
-;00215BCh
-_GetDate		equ 00215C0h
-_GetDateString		equ 00215C4h
-_GetDtFmt		equ 00215C8h
-_GetDtStr		equ 00215CCh
-_GetTime		equ 00215D0h
-_FormTime		equ 00215D4h
-_GetTmFmt		equ 00215D8h
-_GetTmStr		equ 00215DCh
-_SetZeroOne		equ 00215E0h
-_SetDate		equ 00215E4h
-_IsOneTwoThree		equ 00215E8h
-_SetTime		equ 00215ECh
-_IsOP112or24		equ 00215F0h
-_ChkTimer0		equ 00215F4h
-_TimeCnv		equ 00215F8h
-_ClrWindowAndFlags	equ 00215FCh
-;0021600h
-;0021604h
-;0021608h
-;002160Ch
-;0021610h
-_CPOP1OP2Rounded	equ 0021614h
-_CPOP1OP2Rounded2	equ 0021618h
-;002161Ch
-;0021620h
-;0021624h
-;0021628h
-_SetUpEditor		equ 002162Ch
-_SortA			equ 0021630h
-_SortD			equ 0021634h
-;0021638h
-_IsOP1ResID		equ 002163Ch
-;0021640h
-;0021644h
-;0021648h
-_ForceModeKeypress	equ 002164Ch
-_DispAboutScreen	equ 0021650h
-_ChkHelpHookVer		equ 0021654h
-;0021658h
-;002165Ch
-;0021660h
-;0021664h
-;0021668h
-_DrawTableEditor	equ 002166Ch
-_DisplayListNameEquals	equ 0021670h
-_DisplayListHeader	equ 0021674h
-_DispMatrixDimensions	equ 0021678h
-_HighlightListEdItem	equ 002167Ch
-;0021680h
-;0021684h
-;0021688h
-;002168Ch
-;0021690h
-;0021694h
-;0021698h
-;002169Ch
-;00216A0h
-_NumError02_Dup		equ 00216A4h
-;00216A8h
-;00216ACh
-;00216B0h
-;00216B4h
-;00216B8h
-;00216BCh
-;00216C0h
-;00216C4h
-;00216C8h
-;00216CCh
-;00216D0h
-;00216D4h
-;00216D8h
-_DrawRectBorder_Dup_2	equ 00216DCh
-;00216E0h
-;00216E4h
-;00216E8h
-;00216ECh
-;00216F0h
-;00216F4h
-;00216F8h
-;00216FCh
-;0021700h
-;0021704h
-;0021708h
-;002170Ch
-;0021710h
-;0021714h
-;0021718h
-_SetUSBActivityHook	equ 002171Ch
-_ClrUSBActivityHook	equ 0021720h
-;0021724h
-;0021728h
-;002172Ch
-;0021730h
-;0021734h
-;0021738h
-;002173Ch
-;0021740h
-;0021744h
-;0021748h
-;002174Ch
-;0021750h
-;0021754h
-;0021758h
-;002175Ch
-;0021760h
-;0021764h
-;0021768h
-;002176Ch
-;0021770h
-;0021774h
-;0021778h
-;002177Ch
-;0021780h
-;0021784h
-;0021788h
-;002178Ch
-;0021790h
-;0021794h
-;0021798h
-;002179Ch
-;00217A0h
-;00217A4h
-;00217A8h
-;00217ACh
-;00217B0h
-;00217B4h
-;00217B8h
-;00217BCh
-;00217C0h
-;00217C4h
-;00217C8h
-;00217CCh
-;00217D0h
-;00217D4h
-;00217D8h
-;00217DCh
-;00217E0h
-;00217E4h
-;00217E8h
-;00217ECh
-;00217F0h
-;00217F4h
-;00217F8h
-;00217FCh
-;0021800h
-;0021804h
-;0021808h
-;002180Ch
-;0021810h
-;0021814h
-;0021818h
-;002181Ch
-;0021820h
-;0021824h
-;0021828h
-;002182Ch
-;0021830h
-;0021834h
-;0021838h
-;002183Ch
-;0021840h
-;0021844h
-;0021848h
-;002184Ch
-;0021850h
-;0021854h
-;0021858h
-;002185Ch
-;0021860h
-;0021864h
-;0021868h
-;002186Ch
-;0021870h
-;0021874h
-;0021878h
-;002187Ch
-;0021880h
-;0021884h
-;0021888h
-;002188Ch
-;0021890h
-;0021894h
-;0021898h
-;002189Ch
-;00218A0h
-;00218A4h
-;00218A8h
-;00218ACh
-;00218B0h
-;00218B4h
-;00218B8h
-;00218BCh
-;00218C0h
-;00218C4h
-;00218C8h
-;00218CCh
-;00218D0h
-;00218D4h
-;00218D8h
-;00218DCh
-;00218E0h
-;00218E4h
-;00218E8h
-;00218ECh
-_RunInitialBootMenu	equ 00218F0h
-;00218F4h
-;00218F8h
-;00218FCh
-;0021900h
-;0021904h
-;0021908h
-;002190Ch
-;0021910h
-;0021914h
-;0021918h
-;002191Ch
-;0021920h
-;0021924h
-;0021928h
-;002192Ch
-;0021930h
-;0021934h
-;0021938h
-;002193Ch
-_CommonKeys_Dup		equ 0021940h
-;0021944h
-;0021948h
-;002194Ch
-;0021950h
-;0021954h
-;0021958h
-;002195Ch
-;0021960h
-;0021964h
-;0021968h
-;002196Ch
-;0021970h
-;0021974h
-;0021978h
-;002197Ch
-;0021980h
-;0021984h
-;0021988h
-;002198Ch
-;0021990h
-;0021994h
-;0021998h
-;002199Ch
-;00219A0h
-;00219A4h
-;00219A8h
-;00219ACh
-;00219B0h
-;00219B4h
-;00219B8h
-;00219BCh
-;00219C0h
-;00219C4h
-;00219C8h
-;00219CCh
-;00219D0h
-;00219D4h
-;00219D8h
-_EnterSelfTest		equ 00219DCh
-;00219E0h
-;00219E4h
-;00219E8h
-;00219ECh
-;00219F0h
-;00219F4h
-;00219F8h
-;00219FCh
-;0021A00h
-;0021A04h
-;0021A08h
-;0021A0Ch
-_ClrLCDAll		equ 0021A10h
-;0021A14h
-;0021A18h
-;0021A1Ch
-;0021A20h
-;0021A24h
-_SetDrawFGColorA	equ 0021A28h
-;0021A2Ch
-;0021A30h
-;0021A34h
-;0021A38h
-_DrawStatusBar		equ 0021A3Ch
-;0021A40h
-;0021A44h
-;0021A48h
-;0021A4Ch
-_DrawBatteryIndicator	equ 0021A50h
-;0021A54h
-;0021A58h
-;0021A5Ch
-;0021A60h
-;0021A64h
-;0021A68h
-;0021A6Ch
-;0021A70h
-;0021A74h
-;0021A78h
-;0021A7Ch
-;0021A80h
-;0021A84h
-;0021A88h
-;0021A8Ch
-;0021A90h
-;0021A94h
-;0021A98h
-;0021A9Ch
-;0021AA0h
-;0021AA4h
-;0021AA8h
-;0021AACh
-;0021AB0h
-_DrawStatusBarInfo	equ 0021AB4h
-_RestoreLCDbrightness	equ 0021AB8h
-_RestoreLCDbrightness2	equ 0021ABCh
-_DimLCDSlow		equ 0021AC0h
-;0021AC4h
-;0021AC8h
-;0021ACCh
-;0021AD0h
-;0021AD4h
-;0021AD8h
-;0021ADCh
-_SetTextFGBGcolors_Duplicate	equ 0021AE0h
-_SetTextFGBGcolors	equ 0021AE4h
-_SetTextBGcolor		equ 0021AE8h
-_VPutPS			equ 0021AECh
-;0021AF0h
-;0021AF4h
-;0021AF8h
-;0021AFCh
-;0021B00h
-_DrawThickRectBorder	equ 0021B04h
-;0021B08h
-;0021B0Ch
-;0021B10h
-;0021B14h
-;0021B18h
-;0021B1Ch
-_VPutPSN		equ 0021B20h
-;0021B24h
-;0021B28h
-;0021B2Ch
-;0021B30h
-;0021B34h
-;0021B38h
-;0021B3Ch
-;0021B40h
-;0021B44h
-;0021B48h
-;0021B4Ch
-;0021B50h
-;0021B54h
-;0021B58h
-;0021B5Ch
-;0021B60h
-;0021B64h
-;0021B68h
-;0021B6Ch
-;0021B70h
-;0021B74h
-;0021B78h
-;0021B7Ch
-;0021B80h
-;0021B84h
-;0021B88h
-;0021B8Ch
-;0021B90h
-;0021B94h
-;0021B98h
-;0021B9Ch
-;0021BA0h
-;0021BA4h
-;0021BA8h
-_GetColorValue		equ 0021BACh
-;0021BB0h
-;0021BB4h
-;0021BB8h
-;0021BBCh
-;0021BC0h
-;0021BC4h
-;0021BC8h
-;0021BCCh
-;0021BD0h
-;0021BD4h
-;0021BD8h
-;0021BDCh
-_DrawRectBorder_Dup		equ 0021BE0h
-;0021BE4h
-;0021BE8h
-;0021BECh
-;0021BF0h
-;0021BF4h
-;0021BF8h
-;0021BFCh
-;0021C00h
-;0021C04h
-;0021C08h
-;0021C0Ch
-;0021C10h
-;0021C14h
-;0021C18h
-;0021C1Ch
-;0021C20h
-;0021C24h
-;0021C28h
-;0021C2Ch
-;0021C30h
-;0021C34h
-;0021C38h
-;0021C3Ch
-;0021C40h
-;0021C44h
-;0021C48h
-;0021C4Ch
-;0021C50h
-;0021C54h
-;0021C58h
-;0021C5Ch
-;0021C60h
-;0021C64h
-;0021C68h
-_Bit_grfFuncM		equ 0021C6Ch
-;0021C70h
-;0021C74h
-;0021C78h
-_PopErrorHandler_Dup	equ 0021C7Ch
-;0021C80h
-;0021C84h
-;0021C88h
-;0021C8Ch
-;0021C90h
-;0021C94h
-;0021C98h
-;0021C9Ch
-;0021CA0h
-;0021CA4h
-;0021CA8h
-;0021CACh
-;0021CB0h
-;0021CB4h
-;0021CB8h
-;0021CBCh
-;0021CC0h
-;0021CC4h
-;0021CC8h
-;0021CCCh
-;0021CD0h
-;0021CD4h
-;0021CD8h
-;0021CDCh
-;0021CE0h
-;0021CE4h
-;0021CE8h
-;0021CECh
-;0021CF0h
-;0021CF4h
-;0021CF8h
-;0021CFCh
-;0021D00h
-;0021D04h
-;0021D08h
-;0021D0Ch
-;0021D10h
-;0021D14h
-;0021D18h
-;0021D1Ch
-;0021D20h
-;0021D24h
-;0021D28h
-;0021D2Ch
-;0021D30h
-;0021D34h
-;0021D38h
-_GetCSC_HL		equ 0021D3Ch
-;0021D40h
-;0021D44h
-_ChkBCIs0		equ 0021D48h
-_ChkDEIs0		equ 0021D4Ch
-_ChkHLIs0		equ 0021D50h
-_SetAToBCU		equ 0021D54h
-_SetAToDEU		equ 0021D58h
-_SetAToHLU		equ 0021D5Ch
-_SetBCUToA		equ 0021D60h
-_SetBCUToB		equ 0021D64h
-_SetDEUToA		equ 0021D68h
-_SetDEUToB		equ 0021D6Ch
-_SetHLUToA		equ 0021D70h
-_SetHLUToB		equ 0021D74h
-_SignExtendBC		equ 0021D78h
-_SignExtendDE		equ 0021D7Ch
-_SignExtendHL		equ 0021D80h
-_SetBCUTo0		equ 0021D84h
-_SetDEUTo0		equ 0021D88h
-_SetHLUTo0		equ 0021D8Ch
-_DivHLByA		equ 0021D90h
-_CpHLDE_s		equ 0021D94h
-_CpHLDE_Duplicate	equ 0021D98h
-_LoadDEInd_s		equ 0021D9Ch
-_LoadDEInd		equ 0021DA0h
-_CpHLDEBC		equ 0021DA4h
-_NegBC			equ 0021DA8h
-_NegDE			equ 0021DACh
-_StrCmpre		equ 0021DB0h
-_AddHLAndA		equ 0021DB4h
-;0021DB8h
-;0021DBCh
-_SwapEndianHL_s		equ 0021DC0h
-;0021DC4h
-;0021DC8h
-;0021DCCh
-;0021DD0h
-;0021DD4h
-;0021DD8h
-;0021DDCh
-;0021DE0h
-;0021DE4h
-;0021DE8h
-;0021DECh
-;0021DF0h
-;0021DF4h
-;0021DF8h
-;0021DFCh
-;0021E00h
-;0021E04h
-;0021E08h
-;0021E0Ch
-;0021E10h
-;0021E14h
-;0021E18h
-;0021E1Ch
-_SetDrawBGColor		equ 0021E20h
-_SetDrawFGColor		equ 0021E24h
-;0021E28h
-;0021E2Ch
-;0021E30h
-;0021E34h
-;0021E38h
-;0021E3Ch
-;0021E40h
-;0021E44h
-;0021E48h
-;0021E4Ch
-;0021E50h
-;0021E54h
-;0021E58h
-;0021E5Ch
-;0021E60h
-;0021E64h
-;0021E68h
-;0021E6Ch
-;0021E70h
-;0021E74h
-;0021E78h
-;0021E7Ch
-;0021E80h
-;0021E84h
-;0021E88h
-;0021E8Ch
-;0021E90h
-;0021E94h
-;0021E98h
-;0021E9Ch
-;0021EA0h
-;0021EA4h
-;0021EA8h
-;0021EACh
-;0021EB0h
-;0021EB4h
-;0021EB8h
-;0021EBCh
-;0021EC0h
-;0021EC4h
-;0021EC8h
-;0021ECCh
-;0021ED0h
-;0021ED4h
-;0021ED8h
-;0021EDCh
-_DispHL			equ 0021EE0h
-;0021EE4h
-_GetDrawFGColor		equ 0021EE8h
-;0021EECh
-;0021EF0h
-;0021EF4h
-;0021EF8h
-;0021EFCh
-;0021F00h
-;0021F04h
-;0021F08h
-;0021F0Ch
-;0021F10h
-;0021F14h
-;0021F18h
-;0021F1Ch
-;0021F20h
-;0021F24h
-;0021F28h
-;0021F2Ch
-;0021F30h
-;0021F34h
-;0021F38h
-;0021F3Ch
-;0021F40h
-_VPutmapNoReset0IY23	equ 0021F44h
-;0021F48h
-;0021F4Ch
-;0021F50h
-;0021F54h
-;0021F58h
-;0021F5Ch
-;0021F60h
-;0021F64h
-;0021F68h
-;0021F6Ch
-;0021F70h
-;0021F74h
-;0021F78h
-;0021F7Ch
-;0021F80h
-;0021F84h
-;0021F88h
-;0021F8Ch
-;0021F90h
-;0021F94h
-_ChkInRam		equ 0021F98h
-;0021F9Ch
-;0021FA0h
-;0021FA4h
-;0021FA8h
-;0021FACh
-_GetSymTablePtr		equ 0021FB0h
-;0021FB4h
-;0021FB8h
-;0021FBCh
-;0021FC0h
-;0021FC4h
-;0021FC8h
-;0021FCCh
-;0021FD0h
-;0021FD4h
-;0021FD8h
-;0021FDCh
-;0021FE0h
-;0021FE4h
-;0021FE8h
-;0021FECh
-;0021FF0h
-;0021FF4h
-;0021FF8h
-;0021FFCh
-;0022000h
-;0022004h
-;0022008h
-;002200Ch
-;0022010h
-;0022014h
-;0022018h
-;002201Ch
-;0022020h
-;0022024h
-;0022028h
-;002202Ch
-;0022030h
-;0022034h
-;0022038h
-;002203Ch
-;0022040h
-;0022044h
-_ChkInRamB		equ 0022048h
-;002204Ch
-;0022050h
-;0022054h
-;0022058h
-;002205Ch
-;0022060h
-;0022064h
-;0022068h
-;002206Ch
-;0022070h
-_Mov11ToOP1		equ 0022074h
-;0022078h
-;002207Ch
-;0022080h
-;0022084h
-;0022088h
-;002208Ch
-;0022090h
-;0022094h
-_RunLocalizeHook	equ 0022098h
-;002209Ch
-;00220A0h
-;00220A4h
-_NMIHandler		equ 00220A8h
-;00220ACh
-;00220B0h
-;00220B4h
-;00220B8h
-;00220BCh
-;00220C0h
-;00220C4h
-;00220C8h
-;00220CCh
-;00220D0h
-;00220D4h
-;00220D8h
-;00220DCh
-;00220E0h
-;00220E4h
-;00220E8h
-;00220ECh
-;00220F0h
-;00220F4h
-;00220F8h
-;00220FCh
-;0022100h
-;0022104h
-;0022108h
-;002210Ch
-;0022110h
-;0022114h
-;0022118h
-;002211Ch
-;0022120h
-;0022124h
-;0022128h
-;002212Ch
-;0022130h
-;0022134h
-;0022138h
-;002213Ch
-;0022140h
-;0022144h
-;0022148h
-;002214Ch
-;0022150h
-;0022154h
-;0022158h
-;002215Ch
-;0022160h
-_RToP_Dup		equ 0022164h
-_PToR_Dup		equ 0022168h
-;002216Ch
-;0022170h
-;0022174h
-;0022178h
-;002217Ch
-;0022180h
-;0022184h
-;0022188h
-;002218Ch
-;0022190h
-;0022194h
-;0022198h
-;002219Ch
-;00221A0h
-;00221A4h
-;00221A8h
-;00221ACh
-;00221B0h
-;00221B4h
+; Boot Calls
+;-----------------------------------
+_boot_GetBootVerMajor      equ 0000080h
+_boot_GetHardwareVers      equ 0000084h
+_boot_GetKeyID             equ 0000088h
+_boot_GetBootVerMinor      equ 000008Ch
+_boot_GetBootVerBuild      equ 0000090h
+_dbgout                    equ 0000094h
+__longjmp                  equ 0000098h
+__memchr                   equ 000009Ch
+__memcmp                   equ 00000A0h
+__memcpy                   equ 00000A4h
+__memmove                  equ 00000A8h
+__memset                   equ 00000ACh
+__memclear                 equ 00000B0h
+_printf                    equ 00000B4h
+__setjmp                   equ 00000B8h
+_sprintf                   equ 00000BCh
+__strcat                   equ 00000C0h
+__strchr                   equ 00000C4h
+__strcmp                   equ 00000C8h
+__strcpy                   equ 00000CCh
+__strcspn                  equ 00000D0h
+__strlen                   equ 00000D4h
+__strncat                  equ 00000D8h
+__strncmp                  equ 00000DCh
+__strncpy                  equ 00000E0h
+__strpbrk                  equ 00000E4h
+__strrchr                  equ 00000E8h
+__strspn                   equ 00000ECh
+__strstr                   equ 00000F0h
+_strtok                    equ 00000F4h
+;_ret                      equ 00000F8h
+__bldiy                    equ 00000FCh
+__bshl                     equ 0000100h
+__bshru                    equ 0000104h
+__bstiy                    equ 0000108h
+__bstix                    equ 000010Ch
+__case                     equ 0000110h
+__case16                   equ 0000114h
+__case16D                  equ 0000118h
+__case24                   equ 000011Ch
+__case24D                  equ 0000120h
+__case8                    equ 0000124h
+__case8D                   equ 0000128h
+__frameset                 equ 000012Ch
+__frameset0                equ 0000130h
+__iand                     equ 0000134h
+__icmpzero                 equ 0000138h
+__idivs                    equ 000013Ch
+__idivu                    equ 0000140h
+__idvrmu                   equ 0000144h
+__ildix                    equ 0000148h
+__ildiy                    equ 000014Ch
+__imul_b                   equ 0000150h
+__imulu                    equ 0000154h
+__imuls                    equ 0000158h
+__indcall                  equ 000015Ch
+__ineg                     equ 0000160h
+__inot                     equ 0000164h
+__ior                      equ 0000168h
+__irems                    equ 000016Ch
+__iremu                    equ 0000170h
+__ishl                     equ 0000174h
+__ishl_b                   equ 0000178h
+__ishrs                    equ 000017Ch
+__ishrs_b                  equ 0000180h
+__ishru                    equ 0000184h
+__ishru_b                  equ 0000188h
+__istix                    equ 000018Ch
+__istiy                    equ 0000190h
+__itol                     equ 0000194h
+__ixor                     equ 0000198h
+__ladd                     equ 000019Ch
+__ladd_b                   equ 00001A0h
+__land                     equ 00001A4h
+__lcmps                    equ 00001A8h
+__lcmpu                    equ 00001ACh
+__lcmpzero                 equ 00001B0h
+__ldivs                    equ 00001B4h
+__ldivu                    equ 00001B8h
+__ldvrmu                   equ 00001BCh
+__lldix                    equ 00001C0h
+__lldiy                    equ 00001C4h
+__lmuls                    equ 00001C8h
+__lmulu                    equ 00001CCh
+__lneg                     equ 00001D0h
+__lnot                     equ 00001D4h
+__lor                      equ 00001D8h
+__lrems                    equ 00001DCh
+__lremu                    equ 00001E0h
+__lshl                     equ 00001E4h
+__lshrs                    equ 00001E8h
+__lshru                    equ 00001ECh
+__lstix                    equ 00001F0h
+__lstiy                    equ 00001F4h
+__lsub                     equ 00001F8h
+__lxor                     equ 00001FCh
+__sand                     equ 0000200h
+__scmpzero                 equ 0000204h
+__sdivs                    equ 0000208h
+__sdivu                    equ 000020Ch
+__seqcase                  equ 0000210h
+__seqcaseD                 equ 0000214h
+__setflag                  equ 0000218h
+__sldix                    equ 000021Ch
+__sldiy                    equ 0000220h
+__smuls                    equ 0000224h
+__smulu                    equ 0000228h
+__sneg                     equ 000022Ch
+__snot                     equ 0000230h
+__sor                      equ 0000234h
+__srems                    equ 0000238h
+__sremu                    equ 000023Ch
+__sshl                     equ 0000240h
+__sshl_b                   equ 0000244h
+__sshrs                    equ 0000248h
+__sshrs_b                  equ 000024Ch
+__sshru                    equ 0000250h
+__sshru_b                  equ 0000254h
+__sstix                    equ 0000258h
+__sstiy                    equ 000025Ch
+__stoi                     equ 0000260h
+__stoiu                    equ 0000264h
+__sxor                     equ 0000268h
+__fppack                   equ 000026Ch
+__fadd                     equ 0000270h
+__fcmp                     equ 0000274h
+__fdiv                     equ 0000278h
+__ftol                     equ 000027Ch
+__ultof                    equ 0000280h
+__ltof                     equ 0000284h
+__fmul                     equ 0000288h
+__fneg                     equ 000028Ch
+__fsub                     equ 0000290h
+FLTMAX                     equ 0000294h ; not a routine
+_sqrtf                     equ 0000298h
+__frbtof                   equ 000029Ch
+__frftob                   equ 00002A0h
+__frftoub                  equ 00002A4h
+__frftoi                   equ 00002A8h
+__frftoui                  equ 00002ACh
+__frftos                   equ 00002B0h
+__frftous                  equ 00002B4h
+__fritof                   equ 00002B8h
+__fruitof                  equ 00002BCh
+__frstof                   equ 00002C0h
+__frubtof                  equ 00002C4h
+__frustof                  equ 00002C8h
+;                          equ 00002CCh
+;                          equ 00002D0h
+_WriteFlashByte            equ 00002D4h ; byte is in B
+_EraseFlash                equ 00002D8h ; clears out all nonessential sectors
+_EraseFlashSector          equ 00002DCh ; sector is in A
+_WriteFlash                equ 00002E0h
+_WriteFlashByteDuplicate   equ 00002E4h ; no difference from _WriteFlashByte
+_WriteFlashA               equ 00002E8h ; byte is in A, not B
+;                          equ 00002ECh ; lots of writes/erases involving sectors 3Bh/3Fh
+_ClrHeap                   equ 00002F0h
+_CpyToHeap                 equ 00002F4h
+_ChkHeapTop                equ 00002F8h
+_ExecuteInRAM              equ 00002FCh
+_ExecuteInRAMDup           equ 0000300h
+_ExecuteInRAMDup2          equ 0000304h
+;                          equ 0000308h
+_GetNextFlashEntrySize     equ 000030Ch
+;                          equ 0000310h
+_FindFlashEntryType        equ 0000314h
+;                          equ 0000318h
+;                          equ 000031Ch
+_GetNextFlashEntrySizeDup  equ 0000320h
+_GetFlashEntrySize         equ 0000324h
+_SkipFlashEntry            equ 0000328h
+_SkipNextFlashEntry        equ 000032Ch
+;                          equ 0000330h
+_WriteFlashUnsafe          equ 0000334h
+;                          equ 0000338h
+;                          equ 000033Ch
+_GetSerial                 equ 0000340h ; OP4 contains first 5 bytes of serial, B=5 (same as 83+)
+;                          equ 0000344h
+_ATimesDE                  equ 0000348h ; HL = DE*A
+_DivHLByE                  equ 000034Ch ; DE = HL/E
+_DivHLByDE                 equ 0000350h ; DE = HL/DE
+;                          equ 0000354h
+;                          equ 0000358h
+;                          equ 000035Ch
+;                          equ 0000360h
+;                          equ 0000364h
+_FindAppHeaderSubField     equ 0000368h
+_FindSimpleGroupedField    equ 000036Ch
+_FindAppHeaderTimestamp    equ 0000370h
+_boot_ClearVRAM            equ 0000374h
+_boot_PutS                 equ 0000378h
+;                          equ 000037Ch
+;                          equ 0000380h
+_boot_InitializeHardware   equ 0000384h
+_boot_TurnOffHardware      equ 0000388h
+_MakeColCmd                equ 000038Ch
+_boot_NewLine              equ 0000390h
+_PutBootVersion            equ 0000394h
+_DrawSectorProtectionTable equ 0000398h
+_boot_Set6MHzMode          equ 000039Ch
+_boot_Set48MHzMode         equ 00003A0h
+_boot_Set6MHzModeI         equ 00003A4h
+_boot_Set48MHzModeI        equ 00003A8h
+_CheckHardware             equ 00003ACh
+_GetBatteryStatus          equ 00003B0h
+_WaitShort                 equ 00003B4h
+_WaitLong                  equ 00003B8h
+;                          equ 00003BCh
+;                          equ 00003C0h
+;                          equ 00003C4h
+;                          equ 00003C8h
+_USBBusPowered             equ 00003CCh
+_KeypadScan                equ 00003D0h
+_KeypadScanFull            equ 00003D4h
+;_ret                      equ 00003D8h
+;_ret                      equ 00003DCh
+_MarkOSInvalid             equ 00003E0h
+_boot_USBBusPowered        equ 00003E4h
+_boot_USBSelfPowered       equ 00003E8h
+;                          equ 00003ECh
+;                          equ 00003F0h
+;                          equ 00003F4h
+;                          equ 00003F8h
+;                          equ 00003FCh
+;                          equ 0000400h
+;                          equ 0000404h
+;                          equ 0000408h
+;                          equ 000040Ch
+;                          equ 0000410h
+;                          equ 0000414h
+;                          equ 0000418h
+;                          equ 000041Ch
+;                          equ 0000420h
+;                          equ 0000424h
+;                          equ 0000428h
+;                          equ 000042Ch
+;                          equ 0000430h
+;                          equ 0000434h
+;                          equ 0000438h
+;                          equ 000043Ch
+;                          equ 0000440h
+;                          equ 0000444h
+;                          equ 0000448h
+;                          equ 000044Ch
+;                          equ 0000450h
+;                          equ 0000454h
+;                          equ 0000458h
+;                          equ 000045Ch
+_MarkOSValid               equ 0000460h
+;                          equ 0000464h
+;                          equ 0000468h
+;                          equ 000046Ch
+;                          equ 0000470h
+;                          equ 0000474h
+;                          equ 0000478h
+;                          equ 000047Ch
+;                          equ 0000480h
+;                          equ 0000484h
+;                          equ 0000488h
+;                          equ 000048Ch
+;                          equ 0000490h
+;                          equ 0000494h
+;                          equ 0000498h
+;                          equ 000049Ch
+;                          equ 00004A0h
+;                          equ 00004A4h
+;                          equ 00004A8h
+;                          equ 00004ACh
+;                          equ 00004B0h
+;                          equ 00004B4h
+;                          equ 00004B8h
+;                          equ 00004BCh
+;                          equ 00004C0h
+;                          equ 00004C4h
+;                          equ 00004C8h
+;                          equ 00004CCh
+;                          equ 00004D0h
+;                          equ 00004D4h
+;                          equ 00004D8h
+;                          equ 00004DCh
+;                          equ 00004E0h
+;                          equ 00004E4h
+;                          equ 00004E8h
+;                          equ 00004ECh
+;                          equ 00004F0h
+;                          equ 00004F4h
+_boot_ResetTimer3          equ 00004F8h
+;                          equ 00004FCh
+;                          equ 0000500h
+;                          equ 0000504h
+;                          equ 0000508h
+;                          equ 000050Ch
+;                          equ 0000510h
+;                          equ 0000514h
+;                          equ 0000518h
+;                          equ 000051Ch
+_boot_SetTimersControl     equ 0000520h
+_boot_GetTimersControl     equ 0000524h
+_boot_SetTimersInterrupt   equ 0000528h
+_boot_GetTimersInterrupt   equ 000052Ch
+_boot_SetTimersInterruptM  equ 0000530h
+_boot_GetTimersInterruptM  equ 0000534h
+_boot_SetTimer1Counter     equ 0000538h
+_boot_GetTimer1Counter     equ 000053Ch
+_boot_SetTimer1ReloadValue equ 0000540h
+_boot_GetTimer1ReloadValue equ 0000544h
+_boot_SetTimer1MatchValue1 equ 0000548h
+_boot_GetTimer1MatchValue1 equ 000054Ch
+_boot_SetTimer1MatchValue2 equ 0000550h
+_boot_GetTimer1MatchValue2 equ 0000554h
+_boot_SetTimer2Counter     equ 0000558h
+_boot_GetTimer2Counter     equ 000055Ch
+_boot_SetTimer2ReloadValue equ 0000560h
+_boot_GetTimer2ReloadValue equ 0000564h
+_boot_SetTimer2MatchValue1 equ 0000568h
+_boot_GetTimer2MatchValue1 equ 000056Ch
+_boot_SetTimer2MatchValue2 equ 0000570h
+_boot_GetTimer2MatchValue2 equ 0000574h
+_CheckIfEmulated           equ 0000578h
+_boot_GetOnInt             equ 000057Ch
+_boot_RTCIntHandler        equ 0000580h
+_boot_InitializeRTC        equ 0000584h
+_boot_GetRTCInitStatus     equ 0000588h
+_boot_EnableRTC            equ 000058Ch
+_boot_DisableRTC           equ 0000590h
+_boot_SetTime24Hours       equ 0000594h
+;                          equ 0000598h
+;                          equ 000059Ch
+_boot_AckAlarmInt          equ 00005A0h
+;                          equ 00005A4h
+_boot_WriteRTCTime         equ 00005A8h
+_boot_GetRTCTime12Hour     equ 00005ACh
+_boot_GetRTCTime           equ 00005B0h
+_boot_SetRTCTime           equ 00005B4h
+_boot_GetRTCAlarm          equ 00005B8h
+_boot_SetRTCAlarmSafe      equ 00005BCh
+_boot_CheckAlarmInt        equ 00005C0h
+_boot_SetAlarmInt          equ 00005C4h
+_boot_IsRTCAfternoon       equ 00005C8h
+_boot_GetRTCDay            equ 00005CCh
+_boot_SetAlarmIntSafe      equ 00005D0h
+_boot_SetRTCAlarm          equ 00005D4h
+_boot_EnableRTCInt         equ 00005D8h
+_boot_DisableRTCInt        equ 00005DCh
+_boot_SetRTCCallback       equ 00005E0h
+;                          equ 00005E4h
+;                          equ 00005E8h
+_boot_SetRTCFlags          equ 00005ECh
+;                          equ 00005F0h
+_CheckEmulationBit         equ 00005F4h
+_boot_SetUSBDMAAddress     equ 00005F8h
+;                          equ 00005FCh
+_boot_SectorsBegin         equ 0000600h
+;                          equ 0000604h
+;                          equ 0000608h
+;                          equ 000060Ch
+;                          equ 0000610h
+;                          equ 0000614h
+;                          equ 0000618h
+;                          equ 000061Ch
+;                          equ 0000620h
+;                          equ 0000624h
+;                          equ 0000628h
+;                          equ 000062Ch
+;                          equ 0000630h
+;                          equ 0000634h
+;                          equ 0000638h
+;                          equ 000063Ch
 
 ;RAM Equates
 ;--------------------------------
-flags			equ 0D00080h		; Location of OS Flags (+-80h)
-textFlagsLoc		equ 0D00085h
-apdFlagsLoc		equ 0D00088h		; Location of APD Flags
+ramStart		equ 0D00000h
+flags			equ 0D00080h		; location of OS Flags (+-80h)
+textFlagsLoc		equ 0D00085h            ; location of Text Flags
+apdFlagsLoc		equ 0D00088h		; location of APD Flags
+appFlagsLoc		equ 0D0008Dh		; location of App Flags
+rclFlagsLoc		equ 0D0008Eh            ; location of RCLQueue Flags
+shiftFlagsLoc		equ 0D00092h            ; location of Shifting Flags
+mathprintFlagsLoc	equ 0D000C4h		; location of MathPrint Flags
 
-appData			equ 0D00429h		; Used for OFFSCRPT and ONSCRPT
-;D0053F	3 byte scrap
-kbdScanCode		equ 0D00587h		; Scancode returned by GetCSC
+strtokPtr		equ 0D000FFh            ; location of pointer used by C strtok
+printRoutine		equ 0D00108h            ; stores pointer to printing routines (3 scrap)
+
+cellOverrideAddr	equ 0D00166h
+curCell			equ 0D0016Eh            ; selected list cell
+
+SmallEditCancelParse	equ 0D001A4h
+
+penRowBackup		equ 0D003E3h		; backup of penRow
+mathprintBackup		equ 0D003E6h		; backup of mathprint flags
+winLeftEdgeBackup	equ 0D003D2h		; backup of winLeftEdge
+catalogCurrentBackup	equ 0D003D3h		; backup of catalogCurrent
+menuCurrentSubBackup	equ 0D003D6h		; backup of menuCurrentSub
+menuNumMenusBackup	equ 0D003D8h		; backup of menuNumMenus
+menuCurrentBackup	equ 0D003DAh		; backup of menuCurrent
+cxCurAppBackup		equ 0D003DDh		; backup of cxCurApp
+
+curUnderBackup		equ 0D003E8h		; backup of curUnder
+
+appData			equ 0D00429h		; used for OFFSCRPT and ONSCRPT
+
+arcPtrEnd		equ 0D0052Fh
+
+tempSP			equ 0D0053Fh		; 3 byte scrap
+
+arcInfo			equ 0D00543h
+savedArcInfo		equ 0D0055Bh
+appBank_jump		equ 0D00584h
+
+kbdScanCode		equ 0D00587h		; scancode returned by GetCSC
 kbdLGSC			equ 0D00588h
 kbdPSC			equ 0D00589h
 kbdWUR			equ 0D0058Ah
@@ -2145,17 +2564,19 @@ apdTimer		equ 0D00591h
 curTime			equ 0D00594h
 curRow			equ 0D00595h
 curCol			equ 0D00596h
-
+curOffset		equ 0D00598h
 curUnder		equ 0D00599h
-curY			equ 0D0059Ch
+curYCol			equ 0D0059Ch
 curType			equ 0D0059Fh
 curXRow			equ 0D005A0h
-
+prevDData		equ 0D005A1h
 lFont_record		equ 0D005A4h
 sFont_record		equ 0D005C5h
 tokVarPtr		equ 0D005E9h
-;D005F5
-;D005F6
+tokLen			equ 0D005ECh
+
+indicCounter		equ 0D005F6h
+
 OP1			equ 0D005F8h
 OP1M			equ 0D005FAh
 OP2			equ 0D00603h
@@ -2171,6 +2592,10 @@ OP6			equ 0D0062Fh
 OP6M			equ 0D00631h
 OP6EXT			equ 0D00638h
 
+progToEdit		equ 0D0065Bh
+nameBuff		equ 0D00663h
+
+equ_edit_save		equ 0D0066Eh
 iMathPtr1		equ 0D0066Fh
 iMathPtr2		equ 0D00672h
 iMathPtr3		equ 0D00675h
@@ -2178,12 +2603,6 @@ iMathPtr4		equ 0D00678h
 iMathPtr5		equ 0D0067Bh
 asm_data_ptr1		equ 0D0067Eh
 asm_data_ptr2		equ 0D00681h
-
-onSP			equ 0D007FAh
-promptRow		equ 0D00800h
-promptCol		equ 0D00802h
-promptIns		equ 0D00803h
-promptShift		equ 0D00804h
 
 textShadow		equ 0D006C0h
 textShadCur		equ 0D007C4h
@@ -2193,14 +2612,50 @@ textShadIns		equ 0D007C9h
 cxMain			equ 0D007CAh
 cxPPutAway		equ 0D007CDh
 cxPutAway		equ 0D007D0h
+cxReDisp		equ 0D007D3h
 cxErrorEP		equ 0D007D6h
 cxSizeWind		equ 0D007D9h
+cxPage			equ 0D007DCh
+cxCurApp		equ 0D007E0h
+cxPrev			equ 0D007E2h ; 23 bytes are shadows of cxMain through cxCurApp and appFlags
+cxAppReturn		equ 0D007EBh
+
+onSP			equ 0D007FAh
+
+promptRow		equ 0D00800h
+promptCol		equ 0D00801h
+promptIns		equ 0D00802h
+promptShift		equ 0D00803h
+promptRet		equ 0D00804h
+promptValid		equ 0D00807h
+
+varType			equ 0D00813h
+varCurrent		equ 0D00814h
+varClass		equ 0D0081Ch
+
+catalogCurrent		equ 0D0081Dh ; word at this location starting with 6007h corresponds to what is highlighted in catalog
+catalogCurrentBackupM	equ 0D00820h ; backup of catalogCurrent for menus
+menuAppDepth		equ 0D00823h
+menuCurrent		equ 0D00824h
+menuCurrentSub		equ 0D00825h ; holds current submenu index
+menuSelected		equ 0D00826h ; holds currently selected item in current submenu
+menuNumMenus		equ 0D00827h ; holds number of submenus for this menu
+menuNumItems		equ 0D00828h ; holds number of items in this submenu
+appFlagsBackup		equ 0D00829h ; iy+appFlags backup for menu stuff
+cursorFlagsBackup	equ 0D0082Ah ; iy+cursorFlags backup for menu stuff
+curGStyleBackup		equ 0D0082Bh ; curGStyle backup for menu stuff
+graphFlagsBackup	equ 0D0082Ch ; iy+graphFlags backup for menu stuff
+
+ioPrompt		equ 0D00879h
+ioFlag			equ 0D00894h
+sndRecState		equ 0D00896h
+ioErrState		equ 0D00897h
+ioData			equ 0D008A1h
 
 penCol			equ 0D008D2h
 penRow			equ 0D008D5h
 rclQueue		equ 0D008D6h
 rclQueueEnd		equ 0D008D9h
-
 errNo			equ 0D008DFh
 errSP			equ 0D008E0h
 errOffset		equ 0D008E3h
@@ -2209,6 +2664,49 @@ statVarsOffset		equ 0D0117Fh
 asm_prgm_size		equ 0D0118Ch
 bstCounter		equ 0D0118Fh
 statVars		equ 0D01191h
+infVars			equ 0D013A4h
+infVar1			equ 0D013ADh
+infVar2			equ 0D013B6h
+infVar3			equ 0D013BFh
+infVar4			equ 0D013C8h
+infVar5			equ 0D013D1h
+infVar6			equ 0D013DAh
+infVar7			equ 0D013E3h
+infVar8			equ 0D013ECh
+infVar9			equ 0D013F5h
+infVar10		equ 0D013FEh
+infVar11		equ 0D01407h
+infVar12		equ 0D01410h
+infVar13		equ 0D01419h
+infVar14		equ 0D01422h
+infVar15		equ 0D0142Bh
+infVar16		equ 0D01434h
+infVar17		equ 0D0143Dh
+infVar18		equ 0D01446h
+infVar19		equ 0D0144Fh
+infVar20		equ D01458h
+
+curGStyle		equ 0D0146Dh
+curGY			equ 0D0146Eh
+curGY2			equ 0D01470h
+curGX2			equ 0D01471h ; currently selected equation while graphing
+freeSaveY		equ 0D01472h
+freeSaveX		equ 0D01474h
+
+XOffset			equ 0D014FAh
+YOffset			equ 0D014FCh
+lcdTallP		equ 0D014FDh
+pixWideP		equ 0D014FEh
+pixWide_m_1		equ 0D014FFh
+pixWide_m_2		equ 0D01501h
+lastEntryStkPtr		equ 0D01508h ; pointer to the next available byte in the entry stack
+lastEntryStk		equ 0D0150Bh ; the start of entry stack (note last entry is not in the stack, it is in the program '#'.)  This is a stack of strings.  first 2 bytes are length, followed by string. 2nd from last entry is first in this stack.
+numLastEntries		equ 0D01D0Bh ; number of entries you can back-track through minus one
+currLastEntry		equ 0D01D0Ch ; counter used by OS to keep track of which entry was just displayed by pressing 2nd+enter
+
+curPlotNumber		equ 0D01D45h
+
+curInc			equ 0D01D49h
 
 uXmin			equ 0D01D61h
 uXmax			equ 0D01D6Ah
@@ -2284,18 +2782,24 @@ basic_prog		equ 0D0230Eh
 begPC			equ 0D02317h
 curPC			equ 0D0231Ah
 endPC			equ 0D0231Dh
+numArguments		equ 0D02320h
 
 cmdShadow		equ 0D0232Dh
 cmdShadCur		equ 0D02431h
 cmdShadAlph		equ 0D02433h
 cmdShadIns		equ 0D02435h
 cmdCursor		equ 0D02434h
-
 editTop			equ 0D02437h
 editCursor		equ 0D0243Ah
 editTail		equ 0D0243Dh
 editBtm			equ 0D02440h
 
+currListHighlight	equ 0D0244Bh ; word, this is offset into list for currently-highlighted element in list editor
+editSym			equ 0D0244Eh ; pointer to data of variable being edited
+editDat			equ 0D02451h ; pointer to data of variable being edited
+
+currListPageOffset	equ 0D02457h
+currList		equ 0D02458h
 listName1		equ 0D02459h
 listName2		equ 0D0245Eh
 listName3		equ 0D02463h
@@ -2377,17 +2881,16 @@ winRow			equ 0D0250Bh
 winCol			equ 0D0250Dh
 fmtDigits		equ 0D0250Fh
 fmtString		equ 0D02510h
-
 fmtLeft			equ 0D02561h
 fmtIndex		equ 0D02564h
 fmtMatSym		equ 0D02567h
 fmtMatMem		equ 0D0256Ah
-EQS			equ 0D0256Dh
 
 tSymPtr1		equ 0D0257Bh
 tSymPtr2		equ 0D0257Eh
 chkDelPtr3		equ 0D02581h
 chkDelPtr4		equ 0D02584h
+
 tempMem			equ 0D02587h
 FPSbase			equ 0D0258Ah
 FPS			equ 0D0258Dh
@@ -2397,9 +2900,18 @@ pTempCnt		equ 0D02596h
 cleanTmp		equ 0D02598h
 pTemp			equ 0D0259Ah
 progPtr			equ 0D0259Dh
-newDataPtr		equ 0D025A0h 
-pagedGetPtr		equ 0D025A3h	; 2 byte scrap (unstable)
+newDataPtr		equ 0D025A0h
+pagedGetPtr		equ 0D025A3h ; 3 byte scrap (unstable)
+pagedPutPtr		equ 0D025A6h
 
+appErr1			equ 0D025A9h ; use with _ErrCustom1
+appErr2			equ 0D025B6h ; use with _ErrCustom2
+
+arcPtr			equ 0D025C8h
+appRawKeyHandle		equ 0D025CBh
+customHeight		equ 0D025CEh
+localLanguage		equ 0D025CFh
+hookExecTemp		equ 0D025D2h
 cursorHookPtr		equ 0D025D5h
 libraryHookPtr		equ 0D025D8h
 rawKeyHookPtr		equ 0D025DBh
@@ -2411,7 +2923,7 @@ yEqualsHookPtr		equ 0D025EAh
 fontHookPtr		equ 0D025EDh
 regraphHookPtr		equ 0D025F0h
 graphicsHookPtr		equ 0D025F3h
-traceHookPtr		equ 0D025E6h
+traceHookPtr		equ 0D025F6h
 parserHookPtr		equ 0D025F9h
 appChangeHookPtr	equ 0D025FCh
 catalog1HookPtr		equ 0D025FFh
@@ -2422,7 +2934,9 @@ catalog2HookPtr		equ 0D0260Bh
 tokenHookPtr		equ 0D0260Eh
 localizeHookPtr		equ 0D02611h
 silentLinkHookPtr	equ 0D02614h
-USBActivityHookPtr	equ 0D02617h
+USBActivityHookPtr	equ 0D0261Ah
+
+tempFreeArc		equ 0D02655h ; set after _ArcChk call
 
 textBGcolor		equ 0D02688h
 textFGcolor		equ 0D0268Ah
@@ -2433,22 +2947,34 @@ drawColorCode		equ 0D026AEh
 
 keyToStrRam		equ 0D026EAh
 
-statusBarBGColor	equ 0D02ACCh
+sEditMonSp		equ 0D02706h
+bpSave			equ 0D02709h
+
+graphBGColor		equ 0D02A98h
+
 fillRectColor		equ 0D02AC0h
-;D02A28
-scrapMem		equ 0D02AD7h	; 3 byte scrap (unstable)
+statusBarBGColor	equ 0D02ACCh
+
+scrapMem		equ 0D02AD7h ; 3 byte scrap (unstable)
+
+gCurYLoc		equ 0D02FD6h ; current y pixel location for C functions
 
 ;safeRAM Locations
 ;---------------------------------------------
 ;appData		equ 0D00429h ; 256 bytes
+;textShadow		equ 0D006C0h ; 260 bytes	; Call _ClrTxtShdw to put spaces in here
+;cmdShadow		equ 0D0232Dh ; 260 bytes
 pixelShadow		equ 0D031F6h ; 8400 bytes
 pixelShadow2		equ 0D052C6h ; 8400 bytes
 cmdPixelShadow		equ 0D07396h ; 8400 bytes
 plotSScreen		equ 0D09466h ; 21945 bytes	; Set GraphDraw Flag to redraw graph if used
 saveSScreen		equ 0D0EA1Fh ; 21945 bytes	; Set GraphDraw Flag to redraw graph if used
-;textShadow		equ 0D006C0h ; 260 bytes	; Call _ClrTxtShdw to put spaces in here
-;cmdShadow		equ 0D0232Dh ; 260 bytes
 cursorImage		equ 0E30800h ; 1020 bytes
+
+;semiSafeRAM Locations
+;---------------------------------------------
+tempStr			equ 0D17731h ; unknown size
+ramCode			equ 0D18C7Ch ; 1023 bytes       ; used by the bootcode when working with flash
 
 ;RAM Equates Continued
 ;---------------------------------------------
@@ -2456,13 +2982,6 @@ userMem			equ 0D1A881h
 symTable		equ 0D3FFFFh
 vRam			equ 0D40000h
 vRamEnd			equ 0D65800h
-
-; BOOTCode Calls Cont.
-;---------------------------------------------
-_DETimesA		equ 0000348h			; HL = DE*A
-_HLDivE			equ 000034Ch			; DE = HL/E
-_HLDivDE		equ 0000350h			; DE = HL/DE
-_DrawBootCodeVer	equ 0000394h			; Draws "BOOTCODE 5.0.0.0089" on top row
 
 ;Ports
 ;--------------------------------
@@ -2477,8 +2996,16 @@ mpLcdCtrlRange		equ 0E30000h
 pLcdBase		equ 4010h
 mpLcdBase		equ 0E30010h
 
+pLcdImsc		equ 401Ch
+mpLcdImsc		equ 0E3001Ch
 pLcdCtrl		equ 4018h
 mpLcdCtrl		equ 0E30018h
+pLcdRis			equ 4020h
+mpLcdRis		equ 0E30020h
+pLcdIcr			equ 4028h
+mpLcdIcr		equ 0E30028h
+
+bitLcdLnBuim		equ 04h
 
 lcdEn			equ 01h
 lcdTft			equ 20h
@@ -2518,6 +3045,111 @@ mpLcdCrsrXy		equ 0E30C10h
 pLcdCrsrClip		equ 4C14h
 mpLcdCrsrClip		equ 0E30C14h
 
+;Timer Ports
+;-----------------------------------
+tmrRange		equ 00h
+pTmrRange		equ 7000h
+mpTmrRange		equ 0F20000h
+
+tmr1Counter		equ 00h
+pTmr1Counter		equ 7000h
+mpTmr1Counter		equ 0F20000h
+tmr1Load		equ 04h
+pTmr1Load		equ 7004h
+mpTmr1Load		equ 0F20004h
+tmr1Match1		equ 08h
+pTmr1Match1		equ 7008h
+mpTmr1Match1		equ 0F20008h
+tmr1Match2		equ 0Ch
+pTmr1Match2		equ 700Ch
+mpTmr1Match2		equ 0F2000Ch
+
+tmr2Counter		equ 10h
+pTmr2Counter		equ 7010h
+mpTmr2Counter		equ 0F20010h
+tmr2Load		equ 14h
+pTmr2Load		equ 7014h
+mpTmr2Load		equ 0F20014h
+tmr2Match1		equ 18h
+pTmr2Match1		equ 7018h
+mpTmr2Match1		equ 0F20018h
+tmr2Match2		equ 1Ch
+pTmr2Match2		equ 701Ch
+mpTmr2Match2		equ 0F2001Ch
+
+tmr3Counter		equ 20h
+pTmr3Counter		equ 7020h
+mpTmr3Counter		equ 0F20020h
+tmr3Load		equ 24h
+pTmr3Load		equ 7024h
+mpTmr3Load		equ 0F20024h
+tmr3Match1		equ 28h
+pTmr3Match1		equ 7028h
+mpTmr3Match1		equ 0F20028h
+tmr3Match2		equ 2Ch
+pTmr3Match2		equ 702Ch
+mpTmr3Match2		equ 0F2002Ch
+
+tmrCtrl			equ 30h
+pTmrCtrl		equ 7030h
+mpTmrCtrl		equ 0F20030h
+
+bTmr1Enable		equ 0
+tmr1Enable		equ 1<<bTmr1Enable
+bTmr1Crystal		equ 1
+tmr1Crystal		equ 1<<bTmr1Crystal
+bTmr1IntOverflow	equ 2
+tmr1IntOverflow		equ 1<<bTmr1IntOverflow
+bTmr2Enable		equ 3
+tmr2Enable		equ 1<<bTmr2Enable
+bTmr2Crystal		equ 4
+tmr2Crystal		equ 1<<bTmr2Crystal
+bTmr2IntOverflow	equ 5
+tmr2IntOverflow		equ 1<<bTmr2IntOverflow
+bTmr3Enable		equ 6
+tmr3Enable		equ 1<<bTmr3Enable
+bTmr3Crystal		equ 7
+tmr3Crystal		equ 1<<bTmr3Crystal
+bTmr3IntOverflow	equ 8
+tmr3IntOverflow		equ 1<<bTmr3IntOverflow
+bTmr1CountUp		equ 9
+tmr1CountUp		equ 1<<bTmr1CountUp
+bTmr2CountUp		equ 10
+tmr2CountUp		equ 1<<bTmr2CountUp
+bTmr3CountUp		equ 11
+tmr3CountUp		equ 1<<bTmr3CountUp
+
+tmrIntStatus		equ 34h
+pTmrIntStatus		equ 7034h
+mpTmrIntStatus		equ 0F20034h
+
+bTmr1IntMatch1		equ 0
+tmr1IntMatch1		equ 1<<bTmr1IntMatch1
+bTmr1IntMatch2		equ 1
+tmr1IntMatch2		equ 1<<bTmr1IntMatch2
+;bTmr1IntOverflow	equ 2
+;tmr1IntOverflow	equ 1<<bTmr1IntOverflow
+bTmr2IntMatch1		equ 3
+tmr2IntMatch1		equ 1<<bTmr2IntMatch1
+bTmr2IntMatch2		equ 4
+tmr2IntMatch2		equ 1<<bTmr2IntMatch2
+;bTmr2IntOverflow	equ 5
+;tmr2IntOverflow	equ 1<<bTmr2IntOverflow
+bTmr3IntMatch1		equ 6
+tmr3IntMatch1		equ 1<<bTmr3IntMatch1
+bTmr3IntMatch2		equ 7
+tmr3IntMatch2		equ 1<<bTmr3IntMatch2
+;bTmr3IntOverflow	equ 8
+;tmr3IntOverflow	equ 1<<bTmr3IntOverflow
+
+tmrIntMask		equ 38h
+pTmrIntMask		equ 7038h
+mpTmrIntMask		equ 0F20038h
+
+tmrRevision		equ 3Ch
+pTmrRevision		equ 703Ch
+mpTmrRevision		equ 0F2003Ch
+
 ;RTC Ports
 ;-----------------------------------
 pRtcRange		equ 8000h
@@ -2527,168 +3159,6 @@ mpRtcRange		equ 0F30000h
 ;-----------------------------------
 pBlLevel		equ 0B024h
 mpBlLevel		equ 0F60024h
-
-; Boot Calls
-;-----------------------------------
-__getBootVerMajor	equ 0000080h
-__getHardwareVersion	equ 0000084h
-__getKeyID		equ 0000088h
-__getBootVerMinor	equ 000008Ch
-__getBootVerBuild	equ 0000090h
-			   ;0000094h ;outputs A to 0FFFEh and locks up, only on certain hardware revision?
-__longjmp		equ 0000098h
-__memchr		equ 000009Ch
-__memcmp		equ 00000A0h
-__memcpy		equ 00000A4h
-__memmove		equ 00000A8h
-__memset		equ 00000ACh
-__memclear		equ 00000B0h
-__setjmp		equ 00000B8h
-__sprintf		equ 00000BCh
-__strcat		equ 00000C0h
-__strchr		equ 00000C4h
-__strcmp		equ 00000C8h
-__strcpy		equ 00000CCh
-__strcspn		equ 00000D0h
-__strlen		equ 00000D4h
-__strncat		equ 00000D8h
-__strncmp		equ 00000DCh
-__strncpy		equ 00000E0h
-__strpbrk		equ 00000E4h
-__strrchr		equ 00000E8h
-__strspn		equ 00000ECh
-__strstr		equ 00000F0h
-__strtok		equ 00000F4h; Uses static 24-bit variable at 0D0FFFFh
-__DoNothing		equ 00000F8h
-__case			equ 0000110h
-__case16		equ 0000114h
-__case16D		equ 0000118h
-__case24		equ 000011Ch
-__case24D		equ 0000120h
-__case8			equ 0000124h
-__case8D		equ 0000128h
-__frameset0		equ 0000130h
-__frameset		equ 000012Ch
-__iand			equ 0000134h
-__icmpzero		equ 0000138h
-__idivs			equ 000013Ch
-__idivu			equ 0000140h
-__idvrmu		equ 0000144h
-__ildix			equ 0000148h
-__ildiy			equ 000014Ch
-__imul_b		equ 0000150h
-__imuls			equ 0000154h
-__imulu			equ 0000158h
-__indcall		equ 000015Ch
-__ineg			equ 0000160h
-__sneg			equ 000022Ch
-__inot			equ 0000164h
-__snot			equ 0000230h
-__ior			equ 0000168h
-__irems			equ 000016Ch
-__iremu			equ 0000170h
-__ishl_b		equ 0000178h
-__ishl			equ 0000174h
-__ishrs_b		equ 0000180h
-__ishrs			equ 000017Ch
-__ishru_b		equ 0000188h
-__ishru			equ 0000184h
-__istix			equ 000018Ch
-__istiy			equ 0000190h
-__itol			equ 0000194h
-__ixor			equ 0000198h
-__ladd_b		equ 00001A0h
-__ladd			equ 000019Ch
-__land			equ 00001A4h
-__lcmps			equ 00001A8h
-__lcmpu			equ 00001ACh
-__lcmpzero		equ 00001B0h
-__ldivs			equ 00001B4h
-__ldivu			equ 00001B8h
-__ldvrmu		equ 00001BCh
-__lldix			equ 00001C0h
-__lldiy			equ 00001C4h
-__lmuls			equ 00001C8h
-__lmulu			equ 00001CCh
-__lneg			equ 00001D0h
-__lnot			equ 00001D4h
-__lor			equ 00001D8h
-__lrems			equ 00001DCh
-__lremu			equ 00001E0h
-__lshl			equ 00001E4h
-__lshrs			equ 00001E8h
-__lshru			equ 00001ECh
-__bshru			equ 0000104h
-__bshl			equ 0000100h
-__bldiy			equ 00000FCh
-__bstiy			equ 0000108h
-__bstix			equ 000010Ch
-__lstix			equ 00001F0h
-__lstiy			equ 00001F4h
-__lsub			equ 00001F8h
-__lxor			equ 00001FCh
-__sand			equ 0000200h
-__scmp0			equ 0000204h
-__sdivs			equ 0000208h
-__sdivu			equ 000020Ch
-__seqcase		equ 0000210h
-__seqcaseD		equ 0000214h
-__setflag		equ 0000218h
-__sldix			equ 000021Ch
-__sldiy			equ 0000220h
-__smuls			equ 0000224h
-__smulu			equ 0000228h
-__sor			equ 0000234h
-__srems			equ 0000238h
-__sremu			equ 000023Ch
-__sshl_b		equ 0000244h
-__sshl			equ 0000240h
-__sshrs_b		equ 000024Ch
-__sshrs			equ 0000248h
-__sshru_b		equ 0000254h
-__sshru			equ 0000250h
-__sstix			equ 0000258h
-__sstiy			equ 000025Ch
-__stoi			equ 0000260h
-__stoiu			equ 0000264h
-__sxor			equ 0000268h
-			   ;00002D0h   ;checks something about field 80C0h in the OS header (value 0101h)
-__WriteAByte		equ 00002D4h
-__EraseFlash		equ 00002D8h
-__EraseFlashPage	equ 00002DCh
-__WriteFlash		equ 00002E0h
-__WriteAByte2		equ 00002E4h	;no difference from 00002D4h
-__WriteAByteA		equ 00002E8h	;byte is in A, not B
-			   ;00002ECh   ;lots of writes/erases involving sectors 3Bh/3Fh
-			   ;00002F0h   ;zeroes out 4KB at 0D1887Ch and writes 0D18C7Ch to start of it
-__WriteFlashUnsafe	equ 0000334h
-__DispStr		equ 0000378h
-__NewLine_Boot		equ 0000390h
-
-__fppack		equ 000026Ch
-__FLT_MAX		equ 0000294h	; Not A Routine
-__fadd			equ 0000270h
-__fcmp			equ 0000274h
-__fdiv			equ 0000278h
-__ftol			equ 000027Ch
-__ltof			equ 0000284h
-__fmul			equ 0000288h
-__fneg			equ 000028Ch
-__fsub			equ 0000290h
-__ultof			equ 0000280h
-__fsqrt			equ 0000298h
-__frbtof		equ 000029Ch
-__frftob		equ 00002A0h
-__frftoi		equ 00002A8h
-__frftos		equ 00002B0h
-__frftoub		equ 00002A4h
-__frftoui		equ 00002ACh
-__frftous		equ 00002B4h
-__fritof		equ 00002B8h
-__frstof		equ 00002C0h
-__frubtof		equ 00002C4h
-__fruitof		equ 00002BCh
-__frustof		equ 00002C8h
 
 ;Character Font Equates  
 ;-------------------------------------
@@ -5184,14 +5654,14 @@ E_MS			equ E_SS + FPLEN
 ioDelFlag		equ 0h
 inDelete		equ 0		;1 = DELETE SCREEN 
 
-trigFlags		equ 0h	;Trigonometry mode settings
-trigDeg			equ 2		;1=degrees, 0=radians
+trigFlags		equ 0h		;Trigonometry mode settings
+trigDeg			equ 2		;1 = degrees, 0=radians
 
-kbdFlags		equ 0h	;Keyboard scan
+kbdFlags		equ 0h		;Keyboard scan
 kbdSCR			equ 3		;1=scan code ready
 kbdKeyPress		equ 4		;1=key has been pressed
 
-doneFlags		equ 0h	;display "Done"
+doneFlags		equ 0h		;display "Done"
 donePrgm		equ 5		;1=display "Done" after prgm
 ;----------------------------------------------------------------------
 editFlags		equ 1h
@@ -5200,14 +5670,14 @@ editOpen		equ 2		;1=edit buffer is open
 ansFlags		equ 1
 AnsScroll		equ 3		;1=answer can scroll, seems must be reset in order to move about edit buffer
 
-monFlags		equ 1h	 ;monitor flags
+monFlags		equ 1h	 	;monitor flags
 monAbandon		equ 4		;1=don't start any long process in put away (#715)
 ;----------------------------------------------------------------------
-plotFlags		equ 2h	;plot generation flags
+plotFlags		equ 2h		;plot generation flags
 plotLoc 		equ 1		;0=bkup & display, 1=display only
 plotDisp		equ 2		;1=plot is in display, 0=text in display, this also indicates whether graph is being shown or not
 
-grfModeFlags		equ 2h	;graph mode settings
+grfModeFlags		equ 2h		;graph mode settings
 grfFuncM		equ 4		;1=function graph
 grfPolarM		equ 5		;1=polar graph
 grfParamM		equ 6		;1=parametric graph
@@ -5226,43 +5696,41 @@ grfNoCoord		equ 4		;0=display coordinates, 1=off
 grfNoAxis		equ 5		;0=axis, 1=no axis
 grfLabel		equ 6		;0=off, 1=axis label
 ;----------------------------------------------------------------------
-textFlags		equ 5h	;Text output flags
+textFlags		equ 5h		;Text output flags
 textEraseBelow		equ 1		;1=erase line below small char
 textScrolled		equ 2		;1=screen scrolled
 textInverse		equ 3		;1=display inverse bit-map
 textInsMode		equ 4		;0=overstrike, 1=insert mode
 ;----------------------------------------------------------------------
-ParsFlag		equ 6h	;PARSER flags
+ParsFlag		equ 6h		;PARSER flags
 ;----------------------------------------------------------------------
-ParsFlag2		equ 7h	;PARSER flags
+ParsFlag2		equ 7h		;PARSER flags
 numOP1			equ 0		;1=RESULT IN OP1, 0=NO RESULT
 ;----------------------------------------------------------------------
-newDispF		equ 8h	;Derivative mode flags
+newDispF		equ 8h		;Derivative mode flags
 preClrForMode		equ 0		;1=HELP BLINK ON MODE SCREEN
 allowProgTokens		equ 1		;1=allow programming tokens to be parsed in BASIC programs
+progExecuting		equ 1
 
-apdFlags		equ 8h	;Automatic power-down
+apdFlags		equ 8h		;Automatic power-down
 apdAble 		equ 2		;1=APD enabled
 apdRunning		equ 3		;1=APD clock running
 apdWarmStart		equ 4		;1=calculator is turning on from APD or power loss
 ;----------------------------------------------------------------------
 web_err_mask		equ 60h
 ;----------------------------------------------------------------------
-onFlags 		equ 9h	;on key flags
+onFlags 		equ 9h		;on key flags
 parseInput		equ 1		;1=parse input when done
 onRunning		equ 3		;1=calculator is running
 onInterrupt		equ 4		;1=on key interrupt request
 
-statFlags		equ 9h	;statistics flags
+statFlags		equ 9h		;statistics flags
 ;unknown		equ 5		;unknown
 statsValid		equ 6		;1=stats are valid
 ;----------------------------------------------------------------------
-fmtFlags		equ 0Ah	;numeric format flags
+fmtFlags		equ 0Ah		;numeric format flags
 fmtExponent		equ 0	 	;1=show exponent, 0=no exponent
 fmtEng			equ 1	 	;1=engineering notion, 0=scientific
-fmtHex			equ 2	 	;1=hexadecimal
-fmtOct			equ 3	 	;1=octal
-fmtBin			equ 4	 	;1=binary
 
 numMode			equ 0Ah
 fmtReal			equ 5
@@ -5272,31 +5740,25 @@ fmtPolar		equ 7
 realMode		equ 5
 rectMode		equ 6
 polarMode		equ 7
-;					;if Hex and Oct both = 1
-;					; then Bin=0 means >Frac
-;					; Bin=1 means >DMS
+
 fmtBaseMask		equ  00011100b	; mask to base flags
 fmtBaseShift		equ  2		; offset to base flags
-;
-;       CHECK IF THESE ARE USED BY NUMFORM,
-;
-;               	equ  6
-;               	equ  7
 ;----------------------------------------------------------------------
-fmtOverride		equ 0Bh	;copy of fmtFlags with conversion override
+fmtOverride		equ 0Bh		;copy of fmtFlags with conversion override
 ;----------------------------------------------------------------------
-fmtEditFlags		equ 0Ch	;numeric editing flags
+fmtEditFlags		equ 0Ch		;numeric editing flags
 fmtEdit			equ 0		;1=format number for editing
 
-curFlags		equ 0Ch	;Cursor
+curFlags		equ 0Ch		;Cursor
 curAble 		equ 2		;1=cursor flash is enabled
 curOn			equ 3		;1=cursor is showing
 curLock 		equ 4		;1=cursor is locked off
 
-cmdFlags		equ 0Ch	;command editor flags
+cmdFlags		equ 0Ch		;command editor flags
 cmdVirgin		equ 5		;1=nothing has been typed in cmd bfr
+cmdExec			equ 6           ;1=need to execute a command
 ;----------------------------------------------------------------------
-appFlags		equ 0Dh	;application flags
+appFlags		equ 0Dh		;application flags
 appWantIntrpt		equ 0		;1=want ON key interrupts
 appTextSave		equ 1		;1=save characters in textShadow
 appAutoScroll		equ 2		;1=auto-scroll text on last line
@@ -5315,32 +5777,31 @@ appCurGraphicF		equ 1<<appCurGraphic
 appCurWordF		equ 1<<appCurWord
 appExitF		equ 1<<appExit
 ;----------------------------------------------------------------------
-rclFlag			equ 0Eh	;OS recall queue flags
+rclFlag			equ 0Eh		;OS recall queue flags
 enableQueue		equ 7		;1 = enable recall queue
 ;----------------------------------------------------------------------
-seqFlags		equ 0Fh	;Sequential Graph flags
+seqFlags		equ 0Fh		;Sequential Graph flags
 webMode			equ 0		;0 = NORMAL SEQ MODE, 1 = WEB MODE
 webVert			equ 1
 sequv			equ 2		;U vs V
 seqvw			equ 3		;V vs W
 sequw			equ 4		;U vs W
 ;----------------------------------------------------------------------
-promptFlags		equ 11h	;prompt line flags
+promptFlags		equ 11h		;prompt line flags
 promptEdit		equ 0		;1=editing in prompt buffer
 ;----------------------------------------------------------------------
-indicFlags		equ 12h	;Indicator flags
+indicFlags		equ 12h		;Indicator flags
 indicRun		equ 0		;1=run indicator ON
 indicInUse		equ 1		;indicator save area in use=1, free=0 ;resetting will disable 2nd while in _getkey
-indicOnly		equ 2		;interrupt handler only checks run indicator
 
-shiftFlags		equ 12h	;[2nd] and [ALPHA] flags
+shiftFlags		equ 12h		;[2nd] and [ALPHA] flags
 shift2nd		equ 3		;1=[2nd] has been pressed
 shiftAlpha		equ 4		;1=[ALPHA] has been pressed
 shiftLwrAlph		equ 5		;1=lower case, 0=upper case
 shiftALock		equ 6		;1=alpha lock has been pressed
 shiftKeepAlph		equ 7		;1=cannot cancel alpha shift
 ;----------------------------------------------------------------------
-tblFlags		equ 13h	;table flags.
+tblFlags		equ 13h		;table flags.
 autoFill		equ 4		;1=prompt, 0=fillAuto
 autoCalc		equ 5		;1=prompt, 0=CalcAuto
 reTable			equ 6		;0=table is okay, 1=must recompute table.
@@ -5362,8 +5823,6 @@ saIndic			equ 1
 ;----------------------------------------------------------------------
 interruptFlags		equ 16h
 secondTimerEnabled	equ 0		;1 = second hardware timer enabled
-batteryFlags		equ 16h
-batteriesGood		equ 2		;1 = batteries good, I think this being reset will force the calc to shut off, used in USB error handler
 ;----------------------------------------------------------------------
 smartFlags		equ 17h
 smarter_mask		equ 3
@@ -5378,13 +5837,9 @@ grfExpr			equ 0		;set to hide expression while tracing
 ;----------------------------------------------------------------------
 statFlags2		equ 1Ah
 statDiagnosticsOn	equ 0		;1 = stat diagnostics on
+noDelStat		equ 2		;1 = don't delete stats
 ;----------------------------------------------------------------------
-linkFlags		equ 1Bh
-IDis95h			equ 1		;1 = link routines use machine ID 95h (CBL)
-IDis82h			equ 2		;1 = link routines use machine ID 82h (TI-82)
-IDis83h			equ 3		;1 = link routines use machine ID 83h (TI-83)
-IDis03h			equ 4		;1 = link routines use machine ID 03h (PC to TI-83)
-USBenabled		equ 5		;1 = use USB port first, or at least try to
+;linkFlags		equ 1Bh
 ;----------------------------------------------------------------------
 ;There is a flag 1Ch (stats-related).
 ;----------------------------------------------------------------------
@@ -5392,15 +5847,15 @@ USBenabled		equ 5		;1 = use USB port first, or at least try to
 ;----------------------------------------------------------------------
 ;There is a flag 1Eh.
 ;----------------------------------------------------------------------
-varTypeMask		equ 1Fh	;is this a flag byte? yes
+varTypeMask		equ 1Fh		;is this a flag byte? yes
 varGraphRef		equ 6
 ;----------------------------------------------------------------------
 graphFlags2		equ 1Fh
 splitOverride		equ 3		;0 = force full screen with ParseInp, or something
 ;----------------------------------------------------------------------
-asm_Flag1		equ 21h	;ASM CODING
-asm_Flag2		equ 22h	;ASM CODING
-asm_Flag3		equ 23h	;ASM CODING
+asm_Flag1		equ 21h		;ASM CODING
+asm_Flag2		equ 22h		;ASM CODING
+asm_Flag3		equ 23h		;NO LONGER AVAILABLE
 ;----------------------------------------------------------------------
 arcFlag			equ 24h
 checkBatteryLevelFirst	equ 0		;1 = check battery levels in Arc_Unarc first and throw error if low
@@ -5417,7 +5872,7 @@ lwrCaseActive		equ 3
 contextFlags		equ 25h
 nocxPutAway		equ 5		;1 = do not call cxPutAway routine
 ;----------------------------------------------------------------------
-groupFlags		equ 26h ;used temporarily in Arc_Unarc
+groupFlags		equ 26h		;used temporarily in Arc_Unarc
 inGroup			equ 1		;1 = IN GROUP CONTEXT
 noCompletionByte	equ 2		;1 = do not write 0FCh when calling Arc_Unarc, leave as 0FEh
 noDataWrite		equ 3		;1 = do not write data when calling Arc_Unarc, nor size bytes
@@ -5426,29 +5881,20 @@ writeSizeBytesOnly	equ 5		;1 = only write size bytes when calling Arc_Unarc
 ;There is a flag 27h.
 ;----------------------------------------------------------------------
 APIFlg			equ 28h
-appAllowContext		equ 0           ;App wants context changes to happen
-;1 set to ignore a key after returning from rawkeyhook
-;2 set to send this key back?
-;3
+appAllowContext		equ 0           ;app wants context changes to happen
+
 appRunning		equ 4		;app is currently running
-;5
-;6
 appRetKeyOff		equ 7		;1 = GetKey returns kOff when [2nd]+[ON] pressed
 ;----------------------------------------------------------------------
 apiFlg2			equ 29h
 ;----------------------------------------------------------------------
 apiFlg3			equ 2Ah
-;1 set means using small font?
 ;----------------------------------------------------------------------
 apiFlg4			equ 2Bh
 cellOverride		equ 1		;use cell override
 fullScrnDraw		equ 2		;DRAW INTO LAST ROW/COL OF SCREEN
 ;----------------------------------------------------------------------
-mouseFlag1		equ 2Ch
-;----------------------------------------------------------------------
-mouseFlag2		equ 2Dh ;might want to keep this always reset
-;----------------------------------------------------------------------
-xapFlag0		equ 2Eh	;external app flags, do not use 0,(iy+2Eh) (used by mouse routines)
+xapFlag0		equ 2Eh		;external app flags, do not use 0,(iy+2Eh) (used by mouse routines)
 xapFlag1		equ 2Fh
 xapFlag2		equ 30h
 xapFlag3		equ 31h
@@ -5458,7 +5904,7 @@ fracDrawLFont		equ 2
 fracTallLFont		equ 3
 customFont		equ 7
 ;----------------------------------------------------------------------
-hookflags1		equ 33h ;also scriptFlag, rclFlag2, backGroundLink
+hookflags1		equ 33h		;also scriptFlag, rclFlag2, backGroundLink
 alt_On			equ 0		;run ONSCRPT at startup
 alt_Off			equ 1		;run OFFSCRPT at shutdown
 useRclQueueEnd		equ 2		;1 = external mode
@@ -5467,16 +5913,16 @@ bPLinkOn		equ 4		;1 = link activity hook active
 enableKeyEcho		equ 5		;1 = sends keypresses back to connected calc as remote control packets (with GetCSC vs. GetKey codes...really dumb, TI)
 noTempDelete		equ 6		;1 = do not delete temporary programs at homescreen
 ;----------------------------------------------------------------------
-hookflags2		equ 34h ;also sysHookFlg
+hookflags2		equ 34h		;also sysHookFlg
 getCSCHookActive	equ 0		;1 = GetCSC hook active
 libraryHookActive	equ 1		;1 = library hook active
-;2 This is set in the OS, but never referenced and the code is never executed
+noHookActive		equ 2		;1 = same as 0; never used by OS
 homescreenHookActive	equ 4		;1 = homescreen hook active
 rawKeyHookActive	equ 5		;1 = raw key hook active
 catalog2HookActive	equ 6		;1 = catalog 2 hook active
 cursorHookActive	equ 7		;1 = cursor hook active
 ;----------------------------------------------------------------------
-hookflags3		equ 35h ;also sysHookFlg1
+hookflags3		equ 35h		;also sysHookFlg1
 tokenHookActive		equ 0		;1 = token hook active
 localizeHookActive	equ 1		;1 = localize hook active
 windowHookActive	equ 2		;1 = window hook active
@@ -5486,7 +5932,7 @@ fontHookActive		equ 5		;1 = font hook active
 regraphHookActive	equ 6		;1 = regraph hook active
 drawingHookActive	equ 7		;1 = drawing hook active
 ;----------------------------------------------------------------------
-hookflags4		equ 36h ;also sysHookFlag2
+hookflags4		equ 36h		;also sysHookFlag2
 traceHookActive		equ 0		;1 = trace hook active
 parserHookActive	equ 1		;1 = parser hook active
 appChangeHookActive	equ 2		;1 = app change hook active
@@ -5502,7 +5948,7 @@ silentLinkHookActive	equ 7		;1 = silent link hook active
 ;----------------------------------------------------------------------
 ;hookflags4Override	equ 39h		;set corresponding bit to kill iy+37h hook when executing app
 ;----------------------------------------------------------------------
-;hookflags5		equ 3Ah
+hookflags5		equ 3Ah
 usbActivityHookActive	equ 0		;1 = USB activity hook active
 ;----------------------------------------------------------------------
 plotFlag3		equ 3Ch  
@@ -5518,7 +5964,6 @@ silentLinkActive	equ 0		;1 = SE/84+ silent link is active
 extraHookFlags		equ 3Eh
 checkCatalog2HookVer	equ 3		;1 = check catalog 2 hook's version before executing it (and error or take other action if so)
 openLibActive		equ 4		;1 = OpenLib( was successfully called on a Flash application (ExecLib will error if zero)
-;5
 ;----------------------------------------------------------------------
 clockFlags		equ 3Fh
 notMDYMode		equ 0		;0 = M/D/Y format
@@ -5528,5 +5973,22 @@ inAfternoon		equ 3		;1 = current time is in afternoon (PM) (I think)
 useTokensInString	equ 4		;1 = use tokens instead of characters when displaying clock as string (for getTmStr and getDtStr vs. MODE screen) (keep this reset)
 displayClock		equ 5		;1 = display clock (this is set every second, reset otherwise)
 clockOn			equ 6		;1 = clock on
+;----------------------------------------------------------------------
+mathprintFlags		equ 44h
+mathprintEnabled	equ 5		;1 = use mathprint styling
+;----------------------------------------------------------------------
+backlightFlags		equ 46h
+restoreBrightness	equ 0		;1 = restore lcd brightness when needed
+;----------------------------------------------------------------------
+grFlags			equ 4Ah
+drawGrLbls		equ 0		;1 = don't draw Graph Labels (this is usually reset anyway)
+
+putMapFlags		equ 4Ah
+usePixelShadow2		equ 3		;1 = use pixelshadow2, not pixelshadow
+putMapUseColor		equ 4		;1 = use custom color
+;----------------------------------------------------------------------
+graphDispFlags		equ 4Bh
+backgroundValid		equ 4		;1 = items in graph background are still valid
+;----------------------------------------------------------------------
 #endif
 .list
