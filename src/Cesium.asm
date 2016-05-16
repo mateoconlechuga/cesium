@@ -2,23 +2,20 @@
 #include "includes\macros.inc"		; useful macros
 #include "includes\defines.inc"		; Cesium defines
 
-#define ENGLISH 1			; use english
-;#define FRENCH 1			; use french
+;#define ENGLISH 1			; use english
+#define FRENCH 1			; use french
 
- .org usermem-2
-; if this is the first run, we want to run the installer -- this is literally 2 prgms in one
-#include "routines\installer.asm"
+#include "routines\installer.asm"	; if this is the first run, we want to run the installer -- this is literally 2 prgms in one
 
-CesiumStartLoc:
-; this other program is copied to an AppVar
- .org usermem-2
+CesiumStartLoc:				; this other program is copied to an AppVar
+	.org	UserMem-2
 CesiumStart:
- .db $CE,$CE				; magic bytes to satisfy other routines
- di					; disable interrupts
- call _runindicoff 			; turn off the indicator
-#include "routines\main.asm"		; stick the main file right here
+	.db	$CE,$CE			; magic bytes to satisfy other routines
+
+#include "routines\loaderofloader.asm"	; loads the appvar into usermem
 
 ; program routines
+#include "routines\main.asm"		; stick the main file right here
 #include "routines\pgrmoptions.asm"	; options for prgms
 #include "routines\settings.asm"	; general settings
 #include "routines\delete.asm"		; prgm deletion stuff
@@ -39,31 +36,34 @@ CesiumStart:
 ; program data
 #ifdef ENGLISH
  #include "data\textData.asm"		; text data
- #else
+  #else
  #include "data\textDataFrench.asm"
 #endif
-PROGRAM_HEADER:									; Signifies a CesiumOS program (haha)
+
+CesiumIcon:								; Signifies a CesiumOS program (haha)
  .db 16,16								; Width, Height of sprite
- .db 255,255,255,255,000,000,000,000,255,255,255,255,255,000,000,000
- .db 255,255,000,000,000,000,000,000,255,255,255,000,000,000,000,000
- .db 255,000,000,000,000,000,000,000,255,255,000,000,000,000,000,000
- .db 255,000,000,000,000,000,000,000,255,000,000,000,000,000,000,000
- .db 000,000,000,000,000,000,255,255,255,000,000,000,000,000,255,255
- .db 000,000,000,000,000,255,255,255,000,000,000,000,000,255,255,255
- .db 000,000,000,000,255,255,255,255,000,000,000,000,000,000,000,000
- .db 000,000,000,000,255,255,255,255,000,000,000,000,000,000,000,000
- .db 000,000,000,000,255,255,255,255,000,000,000,000,000,000,000,000
- .db 000,000,000,000,255,255,255,255,000,000,000,000,000,000,000,000
- .db 000,000,000,000,000,255,255,255,000,000,000,000,000,255,255,255
- .db 000,000,000,000,000,000,255,255,255,000,000,000,000,000,255,255
- .db 255,000,000,000,000,000,000,000,255,000,000,000,000,000,000,000
- .db 255,000,000,000,000,000,000,000,255,255,000,000,000,000,000,000
- .db 255,255,000,000,000,000,000,000,255,255,255,000,000,000,000,000
- .db 255,255,255,255,000,000,000,000,255,255,255,255,255,000,000,000
+ .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0DEh,0D6h,0D6h,0DEh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+ .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0D6h,0DEh,0DEh,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+ .db 0FFh,0FFh,0DEh,0D6h,0D6h,0FFh,0D6h,0DEh,0DEh,0B5h,0FFh,0B5h,0B5h,0B6h,0FFh,0FFh
+ .db 0FFh,0DEh,0DEh,0FEh,0DEh,0B6h,0B5h,0D6h,0D6h,0B5h,0B5h,0D6h,0DEh,0B5h,0B6h,0FFh
+ .db 0FFh,0DEh,0B6h,0DEh,0D6h,0DEh,0DEh,0D6h,0D6h,0DEh,0D6h,0D6h,0D6h,06Ch,0B5h,0FFh
+ .db 0FFh,0FFh,0DEh,0D6h,0D6h,0D6h,0B5h,094h,094h,0B5h,0B6h,0B5h,0B5h,0B5h,0FFh,0FFh
+ .db 0D6h,0D6h,0B6h,0DEh,0D6h,0B5h,094h,0DEh,0DEh,0B5h,0B6h,0B5h,0D6h,094h,094h,094h
+ .db 0B6h,0DEh,0D6h,0D6h,0D6h,0B4h,0DEh,0FFh,0FFh,0DEh,0B5h,0B6h,0B5h,0B6h,0DEh,06Bh
+ .db 0B5h,0DEh,0D6h,0B6h,0D6h,0B5h,0DEh,0FFh,0FFh,0DEh,0B5h,0B5h,0B5h,0B5h,0D6h,06Bh
+ .db 0B5h,094h,0B4h,0D6h,0B6h,0D6h,0B5h,0DEh,0DEh,0B5h,0B5h,0B5h,0B5h,06Bh,06Bh,06Bh
+ .db 0FFh,0FFh,0D6h,0B6h,0B5h,0B6h,0B6h,0B5h,0B5h,0B5h,0B5h,0B5h,0B5h,0B5h,0FFh,0FFh
+ .db 0FFh,0D6h,0B4h,0D6h,0B6h,0D6h,0D6h,0D6h,0B6h,0D6h,0B6h,0B5h,0D6h,06Bh,0B5h,0FFh
+ .db 0FFh,0D6h,0B5h,0DEh,0B4h,093h,093h,0B6h,0B5h,06Bh,06Bh,0B4h,0D6h,08Ch,0B5h,0FFh
+ .db 0FFh,0FFh,0B5h,06Bh,06Bh,0FFh,094h,0D6h,0B6h,06Bh,0FEh,06Bh,04Ah,094h,0FFh,0FFh
+ .db 0FFh,0FFh,0FFh,0DEh,0FFh,0FFh,094h,0B5h,0B5h,06Bh,0FFh,0FFh,0DEh,0FFh,0FFh,0FFh
+ .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 VersionStr:
- .db "Cesium Version 1.1.7",0
+ .db "Cesium Version 2.0.1",0
 CesiumEnd:
 
- .echo "Prgm Loader Size:\t",CesiumLoader_End-cesiumLoader_Start
- .echo "Reloader Size:\t\t",cesiumReLoader_End-cesiumReLoader_Start
- .echo "Avail. Reloader Size:\t",245-(cesiumReLoader_End-cesiumReLoader_Start)
+ .echo "Reloader Size:\t\t",CesiumReLoader_End-CesiumReLoader_Start
+ .echo "Cesium Prgm Size:\t",InstallerEnd-InstallerStart+15
+ .echo "Prgm Loader Size:\t",CesiumLoader_End-CesiumLoader_Start
+ .echo "Common Routines Size:\t",CommonRoutines_End-CommonRoutines_Start
+ .echo "AppVar CeOS Size:\t",CesiumEnd-CesiumStart+15
