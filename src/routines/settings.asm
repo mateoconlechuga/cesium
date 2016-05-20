@@ -54,12 +54,14 @@ RedrawSettings:
 	print(RunIndicStr,25,76)
 	print(ProgramCountStr,25,99)				; draw the setting's option text
 	print(ClockStr,25,122)
+	print(AutoBackupStr,25,145)
 	ld	a,107
 	ld	(cIndex),a
 	drawRectOutline(10,52,18,60)
 	drawRectOutline(10,75,18,83)
 	drawRectOutline(10,98,18,106)
-	drawRectOutline(10,121,18,129)				; draw the empty rectangles
+	drawRectOutline(10,121,18,129)				
+	drawRectOutline(10,144,18,152)				; draw the empty rectangles
 	drawRectFilled(12,54,17,59)
 	ld	a,(RunIndic)
 	or	a,a
@@ -76,6 +78,11 @@ ProgCountNotSet:						; option for program count
 	jr	z,ClockDispNotSet
 	drawRectFilled(12,123,17,128)
 ClockDispNotSet:						; option for clock on
+	ld	a,(AutoBackup)
+	or	a,a
+	jr	z,AutoBackupNotSet
+	drawRectFilled(12,146,17,151)
+AutoBackupNotSet:
 	call	HighlightBox
 GetOptions:	
 	call	DrawTime
@@ -122,12 +129,16 @@ _:	dec	a
 	jr	nz,+_
 	drawRectOutline(10,98,18,106)
 	ret
-_:	drawRectOutline(10,121,18,129)
+_:	dec	a
+	jr	nz,+_
+	drawRectOutline(10,121,18,129)
+	ret
+_:	drawRectOutline(10,144,18,152)
 	ret
 
 incrementSettingsOption:
 	ld	a,(currMenuSel)
-	cp	3
+	cp	a,4
 	ret	z
 	inc	a
 	ld	(currMenuSel),a

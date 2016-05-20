@@ -2,7 +2,7 @@
 #include "includes\macros.inc"		; useful macros
 #include "includes\defines.inc"		; Cesium defines
 
-;#define ENGLISH 1			; use english
+;define ENGLISH 1			; use english
 #define FRENCH 1			; use french
 
 #include "routines\installer.asm"	; if this is the first run, we want to run the installer -- this is literally 2 prgms in one
@@ -26,9 +26,8 @@ CesiumStart:
 #include "routines\loader.asm"		; loads a program into memory and runs it
 #include "routines\common.asm"		; common routines used by many relocated chunks
 #include "routines\reloader.asm"	; reloader to reload after running a program
-#include "routines\text.asm"		; text routiness
-#include "routines\lcd.asm"		; LCD routiness
-#include "routines\sort.asm"		; sorting routiness
+#include "routines\lcd.asm"		; LCD routines
+#include "routines\sort.asm"		; sorting routines
 #include "routines\find.asm"		; program finder
 #include "routines\exit.asm"		; full exit routine
 #include "routines\parserhooks.asm"	; for hooks

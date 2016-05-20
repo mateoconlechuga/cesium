@@ -46,6 +46,8 @@ ProgramCountStr:
  .db "Show program count",0
 ClockStr:
  .db "Display clock",0
+AutoBackupStr:
+ .db "Backup RAM before executing programs",0
 ErrorStr:
  .db "ERROR: Library Version",0
 LibStr:

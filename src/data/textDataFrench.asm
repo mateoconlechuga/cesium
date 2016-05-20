@@ -10,6 +10,8 @@ ProgramCountStr:
  .db "Afficher le nombre de programmes",0
 ClockStr:
  .db "Afficher l'horloge",0
+AutoBackupStr:
+ .db "Sauver la RAM avant de lancer des prgms",0
 ErrorStr:
  .db "ERREUR : Version",0
 LibStr:

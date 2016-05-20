@@ -32,14 +32,6 @@ _:	ld	d,b
 	ret
 
 ;-------------------------------------------------------------------------------
-FullBufCpy:
-	ld	bc,lcdWidth*lcdHeight
-	ld	hl,vBuf2
-	ld	de,vBuf1
-	ldir
-	ret
-
-;-------------------------------------------------------------------------------
 _Sprite8bpp:
 ; hl -> sprite
 ; bc = xy
@@ -140,98 +132,6 @@ SpriteWidth255_2x_SMC: =$+1
 	ex	de,hl
 	pop	bc
 	djnz	InLoop8bpp_2x
-	ret
-
-;-------------------------------------------------------------------------------
-FillRectangle:
-; bc = width
-; ixh = height
-; hl = x coordinate
-; e = y coordinate
-; a = color
-	ld	d,lcdWidth/2
-	mlt	de
-	add	hl,de
-	add	hl,de
-	ex	de,hl
-FillRectangle_Computed:
-	ld	ix,vBuf2			; de -> place to begin drawing
-	ld	(_RectangleWidth_SMC),bc
-_Rectangle_Loop_NoClip:
-	add	ix,de
-	lea	de,ix
-_RectangleWidth_SMC =$+1
-	ld	bc,0
-	ld	hl,skinColor
-	ldi					; check if we only need to draw 1 pixel
-	jp	po,_Rectangle_NoClip_Skip
-	scf
-	sbc	hl,hl
-	add	hl,de
-	ldir					; draw the current line
-_Rectangle_NoClip_Skip:
-	ld	de,lcdWidth			; move to next line
-	dec	a
-	jr	nz,_Rectangle_Loop_NoClip
-	ret
-
-;-------------------------------------------------------------------------------
-RectangleOutline:
-; Draws an unclipped rectangle outline with the global color index
-; Arguments:
-; hl : top x left
-; e  : top y left
-; bc : bot x right
-; d  : bot y right
-; Returns:
-;  None
-	ld	a,(cIndex)			; color index to use
-	push	bc
-	push	hl
-	push	de
-	call	_RectHoriz_ASM			; top horizontal line
-	pop	bc
-	push	bc
-	call	_RectVert_ASM			; left vertical line
-	pop	bc
-	pop	hl
-	ld	e,c
-	call	_VertLine_ASM			; right vertical line
-	pop	bc
-	jp	_MemSet				; bottom horizontal line
-
-_RectHoriz_ASM:
-	ld	d,lcdWidth/2
-	mlt	de
-	add	hl,de
-	add	hl,de
-	ld	de,vBuf2
-	add	hl,de				; hl -> place to draw
-	jp	_MemSet
-
-_VertLine_ASM:
-	dec	b
-	ld	d,lcdWidth/2
-	mlt	de
-	add	hl,de
-	add	hl,de
-	ld	de,vBuf2
-	add	hl,de				; hl -> drawing location
-_RectVert_ASM:
-	ld	de,lcdWidth
-_:	ld	(hl),a				; loop for height
-	add	hl,de
-	djnz	-_
-	ret
-
-;-------------------------------------------------------------------------------
-DrawVLine8:
-cIndex =$+1
-	ld	a,0
-_:	ld	(hl),a
-	ld	de,lcdWidth
-	add	hl,de
-	djnz	-_
 	ret
 
 ;-------------------------------------------------------------------------------

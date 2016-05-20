@@ -21,13 +21,41 @@ FullExit:
 	im	1
 	ei
 	ld	hl,stub
-	ld	de,cursorImage
+	ld	de,flashRAMCode
 	ld	bc,stubEnd-stub
 	ldir
-	jp	cursorImage
-stub:	ld	hl,userMem
+	jp	flashRAMCode
+stub:
+relocate(flashRAMCode)
+	ld	hl,userMem
 	ld	de,(asm_prgm_size)
 	call	_DelMem
+	res	apdWarmStart, (iy + apdFlags)
+	call	ClearOldBackup
 	ld	a,kClear
-	jp	_JForceCmd				; clear the screen like a boss
+	jp	_JForceCmd			; clear the screen like a boss
+
+ClearOldBackup:
+	di					; let's do some crazy flash things so that way we can save the RAM state...
+	ld	a, $D1
+	ld	mb,a
+	ld.sis	sp,$987E
+	call.is	funlock - $D10000
+	
+	ld	a,$3C
+	call	EraseSectorBackup			; this is so we can store the new RAM data \o/
+	
+	call.is	flock - $D10000
+	ld	a,$D0
+	ld	mb,a
+
+	ret
+
+EraseSectorBackup:
+	ld	bc,$0000F8			; apparently we can't erase sectors unless we call this routine from flash... Well, I called it from flash now :) (lol, what a secuity flaw)
+	push	bc
+	jp	_EraseFlashSector
+
+#include "routines/ramquit.asm"
+endrelocate()
 stubEnd:

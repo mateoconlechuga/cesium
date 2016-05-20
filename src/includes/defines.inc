@@ -45,9 +45,9 @@ vatentrytempend				equ savesscreen+12+15
 
 tmpSpriteLoc	equ cursorImage
 
-stubLocation	equ $D1987E+6
+stubLocation	equ appdata
 
-currSel		equ $D1987E+6+118	; 118 bytes in which to place the reloader
+currSel		equ stubLocation+117	; 117 bytes in which to place the reloader
 currSelAbs	equ currSel+3
 scrollamt	equ currSelAbs+3
 tmpSettings	equ scrollamt+3
@@ -56,6 +56,7 @@ skinColor	equ tmpSettings
 RunIndic	equ tmpSettings+1
 PrgmCountDisp	equ tmpSettings+2
 clockDisp	equ tmpSettings+3
+AutoBackup	equ tmpSettings+4
 
 prgmNamePtr	equ tmpSettings+10
 prgmDataPtr	equ prgmNamePtr+3

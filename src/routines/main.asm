@@ -96,7 +96,7 @@ GetKeys:
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
-	ld	de,cmdPixelShadow
+	ld	de,cursorImage
 	ld	hl,cesiumLoader_Start
 	ld	bc,CesiumLoader_End-cesiumLoader_Start
 	ldir

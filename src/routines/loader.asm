@@ -1,12 +1,14 @@
+flashRAMCode equ ramcode
+.assume adl = 1
+
 cesiumLoader_Start:
-relocate(cmdPixelShadow)
+relocate(cursorImage)
 cesiumLoader:
-
-	call	DeletePgrmFromUserMem		; now we deleted ourselves. cool.
-	call	ArchiveCesium			; archive ourselves to perserve space when running other things
-
+	ld	a,(AutoBackup)
+	or	a,a
+	call	nz,SaveRAMState			; Save ram state if option is set
+	
 	call	_boot_ClearVRAM
-	call	_HomeUp
 	ld	a,$2D
 	ld	(mpLcdCtrl),a			; Set LCD to 16bpp
 	call	_DrawStatusBar
@@ -45,19 +47,112 @@ RunBasicProgram:
 	ldir
 InROM:	call	_OP4ToOP1
 GoodInRAM:
+	ld	de,apperr1
+	ld	hl,StopError
+	ld	bc,StopErrorEnd-StopError
+	ldir
 	set	graphdraw,(iy+graphFlags)
 	ld	hl,ErrCatchBASIC
 	call	_PushErrorHandler
-	set	ProgExecuting,(iy+newdispf)
+	set	progExecuting,(iy+newdispf)
 	set	allowProgTokens,(iy+newDispF)
 	set	cmdExec,(iy+cmdFlags) 		; set these flags to execute BASIC prgm
 	res	onInterrupt,(iy+onflags)
 	ld	hl,ReturnHereBASIC
 	push	hl
-	xor	a,a
+	sub	a,a
 	ld	(kbdGetKy),a
 	ei
 	jp	_ParseInp			; run program
 
+SaveRAMStateToFlash:
+	call	SaveRAMState
+	jp	ReturnHere
+	
+SaveRAMState:
+	ld	hl,ramsave_sectors_start
+	ld	bc,ramsave_sectors_end-ramsave_sectors_start
+	ld	de,$D18C7C
+	ldir
+	
+	ld	hl,skinColor
+	ld	a,(hl)
+	ld	(cIndex),a
+	push	af
+	ld	(hl),$FF
+#ifdef ENGLISH
+	drawRectFilled(114,105,114+92,105+16)
+	drawRectOutline(113,104,113+94,104+17)
+	pop	af
+	ld	(skinColor),a			; draw stuff saying we are saving ram
+	SetDefaultTextColor()
+	print(savingstring,119,109)
+#else
+	drawRectFilled(114-25,105,114+92+50,105+16)
+	drawRectOutline(113-25,104,113+94+50,104+17)
+	pop	af
+	ld	(skinColor),a			; draw stuff saying we are saving ram
+	SetDefaultTextColor()
+	print(savingstring,119-24,109)
+#endif
+	call	FullBufCpy
+	
+	call	DeletePgrmFromUserMem		; now we deleted ourselves. cool.
+	jp	$D18C7C
+	
+StopError:
+	.db "Stop",0
+StopErrorEnd:
 endrelocate()
+
+ramsave_sectors_start:
+relocate(flashRAMCode)
+
+	di					; let's do some crazy flash things so that way we can save the RAM state...
+	ld	a, $D1
+	ld	mb,a
+	ld.sis	sp,$987E
+	call.is	unlock - $D10000
+	
+	ld	a,$3F
+	call	EraseSector			; clean out the flash sectors
+	ld	a,$3E
+	call	EraseSector
+	ld	a,$3D
+	call	EraseSector
+	ld	a,$3C
+	call	EraseSector			; this is so we can store the new RAM data \o/
+
+	ld	hl,$D00001
+	ld	(hl),$A5
+	dec	hl
+	ld	(hl),$5A			; write some magical bytes
+	ld	de,$3C0000			; we could just write all of ram
+	ld	bc,$40000
+	call	_WriteFlash
+	
+	call.is	lock - $D10000
+	ld	a,$D0
+	ld	mb,a
+
+	ret
+
+EraseSector:
+	ld	bc,$0000F8			; apparently we can't erase sectors unless we call this routine from flash... Well, I called it from flash now :) (lol, what a secuity flaw)
+	push	bc
+	jp	_EraseFlashSector
+
+#include "routines/ramsave.asm"
+
+savingstring:
+
+#ifdef ENGLISH
+	.db	"Backing up...",0
+#else
+	.db	"Sauvegarde en cours...",0
+#endif
+
+endrelocate()
+ramsave_sectors_end:
+
 CesiumLoader_End:
