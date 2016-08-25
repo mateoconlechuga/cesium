@@ -45,7 +45,7 @@ ArchiveStatusStr:
 HiddenStr:
  .db "Cach",$82,0
 EditStatusStr:
- .db "V",$82,"rouill",$82,0
+ .db "Verrouill",$82,0
 SizeStr:
  .db "Taille : ",0
 RAMFreeStr:
