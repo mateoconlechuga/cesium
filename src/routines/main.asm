@@ -97,8 +97,8 @@ GetKeys:
 	jp	SearchAlpha
 BootPrgm:
 	ld	de,cursorImage
-	ld	hl,cesiumLoader_Start
-	ld	bc,CesiumLoader_End-cesiumLoader_Start
+	ld	hl,CesiumLoader_Start
+	ld	bc,CesiumLoader_End-CesiumLoader_Start
 	ldir
 	call	MoveCommonToSafeRAM
 	call	CheckIfCurrentProgramIsUs		; let's make sure we don't boot ourselves ;)

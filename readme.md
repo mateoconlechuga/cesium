@@ -1,6 +1,5 @@
 # Cesium
 
-<img align="right" src="https://i.imgur.com/lQmgxpH.png">
 Cesium is the first *shell* for the TI-84 Plus CE / TI-83 Premium CE calculators.
 
 ### Features
@@ -44,12 +43,6 @@ Cesium provides a way to quickly jump to different programs in the program brows
 ### RUNNING PROGRAMS ###
 Cesium can run programs written in ASM, C, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.  
 To run a program, simply press [2ND] or [Enter]. After a program is finished running, it will return to Cesium.
-
-### RESTORING ###
-To protect against the case of a RAM clear, Cesium archives itself. To unarchive it, press [2ND],[+],[2],[7], and make sure there isn't an asterisk next to CESIUM.  
-To reload, simply go to the program menu and run with the `Asm(` command, findable in the catalog with [2ND],[0]. The homescreen should look like this:
-`Asm(prgmCESIUM`  
-Press [Enter]. Now, Cesium recreated `prgmA` for you, so use that on your next load.
 
 ### UNINSTALLING ###
 To uninstall Cesium, just press [2ND],[+],[2],[1] and delete the following files:

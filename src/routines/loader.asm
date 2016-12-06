@@ -72,7 +72,7 @@ SaveRAMStateToFlash:
 	
 SaveRAMState:
 	ld	hl,ramsave_sectors_start
-	ld	bc,ramsave_sectors_end-ramsave_sectors_start
+	ld	bc,ramsave_sectors_end-ramsave_sectors_start_start
 	ld	de,$D18C7C
 	ldir
 	
@@ -103,9 +103,10 @@ SaveRAMState:
 StopError:
 	.db "Stop",0
 StopErrorEnd:
+ramsave_sectors_start:
 endrelocate()
 
-ramsave_sectors_start:
+ramsave_sectors_start_start:
 relocate(flashRAMCode)
 
 	di					; let's do some crazy flash things so that way we can save the RAM state...
