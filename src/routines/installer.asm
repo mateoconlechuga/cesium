@@ -46,12 +46,11 @@
 	call	_DrawStatusBar
 	ld	hl,CesiumInstalledStr
 	call	_PutS
-	call	_NewLine
 	res	donePrgm,(iy+doneFlags)
-	ret
+	jp	_NewLine
 
 CesiumAppVarName_Install:
-	.db appVarObj,"CeOS",0
+	.db	appVarObj,"CeOS",0
 CesiumPrgmName_Install:
 	.db	protProgObj,"CESIUM",0
 CesiumInstalledStr:
@@ -81,9 +80,7 @@ _:	ld	hl,CesiumAppVarName_Installer
 	ld	e,(hl)
 	add	hl,de
 	inc	hl				; size of name
-	ld	e, (hl)
 	inc	hl
-	ld	d, (hl)
 	inc	hl				; now we are looking at size bytes :)
 	ld	a,(hl)				; $CE
 	inc	hl

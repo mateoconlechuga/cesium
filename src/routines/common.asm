@@ -45,7 +45,7 @@ RELOAD_CESIUM:					; reload the shell after execution
 	call	_RunIndicOff			; in case the launched program re-enabled it
 	ei
 	jp	RELOADED_FROM_PRGM
-
+	
 DeletePgrmFromUserMem:
 	ld	de,(asm_prgm_size)		; load total program totalPrgmSize
 	or	a,a
@@ -591,7 +591,5 @@ Char255: .db $FF,$E7,$DB,$DB,$C3,$DB,$DB,$FF	; (A)
 
 tmpPrgmName:
 	.db	tempProgObj,"ZTGP",0
-CesiumPrgmName:
-	.db	protProgObj,"CESIUM",0
 endrelocate()
 CommonRoutines_End:

@@ -4,6 +4,7 @@ CESIUM_OS_BEGIN:
 	ld	bc,cesiumReLoader_End-cesiumReLoader_Start
 	ldir
 RunShell:
+	call	ArchiveCesium
 	call	_CreateBASICPrgm		; recreate prgmA in case the user decided to muck with things
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
@@ -35,8 +36,8 @@ RELOADED_FROM_PRGM:
 	res	onInterrupt,(iy+OnFlags)	; this bit of stuff just enables the [on] key
 	call	ClearScreens
 	call	_GetBatteryStatus		;> 75%=4 ;50%-75%=3 ;25%-50%=2 ;5%-25%=1 ;< 5%=0
-	sub	a,4
-	neg
+	sub	a,5
+	cpl
 	ld	(batterystatus),a
 MAIN_START_LOOP_1:
 	call	DeleteTempProgramGetName
@@ -171,3 +172,14 @@ MoveCommonToSafeRAM:
 	ld	bc,CommonRoutines_End-CommonRoutines_Start
 	ldir
 	ret
+
+ArchiveCesium:                                  ; archive function
+	ld	hl,CesiumPrgmName
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	call	_ChkInRam
+	jp	z,_Arc_Unarc                    ; archive the program when running so we don't get deleted
+	ret
+	
+CesiumPrgmName:
+	.db	protProgObj,"CESIUM",0

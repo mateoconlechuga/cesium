@@ -5,6 +5,7 @@ cesiumLoader_Start:
 relocate(cursorImage)
 cesiumLoader:
 	call	DeletePgrmFromUserMem		; now we deleted ourselves. cool.
+	
 	ld	a,(AutoBackup)
 	or	a,a
 	call	nz,SaveRAMState			; Save ram state if option is set
