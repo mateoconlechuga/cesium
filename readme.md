@@ -52,7 +52,7 @@ To uninstall Cesium, just press [2ND],[+],[2],[1] and delete the following files
 * Cesium (AppVar)
 
 ### CREDITS ###
-(C) May 2016 Matt Waltz  
+(C) January 2017 Matt Waltz  
 "MateoConLechuga"  
 Licensed under BSD 3 Clause.
 
