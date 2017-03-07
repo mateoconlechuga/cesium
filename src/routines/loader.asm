@@ -20,9 +20,9 @@ cesiumLoader:
 	jp	nz,RunBasicProgram
 	call	MovePgrmToUserMem		; the program is now stored at userMem -- Now we need to check and see what kind of file it is - C or assembly
 	push	hl
-	ld	hl,ReturnHere
+	ld	hl,ReturnHereIfError
 	call	_PushErrorHandler
-	ld	de,ReturnHere
+	ld	de,ReturnHereNoError
 	push	de
 	jp	UserMem				; simply call userMem to execute the program
 
@@ -66,10 +66,6 @@ GoodInRAM:
 	ld	(kbdGetKy),a
 	ei
 	jp	_ParseInp			; run program
-
-SaveRAMStateToFlash:
-	call	SaveRAMState
-	jp	ReturnHere
 	
 SaveRAMState:
 	ld	hl,ramsave_sectors_start

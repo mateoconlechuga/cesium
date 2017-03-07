@@ -16,12 +16,13 @@ ErrCatchBASIC:
 	res	textInverse, (iy + textFlags)
 	call	_PutS
 	call	_GetKey
-	jr	+_
+	jr	ReturnHereIfError
 
 ReturnHereBASIC:
-ReturnHere:					; handler for returning programs
+ReturnHereNoError:                          ; handler for returning programs
 	call	_PopErrorHandler
-_:	ld	hl,CesiumAppVarNameReloader
+ReturnHereIfError:                          ; handler for returning programs
+	ld	hl,CesiumAppVarNameReloader
 	call	_Mov9ToOP1
 	call	_ChkFindSym
 	call	_ChkInRam
