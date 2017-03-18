@@ -291,7 +291,6 @@ setOverflowFlag:
 	ret
  
 AsmOrCFile:
-	bit	drawingSelected,(iy+asmFlag)
 	push	hl
 	push	de
 	push	bc
@@ -361,6 +360,8 @@ GoBack:	ld	de,ez80Str
 NoIcon:	pop	hl
 	jr	GoBack
 DrawCesiumIcon:
+	bit	drawingSelected,(iy+asmFlag)
+	jr z, DontDrawCesiumVersionText
 	push	bc
 	ld	bc,(posX)
 	push	bc
@@ -380,6 +381,7 @@ DrawCesiumIcon:
 	pop	bc
 	ld	(posX),bc
 	pop	bc
+DontDrawCesiumVersionText:
 	ld	hl,CesiumIcon
 	jr	GoBack
 
