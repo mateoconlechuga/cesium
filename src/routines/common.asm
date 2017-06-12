@@ -24,7 +24,22 @@ _:	ld	a,(hl)
 	xor	a,a
 	ld	(de),a				; terminate the string
 	ret
- 
+
+FindAppStart:
+	ld	hl,ThisAppName2
+	push	hl
+	call	$021100
+	pop	bc
+	ld	bc,$100
+	add	hl,bc
+	push	hl
+	ld	bc,$12
+	add	hl,bc
+	ld	hl,(hl)
+	pop	bc
+	add	hl,bc
+	ret
+	
 RELOAD_CESIUM:					; reload the shell after execution
 	di					; in case the launched program enabled interrupts... (fixes GitHub #1)
 	res	ProgExecuting,(iy+newDispf)
@@ -35,16 +50,16 @@ RELOAD_CESIUM:					; reload the shell after execution
 	call	DeletePgrmFromUserMem		; shouldn't do anything if reloading from a basic prgm
 	call	DeleteTempProgramGetName	; delete the basic temp program
 	call	_DeleteTempPrograms
-	call	_CleanAll
-	call	_RunIndicOff
-	ld	hl,CesiumAppVarNameReloader	; because TI was nice when they made the _delmem routine.
-	call	_Mov9ToOP1			
-	call	MovePgrmToUserMem
+	call	_CleanAll	
 	xor	a,a 
 	ld	(kbdGetKy),a			; flush keys
 	call	_RunIndicOff			; in case the launched program re-enabled it
+	call	FindAppStart
 	ei
-	jp	RELOADED_FROM_PRGM
+	jp	(hl)
+	
+ThisAppName2:
+	.db	"Cesium",0
 	
 DeletePgrmFromUserMem:
 	ld	de,(asm_prgm_size)		; load total program totalPrgmSize

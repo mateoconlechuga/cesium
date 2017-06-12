@@ -47,7 +47,7 @@ tmpSpriteLoc	equ cursorImage
 
 stubLocation	equ appdata
 
-currSel		equ stubLocation+117	; 117 bytes in which to place the reloader
+currSel		equ stubLocation+121	; 121 bytes in which to place the reloader
 currSelAbs	equ currSel+3
 scrollamt	equ currSelAbs+3
 tmpSettings	equ scrollamt+3

@@ -1,11 +1,23 @@
 CESIUM_OS_BEGIN:
+	ld	hl,CommonRoutines_Start
+	ld	de,SaveSScreen
+	ld	bc,CommonRoutines_End-CommonRoutines_Start
+	ldir					; copy the common routines to safeRAM
+	call	FindAppStart
+	ld	bc,ParserHook-CesiumStart+_app_init_size
+	add	hl,bc
+	call	_SetParserHook
+	ld	hl,HasReloaded
+	ld	a,(hl)
+	cp	a,$AA
+	push	af
 	ld	de,stubLocation			; first, we need to store the reloader to safeRAM so we can reload after a program executes
 	ld	hl,cesiumReLoader_Start
 	ld	bc,cesiumReLoader_End-cesiumReLoader_Start
 	ldir
+	pop	af
+	jr	z,RELOADED_FROM_PRGM
 RunShell:
-	call	ArchiveCesium
-	call	_CreateBASICPrgm		; recreate prgmA in case the user decided to muck with things
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym			; now lookup the settings program
@@ -171,14 +183,6 @@ MoveCommonToSafeRAM:
 	ld	de,SaveSScreen
 	ld	bc,CommonRoutines_End-CommonRoutines_Start
 	ldir
-	ret
-
-ArchiveCesium:                                  ; archive function
-	ld	hl,CesiumPrgmName
-	call	_Mov9ToOP1
-	call	_ChkFindSym
-	call	_ChkInRam
-	jp	z,_Arc_Unarc                    ; archive the program when running so we don't get deleted
 	ret
 	
 CesiumPrgmName:

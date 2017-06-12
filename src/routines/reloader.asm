@@ -17,34 +17,38 @@ ErrCatchBASIC:
 	call	_PutS
 	call	_GetKey
 	jr	ReturnHereIfError
-
 ReturnHereBASIC:
 ReturnHereNoError:                          ; handler for returning programs
 	call	_PopErrorHandler
 ReturnHereIfError:                          ; handler for returning programs
-	ld	hl,CesiumAppVarNameReloader
-	call	_Mov9ToOP1
-	call	_ChkFindSym
-	call	_ChkInRam
-	ex	de,hl
-	jr	z,ExistsInRAM
-	ld	de,9
-	add	hl,de
-	ld	e,(hl)
-	add	hl,de
-	inc	hl
-ExistsInRAM:					; HL->totalPrgmSize bytes
-	inc	hl
-	inc	hl				; HL->CESIUM PGRM DATA
-	ld	de,CommonRoutines_Start-CesiumStart
+	ld	hl,ThisAppName
+	push	hl
+	call	$021100
+	pop	bc
+	ld	bc,$100
+	add	hl,bc
+	push	hl
+	ld	bc,$12
+	add	hl,bc
+	ld	hl,(hl)
+	pop	bc
+	add	hl,bc
+	ld	de,CommonRoutines_Start-CesiumStart+_app_init_size
 	add	hl,de
 	ld	de,SaveSScreen
 	ld	bc,CommonRoutines_End-CommonRoutines_Start
 	ldir
+	ld	a,$AA
+	ld	(HasReloaded),a
 	jp	RELOAD_CESIUM
- 
-CesiumAppVarNameReloader:
-	.db appVarObj,"CeOS",0
+
+HasReloaded:
+	.db	0
+	
+	; reload here
+	
+ThisAppName:
+	.db "Cesium",0
 QuitStr1:
 	.db "1:",0
 QuitStr2:

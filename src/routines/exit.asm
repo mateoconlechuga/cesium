@@ -6,11 +6,6 @@ FullExit:
 	set	graphdraw,(iy+graphFlags)
 	res	useTokensInString,(iy+clockFlags)
 	res	onInterrupt,(iy+onFlags)        ; [ON] break error destroyed
-	ld	hl,CesiumPrgmNameExit
-	call	_Mov9ToOP1
-	call	_ChkFindSym
-	call	_ChkInRam
-	call	nz,_Arc_Unarc
 	call	_ClrTxtShd                      ; clear text shadow
 	call	_DrawStatusBar
 	ld	hl,pixelshadow
@@ -25,9 +20,6 @@ FullExit:
 	ld	bc,stubEnd-stub
 	ldir
 	jp	flashRAMCode
-
-CesiumPrgmNameExit:
-	.db	protProgObj,"CESIUM",0
 	
 stub:
 relocate(flashRAMCode)

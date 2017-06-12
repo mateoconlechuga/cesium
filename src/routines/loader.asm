@@ -5,6 +5,8 @@ cesiumLoader_Start:
 relocate(cursorImage)
 cesiumLoader:
 	call	DeletePgrmFromUserMem		; now we deleted ourselves. cool.
+	xor	a,a
+	ld	(HasReloaded),a
 	
 	ld	a,(AutoBackup)
 	or	a,a
