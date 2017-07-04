@@ -6,6 +6,10 @@ ez80Str:
  .db "eZ80",0
 CStr:
  .db "C",0
+ICEStr:
+ .db "ICE",0
+ICESourceStr:
+ .db "ICE Source",0
 BasicStr:
  .db "Basic",0
 ArchiveStatusStr:
@@ -60,5 +64,5 @@ NewNameStr:
  .db "New Name -",0
 CheckIconBASICStr:
  .db $3E,$44,$43,$53,$3F,$2A
-CesiumAppVarName:
- .db appVarObj,"CeOS",0
+NoProgramsStr:
+ .db "No programs found",0

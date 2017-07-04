@@ -1,6 +1,4 @@
 DeletePrgm:
-	call	CheckIfCurrentProgramIsUs		; let's make sure we don't delete ourselves ;)
-	jp	z,DrawSettingsMenu
 	call	ClearLowerBar
 	SetInvertedTextColor()
 	print(DeleteConfirmStr,4,228)

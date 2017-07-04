@@ -72,7 +72,13 @@ MAIN_START_LOOP:
 	drawRectOutline(193+44,54,316-42,91)
 	drawHLine(3+2+185+9,22+2+3+9,112)
 	SetDefaultTextColor()
+	ld	hl,(numprograms)
+	add	hl,de
+	or	a,a
+	sbc	hl,de
+	jr	z,NoInfoString
 	print(FileInforamtionStr,3+2+185+9,22+2+3)
+NoInfoString:
 	ld	hl,$000FFF
 	ld	(APDtmmr),hl
 	or	a,a
@@ -109,13 +115,16 @@ GetKeys:
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
+	ld	hl,(numprograms)
+	add	hl,de
+	or	a,a
+	sbc	hl,de
+	jp	z,DrawSettingsMenu
 	ld	de,cursorImage
 	ld	hl,CesiumLoader_Start
 	ld	bc,CesiumLoader_End-CesiumLoader_Start
 	ldir
 	call	MoveCommonToSafeRAM
-	call	CheckIfCurrentProgramIsUs		; let's make sure we don't boot ourselves ;)
-	jp	z,DrawSettingsMenu
 	jp	cesiumLoader
 
 DecrementAPD:

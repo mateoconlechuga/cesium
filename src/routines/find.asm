@@ -44,24 +44,19 @@ CheckNextASMbyte:
 	ld	(AsmCBasic_SMC),a		; reset the default to an ASM prgm
 	inc	hl
 	ld	a,(hl)
+	cp	a,tImag                         ; ICE Source
+	jr	z,GotPrgmType
+	cp	a,$7F
+	jr	z,GotPrgmType                   ; $7F=ICEPrgm
 	or	a,a				; NOP byte for C programs
 	jr	nz,RegularAsmType
 	ld	a,$CE
 GotPrgmType:
-	ld	(AsmCBasic_SMC),a		; $CE=CPrgm,$BB=BasicPrgm,$00=ASMPrgm
+	ld	(AsmCBasic_SMC),a		; $CE=CPrgm,$BB=BasicPrgm,$00=ASMPrgm,$7F=ICEPrgm
 RegularAsmType:
 	pop	hl
 	dec	hl
 	ld	a,(hl)
-	cp	a,'A'
-	jr	nz,NotprgmA			; we don't want to display prgmA because that is the loader
-	inc	hl
-	ld	a,(hl)
-	dec	hl
-	dec	a
-	jr	nz,NotprgmA
-	jp	NotValid
-NotprgmA:
 	cp	a,'!'				; system variable
 	jp	z,NotValid
 	cp	a,'#'				; system variable

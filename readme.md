@@ -56,5 +56,8 @@ To uninstall Cesium, just press [2nd][+][2][1] and delete the following files:
 "MateoConLechuga"
 Licensed under BSD 3 Clause.
 
+### SOURCE ###
+Source is available here: https://github.com/MattWaltz/cesium
+
 ### BUGS ###
 If you encounter an unexpected behaviour, please make an issue here on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!

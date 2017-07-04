@@ -58,8 +58,10 @@ GoodInRAM:
 	set	graphdraw,(iy+graphFlags)
 	ld	hl,ErrCatchBASIC
 	call	_PushErrorHandler
+	res	apptextsave,(iy+appflags)	;text goes to textshadow
 	set	progExecuting,(iy+newdispf)
 	set	allowProgTokens,(iy+newDispF)
+	res	7,(iy + $45)
 	set	cmdExec,(iy+cmdFlags) 		; set these flags to execute BASIC prgm
 	res	onInterrupt,(iy+onflags)
 	ld	hl,ReturnHereBASIC
@@ -67,6 +69,7 @@ GoodInRAM:
 	sub	a,a
 	ld	(kbdGetKy),a
 	ei
+	call	SaveShadow
 	jp	_ParseInp			; run program
 	
 SaveRAMState:

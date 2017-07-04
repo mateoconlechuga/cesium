@@ -25,7 +25,7 @@ _:	ld	a,24
 	ld	bc,(numprograms)
 	sbc	hl,hl
 	adc	hl,bc
-	ret	z
+	jp	z,DrawNoPrograms                                ; return if no programs are found
 	ld	hl,pixelshadow2
 	ld	de,(scrollamt)
 	call	_ChkDEIs0
@@ -149,7 +149,7 @@ NotHiddenHere:
 	inc	hl
 	inc	hl
 	inc	hl
-	res	iscprog,(iy+asmFlag)
+	res	isspecialprog,(iy+asmFlag)
 	ld	a,(hl)
 	bit	drawingSelected,(iy+asmFlag)
 	jr	z,NotHighlighted
@@ -160,12 +160,19 @@ NotHighlighted:
 	ld	de,ez80Str
 	ld	hl,asmFileSprite
 	or	a,a
-	jp	z,AsmOrCFile					; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
-	set	iscprog,(iy+asmFlag)
+	jp	z,AsmOrICEOrCFile					; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
+	set	isspecialprog,(iy+asmFlag)
+	ld	de,ICEStr
+	ld	hl,iceFileSprite
+	cp	a,$7F
+	jp	z,AsmOrICEOrCFile
+	ld	de,ICESourceStr
+	cp	a,tImag
+	jp	z,AsmOrICEOrCFile
 	ld	de,CStr
 	ld	hl,cFileSprite
 	cp	a,$CE
-	jp	z,AsmOrCFile					; Well... technically an ASM file could be a C file? :)
+	jp	z,AsmOrICEOrCFile					; Well... technically an ASM file could be a C file? :)
 	set	tmpIsBasic,(iy+tmpPgrmStatus)
 	call	CheckIfIconBASIC
 
@@ -267,11 +274,7 @@ NotHidden:
 	ld	(posX),de
 	inc	hl
 	call	DrawString
-	print(SettingsStr,199,206)
-	ld	de,270
-	ld	(posX),de
-	inc	hl
-	call	DrawString
+	call	PrintModeSettings
 	push	hl
 NotCurrentlySelected:
 	pop	hl
@@ -290,21 +293,19 @@ setOverflowFlag:
 	set scrollDown,(iy+asmFlag)
 	ret
  
-AsmOrCFile:
+AsmOrICEOrCFile:
 	push	hl
 	push	de
 	push	bc
-	call	CheckIfCurrentTmpProgramIsUs
 	pop	bc
 	pop	de
 	pop	hl
-	jp	z,DrawCesiumIcon
 	push	hl					; save the default icon
 tmpPrgmDataPtr: =$+1
 	ld	hl,0					; HL->pointer to data for program
 	inc	hl					; $EF
 	inc	hl					; $7B
-	bit	iscprog,(iy+asmFlag)
+	bit	isspecialprog,(iy+asmFlag)
 	jr	z,notc
 	inc	hl					; SMC byte to 'inc hl' if C program -- remember the nop magic byte?
 notc:
@@ -316,7 +317,7 @@ notc:
 	inc	hl
 	inc	hl					; HL->Icon indicator byte, hopefully
 	ld	a,(hl)
-	cp	a,$01					; is it the CesiumOS indicator?
+	cp	a,$01					; is it the Cesium indicator?
 	jr	nz,NoIcon
 	inc	hl					; now we have to load in the icon -- which is just an 'inc hl'
 	bit	drawingSelected,(iy+asmFlag)		; make sure we actually want to draw the description
@@ -351,38 +352,11 @@ notc:
 	pop	hl
 
 Icon:
-	pop	de
-GoBack:	ld	de,ez80Str
-	bit	iscprog,(iy+asmFlag)
+	pop	de                                      ; de -> icon
+GoBack:	bit	isspecialprog,(iy+asmFlag)
 	jp	z,DrawIcon
-	ld	de,CStr
 	jp	DrawIcon				; now draw the right icon :)
 NoIcon:	pop	hl
-	jr	GoBack
-DrawCesiumIcon:
-	bit	drawingSelected,(iy+asmFlag)
-	jr z, DontDrawCesiumVersionText
-	push	bc
-	ld	bc,(posX)
-	push	bc
-	ld	a,(posY)
-	push	af
-	call	ClearLowerBar
-	ld	hl,VersionStr
-	ld	bc,4
-	ld	a,228
-	ld	(posX),bc
-	ld	(posY),a
-	SetInvertedTextColor()
-	call	DrawString
-	SetDefaultTextColor()
-	pop	af
-	ld	(posY),a
-	pop	bc
-	ld	(posX),bc
-	pop	bc
-DontDrawCesiumVersionText:
-	ld	hl,CesiumIcon
 	jr	GoBack
 
 CheckIfIconBASIC:
@@ -434,5 +408,18 @@ NoIconBASIC:
 _:	ld	de,BasicStr
 	ret
 
+DrawNoPrograms:
+	print(NoProgramsStr,24,30)
+	ld	hl,CesiumIcon
+	ld	bc,(240/2*256)+57
+	call	_Sprite8bpp_2x
+PrintModeSettings:
+	print(SettingsStr,3+2+185+9,22+2+3)
+	ld	de,270
+	ld	(posX),de
+	inc	hl
+	call	DrawString
+	ret
+	
 colorTable:
  .db 255,24,224,0,248,36,227,97,09,19,230,255,181,107,106,74

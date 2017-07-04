@@ -10,7 +10,7 @@
 #define scrollDown		02h
 #define drawingSelected		03h
 #define drawPrgmCnt		05h
-#define iscprog			06h
+#define isspecialprog		06h
 #define asmFlag			22h
 
 #define clockIsOff		04h

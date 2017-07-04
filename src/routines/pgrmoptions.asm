@@ -1,8 +1,5 @@
 RenameProgram:
-	call	CheckIfCurrentProgramIsUs
-	jp	z,DrawSettingsMenu
 RenameGood:
-	
 	ld	hl,skinColor
 	ld	a,(hl)
 	push	af
@@ -193,8 +190,6 @@ NameBufferPtr:
 	.dl	NameBuffer+1
 
 LoadProgramOptions:
-	call	CheckIfCurrentProgramIsUs
-	jp	z,DrawSettingsMenu			; don't change the options if we are the program!
 	ld	hl,PgrmOptions
 	ld	bc,4
 	call	_MemClear
