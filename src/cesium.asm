@@ -31,9 +31,9 @@ CesiumStart:
 
 ; program data
 #ifdef ENGLISH
- #include "data/textData.asm"           ; text data
+ #include "data/text.asm"               ; text data
   #else
- #include "data/textDataFrench.asm"
+ #include "data/textFrench.asm"
 #endif
 
 CesiumIcon: ; Signifies a CesiumOS program (haha)

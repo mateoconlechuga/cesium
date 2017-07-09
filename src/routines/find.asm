@@ -33,6 +33,8 @@ isnormalprog:					; at this point, HL->[t], so we'll move back six bytes to [nl]
 	cp	a,tExtTok			; ASM prgm?
 	jr	z,CheckNextASMbyte
 PrgmIsBASIC:
+	cp	a,$2C                           ; ICE Source
+	jr	z,GotPrgmType
 	ld	a,$BB				; $BB == BASIC prgm
 	jr	GotPrgmType
 CheckNextASMbyte:
@@ -44,8 +46,6 @@ CheckNextASMbyte:
 	ld	(AsmCBasic_SMC),a		; reset the default to an ASM prgm
 	inc	hl
 	ld	a,(hl)
-	cp	a,tImag                         ; ICE Source
-	jr	z,GotPrgmType
 	cp	a,$7F
 	jr	z,GotPrgmType                   ; $7F=ICEPrgm
 	or	a,a				; NOP byte for C programs

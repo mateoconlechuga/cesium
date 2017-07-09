@@ -69,7 +69,6 @@ GoodInRAM:
 	sub	a,a
 	ld	(kbdGetKy),a
 	ei
-	call	SaveShadow
 	jp	_ParseInp			; run program
 	
 SaveRAMState:

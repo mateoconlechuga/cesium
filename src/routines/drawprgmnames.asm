@@ -160,14 +160,15 @@ NotHighlighted:
 	ld	de,ez80Str
 	ld	hl,asmFileSprite
 	or	a,a
-	jp	z,AsmOrICEOrCFile					; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
+	jp	z,AsmOrICEOrCFile			
+	; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
 	set	isspecialprog,(iy+asmFlag)
 	ld	de,ICEStr
 	ld	hl,iceFileSprite
 	cp	a,$7F
 	jp	z,AsmOrICEOrCFile
 	ld	de,ICESourceStr
-	cp	a,tImag
+	cp	a,$2C
 	jp	z,AsmOrICEOrCFile
 	ld	de,CStr
 	ld	hl,cFileSprite
@@ -274,7 +275,11 @@ NotHidden:
 	ld	(posX),de
 	inc	hl
 	call	DrawString
-	call	PrintModeSettings
+	print(SettingsStr,199,206)
+	ld	de,270
+	ld	(posX),de
+	inc	hl
+	call	DrawString
 	push	hl
 NotCurrentlySelected:
 	pop	hl
@@ -290,7 +295,7 @@ NotCurrentlySelected:
 	jp	nz,DrawProgramsLoop
 	ret
 setOverflowFlag:
-	set scrollDown,(iy+asmFlag)
+	set	scrollDown,(iy+asmFlag)
 	ret
  
 AsmOrICEOrCFile:
