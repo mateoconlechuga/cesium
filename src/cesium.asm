@@ -8,21 +8,20 @@
 
 #include "routines/installer.asm"       ; if this is the first run, we want to run the installer
 
-app_start("Cesium", "(c) 2017 Matt Waltz")
+app_start("Cesium", "(c) 2017 Matt Waltz", 0, 1, 0D09466h, 0)
 
 CesiumStart:
 
 ; program routines
 #include "routines/main.asm"            ; stick the main file right here
+#include "routines/loader.asm"          ; loads a program into memory and runs it
+#include "routines/common.asm"          ; common routines used by many relocated chunks
+#include "routines/usefulroutines.asm"  ; common routines
 #include "routines/pgrmoptions.asm"     ; options for prgms
 #include "routines/settings.asm"        ; general settings
 #include "routines/delete.asm"          ; prgm deletion stuff
-#include "routines/usefulroutines.asm"  ; common routines
 #include "routines/drawprgmnames.asm"   ; part of main loop
 #include "routines/search.asm"          ; alphabetizer
-#include "routines/loader.asm"          ; loads a program into memory and runs it
-#include "routines/common.asm"          ; common routines used by many relocated chunks
-#include "routines/reloader.asm"        ; reloader to reload after running a program
 #include "routines/lcd.asm"             ; LCD routines
 #include "routines/sort.asm"            ; sorting routines
 #include "routines/find.asm"            ; program finder
@@ -61,7 +60,5 @@ CesiumEnd:
 app_data()
 app_end()
 
- .echo "Reloader Size:\t\t",CesiumReLoader_End-CesiumReLoader_Start
- .echo "Prgm Loader Size:\t",CesiumLoader_End-CesiumLoader_Start
- .echo "Common Routines Size:\t",CommonRoutines_End-CommonRoutines_Start
- .echo "AppVar CeOS Size:\t",CesiumEnd-CesiumStart
+ .echo "Program Size:\t",CesiumEnd-CesiumStart
+ .echo "App Init Size:\t",_app_init_size

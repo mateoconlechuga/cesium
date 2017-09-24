@@ -1,32 +1,64 @@
-;These are shared routines that are used by many parts of the program
+; These are shared routines that are used by many parts of the program
 
-CommonRoutines_Start:
-relocate(SaveSScreen)
-CommonRoutines:
-
-NamePtrToOP1:
+ErrCatchBASIC:
+	call	_boot_ClearVRAM
+	call	_DrawStatusBar
+	call	_DispErrorScreen
+	call	_GetKey
+	jr	ReturnHereIfError
+ReturnHereBASIC:
+ReturnHereNoError:                          ; handler for returning programs
+	call	_PopErrorHandler
+ReturnHereIfError:                          ; handler for returning programs
+	di                                  ; in case the launched program enabled interrupts...
+	xor	a,a 
+	ld	(kbdGetKy),a                ; flush keys
+	res	progExecuting,(iy+newDispf)
+	res	cmdExec,(iy+cmdFlags)
+	res	textInverse,(iy+textFlags)
+	res	allowProgTokens,(iy+newDispF)
+	res	onInterrupt,(iy+onFlags)
+	call	_DeleteTempPrograms
+	call	_CleanAll	
+	call	_RunIndicOff                ; in case the launched program re-enabled it
+	ld	de,(asm_prgm_size)
+	or	a,a
+	sbc	hl,hl
+	ld	(asm_prgm_size),hl
+	ld	hl,userMem
+	call	_DelMem
+	
+	ld	hl,OP1                      ; execute app
+	ld	(hl),'C'
+	inc	hl
+	ld	(hl),'e'
+	inc	hl
+	ld	(hl),'s'
+	inc	hl
+	ld	(hl),'i'
+	inc	hl
+	ld	(hl),'u'
+	inc	hl
+	ld	(hl),'m'
+	inc	hl
+	ld	(hl),0
+	ld	hl,OP1
+	push	hl
+	call	_os_FindAppStart
+	pop	bc
+	ld	bc,$100                      ; bypass header
+	add	hl,bc
+	push	hl
+	ld	bc,$12                       ; bypass bytes
+	add	hl,bc
 	ld	hl,(hl)
-	push	hl				; VAT pointer
-	ld	de,6
-	add	hl,de
-	ld	a,(hl)				; Get the type byte
-	pop	hl
-	ld	de,OP1				; store to OP1
-	ld	(de),a
-	inc	de
-	ld	b,(hl)
-	dec	hl
-_:	ld	a,(hl)
-	ld	(de),a
-	inc	de
-	dec	hl
-	djnz	-_
-	xor	a,a
-	ld	(de),a				; terminate the string
-	ret
+	pop	bc
+	add	hl,bc
+	ld	a,$AA
+	jp	(hl)
 
 FindAppStart:
-	ld	hl,ThisAppName2
+	ld	hl,CesiumAppName
 	push	hl
 	call	$021100
 	pop	bc
@@ -38,29 +70,13 @@ FindAppStart:
 	ld	hl,(hl)
 	pop	bc
 	add	hl,bc
+	ld	bc,_app_init_size
+	add	hl,bc
 	ret
 	
-RELOAD_CESIUM:					; reload the shell after execution
-	di					; in case the launched program enabled interrupts... (fixes GitHub #1)
-	res	ProgExecuting,(iy+newDispf)
-	res	cmdExec,(iy+cmdFlags)
-	res	textInverse,(iy+textFlags)
-	res	allowProgTokens,(iy+newDispF)
-	res	onInterrupt,(iy+onFlags)
-	call	DeletePgrmFromUserMem		; shouldn't do anything if reloading from a basic prgm
-	call	DeleteTempProgramGetName	; delete the basic temp program
-	call	_DeleteTempPrograms
-	call	_CleanAll	
-	xor	a,a 
-	ld	(kbdGetKy),a			; flush keys
-	call	_RunIndicOff			; in case the launched program re-enabled it
-	call	FindAppStart
-	ei
-	jp	(hl)
-	
-ThisAppName2:
+CesiumAppName:
 	.db	"Cesium",0
-	
+
 DeletePgrmFromUserMem:
 	ld	de,(asm_prgm_size)		; load total program totalPrgmSize
 	or	a,a
@@ -112,6 +128,27 @@ DeleteTempProgramGetName:
 	call	nc,_DelVarArc			; delete the temp prgm if it exists
 	jp	_PopOP1
 	
+NamePtrToOP1:
+	ld	hl,(hl)
+	push	hl				; VAT pointer
+	ld	de,6
+	add	hl,de
+	ld	a,(hl)				; Get the type byte
+	pop	hl
+	ld	de,OP1				; store to OP1
+	ld	(de),a
+	inc	de
+	ld	b,(hl)
+	dec	hl
+_:	ld	a,(hl)
+	ld	(de),a
+	inc	de
+	dec	hl
+	djnz	-_
+	xor	a,a
+	ld	(de),a				; terminate the string
+	ret
+
 ;-------------------------------------------------------------------------------
 FillRectangle:
 ; bc = width
@@ -606,5 +643,3 @@ Char255: .db $FF,$E7,$DB,$DB,$C3,$DB,$DB,$FF	; (A)
 
 tmpPrgmName:
 	.db	tempProgObj,"ZTGP",0
-endrelocate()
-CommonRoutines_End:

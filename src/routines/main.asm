@@ -1,21 +1,29 @@
 CESIUM_OS_BEGIN:
-	ld	hl,CommonRoutines_Start
-	ld	de,SaveSScreen
-	ld	bc,CommonRoutines_End-CommonRoutines_Start
-	ldir					; copy the common routines to safeRAM
+	push	af
 	call	FindAppStart
-	ld	bc,ParserHook-CesiumStart+_app_init_size
+	ld	bc,0-CesiumStart
+	add	hl,bc
+	push	hl
+	ld	bc,ParserHook
 	add	hl,bc
 	call	_SetParserHook
-	ld	hl,HasReloaded
-	ld	a,(hl)
-	cp	a,$AA
-	push	af
-	ld	de,stubLocation			; first, we need to store the reloader to safeRAM so we can reload after a program executes
-	ld	hl,cesiumReLoader_Start
-	ld	bc,cesiumReLoader_End-cesiumReLoader_Start
-	ldir
+	pop	hl
+	ld	bc,ReturnHereNoError
+	add	hl,bc
+	ld	(ASMSTART_HANDLER+1),hl
+	ld	(BASICSTART_HANDLER+1),hl
+	or	a,a
+	sbc	hl,bc
+	ld	bc,ReturnHereIfError
+	add	hl,bc
+	ld	(ASMERROR_HANDLER+1),hl
+	or	a,a
+	sbc	hl,bc
+	ld	bc,ErrCatchBASIC
+	add	hl,bc
+	ld	(BASICERROR_HANDLER+1),hl
 	pop	af
+	cp	a,$AA
 	jr	z,RELOADED_FROM_PRGM
 RunShell:
 	ld	hl,settingsAppVar
@@ -50,7 +58,7 @@ RELOADED_FROM_PRGM:
 	call	_GetBatteryStatus		;> 75%=4 ;50%-75%=3 ;25%-50%=2 ;5%-25%=1 ;< 5%=0
 	sub	a,5
 	cpl
-	ld	(batterystatus),a
+	ld	(CesiumBatteryStatus),a
 MAIN_START_LOOP_1:
 	call	DeleteTempProgramGetName
 	ld	hl,pixelshadow2
@@ -63,7 +71,6 @@ MAIN_START_LOOP_1:
 	ld	a,$27
 	ld	(mpLcdCtrl),a			; set LCD to 8bpp
 	call	CopyHL1555Palette		; HIGH=LOW
-	call	MoveCommonToSafeRAM
 MAIN_START_LOOP:
 	call	DrawMainOSThings
 	ld	a,107
@@ -120,12 +127,7 @@ BootPrgm:
 	or	a,a
 	sbc	hl,de
 	jp	z,DrawSettingsMenu
-	ld	de,cursorImage
-	ld	hl,CesiumLoader_Start
-	ld	bc,CesiumLoader_End-CesiumLoader_Start
-	ldir
-	call	MoveCommonToSafeRAM
-	jp	cesiumLoader
+	jp	CesiumLoader
 
 DecrementAPD:
 APDtmmr: =$+1
@@ -186,13 +188,3 @@ ScrollListDown:
 	inc	hl
 	ld	(scrollamt),hl
 	ret
-
-MoveCommonToSafeRAM:
-	ld	hl,CommonRoutines_Start
-	ld	de,SaveSScreen
-	ld	bc,CommonRoutines_End-CommonRoutines_Start
-	ldir
-	ret
-	
-CesiumPrgmName:
-	.db	protProgObj,"CESIUM",0

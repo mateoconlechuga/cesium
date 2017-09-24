@@ -45,9 +45,7 @@ vatentrytempend				equ savesscreen+12+15
 
 tmpSpriteLoc	equ cursorImage
 
-stubLocation	equ appdata
-
-currSel		equ stubLocation+121	; 121 bytes in which to place the reloader
+currSel		equ appdata
 currSelAbs	equ currSel+3
 scrollamt	equ currSelAbs+3
 tmpSettings	equ scrollamt+3
@@ -70,43 +68,3 @@ ArchiveSet	equ PgrmOptions
 LockSet		equ ArchiveSet+1
 HideSet		equ LockSet+1
 currMenuSel	equ HideSet+1
-
-#macro relocateNest(newlocation)
- #ifdef oldlocation
- .echo "Mateo: ",__file,":",__line,": Error: You cannot nest relocated blocks."
- #else
- #define oldlocation eval($)
- .org newlocation
- #define glocation eval(newlocation)
- #endif
-#endmacro
-
-#macro endrelocateNest()
- #ifdef glocation
- .org $-glocation + oldlocation
- #undefine glocation
- #undefine oldlocation
- #else
- .echo "Error line ",__line,": No relocate statements corresponds to this endrelocate."
- #endif
-#endmacro
-
-#macro relocate(new_location)
- #ifdef old_location
- .echo "Mateo: ",__file,":",__line,": Error: You cannot nest relocated blocks."
- #else
- #define old_location eval($)
- .org new_location
- #define g_location eval(new_location)
- #endif
-#endmacro
-
-#macro endrelocate()
- #ifdef g_location
- .org $-g_location + old_location
- #undefine g_location
- #undefine old_location
- #else
- .echo "Error line ",__line,": No relocate statements corresponds to this endrelocate."
- #endif
-#endmacro

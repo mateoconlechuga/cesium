@@ -1,13 +1,6 @@
-flashRAMCode equ ramcode
 .assume adl = 1
 
-cesiumLoader_Start:
-relocate(cursorImage)
-cesiumLoader:
-	call	DeletePgrmFromUserMem		; now we deleted ourselves. cool.
-	xor	a,a
-	ld	(HasReloaded),a
-	
+CesiumLoader:
 	ld	a,(AutoBackup)
 	or	a,a
 	call	nz,SaveRAMState			; Save ram state if option is set
@@ -21,12 +14,13 @@ cesiumLoader:
 	bit	isBasic,(iy+pgrmStatus)
 	jp	nz,RunBasicProgram
 	call	MovePgrmToUserMem		; the program is now stored at userMem -- Now we need to check and see what kind of file it is - C or assembly
-	push	hl
-	ld	hl,ReturnHereIfError
+ASMERROR_HANDLER:
+	ld	hl,0
 	call	_PushErrorHandler
-	ld	de,ReturnHereNoError
-	push	de
-	jp	UserMem				; simply call userMem to execute the program
+ASMSTART_HANDLER:
+	ld	hl,0
+	push	hl
+	jp	UserMem				 ; simply call userMem to execute the program
 
 RunBasicProgram:
 	call	_RunIndicOn
@@ -56,7 +50,8 @@ GoodInRAM:
 	ld	bc,StopErrorEnd-StopError
 	ldir
 	set	graphdraw,(iy+graphFlags)
-	ld	hl,ErrCatchBASIC
+BASICERROR_HANDLER:
+	ld	hl,0
 	call	_PushErrorHandler
 	res	apptextsave,(iy+appflags)	;text goes to textshadow
 	set	progExecuting,(iy+newdispf)
@@ -64,7 +59,8 @@ GoodInRAM:
 	res	7,(iy + $45)
 	set	cmdExec,(iy+cmdFlags) 		; set these flags to execute BASIC prgm
 	res	onInterrupt,(iy+onflags)
-	ld	hl,ReturnHereBASIC
+BASICSTART_HANDLER:
+	ld	hl,0
 	push	hl
 	sub	a,a
 	ld	(kbdGetKy),a
@@ -72,11 +68,6 @@ GoodInRAM:
 	jp	_ParseInp			; run program
 	
 SaveRAMState:
-	ld	hl,ramsave_sectors_start
-	ld	bc,ramsave_sectors_end-ramsave_sectors_start_start
-	ld	de,$D18C7C
-	ldir
-	
 	ld	hl,skinColor
 	ld	a,(hl)
 	ld	(cIndex),a
@@ -90,31 +81,19 @@ SaveRAMState:
 	SetDefaultTextColor()
 	print(savingstring,119,109)
 #else
-	drawRectFilled(114-25,105,114+92+50,105+16)
-	drawRectOutline(113-25,104,113+94+50,104+17)
+	drawRectFilled(89,105,256,121)
+	drawRectOutline(88,104,257,121)
 	pop	af
 	ld	(skinColor),a			; draw stuff saying we are saving ram
 	SetDefaultTextColor()
 	print(savingstring,119-24,109)
 #endif
 	call	FullBufCpy
-	
-	jp	$D18C7C
-	
-StopError:
-	.db "Stop",0
-StopErrorEnd:
-ramsave_sectors_start:
-endrelocate()
 
-ramsave_sectors_start_start:
-relocate(flashRAMCode)
 
 	di					; let's do some crazy flash things so that way we can save the RAM state...
-	ld	a, $D1
-	ld	mb,a
-	ld.sis	sp,$987E
-	call.is	unlock - $D10000
+	ld.sis	sp,$ea1f
+	call.is	unlock & $ffff
 	
 	ld	a,$3F
 	call	EraseSector			; clean out the flash sectors
@@ -133,9 +112,7 @@ relocate(flashRAMCode)
 	ld	bc,$40000
 	call	_WriteFlash
 	
-	call.is	lock - $D10000
-	ld	a,$D0
-	ld	mb,a
+	call.is	lock & $ffff
 
 	ret
 
@@ -154,7 +131,6 @@ savingstring:
 	.db	"Sauvegarde en cours...",0
 #endif
 
-endrelocate()
-ramsave_sectors_end:
-
-CesiumLoader_End:
+StopError:
+	.db "Stop",0
+StopErrorEnd:

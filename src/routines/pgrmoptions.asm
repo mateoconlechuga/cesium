@@ -179,7 +179,6 @@ jump_SMC =$+1
 	ld	(numprograms),hl
 	call	sort				; sort the VAT alphabetically
 	call	FindPrograms			; find available assembly programs in the VAT
-	call	MoveCommonToSafeRAM
 	ld	hl,NameBuffer+1
 	jp	SearchAlphaName
 ReturnHome:

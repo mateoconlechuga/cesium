@@ -8,19 +8,13 @@
 	call	_app_create
 #endmacro
 
-#macro app_start(myappname, description)
-	app_start(myappname, description, 0, 1)
-#endmacro
-
-#macro app_start(myappname, description, version)
-	app_start(myappname, description, version, 1)
-#endmacro
-
-#macro app_start(myappname, description, version, use_splash)
+#macro app_start(myappname, description, version, use_splash, extract_loc, use_usermem)
+#define __extract_loc eval(extract_loc)
 #ifdef __app_start
 	.error "App already defined."
 #endif
 #define __use_splash eval(use_splash)
+#define __use_usermem eval(use_usermem)
 #define __app_version eval(version)
 #define __app_start eval($)
 	.db	$81, $0F, $00
@@ -51,8 +45,9 @@ _appname:
 	.error "App name is too long."
 #endif
 	.db	0
-        .db	1
-	.db	0, 0
+        .db	__use_splash
+	.db	0
+	.db	0
 	.dl	0
 	.dl	___app_code_start-__ahs
 	.dl	__data-__ahs
@@ -65,29 +60,39 @@ ___app_information_string:
 	.db	description,0
 ___app_code_start:
 #define _app_init eval($)
+	push	af
+	res	4,(iy + $28)
+	res	6,(iy + $12)
+	res	4,(iy + $12)
+	res	6,(iy + $45)
 	ld	hl,___relocate_end-__relocate_start
 	push	hl
-	call	$02051C
+#if __use_usermem != 0
+	call	_EnoughMem
 	pop	hl
-	jp	c,$020768
-	ld	de,$D1A881
+	jp	c,_ErrMemory
+	ld	de,__extract_loc
 	push	hl
-	ld	($D0118C),hl
-	call	$020514
+	ld	(asm_prgm_size),hl
+	call	_InsertMem
+#else
+	ld	de,__extract_loc
+#endif
 	ld	a,$E1
 	ld	($E30800),a
 	ld	a,$E9
 	ld	($E30801),a
 	call	$E30800
-	ld	bc,12
+	ld	bc,13
 	add	hl,bc
 	pop	bc
 	ldir
-	jp	$D1A881
+	pop	af
+	jp	__extract_loc
 #define _app_init_size eval($-_app_init)
 #define __old_app_location eval($)
-	.org $D1A881
-#define __g_app_location eval($D1A881)
+	.org __extract_loc
+#define __g_app_location __extract_loc
 #define __relocate_start eval($)
 #endmacro
 

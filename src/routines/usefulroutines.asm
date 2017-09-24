@@ -70,7 +70,7 @@ DrawMainOSThings:
 	drawSpr255(batterySprite, 3,7)
 	ld	a,255
 	ld	(cIndex),a
-batterystatus: =$+1
+CesiumBatteryStatus: =$+1
 	ld	a,0
 	or	a,a
 	ret	z
@@ -83,3 +83,6 @@ ClearLowerBar:
 	drawRectFilled(1,225,319,239)
 	pop	bc
 	ret
+	
+CesiumPrgmName:
+	.db	protProgObj,"CESIUM",0
