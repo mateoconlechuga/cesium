@@ -45,7 +45,7 @@ currSel		equ appdata+200
 currSelAbs	equ currSel+3
 scrollamt	equ currSelAbs+3
 
-tmpSettings	equ pixelShadow2+300
+tmpSettings	equ scrollamt+3
 skinColor	equ tmpSettings
 RunIndic	equ tmpSettings+1
 PrgmCountDisp	equ tmpSettings+2
