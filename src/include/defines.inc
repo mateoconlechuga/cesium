@@ -20,7 +20,7 @@
 #define pgrmLocked		01h
 #define pgrmHidden		02h
 #define isBasic			03h
-#define pgrmStatus		23h
+#define pgrmStatus		30h
 
 #define tmpPgrmArchived		00h
 #define tmpPgrmLocked		01h

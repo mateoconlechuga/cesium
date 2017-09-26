@@ -163,18 +163,18 @@ NotHighlighted:
 	jp	z,AsmOrICEOrCFile			
 	; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
 	set	isspecialprog,(iy+asmFlag)
-	ld	de,ICEStr
-	ld	hl,iceFileSprite
-	cp	a,$7F
-	jp	z,AsmOrICEOrCFile
-	ld	de,ICESourceStr
-	cp	a,$2C
-	jp	z,AsmOrICEOrCFile
 	ld	de,CStr
 	ld	hl,cFileSprite
 	cp	a,$CE
 	jp	z,AsmOrICEOrCFile					; Well... technically an ASM file could be a C file? :)
+	ld	de,ICEStr
+	ld	hl,iceFileSprite
+	cp	a,$7F
+	jp	z,AsmOrICEOrCFile
 	set	tmpIsBasic,(iy+tmpPgrmStatus)
+	ld	de,ICESourceStr
+	cp	a,$2C
+	jp	z,AsmOrICEOrCFile
 	call	CheckIfIconBASIC
 
 DrawIcon:

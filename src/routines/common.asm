@@ -4,6 +4,29 @@ ErrCatchBASIC:
 	call	_boot_ClearVRAM
 	call	_DrawStatusBar
 	call	_DispErrorScreen
+	ld	hl,1
+	ld	(curRow),hl
+	ld	hl,OP1
+	ld	(hl),'1'
+	inc	hl
+	ld	(hl),':'
+	inc	hl
+	ld	(hl),0
+	inc	hl
+	ld	(hl),'Q'
+	inc	hl
+	ld	(hl),'u'
+	inc	hl
+	ld	(hl),'i'
+	inc	hl
+	ld	(hl),'t'
+	inc	hl
+	ld	(hl),0
+	ld	hl,OP1
+	set	textInverse,(iy+textFlags)
+	call	_PutS
+	res	textInverse,(iy+textFlags)
+	call	_PutS
 	call	_GetKey
 	jr	ReturnHereIfError
 ReturnHereBASIC:
@@ -56,6 +79,11 @@ ReturnHereIfError:                          ; handler for returning programs
 	add	hl,bc
 	ld	a,$AA
 	jp	(hl)
+
+QuitStr1:
+	.db "1:",0
+QuitStr2:
+	.db "Quit",0
 
 FindAppStart:
 	ld	hl,CesiumAppName
