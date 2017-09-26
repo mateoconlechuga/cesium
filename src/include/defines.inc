@@ -28,28 +28,24 @@
 #define tmpIsBasic		03h
 #define tmpPgrmStatus		21h
 
-
-IntEnableMask	equ	0F00004h
-IntLatchBits	equ	0F0000Ch
-
-firstprog				equ 0 ;flag in asm_Flag1
-hideFlag				equ asm_Flag1
-prog1hidden				equ 1
-prog2hidden				equ 2
-firstprogpointer 			equ savesscreen
-endofsortedpartpointer			equ savesscreen+3
-vatentrysize				equ savesscreen+6
-vatentrynewloc				equ savesscreen+9
-vatentrytempstart			equ savesscreen+12
-vatentrytempend				equ savesscreen+12+15
+firstprog			equ 0 ;flag in asm_Flag1
+hideFlag			equ asm_Flag1
+prog1hidden			equ 1
+prog2hidden			equ 2
+firstprogpointer 		equ pixelShadow2
+endofsortedpartpointer		equ pixelShadow2+3
+vatentrysize			equ pixelShadow2+6
+vatentrynewloc			equ pixelShadow2+9
+vatentrytempstart		equ pixelShadow2+12
+vatentrytempend			equ pixelShadow2+12+15
 
 tmpSpriteLoc	equ cursorImage
 
-currSel		equ appdata
+currSel		equ appdata+200
 currSelAbs	equ currSel+3
 scrollamt	equ currSelAbs+3
-tmpSettings	equ scrollamt+3
 
+tmpSettings	equ pixelShadow2+300
 skinColor	equ tmpSettings
 RunIndic	equ tmpSettings+1
 PrgmCountDisp	equ tmpSettings+2
