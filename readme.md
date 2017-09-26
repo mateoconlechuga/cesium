@@ -1,8 +1,8 @@
-# Cesium
+## Cesium
 
-Cesium is the first *shell* for the TI-84 Plus CE / TI-83 Premium CE calculators.
+Cesium is the first *shell* for the TI-84 Plus CE / TI-83 Premium CE calculators, and includes many useful features.
 
-### INSTALLING ###
+### Installing
 
 In order to transfer Cesium to your calculator, you must have a linking program, such as TI-Connect CE: https://education.ti.com/ticonnectce. Once installed:
 
@@ -13,7 +13,7 @@ In order to transfer Cesium to your calculator, you must have a linking program,
 
 Congratulations, Cesium is now on your calculator!
 
-### RUNNING ###
+### Running
 For the first run, execute Cesium as you would any other assembly program by pressing [2nd][0] and choosing the `Asm(` token.
 Then press [prgm] and choose `CESIUM`. The homescreen should look like this:
 
@@ -23,7 +23,7 @@ Press [enter] to execute.
 
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
-### NAVIGATION ###
+### Controls
 Cesium provides a way to quickly jump to different programs in the program browser. Simply press one of the keys with a green letter above it, and it will take you to the first program with that starts with that letter.
 * [2nd/enter] - Run, select
 * [alpha] - Edit program options
@@ -31,8 +31,8 @@ Cesium provides a way to quickly jump to different programs in the program brows
 * [up/down] - Move places
 * [Keys with green letters] - Alpha search
  
-### RUNNING PROGRAMS ###
-Cesium can run programs written in ASM, C, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
+### Running Programs
+Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
 To run a program, simply press [2ND] or [Enter]. After a program is finished running, it will return to Cesium.
 
 ### Features
@@ -46,18 +46,16 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 * Customizable colors/theme
 * Available in French and English
 
-### UNINSTALLING ###
+### Uninstalling
 To uninstall Cesium, just press [2nd][+][2][1] and delete the following files:
 * Cesium (App)
 * Cesium (AppVar)
 
-### CREDITS ###
-(C) June 2017 Matt Waltz
-"MateoConLechuga"
+### Credits
+(C) June 2017 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
 
-### SOURCE ###
-Source is available here: https://github.com/MattWaltz/cesium
+### Source and Bug Reports
+Source is available here: https://github.com/mateoconlechuga/cesium
 
-### BUGS ###
-If you encounter an unexpected behaviour, please make an issue here on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
+If you encounter an unexpected behaviour, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
