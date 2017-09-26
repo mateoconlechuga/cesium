@@ -28,12 +28,11 @@ CesiumStart:
 #include "routines/exit.asm"            ; full exit routine
 #include "routines/parserhooks.asm"     ; for hooks
 
-; program data
-#ifdef ENGLISH
- #include "data/text.asm"               ; text data
-  #else
- #include "data/textFrench.asm"
-#endif
+CesiumEnd:
+
+app_data()
+
+CesiumDataStart:
 
 CesiumIcon: ; Signifies a CesiumOS program (haha)
  .db 16,16  ; Width, Height of sprite
@@ -53,12 +52,20 @@ CesiumIcon: ; Signifies a CesiumOS program (haha)
  .db 0FFh,0FFh,0B5h,06Bh,06Bh,0FFh,094h,0D6h,0B6h,06Bh,0FEh,06Bh,04Ah,094h,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0DEh,0FFh,0FFh,094h,0B5h,0B5h,06Bh,0FFh,0FFh,0DEh,0FFh,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
-VersionStr:
+CesiumVersionStr:
  .db "Cesium Version 2.3.2",0
-CesiumEnd:
+ 
+; program data
+#ifdef ENGLISH
+ #include "data/text.asm"               ; text data
+  #else
+ #include "data/textFrench.asm"
+#endif
 
-app_data()
+CesiumDataEnd:
+
 app_end()
 
- .echo "Program Size:\t",CesiumEnd-CesiumStart
+ .echo "App Size:\t",CesiumEnd-CesiumStart
+ .echo "App Data Size:\t",CesiumDataEnd-CesiumDataStart
  .echo "App Init Size:\t",_app_init_size

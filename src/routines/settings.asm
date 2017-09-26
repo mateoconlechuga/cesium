@@ -48,6 +48,12 @@ RedrawSettings:
 	set	clockIsOff,(iy+clockFlag)
 	res	shiftLwrAlph,(iy+shiftFlags)
 	call	DrawMainOSThings
+	call	ClearLowerBar
+	ld	a,107
+	ld	(cIndex),a
+	print(CesiumVersionStr,4,228)
+	ld	a,255
+	ld	(cIndex),a
 	SetDefaultTextColor()
 	print(GenSettingsStr,10,30)
 	print(ColorStr,25,53)

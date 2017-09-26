@@ -1,24 +1,4 @@
 ;-------------------------------------------------------------------------------
-CheckIfCurrentProgramIsUs:					; returns Z if we try to do anything to this program
-	ld	hl,(prgmNamePtr)
-	jr	+_
-CheckIfCurrentTmpProgramIsUs:
-	ld	hl,(tmpPrgmNamePtr)
-_:	call	NamePtrToOP1
-	ld	hl,CesiumPrgmName
-	ld	de,OP1
-	ld	b,8
-CheckNameLoop:
-	ld	a,(de)
-	cp	a,(hl)
-	ret	nz
-	inc	hl
-	inc	de
-	djnz	CheckNameLoop
-	xor	a,a
-	ret
-
-;-------------------------------------------------------------------------------
 DrawTime:
 	ld	a,(ClockDisp)
 	or	a,a
@@ -83,6 +63,3 @@ ClearLowerBar:
 	drawRectFilled(1,225,319,239)
 	pop	bc
 	ret
-	
-CesiumPrgmName:
-	.db	protProgObj,"CESIUM",0
