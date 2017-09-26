@@ -86,7 +86,7 @@ MAIN_START_LOOP:
 	jr	z,NoInfoString
 	print(FileInforamtionStr,3+2+185+9,22+2+3)
 NoInfoString:
-	ld	hl,$000FFF
+	ld	hl,$FFF
 	ld	(APDtmmr),hl
 	or	a,a
 	sbc	hl,hl

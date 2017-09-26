@@ -61,21 +61,9 @@ ___app_information_string:
 ___app_code_start:
 #define _app_init eval($)
 	push	af
-	call	_ReloadAppEntryVecs
-	res	appRunning,(iy+APIFlg)
-	set	appAllowContext,(iy+APIFlg)
-	set	nocxPutAway,(iy+contextFlags)
 	res	appTextSave,(iy+appFlags)
-	res	6,(iy+28)
-	set	7,(iy+9)
-	res	1,(iy+$0D)
-	set	bufferOnly,(iy+plotFlag3)
 	call	_HomeUp
 	call	_SaveShadow
-	ld	hl,cmdShadCur
-	ld	(hl),0
-	inc	hl
-	ld	(hl),0
 	ld	hl,___relocate_end-__relocate_start
 	push	hl
 #if __use_usermem != 0

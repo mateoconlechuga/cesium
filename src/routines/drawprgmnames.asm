@@ -299,13 +299,8 @@ setOverflowFlag:
 	ret
  
 AsmOrICEOrCFile:
-	push	hl
-	push	de
-	push	bc
-	pop	bc
-	pop	de
-	pop	hl
 	push	hl					; save the default icon
+	push	de
 tmpPrgmDataPtr: =$+1
 	ld	hl,0					; HL->pointer to data for program
 	inc	hl					; $EF
@@ -336,7 +331,7 @@ notc:
 	ld	e,(hl)
 	mlt	de
 	inc	de
-	add	hl,de					; DE->description string (NULL terminated)
+	add	hl,de					; hl->description string (NULL terminated)
 	push	bc
 	ld	bc,(posX)
 	push	bc
@@ -347,7 +342,7 @@ notc:
 	ld	(posX),bc
 	ld	(posY),a
 	SetInvertedTextColor()
-	call DrawString
+	call	DrawString
 	SetDefaultTextColor()
 	pop	af
 	pop	bc
@@ -355,14 +350,19 @@ notc:
 	ld	(posY),a
 	pop	bc
 	pop	hl
+	pop	de
+	pop	ix
+	jp	DrawIcon
+
+NoIcon:
+	pop	de
+	pop	hl                                      ; hl -> icon, de -> language string
+	jp	DrawIcon				; now draw the right icon :)
 
 Icon:
-	pop	de                                      ; de -> icon
-GoBack:	bit	isspecialprog,(iy+asmFlag)
-	jp	z,DrawIcon
-	jp	DrawIcon				; now draw the right icon :)
-NoIcon:	pop	hl
-	jr	GoBack
+	pop	de
+	pop	ix
+	jp	DrawIcon
 
 CheckIfIconBASIC:
 	ld	hl,basicFileSprite

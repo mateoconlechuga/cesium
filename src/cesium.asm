@@ -54,7 +54,7 @@ CesiumIcon: ; Signifies a CesiumOS program (haha)
  .db 0FFh,0FFh,0FFh,0DEh,0FFh,0FFh,094h,0B5h,0B5h,06Bh,0FFh,0FFh,0DEh,0FFh,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 VersionStr:
- .db "Cesium Version 2.3.1",0
+ .db "Cesium Version 2.3.2",0
 CesiumEnd:
 
 app_data()

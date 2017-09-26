@@ -21,7 +21,7 @@ Then press [prgm] and choose `CESIUM`. The homescreen should look like this:
 
 Press [enter] to execute.
 
-Now all you need to do to run Cesium is to press [apps] and select the `Cesium` application either using the numbers or scrolling.
+**NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
 ### NAVIGATION ###
 Cesium provides a way to quickly jump to different programs in the program browser. Simply press one of the keys with a green letter above it, and it will take you to the first program with that starts with that letter.

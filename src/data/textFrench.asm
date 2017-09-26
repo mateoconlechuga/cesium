@@ -41,7 +41,7 @@ CStr:
 ICEStr:
  .db "ICE",0
 ICESourceStr:
- .db "ICE S",0
+ .db "ICE",0
 BasicStr:
  .db "Basic",0
 ArchiveStatusStr:
