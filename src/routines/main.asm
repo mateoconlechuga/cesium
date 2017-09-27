@@ -92,6 +92,11 @@ NoInfoString:
 	sbc	hl,hl
 	ld	(posX),hl
 	call	DrawProgramNames
+	ld	hl,(numprograms)
+	add	hl,de
+	or	a,a
+	sbc	hl,de
+	jr	z,GetKeysNoPrgms
 GetKeys:
 	call	DrawTime
 	call	FullBufCpy
@@ -122,12 +127,19 @@ GetKeys:
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
-	ld	hl,(numprograms)
-	add	hl,de
-	or	a,a
-	sbc	hl,de
-	jp	z,DrawSettingsMenu
 	jp	CesiumLoader
+
+GetKeysNoPrgms:
+	call	DrawTime
+	call	FullBufCpy
+	call	_GetCSC
+	or	a,a
+	call	z,DecrementAPD
+	cp	a,skClear
+	jp	z,FullExit
+	cp	a,skMode
+	jp	z,DrawSettingsMenu
+	jr	GetKeysNoPrgms
 
 DecrementAPD:
 APDtmmr: =$+1

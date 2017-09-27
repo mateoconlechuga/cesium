@@ -23,6 +23,8 @@ Press [enter] to execute.
 
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
+Once installed, the application cannot be transferred to other calculators. If you wish to transfer Cesium to other calculators after installation, you must resend the installer and transfer the installer to other calculators.
+
 ### Controls
 Cesium provides a way to quickly jump to different programs in the program browser. Simply press one of the keys with a green letter above it, and it will take you to the first program with that starts with that letter.
 * [2nd/enter] - Run, select
@@ -47,9 +49,7 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 * Available in French and English
 
 ### Uninstalling
-To uninstall Cesium, just press [2nd][+][2][1] and delete the following files:
-* Cesium (App)
-* Cesium (AppVar)
+To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
 
 ### Credits
 (C) June 2017 Matt "MateoConLechuga" Waltz
