@@ -119,4 +119,3 @@ FindStartOfAppCode:
 
 endrelocate()
 executeapp_end:
-	ret

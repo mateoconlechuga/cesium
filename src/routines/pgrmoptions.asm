@@ -109,6 +109,8 @@ ConfirmRename:
 	ld	a,(cursor)
 	or	a,a
 	jp	z,GetNewName
+	ld	hl,(prgmNamePtr)
+	call	NamePtrToOP1				; move the selected name to OP1
 	ld	hl,_Arc_Unarc
 	ld	(jump_SMC),hl
 	ld	hl,(NameBufferPtr)

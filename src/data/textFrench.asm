@@ -65,4 +65,4 @@ CheckIconBASICStr:
 settingsAppVar:
  .db appVarObj,"Cesium",0
 NoProgramsStr:
- .db "No programs found",0
+ .db "Aucun programme trouv",$82,0
