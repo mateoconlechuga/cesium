@@ -15,6 +15,7 @@
 #endif
 #define __use_splash eval(use_splash)
 #define __use_usermem eval(use_usermem)
+#define __app_description eval(description)
 #define __app_version eval(version)
 #define __app_start eval($)
 	.db	$81, $0F, $00
@@ -55,11 +56,9 @@ _appname:
 	.dl	___app_code_start-__ahs
 	.dl	0, 0
 	.dl	___app_information_string-__ahs
-	.dl	___app_relocations-__ahs
+	.dl	0
 ___app_block_start:
 ___app_relocations:
-___app_information_string:
-	.db	description,0
 ___app_code_start:
 #define _app_init eval($)
 	push	af
@@ -180,6 +179,8 @@ _:	xor	a,a
 #macro app_end()
 	.org	$-$D1787C+__data
 #define __data_end eval($)
+___app_information_string:
+	.db	__app_description,0
 __sig:
 	.db	$02,$3e,$01,$00
 	.block	256
