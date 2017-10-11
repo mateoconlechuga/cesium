@@ -47,10 +47,12 @@ scrollamt	equ currSelAbs+3
 
 tmpSettings	equ scrollamt+3
 skinColor	equ tmpSettings
-RunIndic	equ tmpSettings+1
-PrgmCountDisp	equ tmpSettings+2
+runIndic	equ tmpSettings+1
+prgmCountDisp	equ tmpSettings+2
 clockDisp	equ tmpSettings+3
-AutoBackup	equ tmpSettings+4
+autoBackup	equ tmpSettings+4
+listApps	equ tmpSettings+5
+shortcutKeys	equ tmpSettings+6
 
 prgmNamePtr	equ tmpSettings+10
 prgmDataPtr	equ prgmNamePtr+3

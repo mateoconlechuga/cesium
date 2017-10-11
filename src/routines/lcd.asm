@@ -137,6 +137,24 @@ SpriteWidth255_2x_SMC: =$+1
 ;-------------------------------------------------------------------------------
 ; Common Sprites
 ;-------------------------------------------------------------------------------
+applicationBoxSprite:
+ .db 16,16
+ .db 094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h
+ .db 094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h
+ .db 094h,094h,08Bh,083h,083h,083h,083h,083h,083h,083h,082h,082h,083h,08Bh,094h,094h
+ .db 094h,0A3h,0ABh,0ACh,0ACh,0ACh,0ACh,0ACh,0ACh,0ACh,0ACh,0ACh,0ACh,0A3h,08Bh,094h
+ .db 083h,0ABh,0CCh,0A3h,0A3h,0A3h,0A3h,0A2h,0A2h,082h,082h,082h,08Bh,0ABh,083h,08Bh
+ .db 083h,0CDh,0A3h,0A2h,0A2h,0A2h,082h,082h,082h,082h,082h,082h,082h,083h,0ACh,082h
+ .db 083h,0EEh,0F5h,0EDh,0EDh,0EDh,0EDh,0EDh,0EDh,0EDh,0ECh,0ECh,0ECh,0ECh,0EDh,082h
+ .db 083h,0EDh,0EDh,0EDh,0ECh,0ECh,0ECh,0ECh,0CCh,0CCh,0CCh,0CBh,0CBh,0CBh,0ECh,082h
+ .db 083h,0EDh,0EDh,0ECh,0ECh,0ECh,0ECh,0CCh,0CCh,0CBh,0CBh,0CBh,0CBh,0CBh,0ECh,082h
+ .db 083h,0EDh,0ECh,0ECh,0ECh,0CCh,0CCh,0CCh,0CBh,0CBh,0CBh,0CBh,0CBh,0C3h,0CCh,082h
+ .db 083h,0EDh,0ECh,0CCh,0CCh,0CCh,0CBh,0CBh,0CBh,0CBh,0CBh,0C3h,0C3h,0C3h,0CCh,082h
+ .db 083h,0EDh,0ECh,0CCh,0CBh,0CBh,0CBh,0CBh,0CBh,0C3h,0C3h,0C3h,0C3h,0C3h,0CCh,082h
+ .db 082h,0EDh,0CCh,0CBh,0CBh,0CBh,0CBh,0CBh,0C3h,0C3h,0C3h,0C3h,0C3h,0C2h,0CCh,082h
+ .db 082h,0CDh,0EDh,0EDh,0ECh,0ECh,0ECh,0CCh,0CCh,0CCh,0CCh,0CCh,0CCh,0CCh,0CCh,082h
+ .db 08Bh,082h,082h,082h,082h,082h,082h,082h,082h,082h,082h,082h,082h,082h,082h,08Ah
+ .db 094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h,094h
 asmFileSprite:
  .db 16,16
  .db 255,255,255,093,125,125,125,125,125,125,019,019,255,255,255,255

@@ -26,7 +26,7 @@ CesiumStart:
 #include "routines/sort.asm"            ; sorting routines
 #include "routines/find.asm"            ; program finder
 #include "routines/exit.asm"            ; full exit routine
-#include "routines/parserhooks.asm"     ; for hooks
+#include "routines/hooks.asm"           ; for hooks
 
 CesiumEnd:
 
@@ -53,7 +53,7 @@ CesiumIcon: ; Signifies a CesiumOS program (haha)
  .db 0FFh,0FFh,0FFh,0DEh,0FFh,0FFh,094h,0B5h,0B5h,06Bh,0FFh,0FFh,0DEh,0FFh,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 CesiumVersionStr:
- .db "Cesium Version 2.3.4",0
+ .db "Cesium Version 2.3.5",0
  
 ; program data
 #ifdef ENGLISH

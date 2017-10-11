@@ -111,7 +111,7 @@ FindStartOfAppCode:
 	add	hl,bc
 	push	hl
 	pop	de
-	ld	bc,$1B			; offset
+	ld	bc,$12			; offset
 	add	hl,bc
 	ld	hl,(hl)
 	add	hl,de
@@ -119,3 +119,5 @@ FindStartOfAppCode:
 
 endrelocate()
 executeapp_end:
+
+.echo "Execute size:\t",executeapp_end-executeapp_start

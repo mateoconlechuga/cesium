@@ -40,7 +40,8 @@ WipeSafeRam:
 	set	graphdraw,(iy+graphFlags)
 	im	1
 	ei
-	jp	_JForceCmdNoChar                 ; exit like a boss
+	ld	a,kClear
+	jp	_JForceCmd	                 ; exit like a boss
 endrelocate()
 WipeSafeRam_End:
 

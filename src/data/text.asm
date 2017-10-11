@@ -52,6 +52,10 @@ ClockStr:
  .db "Display clock",0
 AutoBackupStr:
  .db "Backup RAM before executing programs",0
+ListAppsStr:
+ .db "List Flash applications",0
+ShortcutsStr:
+ .db "Enable keypad shortcuts",0
 ErrorStr:
  .db "ERROR: Library Version",0
 LibStr:

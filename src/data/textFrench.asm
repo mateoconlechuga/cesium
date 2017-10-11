@@ -12,6 +12,10 @@ ClockStr:
  .db "Afficher l'horloge",0
 AutoBackupStr:
  .db "Sauver la RAM avant de lancer des prgms",0
+ListAppsStr:
+ .db "les applications Flash",0
+RunOnBootStr:
+ .db "Lancer Cesium au d",$82,"marrage",0
 ErrorStr:
  .db "ERREUR : Version",0
 LibStr:

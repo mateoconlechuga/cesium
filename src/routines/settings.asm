@@ -12,10 +12,22 @@ CreateDefaultSettings:
 	call	_MemClear
 	pop	hl
 	ld	(hl),107					; Default Color
-	call	_OP4ToOP1
-	ret
+	inc	hl
+	inc	hl
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	(hl),255					; List applications
+	inc	hl
+	ld	(hl),255					; Enable homescreen hooks
+	jp	_OP4ToOP1
 
 SaveSettings:
+	call	_ClrRawKeyHook
+	ld	a,(shortcutKeys)
+	or	a,a
+	ld	hl,(rawKeyHookPtr)
+	call	nz,_SetRawKeyHook
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym
@@ -26,7 +38,7 @@ SaveSettings:
 	jr	nz,SaveSettings
 	inc	de
 	inc	de
-	ld	hl,TmpSettings
+	ld	hl,tmpSettings
 	ld	bc,9
 	ldir
 NotArchivedSet:
@@ -61,34 +73,48 @@ RedrawSettings:
 	print(ProgramCountStr,25,99)				; draw the setting's option text
 	print(ClockStr,25,122)
 	print(AutoBackupStr,25,145)
+	print(ListAppsStr,25,168)
+	print(ShortcutsStr,25,191)
 	ld	a,107
 	ld	(cIndex),a
 	drawRectOutline(10,52,18,60)
 	drawRectOutline(10,75,18,83)
 	drawRectOutline(10,98,18,106)
-	drawRectOutline(10,121,18,129)				
-	drawRectOutline(10,144,18,152)				; draw the empty rectangles
+	drawRectOutline(10,121,18,129)
+	drawRectOutline(10,144,18,152)
+	drawRectOutline(10,167,18,175)				
+	drawRectOutline(10,190,18,198)				; draw the empty rectangles
 	drawRectFilled(12,54,17,59)
-	ld	a,(RunIndic)
+	ld	a,(runIndic)
 	or	a,a
 	jr	z,BreakNotSet
 	drawRectFilled(12,77,17,82)
 BreakNotSet:							; option for RunIndic
-	ld	a,(PrgmCountDisp)
+	ld	a,(prgmCountDisp)
 	or	a,a
 	jr	z,ProgCountNotSet
 	drawRectFilled(12,100,17,105)
 ProgCountNotSet:						; option for program count
-	ld	a,(ClockDisp)
+	ld	a,(clockDisp)
 	or	a,a
 	jr	z,ClockDispNotSet
 	drawRectFilled(12,123,17,128)
 ClockDispNotSet:						; option for clock on
-	ld	a,(AutoBackup)
+	ld	a,(autoBackup)
 	or	a,a
 	jr	z,AutoBackupNotSet
 	drawRectFilled(12,146,17,151)
 AutoBackupNotSet:
+	ld	a,(listApps)
+	or	a,a
+	jr	z,ListAppsNotSet
+	drawRectFilled(12,169,17,174)
+ListAppsNotSet:
+	ld	a,(shortcutKeys)
+	or	a,a
+	jr	z,ShortcutsNotSet
+	drawRectFilled(12,192,17,197)
+ShortcutsNotSet:
 	call	HighlightBox
 GetOptions:	
 	call	DrawTime
@@ -139,12 +165,20 @@ _:	dec	a
 	jr	nz,+_
 	drawRectOutline(10,121,18,129)
 	ret
-_:	drawRectOutline(10,144,18,152)
+_:	dec	a
+	jr	nz,+_
+	drawRectOutline(10,144,18,152)
+	ret
+_:	dec	a
+	jr	nz,+_
+	drawRectOutline(10,167,18,175)
+	ret
+_:	drawRectOutline(10,190,18,198)
 	ret
 
 incrementSettingsOption:
 	ld	a,(currMenuSel)
-	cp	a,4
+	cp	a,6
 	ret	z
 	inc	a
 	ld	(currMenuSel),a
@@ -176,7 +210,7 @@ SwapOption:
 	ld	a,(currMenuSel)
 	or	a,a
 	ret	z
-	ld	hl,TmpSettings
+	ld	hl,tmpSettings
 	ld	a,(currMenuSel)
 	call	_AddHLAndA
 	ld	a,(hl)

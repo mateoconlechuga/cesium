@@ -18,8 +18,8 @@
 #define __app_description eval(description)
 #define __app_version eval(version)
 #define __app_start eval($)
+#define addr eval(__sig-$)
 	.db	$81, $0F, $00
-#define addr eval(__sig-$-3)
 	.dl	(addr>>16)|(addr&$00FF00)|(addr<<16)
 	.db	$81, $12, $13, $0F
 	.db	$81, $2D, $0B, "5.0.0.0089", $00
@@ -31,8 +31,8 @@
 #define freespace eval(247-($-__app_start))
 	.db	$00, $0D, freespace
 	.block	freespace
-	.db	$81, $7F, $00
 #define addr eval(__sig-$)
+	.db	$81, $7F, $00
 	.dl	(addr>>16)|(addr&$00FF00)|(addr<<16)
 __ahs:
 	.db	"eZ8"

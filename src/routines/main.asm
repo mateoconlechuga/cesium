@@ -1,5 +1,29 @@
 CESIUM_OS_BEGIN:
 	push	af
+	
+LoadSettings:
+	ld	hl,settingsAppVar
+	call	_Mov9ToOP1
+	call	_ChkFindSym			; now lookup the settings appvar
+	call	c,CreateDefaultSettings		; create it if it doesn't exist
+	call	_ChkInRam
+	push	af
+	call	z,_Arc_Unarc			; archive it
+	pop	af
+	jr	z,LoadSettings			; now lookup the settings appvar
+	ex	de,hl
+	ld	de,9
+	push	de
+	pop	bc
+	add	hl,de
+	ld	e,(hl)
+	add	hl,de
+	inc	hl				; HL->totalPrgmSize bytes
+	inc	hl
+	inc	hl
+	ld	de,TmpSettings
+	ldir					; copy the temporary settings to the lower stack
+	
 	call	FindAppStart
 	ld	bc,0-CesiumStart
 	add	hl,bc
@@ -7,6 +31,14 @@ CESIUM_OS_BEGIN:
 	ld	bc,ParserHook
 	add	hl,bc
 	call	_SetParserHook
+	pop	hl
+	push	hl
+	ld	bc,GetKeyHook
+	add	hl,bc
+	ld	(rawKeyHookPtr),hl
+	ld	a,(shortcutKeys)
+	or	a,a
+	call	nz,_SetRawKeyHook
 	pop	hl
 	ld	bc,ReturnHereNoError
 	add	hl,bc
@@ -25,28 +57,6 @@ CESIUM_OS_BEGIN:
 	pop	af
 	cp	a,$AA
 	jr	z,RELOADED_FROM_PRGM
-RunShell:
-	ld	hl,settingsAppVar
-	call	_Mov9ToOP1
-	call	_ChkFindSym			; now lookup the settings program
-	call	c,CreateDefaultSettings		; create it if it doesn't exist
-	call	_ChkInRam
-	push	af
-	call	z,_Arc_Unarc			; archive it
-	pop	af
-	jr	z,RunShell			; now lookup the settings program
-	ex	de,hl
-	ld	de,9
-	push	de
-	pop	bc
-	add	hl,de
-	ld	e,(hl)
-	add	hl,de
-	inc	hl				; HL->totalPrgmSize bytes
-	inc	hl
-	inc	hl
-	ld	de,TmpSettings
-	ldir					; copy the temporary settings to the lower stack
 	xor	a,a 
 	sbc	hl,hl
 	ld	(currSelAbs),hl

@@ -5,6 +5,9 @@ CesiumLoader:
 	or	a,a
 	call	nz,SaveRAMState			; Save ram state if option is set
 	
+	ld	a,(shortcutKeys)
+	or	a,a
+	call	nz,_ClrRawKeyHook
 	call	_boot_ClearVRAM
 	ld	a,$2D
 	ld	(mpLcdCtrl),a			; Set LCD to 16bpp

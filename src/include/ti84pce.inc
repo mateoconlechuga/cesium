@@ -1230,12 +1230,12 @@ _RunLibraryHook            equ 00213BCh
 _RunRawKeyHook             equ 00213C0h
 _SetCursorHook             equ 00213C4h
 _SetLibraryHook            equ 00213C8h
-_SetGetKeyHook             equ 00213CCh
+_SetRawKeyHook             equ 00213CCh
 _ClrCursorHook             equ 00213D0h
 _ClrLibraryHook            equ 00213D4h
 _ClrRawKeyHook             equ 00213D8h
-_GetKeyHook                equ 00213DCh
-_SetGetCSCHook             equ 00213E0h
+_RawKeyHook                equ 00213DCh
+_SetGetKeyHook             equ 00213E0h
 _ClrGetKeyHook             equ 00213E4h
 _SetCatalog2Hook           equ 00213E8h
 _ClrCatalog2Hook           equ 00213ECh
