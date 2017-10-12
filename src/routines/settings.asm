@@ -1,5 +1,5 @@
 CreateDefaultSettings:
-	ld	hl,10
+	ld	hl,12
 	call	_EnoughMem
 	jp	c,FullExit
 	ld	hl,10

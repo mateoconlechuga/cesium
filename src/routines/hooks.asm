@@ -20,7 +20,10 @@ StopEverything:
 GetKeyHook:
 	add	a,e
 	cp	a,kPrgm
-	ret	nz
+	jr	z,StartCesium
+	ret
+
+StartCesium:
 	di
 	ld	hl,$f0202c
 	ld	(hl),l
@@ -31,7 +34,14 @@ GetKeyHook:
 	ld	(menuCurrent),a
 	res	curAble, (iy + curFlags)
 	call	_CloseEditEqu
-	ld	hl,OP1                      ; execute app
+	ld	de,(asm_prgm_size)	; load total program size
+	or	a,a
+	sbc	hl,hl
+	ld	(asm_prgm_size),hl	; delete whatever current program was there (in case someone uses getkey in a program)
+	ld	hl,userMem
+	call	_DelMem
+	ld	hl,OP1			; execute app
+	push	hl
 	ld	(hl),'C'
 	inc	hl
 	ld	(hl),'e'
@@ -45,22 +55,11 @@ GetKeyHook:
 	ld	(hl),'m'
 	inc	hl
 	ld	(hl),0
-	ld	hl,OP1
-	push	hl
-	ld	de,(asm_prgm_size)	; load total program prgmSize
-	or	a,a
-	sbc	hl,hl
-	ld	(asm_prgm_size),hl	; delete whatever current program was there
-	ld	hl,userMem
-	call	_DelMem			; HL->place to delete, DE=amount to delete
-	ld	hl,$100
-	call	_EnoughMem
 	pop	hl
-	jp	c, _ErrMemory
 	call	_FindAppStart		; This locates the start of executable code for an app
 	ld	a,E_Validation
 	jp	c,_JError		; If we can't find it, that's a problem (throw a validation error)
-	push	hl			; push location of start of app
+	push	hl
 	call	_ReloadAppEntryVecs
 	call	_RunIndicOff
 	call	_AppSetup
@@ -68,34 +67,14 @@ GetKeyHook:
 	set	6,(iy+$28)
 	res	0,(iy+$2C)		; set some app flags
 	set	appAllowContext,(iy+APIFlg)	; turn on apps
-	ld	hl,$D1787C		; copy to ram data location
-	ld	bc,$FFF
-	call	_MemClear		; zero out the ram data section
 	pop	hl			; hl -> start of app
-	push	hl			; de -> start of code for app
-	ld	bc,$100			; bypass header information
-	add	hl,bc
-	ex	de,hl
-	ld	hl,$18			; find the start of the data to copy to ram
-	add	hl,de
-	ld	hl,(hl)
-	call	__icmpzero		; initialize the bss if it exists
-	jr	z,+_
-	push	hl
-	pop	bc
-	ld	hl,$15
-	add	hl,de
-	ld	hl,(hl)
-	add	hl,de
-	ld	de,$D1787C		; copy it in
-	ldir
-_:	pop	hl			; hl -> start of app
 	ld	bc,$100			; bypass some header info
 	add	hl,bc
 	push	hl
-	pop	de
 	ld	bc,$12			; offset
 	add	hl,bc
 	ld	hl,(hl)
-	add	hl,de
+	pop	bc
+	add	hl,bc
+	xor	a,a
 	jp	(hl)

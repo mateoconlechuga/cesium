@@ -14,8 +14,8 @@ AutoBackupStr:
  .db "Sauver la RAM avant de lancer des prgms",0
 ListAppsStr:
  .db "les applications Flash",0
-RunOnBootStr:
- .db "Lancer Cesium au d",$82,"marrage",0
+ShortcutsStr:
+ .db "Activer les raccourcis clavier",0
 ErrorStr:
  .db "ERREUR : Version",0
 LibStr:

@@ -105,6 +105,20 @@ FindAppStart:
 CesiumAppName:
 	.db	"Cesium",0
 
+SetKeyHookPtr:
+	call	FindAppStart
+	ld	bc,0-CesiumStart
+	add	hl,bc
+	push	hl
+	ld	bc,GetKeyHook
+	add	hl,bc
+	ld	(rawKeyHookPtr),hl
+	ld	a,(shortcutKeys)
+	or	a,a
+	call	nz,_SetRawKeyHook
+	pop	hl
+	ret
+
 DeletePgrmFromUserMem:
 	ld	de,(asm_prgm_size)		; load total program totalPrgmSize
 	or	a,a

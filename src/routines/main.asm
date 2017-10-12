@@ -1,6 +1,13 @@
 CESIUM_OS_BEGIN:
-	push	af
+	cp	a,$aa
+	jr	z,LoadSettings
 	
+	xor	a,a 
+	sbc	hl,hl
+	ld	(currSelAbs),hl
+	ld	(scrollamt),hl
+	ld	(currSel),a			; op1 holds the name of this program
+
 LoadSettings:
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
@@ -24,9 +31,7 @@ LoadSettings:
 	ld	de,TmpSettings
 	ldir					; copy the temporary settings to the lower stack
 	
-	call	FindAppStart
-	ld	bc,0-CesiumStart
-	add	hl,bc
+	call	SetKeyHookPtr
 	push	hl
 	ld	bc,ParserHook
 	add	hl,bc
@@ -54,15 +59,6 @@ LoadSettings:
 	ld	bc,ErrCatchBASIC
 	add	hl,bc
 	ld	(BASICERROR_HANDLER+1),hl
-	pop	af
-	cp	a,$AA
-	jr	z,RELOADED_FROM_PRGM
-	xor	a,a 
-	sbc	hl,hl
-	ld	(currSelAbs),hl
-	ld	(scrollamt),hl
-	ld	(currSel),a			; op1 holds the name of this program
-RELOADED_FROM_PRGM:		
 	res	onInterrupt,(iy+OnFlags)	; this bit of stuff just enables the [on] key
 	call	ClearScreens
 	call	_GetBatteryStatus		;> 75%=4 ;50%-75%=3 ;25%-50%=2 ;5%-25%=1 ;< 5%=0

@@ -11,6 +11,10 @@ FullExit:
 	ld	a,(AutoBackup)
 	or	a,a
 	call	nz,ClearOldBackup
+	call	SetKeyHookPtr
+	ld	hl,appdata
+	ld	bc,200
+	call	_MemClear
 	ld	hl,WipeSafeRam_Start
 	ld	de,WipeSafeRam
 	ld	bc,WipeSafeRam_End-WipeSafeRam_Start
