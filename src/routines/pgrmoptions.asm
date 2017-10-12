@@ -327,7 +327,51 @@ _j2:
 	drawRectFilled(302,120+22,307,125+22)
 _j3:
 	ret
+;-------------------------------------------------------------------------------
 SetOptions:
+;-------------------------------------------------------------------------------
+
+CheckLock:
+	ld	hl,(prgmNamePtr)
+	call	NamePtrToOP1
+	call	_ChkFindSym
+	ld	a,(LockSet)
+	or	a,a
+	jr	z,UnlockPrgm
+
+LockPrgm:
+	ld	(hl),$06
+	jr	CheckHide
+UnlockPrgm:
+	ld	(hl),$05
+
+;-------------------------------------------------------------------------------
+
+CheckHide:
+	ld	hl,(prgmNamePtr)
+	ld	hl,(hl)
+	dec	hl					; bypass name totalPrgmSize byte
+	ld	a,(hl)
+	cp	a,64
+	push	af
+	ld	a,(HideSet)
+	or	a,a
+	jr	z,Unhide
+Hide:
+	pop	af
+	jr	c,CheckArchive				; already hidden
+	sub	a,64
+	ld	(hl),a
+	jr	CheckArchive
+Unhide:
+	pop	af
+	jr	nc,CheckArchive				; already hidden
+	add	a,64
+	ld	(hl),a
+	
+;-------------------------------------------------------------------------------
+
+CheckArchive:
 	ld	hl,(prgmNamePtr)
 	call	NamePtrToOP1				; if 255, archive it
 	call	_ChkFindSym
@@ -339,47 +383,10 @@ SetOptions:
 ArchivePrgm:
 	pop	af
 	call	z,_Arc_Unarc
-	jr	CheckLock
+	jr	ReturnToMain
 UnarchivePrgm:
 	pop	af
 	call	nz,_Arc_Unarc
-
-;-------------------------------------------------------------------------------
-CheckLock:
-	ld	hl,(prgmNamePtr)
-	call	NamePtrToOP1
-	call	_ChkFindSym
-	ld	a,(LockSet)
-	or	a,a
-	jr	z,UnlockPrgm
-
-;-------------------------------------------------------------------------------
-LockPrgm:
-	ld	(hl),$06
-	jr	CheckHide
-UnlockPrgm:
-	ld	(hl),$05
-CheckHide:
-	ld	hl,(prgmNamePtr)
-	ld	hl,(hl)
-	dec	hl						; bypass name totalPrgmSize byte
-	ld	a,(hl)
-	cp	a,64
-	push	af
-	ld	a,(HideSet)
-	or	a,a
-	jr	z,Unhide
-Hide:
-	pop	af
-	jr	c,ReturnToMain				; already hidden
-	sub	a,64
-	ld	(hl),a
-	jr	ReturnToMain
-Unhide:
-	pop	af
-	jr	nc,ReturnToMain				; already hidden
-	add	a,64
-	ld	(hl),a
 ReturnToMain:
 	jp	MAIN_START_LOOP
 

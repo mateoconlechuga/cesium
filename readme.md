@@ -27,12 +27,23 @@ Once installed, the application cannot be transferred to other calculators. If y
 
 ### Controls
 Cesium provides a way to quickly jump to different programs in the program browser. Simply press one of the keys with a green letter above it, and it will take you to the first program with that starts with that letter.
-* [2nd/enter] - Run, select
-* [alpha] - Edit program options
-* [mode] - Enter settings menu
-* [up/down] - Move places
-* [Keys with green letters] - Alpha search
- 
+
+| Combination     | Action                   |
+|-----------------|--------------------------|
+| [2nd/enter]     | Run, select              |
+| [alpha]         | Edit program options     |
+| [mode]          | Enter settings menu      |
+| [up/down]       | Move places              |
+| [Green letters] | Alpha search for program |
+
+### Shortcuts
+Shortcuts are available from the TI-OS system anywhere. Simply hold the [on] key and press the corresponding button to trigger the action.
+Available actions:
+
+| Combination | Action                    |
+|-------------|---------------------------|
+| [on]+[prgm] | Launch Cesium Application |
+
 ### Running Programs
 Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
 To run a program, simply press [2ND] or [Enter]. After a program is finished running, it will return to Cesium.
