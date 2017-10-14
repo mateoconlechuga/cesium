@@ -20,26 +20,25 @@ StopEverything:
 GetKeyHook:
 	add	a,e
 	cp	a,kPrgm
-	jr	z,StartCesium
+	jr	z,Good
+	cp	a,kStat
+	jr	z,Good
 	ret
 
-StartCesium:
+Good:
 	di
 	ld	hl,$f0202c
 	ld	(hl),l
 	ld	l,h
 	bit	0,(hl)
 	ret	z
-	xor 	a,a
-	ld	(menuCurrent),a
-	res	curAble, (iy + curFlags)
-	call	_CloseEditEqu
-	ld	de,(asm_prgm_size)	; load total program size
-	or	a,a
-	sbc	hl,hl
-	ld	(asm_prgm_size),hl	; delete whatever current program was there (in case someone uses getkey in a program)
-	ld	hl,userMem
-	call	_DelMem
+	cp	a,kPrgm
+	jr	z,StartCesium
+	cp	a,kStat
+	jr	z,StartPassword
+	ret
+
+StartCesium:
 	ld	hl,OP1			; execute app
 	push	hl
 	ld	(hl),'C'
@@ -56,25 +55,66 @@ StartCesium:
 	inc	hl
 	ld	(hl),0
 	pop	hl
-	call	_FindAppStart		; This locates the start of executable code for an app
-	ld	a,E_Validation
-	jp	c,_JError		; If we can't find it, that's a problem (throw a validation error)
+	ld	de,progToEdit
+	ld	bc,8
+	ldir
+	ld	a,cxExtApps
+	jp	_NewContext
+
+StartPassword:
+	call	_ClrScrn
+	call	_HomeUp
+	call	_EnableAPD
+	ld	a,1
+	ld	hl,apdSubTimer
+	ld	(hl),a
+	inc	hl
+	ld	(hl),a
+	set	apdRunning,(iy+apdFlags)
+	ld	hl,OP1
 	push	hl
-	call	_ReloadAppEntryVecs
-	call	_RunIndicOff
-	call	_AppSetup
-	set	appRunning,(iy+APIFlg)	; turn on apps
-	set	6,(iy+$28)
-	res	0,(iy+$2C)		; set some app flags
-	set	appAllowContext,(iy+APIFlg)	; turn on apps
-	pop	hl			; hl -> start of app
-	ld	bc,$100			; bypass some header info
-	add	hl,bc
+	ld	(hl),'P'
+	inc	hl
+	ld	(hl),'a'
+	inc	hl
+	ld	(hl),'s'
+	inc	hl
+	ld	(hl),'s'
+	inc	hl
+	ld	(hl),'w'
+	inc	hl
+	ld	(hl),'o'
+	inc	hl
+	ld	(hl),'r'
+	inc	hl
+	ld	(hl),'d'
+	inc	hl
+	ld	(hl),':'
+	inc	hl
+	ld	(hl),' '
+	inc	hl
+	ld	(hl),0
+	pop	hl
+	call	_PutS
+	ld	bc,$400
+KeyPress:
 	push	hl
-	ld	bc,$12			; offset
-	add	hl,bc
-	ld	hl,(hl)
-	pop	bc
-	add	hl,bc
-	xor	a,a
-	jp	(hl)
+	call	_GetCSC
+	pop	hl
+	or	a,a
+	jr	z,KeyPress
+	cp	a,sk5
+	jr	z,Asterisk
+	inc	c
+Asterisk: 
+	ld	a,'*'
+	call	_PutC
+	djnz	KeyPress 
+	dec	c
+	inc	c
+	jr	nz,StartPassword
+	call	_ClrScrn
+	call	_HomeUp
+	ld	a,skClear
+	jp	_SendKPress
+

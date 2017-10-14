@@ -40,9 +40,10 @@ Cesium provides a way to quickly jump to different programs in the program brows
 Shortcuts are available from the TI-OS system anywhere. Simply hold the [on] key and press the corresponding button to trigger the action.
 Available actions:
 
-| Combination | Action                    |
-|-------------|---------------------------|
-| [on]+[prgm] | Launch Cesium Application |
+| Combination | Action                                  |
+|-------------|-----------------------------------------|
+| [on]+[prgm] | Launch Cesium Application               |
+| [on]+[stat] | Power down with password on wake (5555) |
 
 ### Running Programs
 Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
