@@ -19,9 +19,12 @@ StopEverything:
 
 GetKeyHook:
 	add	a,e
-	cp	a,kPrgm
+	cp	a,1Bh
+        ret	nz
+	ld	a,b
+	cp	a,skPrgm
 	jr	z,Good
-	cp	a,kStat
+	cp	a,skStat
 	jr	z,Good
 	ret
 
@@ -31,16 +34,25 @@ Good:
 	ld	(hl),l
 	ld	l,h
 	bit	0,(hl)
-	ret	z
-	cp	a,kPrgm
+	jr	z,NoOnKey
+	cp	a,skPrgm
 	jr	z,StartCesium
-	cp	a,kStat
+	cp	a,skStat
 	jr	z,StartPassword
 	ret
 
+NoOnKey:
+	dec	a
+	inc	a
+	ret
+
 StartCesium:
-	ld	hl,OP1			; execute app
-	push	hl
+	xor	a,a
+	ld	(menuCurrent),a
+	call	_CursorOff
+	call	_RunIndicOff
+	di
+	ld	hl,$D0082e			; honestly I've no idea what this address is...
 	ld	(hl),'C'
 	inc	hl
 	ld	(hl),'e'
@@ -54,16 +66,60 @@ StartCesium:
 	ld	(hl),'m'
 	inc	hl
 	ld	(hl),0
-	pop	hl
-	ld	de,progToEdit
+	ld	hl,$D0082e
+	ld	de,progtoedit			; copy it here just to be safe
 	ld	bc,8
 	ldir
 	ld	a,cxExtApps
 	jp	_NewContext
 
 StartPassword:
-	call	_ClrScrn
+	ld	bc,reloacted_code_password_end-reloacted_code_password_start
+	ld	de,saveSScreen
+	push	bc
+	ld	a,$E1
+	ld	($E30800),a
+	ld	a,$E9
+	ld	($E30801),a
+	call	$E30800
+	ld	bc,12
+	add	hl,bc
+	pop	bc
+	ldir
+	jp	saveSScreen
+
+reloacted_code_password_start:
+relocate(saveSScreen)
+FindSettings:
+	ld	hl,CesiumAppvarNameRelocated
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	call	_ChkInRam
+	push	af
+	call	z,_Arc_Unarc			; archive it
+	pop	af
+	jr	z,FindSettings			; now lookup the settings appvar
+	ex	de,hl
+	ld	de,9
+	push	de
+	pop	bc
+	add	hl,de
+	ld	e,(hl)
+	add	hl,de
+	ld	de,10
+	add	hl,de
+	ld	(PasswordTemp),hl
+	
+WrongPassword:
+	call	_CursorOff
+	ld	a,cxCmd
+	call	_NewContext0
+	call	_CursorOff
+	call	_ClrSCrn
 	call	_HomeUp
+	ld	hl,PasswordStrRelocated
+	call	_PutS
+	di
 	call	_EnableAPD
 	ld	a,1
 	ld	hl,apdSubTimer
@@ -71,50 +127,42 @@ StartPassword:
 	inc	hl
 	ld	(hl),a
 	set	apdRunning,(iy+apdFlags)
-	ld	hl,OP1
-	push	hl
-	ld	(hl),'P'
-	inc	hl
-	ld	(hl),'a'
-	inc	hl
-	ld	(hl),'s'
-	inc	hl
-	ld	(hl),'s'
-	inc	hl
-	ld	(hl),'w'
-	inc	hl
-	ld	(hl),'o'
-	inc	hl
-	ld	(hl),'r'
-	inc	hl
-	ld	(hl),'d'
-	inc	hl
-	ld	(hl),':'
-	inc	hl
-	ld	(hl),' '
-	inc	hl
-	ld	(hl),0
-	pop	hl
-	call	_PutS
+	ei
 	ld	bc,$400
-KeyPress:
-	push	hl
-	call	_GetCSC
-	pop	hl
-	or	a,a
-	jr	z,KeyPress
-	cp	a,sk5
-	jr	z,Asterisk
-	inc	c
+	ld	hl,(PasswordTemp) 
+KeyPress: 
+	call	GetKeyPress
+	cp	a,(hl) 
+	inc	hl 
+	jr	z,Asterisk 
+	inc	c 
 Asterisk: 
 	ld	a,'*'
 	call	_PutC
-	djnz	KeyPress 
+	djnz	KeyPress
 	dec	c
 	inc	c
-	jr	nz,StartPassword
-	call	_ClrScrn
-	call	_HomeUp
-	ld	a,skClear
+	jr 	nz,WrongPassword
+	ld	a,kClear
 	jp	_SendKPress
-
+	
+GetKeyPress:
+	push	hl
+   	call	_GetCSC
+	pop	hl
+	or	a,a
+	jr	z,GetKeyPress
+	ret 
+   
+CesiumAppvarNameRelocated:
+	.db	appVarObj,"Cesium",0
+PasswordStrRelocated:
+#ifdef ENGLISH
+	.db	"Password:",0
+#else
+	.db	"Mot de passe:",0
+#endif
+PasswordTemp:
+	.dl	0
+endrelocate()
+reloacted_code_password_end:hl

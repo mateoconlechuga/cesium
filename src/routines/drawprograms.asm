@@ -1,9 +1,13 @@
-DrawProgramNames:
+DrawPrograms:
 	ld	a,(PrgmCountDisp)
 	or	a,a
-	jr	z,+_
+	jr	z,++_
 	ld	hl,(numprograms)
-	call	ConvHL
+	ld	a,(listApps)
+	or	a,a
+	jr	z,+_
+	dec	hl
+_:	call	ConvHL
 	inc	hl
 	inc	hl
 	inc	hl
@@ -26,7 +30,15 @@ _:	ld	a,24
 	sbc	hl,hl
 	adc	hl,bc
 	jp	z,DrawNoPrograms                                ; return if no programs are found
-	ld	hl,pixelshadow2
+	res	isAtBox,(iy+asmFlag)
+	ld	a,(listApps)
+	or	a,a
+	jr	z,+_
+	ld	de,(currSelAbs)
+	call	_ChkDEIs0
+	jr	nz,+_
+	set	isAtBox,(iy+asmFlag)
+_:	ld	hl,pixelshadow2
 	ld	de,(scrollamt)
 	call	_ChkDEIs0
 	jr	z,DrawProgramsLoop
@@ -100,8 +112,9 @@ _:	ex	de,hl
 	call	_AddHLAndA
 	ld	(totalPrgmSize),hl
 	pop	hl
-	ld	de,3
-	add	hl,de
+	inc	hl
+	inc	hl
+	inc	hl
 	ld	a,(hl)
 	ld	(typebyte),a
 	pop	hl
@@ -143,8 +156,7 @@ NotHiddenHere:
 	ld	c,a
 	ld	a,24
 	ld	(posX),a
-	ld	a,2
-	ld	b,a
+	ld	b,2
 	pop	hl
 	inc	hl
 	inc	hl
@@ -157,6 +169,10 @@ NotHiddenHere:
 NotHighlighted:
 	inc	hl
 	push	hl
+	ld	de,DirStr
+	ld	hl,directorySprite
+	cp	a,$aa
+	jp	z,SpecialFolder
 	ld	de,ez80Str
 	ld	hl,asmFileSprite
 	or	a,a
@@ -231,25 +247,25 @@ archivestatus: =$+1
 	ld	a,255
 NotArchived:
 	ld	(arcStatus),a
-	print(EditStatusStr,185+9+3+2,22+2+3+91+11)
+	print(EditStatusStr,199,22+2+3+91+11)
 	drawRectOutline(300,118+11,308,126+11)
 	bit	pgrmLocked,(iy+pgrmStatus)
 	jr	z,Unlocked
 	drawRectFilled(302,120+11,307,125+11)
 Unlocked:
-	print(HiddenStr,185+9+3+2,22+2+3+91+22)
+	print(HiddenStr,199,140)
 	drawRectOutline(300,118+22,308,126+22)
 	bit	pgrmHidden,(iy+pgrmStatus)
 	jr	z,NotHidden
-	drawRectFilled(302,120+22,307,125+22)
+	drawRectFilled(302,142,307,147)
 NotHidden:
-	print(SizeStr,185+9+3+2,22+2+3+91+22+11)
+	print(SizeStr,199,151)
 	ld	hl,(totalPrgmSize)
 	call	ConvHL
 	inc	hl
 	inc	hl
 	call	DrawString
-	print(LanguageStr,185+9+3+2,22+2+3+80)
+	print(LanguageStr,199,107)
 	pop	hl
 	call	DrawString
 	print(AttributesStr,199,173)
@@ -266,20 +282,7 @@ NotHidden:
 	ld	(posX),de
 	inc	hl
 	call	DrawString
-	print(DeleteStr,199,195)
-#ifdef ENGLISH
-	ld	de,278
-#else
-	ld	de,262
-#endif
-	ld	(posX),de
-	inc	hl
-	call	DrawString
-	print(SettingsStr,199,206)
-	ld	de,270
-	ld	(posX),de
-	inc	hl
-	call	DrawString
+	call	DrawStaticInfo
 	push	hl
 NotCurrentlySelected:
 	pop	hl
@@ -297,7 +300,15 @@ NotCurrentlySelected:
 setOverflowFlag:
 	set	scrollDown,(iy+asmFlag)
 	ret
- 
+
+SpecialFolder:
+	push	hl
+	or	a,a
+	sbc	hl,hl
+	ld	(totalPrgmSize),hl
+	pop	hl
+	jp	DrawIcon
+
 AsmOrICEOrCFile:
 	push	hl					; save the default icon
 	push	de
@@ -323,32 +334,13 @@ notc:
 	bit	drawingSelected,(iy+asmFlag)		; make sure we actually want to draw the description
 	jr	z,Icon
 	push	hl
-	push	hl
-	call	ClearLowerBar				; clear out the bottom bar
-	pop	hl
 	ld	d,(hl)					; okay, now we have to draw the description string
 	inc	hl
 	ld	e,(hl)
 	mlt	de
 	inc	de
 	add	hl,de					; hl->description string (NULL terminated)
-	push	bc
-	ld	bc,(posX)
-	push	bc
-	ld	a,(posY)
-	push	af
-	ld	bc,4
-	ld	a,228
-	ld	(posX),bc
-	ld	(posY),a
-	SetInvertedTextColor()
-	call	DrawString
-	SetDefaultTextColor()
-	pop	af
-	pop	bc
-	ld	(posX),bc
-	ld	(posY),a
-	pop	bc
+	call	DrawLowerDescription
 	pop	hl
 	pop	de
 	pop	ix
@@ -426,5 +418,44 @@ PrintModeSettings:
 	call	DrawString
 	ret
 	
+DrawLowerDescription:
+	push	bc
+	push	hl
+	call	ClearLowerBar				; clear out the bottom bar
+	pop	hl
+	ld	bc,(posX)
+	push	bc
+	ld	a,(posY)
+	push	af
+	ld	bc,4
+	ld	a,228
+	ld	(posX),bc
+	ld	(posY),a
+	SetInvertedTextColor()
+	call	DrawString
+	SetDefaultTextColor()
+	pop	af
+	pop	bc
+	ld	(posX),bc
+	ld	(posY),a
+	pop	bc
+	ret
+
+DrawStaticInfo:
+	print(DeleteStr,199,195)
+#ifdef ENGLISH
+	ld	de,278
+#else
+	ld	de,262
+#endif
+	ld	(posX),de
+	inc	hl
+	call	DrawString
+	print(SettingsStr,199,206)
+	ld	de,270
+	ld	(posX),de
+	inc	hl
+	jp	DrawString
+
 colorTable:
- .db 255,24,224,0,248,36,227,97,09,19,230,255,181,107,106,74
+	.db	255,24,224,0,248,36,227,97,09,19,230,255,181,107,106,74

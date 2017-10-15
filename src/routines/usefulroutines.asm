@@ -30,23 +30,10 @@ DrawTime:
 ;-------------------------------------------------------------------------------
 DrawMainOSThings:
 	call	ClearVBuf2
-	SetInvertedTextColor()
+	call	PrintRAMAndROMFree
 	drawRectFilled(1,1,319,21)
-	call	ClearLowerBar
-	ld	a,107
-	ld	(cIndex),a
 	drawRectOutline(1,22,318,223)
 	print(CesiumTitle,15,7)
-	print(RAMFreeStr,4,228)
-	call	_MemChk
-	call	ConvHL
-	inc	hl
-	call	DrawString
-	print(ROMFreeStr,196,228)
-	call	_ArcChk
-	ld	hl,(tempFreeArc)
-	call	ConvHL
-	call	DrawString
 	drawSpr255(batterySprite, 3,7)
 	ld	a,255
 	ld	(cIndex),a
@@ -57,7 +44,23 @@ CesiumBatteryStatus: =$+1
 	ld	bc,4
 	ld	de,(lcdWidth*8)+7
 	jp	FillRectangle_Computed
- 
+
+PrintRAMAndROMFree:
+	SetInvertedTextColor()
+	call	ClearLowerBar
+	ld	a,107
+	ld	(cIndex),a
+	print(RAMFreeStr,4,228)
+	call	_MemChk
+	call	ConvHL
+	inc	hl
+	call	DrawString
+	print(ROMFreeStr,196,228)
+	call	_ArcChk
+	ld	hl,(tempFreeArc)
+	call	ConvHL
+	jp	DrawString
+
 ClearLowerBar:
 	push	bc
 	drawRectFilled(1,225,319,239)

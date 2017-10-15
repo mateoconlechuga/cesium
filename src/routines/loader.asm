@@ -7,7 +7,7 @@ CesiumLoader:
 	
 	ld	a,(shortcutKeys)
 	or	a,a
-	call	nz,_ClrRawKeyHook
+	call	nz,$0213E4
 	call	_boot_ClearVRAM
 	ld	a,$2D
 	ld	(mpLcdCtrl),a			; Set LCD to 16bpp

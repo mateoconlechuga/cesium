@@ -2,11 +2,12 @@ CESIUM_OS_BEGIN:
 	cp	a,$aa
 	jr	z,LoadSettings
 	
-	xor	a,a 
+	xor	a,a
 	sbc	hl,hl
 	ld	(currSelAbs),hl
 	ld	(scrollamt),hl
 	ld	(currSel),a			; op1 holds the name of this program
+	ld	(inAppScreen),a
 
 LoadSettings:
 	ld	hl,settingsAppVar
@@ -40,10 +41,10 @@ LoadSettings:
 	push	hl
 	ld	bc,GetKeyHook
 	add	hl,bc
-	ld	(rawKeyHookPtr),hl
+	ld	(getKeyHookPtr),hl
 	ld	a,(shortcutKeys)
 	or	a,a
-	call	nz,_SetRawKeyHook
+	call	nz,$0213E0
 	pop	hl
 	ld	bc,ReturnHereNoError
 	add	hl,bc
@@ -67,16 +68,19 @@ LoadSettings:
 	ld	(CesiumBatteryStatus),a
 MAIN_START_LOOP_1:
 	call	DeleteTempProgramGetName
-	ld	hl,pixelshadow2
-	ld	(programNameLocationsPtr),hl
-	xor	a,a
-	sbc	hl,hl
-	ld	(numprograms),hl
 	call	sort				; sort the VAT alphabetically
-	call	FindPrograms			; find available assembly programs in the VAT
 	ld	a,$27
 	ld	(mpLcdCtrl),a			; set LCD to 8bpp
 	call	CopyHL1555Palette		; HIGH=LOW
+MAIN_START_LOOP_SETTINGS:
+	call	AppCheck
+	call	FindAppsPrograms		; find available programs and apps
+	ld	hl,(numprograms)
+	ld	a,(inAppScreen)
+	or	a,a
+	jr	z,+_
+	ld	hl,(numapps)
+_:	ld	(MaxListAmt),hl
 MAIN_START_LOOP:
 	call	DrawMainOSThings
 	ld	a,107
@@ -97,12 +101,17 @@ NoInfoString:
 	or	a,a
 	sbc	hl,hl
 	ld	(posX),hl
-	call	DrawProgramNames
+	ld	a,(inAppScreen)
+	or	a,a
+	push	af
+	call	z,DrawPrograms
+	pop	af
+	call	nz,DrawApps
 	ld	hl,(numprograms)
 	add	hl,de
 	or	a,a
 	sbc	hl,de
-	jr	z,GetKeysNoPrgms
+	jp	z,GetKeysNoPrgms
 GetKeys:
 	call	DrawTime
 	call	FullBufCpy
@@ -133,7 +142,56 @@ GetKeys:
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
-	jp	CesiumLoader
+	ld	a,(listApps)
+	or	a,a
+	jp	z,CesiumLoader
+	ld	hl,(currSelAbs)
+	call	_ChkHLIs0
+	jr	nz,CheckForRun
+	ld	hl,inAppScreen
+	ld	a,(hl)
+	cpl
+	ld	(hl),a
+	jp	MAIN_START_LOOP_SETTINGS
+CheckForRun:
+	ld	a,(inAppScreen)
+	or	a,a
+	jp	z,CesiumLoader
+	call	CleanUp
+	call	_ResetStacks
+	call	_ReloadAppEntryVecs
+	call	_AppSetup
+	set	appRunning,(iy+APIFlg)	; turn on apps
+	set	6,(iy+$28)
+	res	0,(iy+$2C)		; set some app flags
+	set	appAllowContext,(iy+APIFlg)	; turn on apps
+	ld	hl,$D1787C		; copy to ram data location
+	ld	bc,$FFF
+	call	_MemClear		; zero out the ram data section
+	ld	hl,(currAppPtr)		; hl -> start of app
+	push	hl			; de -> start of code for app
+	ex	de,hl
+	ld	hl,$18			; find the start of the data to copy to ram
+	add	hl,de
+	ld	hl,(hl)
+	call	__icmpzero		; initialize the bss if it exists
+	jr	z,+_
+	push	hl
+	pop	bc
+	ld	hl,$15
+	add	hl,de
+	ld	hl,(hl)
+	add	hl,de
+	ld	de,$D1787C		; copy it in
+	ldir
+_:	pop	hl
+	push	hl
+	pop	de
+	ld	bc,$1B			; offset
+	add	hl,bc
+	ld	hl,(hl)
+	add	hl,de
+	jp	(hl)
 
 GetKeysNoPrgms:
 	call	DrawTime
@@ -162,7 +220,7 @@ APDtmmr: =$+1
 MoveSelectionUp:
 	ld	hl,MAIN_START_LOOP
 	push	hl
-GetNextPrgmUp:
+GetListUp:
 	ld	hl,(currSelAbs)
 	add	hl,de
 	or	a,a
@@ -182,7 +240,8 @@ MoveSelectionDown:
 	push	hl
 GetNextPrgmDown:
 	ld	hl,(currSelAbs)
-	ld	de,(numprograms)
+MaxListAmt =$+1
+	ld	de,0
 	dec	de
 	call	_CpHLDE
 	ret	z

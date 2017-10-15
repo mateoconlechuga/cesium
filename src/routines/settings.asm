@@ -1,14 +1,14 @@
 CreateDefaultSettings:
-	ld	hl,12
+	ld	hl,30
 	call	_EnoughMem
 	jp	c,FullExit
-	ld	hl,10
+	ld	hl,15
 	call	_CreateAppVar
 	inc	de
 	inc	de
 	ex	de,hl
 	push	hl
-	ld	bc,10
+	ld	bc,15
 	call	_MemClear
 	pop	hl
 	ld	(hl),107					; Default Color
@@ -20,14 +20,22 @@ CreateDefaultSettings:
 	ld	(hl),255					; List applications
 	inc	hl
 	ld	(hl),255					; Enable homescreen hooks
+	inc	hl
+	ld	(hl),sk5
+	inc	hl
+	ld	(hl),sk5
+	inc	hl
+	ld	(hl),sk5
+	inc	hl
+	ld	(hl),sk5
 	jp	_OP4ToOP1
 
 SaveSettings:
-	call	_ClrRawKeyHook
+	call	$0213E4
 	ld	a,(shortcutKeys)
 	or	a,a
-	ld	hl,(rawKeyHookPtr)
-	call	nz,_SetRawKeyHook
+	ld	hl,(getKeyHookPtr)
+	call	nz,$0213E0
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym
@@ -39,7 +47,7 @@ SaveSettings:
 	inc	de
 	inc	de
 	ld	hl,tmpSettings
-	ld	bc,9
+	ld	bc,14
 	ldir
 NotArchivedSet:
 	ld	hl,settingsAppVar				; locate the appvar
@@ -122,6 +130,8 @@ GetOptions:
 	call	_GetCSC
 	ld	hl,RedrawSettings
 	push	hl
+	cp	a,skStore
+	jp	z,ChangePassword
 	cp	a,skLeft
 	jp	z,decrementColor
 	cp	a,skRight
@@ -142,8 +152,21 @@ GetOptions:
 	jr	GetOptions
 SetAndSaveOptions:
 	call	SaveSettings
-	jp	MAIN_START_LOOP
-	
+	ld	a,(inAppScreen)
+	or	a,a
+	jr	nz,++_
+_:	jp	MAIN_START_LOOP_SETTINGS
+_:	ld	a,(listApps)
+	or	a,a
+	jr	nz,--_
+	xor	a,a
+	sbc	hl,hl
+	ld	(currSelAbs),hl
+	ld	(scrollamt),hl
+	ld	(currSel),a			; op1 holds the name of this program
+	ld	(inAppScreen),a
+	jr	--_
+
 HighlightBox:
 	ld	a,HIGHLIGHT_COLOR
 	ld	(cIndex),a
@@ -217,3 +240,37 @@ SwapOption:
 	cpl
 	ld	(hl),a
 	ret
+
+ChangePassword:
+	call	_boot_ClearVRAM
+	call	DrawMainOSThings
+	call	ClearLowerBar
+	ld	a,107
+	ld	(cIndex),a
+	print(CesiumVersionStr,4,228)
+	ld	a,255
+	ld	(cIndex),a
+	SetDefaultTextColor()
+	print(NewPasswordPrompt,10,30)
+	ld	b,4
+	ld	hl,pass1
+GetPassLoop:
+	push	hl
+	push	bc
+	call	FullBufCpy
+_:	call	_GetCSC
+	or	a,a
+	jr	z,-_
+	push	af
+	ld	a,'*'
+	call	DrawChar
+	pop	af
+	pop	bc
+	pop	hl
+	ld	(hl),a
+	inc	hl
+	djnz	GetPassLoop
+	ret
+
+settingsAppVar:
+	.db	appVarObj,"Cesium",0

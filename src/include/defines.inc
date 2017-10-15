@@ -11,6 +11,7 @@
 #define drawingSelected		03h
 #define drawPrgmCnt		05h
 #define isspecialprog		06h
+#define isAtBox                 07h
 #define asmFlag			22h
 
 #define clockIsOff		04h
@@ -20,6 +21,7 @@
 #define pgrmLocked		01h
 #define pgrmHidden		02h
 #define isBasic			03h
+#define isDisabled		04h
 #define pgrmStatus		30h
 
 #define tmpPgrmArchived		00h
@@ -42,7 +44,8 @@ vatentrytempend			equ pixelShadow2+12+15
 tmpSpriteLoc	equ cursorImage
 
 currSel		equ appdata+200
-currSelAbs	equ currSel+3
+inAppScreen	equ currSel+1
+currSelAbs	equ inAppScreen+1
 scrollamt	equ currSelAbs+3
 
 tmpSettings	equ scrollamt+3
@@ -53,6 +56,10 @@ clockDisp	equ tmpSettings+3
 autoBackup	equ tmpSettings+4
 listApps	equ tmpSettings+5
 shortcutKeys	equ tmpSettings+6
+pass1		equ tmpSettings+7
+pass2		equ tmpSettings+8
+pass3		equ tmpSettings+9
+pass4		equ tmpSettings+10
 
 prgmNamePtr	equ tmpSettings+10
 prgmDataPtr	equ prgmNamePtr+3

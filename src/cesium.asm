@@ -20,7 +20,8 @@ CesiumStart:
 #include "routines/pgrmoptions.asm"     ; options for prgms
 #include "routines/settings.asm"        ; general settings
 #include "routines/delete.asm"          ; prgm deletion stuff
-#include "routines/drawprgmnames.asm"   ; part of main loop
+#include "routines/drawprograms.asm"	; part of main loop
+#include "routines/drawapps.asm"	; part of main loop
 #include "routines/search.asm"          ; alphabetizer
 #include "routines/lcd.asm"             ; LCD routines
 #include "routines/sort.asm"            ; sorting routines
@@ -53,7 +54,7 @@ CesiumIcon: ; Signifies a CesiumOS program (haha)
  .db 0FFh,0FFh,0FFh,0DEh,0FFh,0FFh,094h,0B5h,0B5h,06Bh,0FFh,0FFh,0DEh,0FFh,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 CesiumVersionStr:
- .db "Cesium Version 2.3.5",0
+ .db "Cesium Version 2.3.9",0
  
 ; program data
 #ifdef ENGLISH

@@ -18,6 +18,8 @@ ShortcutsStr:
  .db "Activer les raccourcis clavier",0
 ErrorStr:
  .db "ERREUR : Version",0
+MinVersionStr:
+ .db "Min Version:",0
 LibStr:
  .db "ERREUR : Biblioth",$8A,"que",0
 LibNameStr:
@@ -45,7 +47,9 @@ CStr:
 ICEStr:
  .db "ICE",0
 ICESourceStr:
- .db "ICE",0
+ .db "ICE S",0
+DirStr:
+ .db "Dir",0
 BasicStr:
  .db "Basic",0
 ArchiveStatusStr:
@@ -66,7 +70,8 @@ NewNameStr:
  .db "Nouveau Nom -",0
 CheckIconBASICStr:
  .db $3E,$44,$43,$53,$3F,$2A
-settingsAppVar:
- .db appVarObj,"Cesium",0
 NoProgramsStr:
  .db "Aucun programme trouv",$82,0
+NewPasswordPrompt:
+ .db "Saisir le nouveau mot de passe:",0
+

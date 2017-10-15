@@ -1,20 +1,6 @@
 ;-------------------------------------------------------------------------------
 FullExit:
-	call	_boot_ClearVRAM
-	ld	a,$2D
-	ld	(mpLcdCtrl),a                   ; Set LCD to 16bpp
-	res	useTokensInString,(iy+clockFlags)
-	res	onInterrupt,(iy+onFlags)        ; [ON] break error destroyed
-	call	_DrawStatusBar
-	call	_ClrParserHook
-	res	apdWarmStart, (iy + apdFlags)
-	ld	a,(AutoBackup)
-	or	a,a
-	call	nz,ClearOldBackup
-	call	SetKeyHookPtr
-	ld	hl,appdata
-	ld	bc,200
-	call	_MemClear
+	call	CleanUp
 	ld	hl,WipeSafeRam_Start
 	ld	de,WipeSafeRam
 	ld	bc,WipeSafeRam_End-WipeSafeRam_Start
@@ -34,6 +20,27 @@ ClearOldBackup:
 
 	ret
 
+CleanUp:
+	call	_boot_ClearVRAM
+	ld	a,$2D
+	ld	(mpLcdCtrl),a                   ; Set LCD to 16bpp
+	res	useTokensInString,(iy+clockFlags)
+	res	onInterrupt,(iy+onFlags)        ; [ON] break error destroyed
+	call	_DrawStatusBar
+	call	_ClrParserHook
+	res	apdWarmStart, (iy + apdFlags)
+	ld	a,(AutoBackup)
+	or	a,a
+	call	nz,ClearOldBackup
+	call	SetKeyHookPtr
+	ld	hl,appdata
+	ld	bc,250
+	call	_MemClear
+	set	graphdraw,(iy+graphFlags)
+	im	1
+	ei
+	ret
+
 WipeSafeRam_Start:
 relocate(cursorimage)
 WipeSafeRam:
@@ -41,9 +48,6 @@ WipeSafeRam:
 	ld	bc,69090
 	call	_MemClear
 	call	_ClrTxtShd                      ; clear text shadow
-	set	graphdraw,(iy+graphFlags)
-	im	1
-	ei
 	ld	a,kClear
 	jp	_JForceCmd	                 ; exit like a boss
 endrelocate()

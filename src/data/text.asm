@@ -9,7 +9,9 @@ CStr:
 ICEStr:
  .db "ICE",0
 ICESourceStr:
- .db "ICE",0
+ .db "ICE S",0
+DirStr:
+ .db "Dir",0
 BasicStr:
  .db "Basic",0
 ArchiveStatusStr:
@@ -20,6 +22,8 @@ EditStatusStr:
  .db "Locked",0
 SizeStr:
  .db "Size: ",0
+MinVersionStr:
+ .db "Min Version:",0
 RAMFreeStr:
  .db "RAM Free: ",0
 FileInforamtionStr:
@@ -38,8 +42,6 @@ RenameStr:
  .db 126,"GRAPH]",0
 DeleteConfirmStr:
  .db "Delete?: ",126,"ZOOM]-Yes  ",126,"GRAPH]-No",0
-settingsAppVar:
- .db appVarObj,"Cesium",0
 GenSettingsStr:
  .db "General Settings",0
 ColorStr:
@@ -70,3 +72,5 @@ CheckIconBASICStr:
  .db $3E,$44,$43,$53,$3F,$2A
 NoProgramsStr:
  .db "No programs found",0
+NewPasswordPrompt:
+ .db "Input new password: ",0

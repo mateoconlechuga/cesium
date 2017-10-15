@@ -112,10 +112,10 @@ SetKeyHookPtr:
 	push	hl
 	ld	bc,GetKeyHook
 	add	hl,bc
-	ld	(rawKeyHookPtr),hl
+	ld	(getKeyHookPtr),hl
 	ld	a,(shortcutKeys)
 	or	a,a
-	call	nz,_SetRawKeyHook
+	call	nz,$0213E0
 	pop	hl
 	ret
 
@@ -191,6 +191,20 @@ _:	ld	a,(hl)
 	ld	(de),a				; terminate the string
 	ret
 
+CheckIfOnBox:
+	ld	a,(listApps)
+	or	a,a
+	jr	z,+_
+	ld	hl,(currSelAbs)
+	call	_ChkHLIs0
+	jr	nz,+_
+	xor	a,a
+	ret
+_:	xor	a,a
+	inc	a
+	ret
+
+	
 ;-------------------------------------------------------------------------------
 FillRectangle:
 ; bc = width
@@ -389,7 +403,7 @@ ConvHL:    				; hl = 8-bit score
 	ret
 
 tmpStr:
- .dl 0,0,0,0,0,0,0,0,0,0
+	.dl	0,0,0,0,0,0,0,0,0,0
 str:
 	ld	bc,-1000000
 	call	Num13
