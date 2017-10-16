@@ -10,6 +10,11 @@ CESIUM_OS_BEGIN:
 	ld	(inAppScreen),a
 
 LoadSettings:
+	ld	hl,settingsOldAppVar
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	call	nc,_DelVarArc
+	
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym			; now lookup the settings appvar

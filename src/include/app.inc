@@ -18,7 +18,7 @@
 #define __app_description eval(description)
 #define __app_version eval(version)
 #define __app_start eval($)
-#define addr eval(__sig-$)
+#define addr eval((__sig-$)-3)
 	.db	$81, $0F, $00
 	.dl	(addr>>16)|(addr&$00FF00)|(addr<<16)
 	.db	$81, $12, $13, $0F

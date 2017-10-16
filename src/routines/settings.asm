@@ -273,4 +273,6 @@ _:	call	_GetCSC
 	ret
 
 settingsAppVar:
+	.db	appVarObj,"CesiumV",0
+settingsOldAppVar:
 	.db	appVarObj,"Cesium",0

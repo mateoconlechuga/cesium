@@ -33,4 +33,5 @@ DeleteApp:
 	ld	bc,0-$100
 	add	hl,bc
 	call	_DeleteApp
+	set	3,(iy+$25)				; defrag on exit
 	jr	-_					; reload everything

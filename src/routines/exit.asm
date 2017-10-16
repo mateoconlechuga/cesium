@@ -48,7 +48,11 @@ WipeSafeRam:
 	ld	bc,69090
 	call	_MemClear
 	call	_ClrTxtShd                      ; clear text shadow
-	ld	a,kClear
+	bit	3,(iy+$25)
+	jr	z,+_
+	ld	a,cxErase
+	call	_NewContext0
+_:	ld	a,kClear
 	jp	_JForceCmd	                 ; exit like a boss
 endrelocate()
 WipeSafeRam_End:

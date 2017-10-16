@@ -160,6 +160,10 @@ AppCheck:
 	ld	de,$C00
 	call	$310
 	ret	nz
+	call	$30C
+	ld	a,(hl)
+	or	a,a
+	ret	z
 	xor	a,a
 	ld	(listApps),a
 	set	isDisabled,(iy+pgrmStatus)

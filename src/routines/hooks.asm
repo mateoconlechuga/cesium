@@ -155,7 +155,7 @@ GetKeyPress:
 	ret 
    
 CesiumAppvarNameRelocated:
-	.db	appVarObj,"Cesium",0
+	.db	appVarObj,"CesiumV",0
 PasswordStrRelocated:
 #ifdef ENGLISH
 	.db	"Password:",0
