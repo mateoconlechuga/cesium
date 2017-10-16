@@ -7,7 +7,7 @@ Cesium is the first *shell* for the TI-84 Plus CE / TI-83 Premium CE calculators
 In order to transfer Cesium to your calculator, you must have a linking program, such as TI-Connect CE: https://education.ti.com/ticonnectce. Once installed:
 
 1. Plug-in your calculator and Launch TI-Connect CE
-2. Send `Cesium.8xp` (or `Cesium_French.8xp` if needed)
+2. Send `cesium.8xp` (or `cesium_french.8xp` if needed)
 3. Drag'n'drop them onto the calculator that should be in the devices list in TI-Connect CE
 4. Press the [Send] button in the window that pops up.
 
@@ -40,10 +40,12 @@ Cesium provides a way to quickly jump to different programs in the program brows
 Shortcuts are available from the TI-OS system anywhere. Simply hold the [on] key and press the corresponding button to trigger the action.
 Available actions:
 
-| Combination | Action                                  |
-|-------------|-----------------------------------------|
-| [on]+[prgm] | Launch Cesium Application               |
-| [on]+[stat] | Power down with password on wake (5555) |
+| Combination | Action                                                     |
+|-------------|------------------------------------------------------------|
+| [on]+[prgm] | Launch Cesium Application                                  |
+| [on]+[stat] | Power down with password on wake (Default password - 5555) |
+
+You can change the password from the settings menu (Accessed using [mode]), and pressing the [sto->] button. This will prompt for a new password which will be automatically saved.
 
 ### Running Programs
 Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.

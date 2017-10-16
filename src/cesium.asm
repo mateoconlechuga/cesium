@@ -8,7 +8,7 @@
 
 #include "routines/installer.asm"       ; if this is the first run, we want to run the installer
 
-app_start("Cesium", "(c) 2017 Matt Waltz", 0, 1, 0D09466h, 0)
+app_start("Cesium", "(C) 2017 Matt \"MateoConLechuga\" Waltz", 0, 1, 0D09466h, 0)
 
 CesiumStart:
 
