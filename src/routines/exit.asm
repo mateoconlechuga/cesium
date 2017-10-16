@@ -51,7 +51,7 @@ WipeSafeRam:
 	bit	3,(iy+$25)
 	jr	z,+_
 	ld	a,cxErase
-	call	_NewContext0
+	call	_NewContext0			; trigger a defrag
 _:	ld	a,kClear
 	jp	_JForceCmd	                 ; exit like a boss
 endrelocate()

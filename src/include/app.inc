@@ -113,7 +113,7 @@ ___app_code_start:
 	xor	a,a
 	ret
 __CANECREATE:
-	.db	"Error: App exists; please delete from memory        management screen",0
+	.db	"Error: Cesium already     installed, please delete  App to reinstall.",0
 _:	ld	hl,$3B0000             ; applications start here
 _:	push	hl
 	call	$022044                ; locates start of next application header
