@@ -1,5 +1,4 @@
 DrawPrograms:
-	res	isOnAppsScreen,(iy+cesiumFlags)
 	ld	a,(PrgmCountDisp)
 	or	a,a
 	jr	z,++_

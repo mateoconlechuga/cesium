@@ -20,8 +20,8 @@ CesiumStart:
 #include "routines/pgrmoptions.asm"     ; options for prgms
 #include "routines/settings.asm"        ; general settings
 #include "routines/delete.asm"          ; prgm deletion stuff
-#include "routines/drawprograms.asm"	; part of main loop
-#include "routines/drawapps.asm"	; part of main loop
+#include "routines/drawprograms.asm"    ; part of main loop
+#include "routines/drawapps.asm"        ; part of main loop
 #include "routines/search.asm"          ; alphabetizer
 #include "routines/lcd.asm"             ; LCD routines
 #include "routines/sort.asm"            ; sorting routines
@@ -35,7 +35,7 @@ app_data()
 
 CesiumDataStart:
 
-CesiumIcon: ; Signifies a CesiumOS program (haha)
+CesiumIcon: ; Signifies a Cesium program (haha)
  .db 16,16  ; Width, Height of sprite
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0DEh,0D6h,0D6h,0DEh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0D6h,0DEh,0DEh,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh

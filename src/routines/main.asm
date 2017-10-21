@@ -106,13 +106,16 @@ NoInfoString:
 	or	a,a
 	sbc	hl,hl
 	ld	(posX),hl
+	res	isOnAppsScreen,(iy+cesiumFlags)
 	ld	a,(inAppScreen)
 	or	a,a
-	push	af
-	call	z,DrawPrograms
-	pop	af
-	call	nz,DrawApps
-	ld	hl,(numprograms)
+	jr	z,NotOnApps
+	call	DrawApps
+	set	isOnAppsScreen,(iy+cesiumFlags)
+	jr	+_
+NotOnApps:
+	call	DrawPrograms
+_:	ld	hl,(numprograms)
 	add	hl,de
 	or	a,a
 	sbc	hl,de
@@ -149,8 +152,6 @@ GetKeys:
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
-	bit	isOnAppsScreen,(iy+cesiumFlags)
-	jp	z,CesiumLoader
 	ld	hl,(currSelAbs)
 	call	_ChkHLIs0
 	jr	nz,CheckForRun

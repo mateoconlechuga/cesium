@@ -23,15 +23,15 @@
 #define isBasic			03h
 #define pgrmStatus		30h
 
-#define isOnAppsScreen          05h
-#define isDisabled		04h
-#define cesiumFlags		30h
-
 #define tmpPgrmArchived		00h
 #define tmpPgrmLocked		01h
 #define tmpPgrmHidden		02h
 #define tmpIsBasic		03h
 #define tmpPgrmStatus		21h
+
+#define isDisabled		04h
+#define isOnAppsScreen          05h
+#define cesiumFlags		21h
 
 firstprog			equ 0 ;flag in asm_Flag1
 hideFlag			equ asm_Flag1
