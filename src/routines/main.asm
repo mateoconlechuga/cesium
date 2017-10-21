@@ -123,10 +123,6 @@ GetKeys:
 	call	_GetCSC
 	or	a,a
 	call	z,DecrementAPD
-	cp	a,skGraph
-	jp	z,RenameProgram
-	cp	a,skAlpha
-	jp	z,LoadProgramOptions
 	cp	a,skClear
 	jp	z,FullExit
 	cp	a,skDel
@@ -141,14 +137,19 @@ GetKeys:
 	jr	z,BootPrgm
 	cp	a,skEnter
 	jr	z,BootPrgm
+	bit	isOnAppsScreen,(iy+cesiumFlags)
+	jr	nz,GetKeys
+	cp	a,skGraph
+	jp	z,RenameProgram
+	cp	a,skAlpha
+	jp	z,LoadProgramOptions
 	sub	a,skAdd
 	jp	c,GetKeys
 	cp	a,skMath-skAdd+1
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
-	ld	a,(listApps)
-	or	a,a
+	bit	isOnAppsScreen,(iy+cesiumFlags)
 	jp	z,CesiumLoader
 	ld	hl,(currSelAbs)
 	call	_ChkHLIs0
@@ -159,8 +160,7 @@ BootPrgm:
 	ld	(hl),a
 	jp	MAIN_START_LOOP_SETTINGS
 CheckForRun:
-	ld	a,(inAppScreen)
-	or	a,a
+	bit	isOnAppsScreen,(iy+cesiumFlags)
 	jp	z,CesiumLoader
 	call	CleanUp
 	call	_ResetStacks

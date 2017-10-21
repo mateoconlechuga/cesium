@@ -167,7 +167,7 @@ AppCheck:
 	xor	a,a
 	ld	(listApps),a
 	set	isDisabled,(iy+pgrmStatus)
-	ret
+	jp	FullExit
 	
 ;-------------------------------------------------------------------------------
 FindApps:

@@ -106,7 +106,7 @@ FindSettings:
 	add	hl,de
 	ld	e,(hl)
 	add	hl,de
-	ld	de,10
+	ld	de,11
 	add	hl,de
 	ld	(PasswordTemp),hl
 	
@@ -128,15 +128,18 @@ WrongPassword:
 	ld	(hl),a
 	set	apdRunning,(iy+apdFlags)
 	ei
-	ld	bc,$400
-	ld	hl,(PasswordTemp) 
+	ld	hl,(PasswordTemp)
+	dec	hl
+	ld	b,(hl)
+	ld	c,0
+	inc	hl
 KeyPress: 
 	call	GetKeyPress
 	cp	a,(hl) 
-	inc	hl 
-	jr	z,Asterisk 
-	inc	c 
-Asterisk: 
+	inc	hl
+	jr	z,Asterisk
+	inc	c
+Asterisk:
 	ld	a,'*'
 	call	_PutC
 	djnz	KeyPress
@@ -155,7 +158,7 @@ GetKeyPress:
 	ret 
    
 CesiumAppvarNameRelocated:
-	.db	appVarObj,"CesiumV",0
+	.db	appVarObj,"CesiumS",0
 PasswordStrRelocated:
 #ifdef ENGLISH
 	.db	"Password:",0

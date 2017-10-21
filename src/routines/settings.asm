@@ -11,15 +11,17 @@ CreateDefaultSettings:
 	ld	bc,15
 	call	_MemClear
 	pop	hl
-	ld	(hl),107					; Default Color
+	ld	(hl),107			; Default Color
 	inc	hl
 	inc	hl
 	inc	hl
 	inc	hl
 	inc	hl
-	ld	(hl),255					; List applications
+	ld	(hl),255			; List applications
 	inc	hl
-	ld	(hl),255					; Enable homescreen hooks
+	ld	(hl),255			; Enable homescreen hooks
+	inc	hl
+	ld	(hl),4
 	inc	hl
 	ld	(hl),sk5
 	inc	hl
@@ -50,7 +52,7 @@ SaveSettings:
 	ld	bc,14
 	ldir
 NotArchivedSet:
-	ld	hl,settingsAppVar				; locate the appvar
+	ld	hl,settingsAppVar		; locate the appvar
 	call	_Mov9ToOP1
 	call	_ChkFindSym
 	call	_ChkInRam
@@ -62,7 +64,7 @@ NotArchivedSet:
 
 DrawSettingsMenu:
 	xor	a
-	ld	(currMenuSel),a					; start on the first menu item
+	ld	(currMenuSel),a			; start on the first menu item
 RedrawSettings:
 	res	drawPrgmCnt,(iy+asmFlag)
 	set	clockIsOff,(iy+clockFlag)
@@ -78,7 +80,7 @@ RedrawSettings:
 	print(GenSettingsStr,10,30)
 	print(ColorStr,25,53)
 	print(RunIndicStr,25,76)
-	print(ProgramCountStr,25,99)				; draw the setting's option text
+	print(ProgramCountStr,25,99)		; draw the setting's option text
 	print(ClockStr,25,122)
 	print(AutoBackupStr,25,145)
 	print(ListAppsStr,25,168)
@@ -91,23 +93,23 @@ RedrawSettings:
 	drawRectOutline(10,121,18,129)
 	drawRectOutline(10,144,18,152)
 	drawRectOutline(10,167,18,175)				
-	drawRectOutline(10,190,18,198)				; draw the empty rectangles
+	drawRectOutline(10,190,18,198)		; draw the empty rectangles
 	drawRectFilled(12,54,17,59)
 	ld	a,(runIndic)
 	or	a,a
 	jr	z,BreakNotSet
 	drawRectFilled(12,77,17,82)
-BreakNotSet:							; option for RunIndic
+BreakNotSet:					; option for RunIndic
 	ld	a,(prgmCountDisp)
 	or	a,a
 	jr	z,ProgCountNotSet
 	drawRectFilled(12,100,17,105)
-ProgCountNotSet:						; option for program count
+ProgCountNotSet:				; option for program count
 	ld	a,(clockDisp)
 	or	a,a
 	jr	z,ClockDispNotSet
 	drawRectFilled(12,123,17,128)
-ClockDispNotSet:						; option for clock on
+ClockDispNotSet:				; option for clock on
 	ld	a,(autoBackup)
 	or	a,a
 	jr	z,AutoBackupNotSet
@@ -252,15 +254,20 @@ ChangePassword:
 	ld	(cIndex),a
 	SetDefaultTextColor()
 	print(NewPasswordPrompt,10,30)
-	ld	b,4
-	ld	hl,pass1
+	ld	bc,$600
+	ld	hl,passPtr-1
 GetPassLoop:
+	inc	hl
 	push	hl
 	push	bc
 	call	FullBufCpy
 _:	call	_GetCSC
 	or	a,a
 	jr	z,-_
+	cp	a,sk2nd
+	jr	z,DonePassword
+	cp	a,skEnter
+	jr	z,DonePassword
 	push	af
 	ld	a,'*'
 	call	DrawChar
@@ -268,11 +275,17 @@ _:	call	_GetCSC
 	pop	bc
 	pop	hl
 	ld	(hl),a
-	inc	hl
 	djnz	GetPassLoop
+DonePassword:
+	ld	de,passPtr
+	or	a,a
+	sbc	hl,de
+	inc	hl
+	ld	a,l
+	ld	(passLength),a
 	ret
 
 settingsAppVar:
-	.db	appVarObj,"CesiumV",0
+	.db	appVarObj,"CesiumS",0
 settingsOldAppVar:
-	.db	appVarObj,"Cesium",0
+	.db	appVarObj,"CesiumV",0

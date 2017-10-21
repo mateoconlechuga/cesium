@@ -21,8 +21,11 @@
 #define pgrmLocked		01h
 #define pgrmHidden		02h
 #define isBasic			03h
-#define isDisabled		04h
 #define pgrmStatus		30h
+
+#define isOnAppsScreen          05h
+#define isDisabled		04h
+#define cesiumFlags		30h
 
 #define tmpPgrmArchived		00h
 #define tmpPgrmLocked		01h
@@ -56,10 +59,8 @@ clockDisp	equ tmpSettings+3
 autoBackup	equ tmpSettings+4
 listApps	equ tmpSettings+5
 shortcutKeys	equ tmpSettings+6
-pass1		equ tmpSettings+7
-pass2		equ tmpSettings+8
-pass3		equ tmpSettings+9
-pass4		equ tmpSettings+10
+passLength      equ tmpSettings+7
+passPtr		equ tmpSettings+8
 
 prgmNamePtr	equ tmpSettings+10
 prgmDataPtr	equ prgmNamePtr+3

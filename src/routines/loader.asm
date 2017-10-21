@@ -27,6 +27,8 @@ ASMSTART_HANDLER:
 
 RunBasicProgram:
 	call	_RunIndicOn
+	call	_DisableAPD
+	di
 	ld	a,(RunIndic)
 	or	a,a
 	call	nz,_RunIndicOff

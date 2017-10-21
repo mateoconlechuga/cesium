@@ -19,8 +19,7 @@ waitForInput:
 	jp	z,MAIN_START_LOOP_SETTINGS
 	jr	waitForInput
 DeletePrgmYes:
-	ld	a,(inAppScreen)
-	or	a,a
+	bit	isOnAppsScreen,(iy+cesiumFlags)
 	jr	nz,DeleteApp
 	ld	hl,(prgmNamePtr)
 	call	NamePtrToOP1				; move the selected name to OP1
