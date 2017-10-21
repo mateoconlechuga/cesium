@@ -164,11 +164,15 @@ AppCheck:
 	ld	a,(hl)
 	or	a,a
 	ret	z
+	inc	hl
+	ld	a,(hl)
+	tst	a,4
+	jp	nz,FullExit
 	xor	a,a
 	ld	(listApps),a
 	set	isDisabled,(iy+pgrmStatus)
-	jp	FullExit
-	
+	ret
+
 ;-------------------------------------------------------------------------------
 FindApps:
 	ld	hl,(appNameLocationsPtr)
