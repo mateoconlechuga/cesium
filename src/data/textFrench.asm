@@ -13,7 +13,7 @@ ClockStr:
 AutoBackupStr:
  .db "Sauver la RAM avant de lancer des prgms",0
 ListAppsStr:
- .db "les applications Flash",0
+ .db "Lister les applications Flash",0
 ShortcutsStr:
  .db "Activer les raccourcis clavier",0
 ErrorStr:
