@@ -66,7 +66,7 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
 
 ### Credits
-(C) June 2017 Matt "MateoConLechuga" Waltz
+(C) October 2017 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
 
 ### Source and Bug Reports
