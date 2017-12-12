@@ -30,7 +30,8 @@
 #define tmpPgrmStatus		21h
 
 #define isDisabled		04h
-#define isOnAppsScreen          05h
+#define isNLDisabled		05h
+#define isOnAppsScreen		06h
 #define cesiumFlags		21h
 
 firstprog			equ 0 ;flag in asm_Flag1

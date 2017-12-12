@@ -1,4 +1,10 @@
 FindAppsPrograms:
+	call	ResetAppsPrograms
+	call	AppCheck
+	call	FindPrograms
+	jp	FindApps
+
+ResetAppsPrograms:
 	ld	hl,pixelshadow2
 	ld	(programNameLocationsPtr),hl
 	ld	hl,pixelshadow2+5512
@@ -7,9 +13,7 @@ FindAppsPrograms:
 	sbc	hl,hl
 	ld	(numprograms),hl
 	ld	(numapps),hl
-	
-	call	FindPrograms
-	jp	FindApps
+	ret
 
 ;-------------------------------------------------------------------------------
 FindPrograms:
@@ -157,20 +161,24 @@ ApplicationsNameDir:
 
 AppCheck:
 	res	isDisabled,(iy+pgrmStatus)
-	ld	de,$C00
+	res	isNLDisabled,(iy+pgrmStatus)
+	ld	de,$c00
 	call	$310
 	ret	nz
-	call	$30C
+	call	$30c
 	ld	a,(hl)
 	or	a,a
 	ret	z
+	set	isDisabled,(iy+pgrmStatus)
 	inc	hl
 	ld	a,(hl)
 	tst	a,4
-	jp	nz,FullExit
+	jr	nz,+_
 	xor	a,a
 	ld	(listApps),a
-	set	isDisabled,(iy+pgrmStatus)
+	ret
+_:	set	isNLDisabled,(iy+pgrmStatus)
+	pop	hl
 	ret
 
 ;-------------------------------------------------------------------------------

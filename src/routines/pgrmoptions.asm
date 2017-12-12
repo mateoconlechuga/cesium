@@ -194,7 +194,7 @@ LoadProgramOptions:
 	ld	hl,PgrmOptions
 	ld	bc,4
 	call	_MemClear
-	cpl						; A=0FFh
+	cpl						; A=255
 	bit	pgrmArchived,(iy+pgrmStatus)
 	jr	z,NotInArc
 	ld	(ArchiveSet),a				; mark archive as set
@@ -293,8 +293,10 @@ CheckWhatToDo:
 	dec	a
 	jr	nz,NotOnLock
 	ld	a,(prgmbyte)
-	cp	a,$BB
-	ret	nz					; only want to be able to lock and unlock BASIC programs
+	cp	a,$BB					; BASIC programs
+	jr	z,NotOnLock
+	cp	a,$7F					; ICE programs
+	ret	nz
 NotOnLock:
 	ld	a,(currMenuSel)
 	call	_AddHLAndA

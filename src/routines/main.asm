@@ -78,7 +78,6 @@ MAIN_START_LOOP_1:
 	ld	(mpLcdCtrl),a			; set LCD to 8bpp
 	call	CopyHL1555Palette		; HIGH=LOW
 MAIN_START_LOOP_SETTINGS:
-	call	AppCheck
 	call	FindAppsPrograms		; find available programs and apps
 	ld	hl,(numprograms)
 	ld	a,(inAppScreen)
@@ -152,6 +151,9 @@ GetKeys:
 	jp	nc,GetKeys
 	jp	SearchAlpha
 BootPrgm:
+	ld	a,(listApps)
+	or	a,a
+	jr	z,CheckForRun
 	ld	hl,(currSelAbs)
 	call	_ChkHLIs0
 	jr	nz,CheckForRun
