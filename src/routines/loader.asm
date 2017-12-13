@@ -1,10 +1,13 @@
 .assume adl = 1
 
 CesiumLoader:
+	bit	bootEnter,(iy+cesiumFlags)
+	jr	nz,SkipSave
 	ld	a,(AutoBackup)
 	or	a,a
 	call	nz,SaveRAMState			; Save ram state if option is set
-	
+
+SkipSave:
 	ld	hl,HOMEHOOK_START
 	ld	bc,HOMEHOOK_END-HOMEHOOK_START
 	ld	de,HomeHookAddr

@@ -120,6 +120,7 @@ _:	ld	hl,(numprograms)
 	sbc	hl,de
 	jp	z,GetKeysNoPrgms
 GetKeys:
+	res	bootEnter,(iy+cesiumFlags)
 	call	DrawTime
 	call	FullBufCpy
 	call	_GetCSC
@@ -138,7 +139,7 @@ GetKeys:
 	cp	a,sk2nd
 	jr	z,BootPrgm
 	cp	a,skEnter
-	jr	z,BootPrgm
+	jr	z,BootPrgmEnter
 	bit	isOnAppsScreen,(iy+cesiumFlags)
 	jr	nz,GetKeys
 	cp	a,skGraph
@@ -150,6 +151,8 @@ GetKeys:
 	cp	a,skMath-skAdd+1
 	jp	nc,GetKeys
 	jp	SearchAlpha
+BootPrgmEnter:
+	set	bootEnter,(iy+cesiumFlags)
 BootPrgm:
 	ld	a,(listApps)
 	or	a,a
