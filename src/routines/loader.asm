@@ -5,6 +5,14 @@ CesiumLoader:
 	or	a,a
 	call	nz,SaveRAMState			; Save ram state if option is set
 	
+	ld	hl,HOMEHOOK_START
+	ld	bc,HOMEHOOK_END-HOMEHOOK_START
+	ld	de,HomeHookAddr
+	ldir
+	call	SaveHomescreenHooks
+	ld	hl,HomescreenHook
+	call	_SetHomescreenHook
+	call	EstablishHome
 	ld	a,(shortcutKeys)
 	or	a,a
 	call	nz,$0213E4
@@ -95,7 +103,6 @@ SaveRAMState:
 #endif
 	call	FullBufCpy
 
-
 	di					; let's do some crazy flash things so that way we can save the RAM state...
 	ld.sis	sp,$ea1f
 	call.is	unlock & $ffff
@@ -120,7 +127,7 @@ SaveRAMState:
 	call.is	lock & $ffff
 
 	ret
-
+   
 EraseSector:
 	ld	bc,$0000F8			; apparently we can't erase sectors unless we call this routine from flash... Well, I called it from flash now :) (lol, what a secuity flaw)
 	push	bc

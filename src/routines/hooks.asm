@@ -17,6 +17,75 @@ StopEverything:
 	ld	a,$AB
 	jp	_JError
 
+sysHookFlg	equ 52
+appInpPrmptInit	equ 0
+appInpPrmptDone	equ 1
+appWantHome	equ 4
+
+HOMEHOOK_START:
+relocate(HomeHookAddr)
+HomescreenHook:
+	add	a,e
+	cp	a,3
+	ret	nz
+	bit	appInpPrmptDone,(iy+apiFlg2)
+	res	appInpPrmptDone,(iy+apiFlg2)
+	ld	b,0
+	jr	z,RestoreHomescreenHooks
+EstablishHome:
+	call	_ReloadAppEntryVecs
+	ld	hl,AppVectors
+	call	_AppInit
+	call	_ForceFullScreen
+	or	a,1
+	ld	a,cxExtApps
+	ld	(cxCurApp),a
+	ret
+RestoreHomescreenHooks:
+	push	bc
+	call	_ClrHomescreenHook
+	call	_ForceFullScreen
+	res	AppWantHome,(iy+sysHookFlg)
+	pop	bc
+	ld	a,(HomeSave)
+	or	a,a
+	ret	z
+	push	bc
+	ld	hl,(HomeSave)
+	call	_SetHomescreenHook
+	set	AppWantHome,(iy+sysHookFlg)
+	pop	bc
+	ret
+SaveHomescreenHooks:
+	or	a,a
+	sbc	hl,hl
+	bit	AppWantHome,(iy+sysHookFlg)
+	jr	z,+_
+	ld	hl,(homescreenHookPtr)
+_:	ld	(HomeSave),hl
+	ret
+
+AppPutAway:
+	xor    a,a
+	ld     (currLastEntry),a
+	bit    appInpPrmptInit,(iy+apiFlg2)
+	jr     nz,aipi
+	call	_ClrHomescreenHook
+	call	_ForceFullScreen
+aipi:	call	_ReloadAppEntryVecs
+	call	_PutAway
+	ld	b,0
+	ret
+AppVectors:
+	.dl	0F8h
+	.dl	_SaveShadow
+	.dl	AppPutAway
+	.dl	_RstrShadow
+	.dl	0F8h
+	.dl	0F8h
+endrelocate()
+HOMEHOOK_END:
+
 GetKeyHook:
 	add	a,e
 	cp	a,1Bh
@@ -39,12 +108,19 @@ Good:
 	jr	z,StartCesium
 	cp	a,skStat
 	jr	z,StartPassword
+	cp	a,skEnter
+	jr	z,LaunchProgram
 	ret
 
 NoOnKey:
 	dec	a
 	inc	a
 	ret
+
+LaunchProgram:
+	ld	hl,progCurrent
+	call	_Mov9ToOP1
+	jr	NoOnKey
 
 StartCesium:
 	xor	a,a

@@ -65,7 +65,6 @@ ___app_code_start:
 	res	appTextSave,(iy+appFlags)
 	call	_HomeUp
 	call	_ClrScrn
-	call	_SaveShadow
 	ld	hl,___relocate_end-__relocate_start
 	push	hl
 #if __use_usermem != 0

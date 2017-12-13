@@ -41,17 +41,30 @@ ReturnHereIfError:                          ; handler for returning programs
 	res	textInverse,(iy+textFlags)
 	res	allowProgTokens,(iy+newDispF)
 	res	onInterrupt,(iy+onFlags)
+	call	_ReloadAppEntryVecs
 	call	_DeleteTempPrograms
 	call	_CleanAll	
 	call	_RunIndicOff                ; in case the launched program re-enabled it
+	di
 	ld	de,(asm_prgm_size)
 	or	a,a
 	sbc	hl,hl
 	ld	(asm_prgm_size),hl
 	ld	hl,userMem
 	call	_DelMem
+
+	call	_ClrHomescreenHook
+	call	_ForceFullScreen
+	res	AppWantHome,(iy+sysHookFlg)
+	ld	a,(HomeSave)
+	or	a,a
+	jr	z,+_
+	push	bc
+	ld	hl,(HomeSave)
+	call	_SetHomescreenHook
+	set	AppWantHome,(iy+sysHookFlg)
 	
-	ld	hl,OP1                      ; execute app
+_:	ld	hl,OP1                      ; execute app
 	ld	(hl),'C'
 	inc	hl
 	ld	(hl),'e'

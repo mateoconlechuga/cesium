@@ -47,12 +47,14 @@ vatentrytempend			equ pixelShadow2+12+15
 
 tmpSpriteLoc	equ cursorImage
 
+HomeHookAddr	equ appdata+50
 currSel		equ appdata+200
 inAppScreen	equ currSel+1
 currSelAbs	equ inAppScreen+1
 scrollamt	equ currSelAbs+3
+HomeSave	equ scrollamt+3
 
-tmpSettings	equ scrollamt+3
+tmpSettings	equ HomeSave+3
 skinColor	equ tmpSettings
 runIndic	equ tmpSettings+1
 prgmCountDisp	equ tmpSettings+2
