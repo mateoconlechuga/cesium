@@ -389,7 +389,11 @@ AddToPosistion:
 	pop	hl
 	ret
 
-ConvHL:    				; hl = 8-bit score
+ConvA:
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+ConvHL:    				; hl = number
 	push	de
 	push	bc
 	ld	de,tmpStr		; de = converted string loc

@@ -63,7 +63,7 @@ NotArchivedSet:
 	ret
 
 DrawSettingsMenu:
-	xor	a
+	xor	a,a
 	ld	(currMenuSel),a			; start on the first menu item
 RedrawSettings:
 	res	drawPrgmCnt,(iy+asmFlag)
@@ -79,6 +79,14 @@ RedrawSettings:
 	SetDefaultTextColor()
 	print(GenSettingsStr,10,30)
 	print(ColorStr,25,53)
+	ld	bc,4
+	ld	hl,(posX)
+	add	hl,bc
+	ld	(posX),hl
+	ld	a,(skinColor)
+	call	ConvA
+	add	hl,bc
+	call	DrawString
 	print(RunIndicStr,25,76)
 	print(ProgramCountStr,25,99)		; draw the setting's option text
 	print(ClockStr,25,122)
