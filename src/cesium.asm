@@ -3,9 +3,6 @@
 #include "include/defines.inc"          ; cesium defines
 #include "include/app.inc"              ; for creating the application
 
-#define ENGLISH                         ; use english
-;#define FRENCH                         ; use french
-
 #include "routines/installer.asm"       ; if this is the first run, we want to run the installer
 
 app_start("Cesium", "(C) 2017 Matt \"MateoConLechuga\" Waltz", 0, 1, 0D09466h, 0)
@@ -58,9 +55,9 @@ CesiumVersionStr:
  
 ; program data
 #ifdef ENGLISH
- #include "data/text.asm"               ; text data
-  #else
- #include "data/textFrench.asm"
+#include "data/text.asm"               ; text data
+#else
+#include "data/textFrench.asm"
 #endif
 
 CesiumDataEnd:

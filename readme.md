@@ -65,6 +65,13 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 ### Uninstalling
 To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
 
+### Building
+You can easily build Cesium by navigating in the `src` directory and entering the command:
+
+    spasm -E -DENGLISH=1 cesium.asm cesium.8xp && mv cesium.8xp ../cesium.8xp && spasm -E -DFRENCH=1 cesium.asm cesium.8xp && mv cesium.8xp ../cesium-french.8xp
+
+The input may differ slightly on a Windows machine.
+
 ### Credits
 (C) October 2017 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
