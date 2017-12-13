@@ -153,18 +153,19 @@ comparestrings_continue:
 	dec	de
 	ld	a,(de)
 	cp	a,(hl)
-	jr	nz,+_
+	jr	nz,resetHiddenFlags_2
 	djnz	comparestrings_continue
-_:	pop	de
+	pop	de
 	pop	hl
-	push	af
 	call	resetHiddenFlags
-	pop	af
 comparestrings_checklength:
 	dec	c
 	ret	nz
 	ccf
 	ret
+resetHiddenFlags_2:
+	pop	de
+	pop	hl
 resetHiddenFlags:
 	bit	prog1Hidden,(iy+hideFlag)
 	jr	z,prog1NotHidden_chk
@@ -177,6 +178,8 @@ prog1NotHidden_chk:
 	ld	a,(de)
 	sub	a,64
 	ld	(de),a
+	xor	a,a
+	inc	a
 	ret
 	
 findnextitem:						; carry=found nc=notfound

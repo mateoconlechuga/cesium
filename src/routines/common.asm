@@ -63,7 +63,7 @@ ReturnHereIfError:                          ; handler for returning programs
 	ld	hl,(HomeSave)
 	call	_SetHomescreenHook
 	set	AppWantHome,(iy+sysHookFlg)
-	
+
 _:	ld	hl,OP1                      ; execute app
 	ld	(hl),'C'
 	inc	hl
