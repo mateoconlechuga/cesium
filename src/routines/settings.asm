@@ -255,9 +255,8 @@ ChangePassword:
 	SetDefaultTextColor()
 	print(NewPasswordPrompt,10,30)
 	ld	bc,$600
-	ld	hl,passPtr-1
+	ld	hl,passPtr
 GetPassLoop:
-	inc	hl
 	push	hl
 	push	bc
 	call	FullBufCpy
@@ -265,9 +264,9 @@ _:	call	_GetCSC
 	or	a,a
 	jr	z,-_
 	cp	a,sk2nd
-	jr	z,DonePassword
+	jr	z,DonePassword2
 	cp	a,skEnter
-	jr	z,DonePassword
+	jr	z,DonePassword2
 	push	af
 	ld	a,'*'
 	call	DrawChar
@@ -275,16 +274,21 @@ _:	call	_GetCSC
 	pop	bc
 	pop	hl
 	ld	(hl),a
+	inc	hl
 	djnz	GetPassLoop
 DonePassword:
 	ld	de,passPtr
 	or	a,a
 	sbc	hl,de
-	inc	hl
 	ld	a,l
 	ld	(passLength),a
 	ret
+DonePassword2:
+	pop	bc
+	pop	hl
+	jr	DonePassword
 
+	
 settingsAppVar:
 	.db	appVarObj,"CesiumS",0
 settingsOldAppVar:

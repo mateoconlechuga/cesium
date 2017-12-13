@@ -75,7 +75,7 @@ StartCesium:
 
 StartPassword:
 	ld	bc,reloacted_code_password_end-reloacted_code_password_start
-	ld	de,saveSScreen
+	ld	de,pixelshadow2
 	push	bc
 	ld	a,$E1
 	ld	($E30800),a
@@ -86,10 +86,10 @@ StartPassword:
 	add	hl,bc
 	pop	bc
 	ldir
-	jp	saveSScreen
+	jp	FindSettings
 
 reloacted_code_password_start:
-relocate(saveSScreen)
+relocate(pixelshadow2)
 FindSettings:
 	ld	hl,CesiumAppvarNameRelocated
 	call	_Mov9ToOP1
@@ -130,7 +130,10 @@ WrongPassword:
 	ei
 	ld	hl,(PasswordTemp)
 	dec	hl
-	ld	b,(hl)
+	ld	a,(hl)
+	or	a,a
+	jr	z,CorrectPassword
+	ld	b,a
 	ld	c,0
 	inc	hl
 KeyPress: 
@@ -146,6 +149,7 @@ Asterisk:
 	dec	c
 	inc	c
 	jr 	nz,WrongPassword
+CorrectPassword:
 	ld	a,kClear
 	jp	_SendKPress
 	
@@ -168,4 +172,4 @@ PasswordStrRelocated:
 PasswordTemp:
 	.dl	0
 endrelocate()
-reloacted_code_password_end:hl
+reloacted_code_password_end:
