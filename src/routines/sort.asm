@@ -182,7 +182,7 @@ prog1NotHidden_chk:
 findnextitem:						; carry=found nc=notfound
 	ex	de,hl
 	ld	hl,(ptemp)
-	or	a					; reset carry flag
+	or	a,a					; reset carry flag
 	sbc	hl,de
 	ret	z
 	ex	de,hl					; load progptr into hl
@@ -190,7 +190,7 @@ findnextitem:						; carry=found nc=notfound
 	and	1Fh					; mask out state bytes
 	push	hl
 	ld	hl,programtypes
-	ld	bc,3
+	ld	bc,2
 	cpir
 	pop	hl
 	jp	nz,skiptonext6				; skip to next entry
