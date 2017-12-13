@@ -13,11 +13,15 @@ SearchAlpha:
 	ld	(currSelAbs),hl
 	ld	(scrollamt),hl
 	ld	hl,pixelshadow2
-	ld	bc,(PrgmCountDisp)		; loop through the prgms
+	ld	bc,(PrgmCountDisp)	; loop through the prgms
 FindAlpha:
 	ld	de,(hl)			; pointer to program name size
 	dec	de
 	ld	a,(de)
+	cp	a,64
+	jr	nc,+_
+	add	a,64
+_:
 SearchChar: =$+1
 	cp	a,0
 	jr	nc,FoundIt
@@ -47,7 +51,7 @@ SearchAlphaName:
 	ld	(currSelAbs),hl
 	ld	(scrollamt),hl
 	ld	hl,pixelshadow2
-	ld	bc,(PrgmCountDisp)		; loop through the prgms
+	ld	bc,(PrgmCountDisp)	; loop through the prgms
 	pop	ix
 	dec	ix
 FindAlphaName:

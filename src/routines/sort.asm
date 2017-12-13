@@ -123,14 +123,14 @@ comparestrings:						; hl and de pointers to strings output=carry if de is first
 	dec	hl
 	dec	de
 	ld	a,(hl)
-	cp	64
+	cp	a,64
 	jr	nc,prog1NotHidden			; check if files are hidden
 	add	a,64
 	ld	(hl),a
 	set	prog1Hidden,(iy+hideFlag)
 prog1NotHidden:
 	ld	a,(de)
-	cp	64
+	cp	a,64
 	jr	nc,prog2NotHidden
 	add	a,64
 	ld	(de),a
@@ -143,7 +143,7 @@ prog2NotHidden:
 	ld	b,(hl)
 	ld	a,(de)
 	ld	c,0
-	cp	b					; check if same length
+	cp	a,b					; check if same length
 	jr	z,comparestrings_continue
 	jr	nc,comparestrings_continue		; b = smaller than a
 	inc	c					; to remember that b was larger
@@ -152,34 +152,31 @@ comparestrings_continue:
 	dec	hl
 	dec	de
 	ld	a,(de)
-	cp	(hl)
-	jr	nz,resetHiddenFlags_2
+	cp	a,(hl)
+	jr	nz,+_
 	djnz	comparestrings_continue
-	pop	de
+_:	pop	de
 	pop	hl
+	push	af
 	call	resetHiddenFlags
+	pop	af
 comparestrings_checklength:
 	dec	c
 	ret	nz
 	ccf
 	ret
-resetHiddenFlags_2:
-	pop	de
-	pop	hl
 resetHiddenFlags:
 	bit	prog1Hidden,(iy+hideFlag)
 	jr	z,prog1NotHidden_chk
 	ld	a,(hl)
-	sub	a,$40
+	sub	a,64
 	ld	(hl),a
 prog1NotHidden_chk:
 	bit	prog2Hidden,(iy+hideFlag)
 	ret	z
 	ld	a,(de)
-	sub	a,$40
+	sub	a,64
 	ld	(de),a
-	xor	a
-	inc	a
 	ret
 	
 findnextitem:						; carry=found nc=notfound
@@ -210,4 +207,4 @@ findnextitem:						; carry=found nc=notfound
 	ret
 	
 programtypes:
-	.db	progobj,protprogobj,tempprogobj
+	.db	progobj,protprogobj
