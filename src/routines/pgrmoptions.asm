@@ -302,7 +302,7 @@ CheckWhatToDo:
 	ld	a,(prgmbyte)
 	cp	a,$BB					; BASIC programs
 	jr	z,NotOnLock
-	cp	a,$7F					; ICE programs
+	cp	a,$2C					; ICE SRC programs
 	ret	nz
 NotOnLock:
 	ld	a,(currMenuSel)
