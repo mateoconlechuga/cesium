@@ -6,7 +6,7 @@
 ; Uses insertion sort to sort the VAT alphabettically.
 ; This is a lot faster than sorting during runtime.
 
-sort:	
+sort:
 	res	firstprog,(iy+asm_Flag1)
 	ld	hl,(progptr)
 sort_next:
@@ -153,33 +153,33 @@ comparestrings_continue:
 	dec	de
 	ld	a,(de)
 	cp	a,(hl)
-	jr	nz,resetHiddenFlags_2
+	jr	nz,match
 	djnz	comparestrings_continue
 	pop	de
 	pop	hl
 	call	resetHiddenFlags
-comparestrings_checklength:
 	dec	c
 	ret	nz
 	ccf
 	ret
-resetHiddenFlags_2:
+match:
 	pop	de
 	pop	hl
 resetHiddenFlags:
+	push	af
 	bit	prog1Hidden,(iy+hideFlag)
-	jr	z,prog1NotHidden_chk
+	jr	z,prog1NotHiddenChk
 	ld	a,(hl)
 	sub	a,64
 	ld	(hl),a
-prog1NotHidden_chk:
+prog1NotHiddenChk:
 	bit	prog2Hidden,(iy+hideFlag)
-	ret	z
+	jr	z,prog2NotHiddenChk
 	ld	a,(de)
 	sub	a,64
 	ld	(de),a
-	xor	a,a
-	inc	a
+prog2NotHiddenChk:
+	pop	af
 	ret
 	
 findnextitem:						; carry=found nc=notfound

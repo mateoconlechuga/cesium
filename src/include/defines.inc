@@ -66,7 +66,7 @@ shortcutKeys	equ tmpSettings+6
 passLength      equ tmpSettings+7
 passPtr		equ tmpSettings+8
 
-prgmNamePtr	equ tmpSettings+20
+prgmNamePtr	equ tmpSettings+15
 prgmDataPtr	equ prgmNamePtr+3
 actualSizePrgm	equ prgmDataPtr+3
 totalPrgmSize	equ actualSizePrgm+3
