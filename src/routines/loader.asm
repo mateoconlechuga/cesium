@@ -1,5 +1,11 @@
 .assume adl = 1
 
+; inputs:
+;  shortcutKeys - Check if shortcut keys are enabled
+;  prgmNamePtr - Pointer to program name
+;  
+; flags:
+;  bootEnter - Was enter used to launch?
 CesiumLoader:
 	bit	bootEnter,(iy+cesiumFlags)
 	jr	nz,SkipSave
@@ -130,16 +136,13 @@ SaveRAMState:
 	call.is	lock & $ffff
 
 	ret
-   
+
 EraseSector:
 	ld	bc,$0000F8			; apparently we can't erase sectors unless we call this routine from flash... Well, I called it from flash now :) (lol, what a secuity flaw)
 	push	bc
 	jp	_EraseFlashSector
 
-#include "routines/ramsave.asm"
-
 savingstring:
-
 #ifdef ENGLISH
 	.db	"Backing up...",0
 #else
@@ -149,3 +152,5 @@ savingstring:
 StopError:
 	.db "Stop",0
 StopErrorEnd:
+
+#include "routines/ramsave.asm"

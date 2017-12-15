@@ -1,7 +1,7 @@
 CESIUM_OS_BEGIN:
-	cp	a,$aa
+	cp	a,$aa				; executed program reload
 	jr	z,LoadSettings
-	
+
 	xor	a,a
 	sbc	hl,hl
 	ld	(currSelAbs),hl

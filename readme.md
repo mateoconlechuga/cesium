@@ -47,6 +47,18 @@ Available actions:
 
 You can change the password from the settings menu (Accessed using [mode]), and pressing the [sto->] button. This will prompt for a new password which will be automatically saved.
 
+### External Backup
+Cesium also offers the ability to externally back up the RAM from within the OS. These are also tied to the shortcuts:
+
+**PLEASE DO NOT USE THESE FOR TRIVIAL ISSUES. THEY MAY CAUSE UNINTENDED WEAR ON THE FLASH CHIP, SO BE SURE TO MODERATE USEAGE.**
+**THE FLASH CHIP IS ONLY DESIGNED TO SUPPORT 100,000+ ERASE CYCLES**
+
+| Combination | Action                                                     |
+|-------------|------------------------------------------------------------|
+| [on]+[8]    | Backup RAM from TI-OS                                      |
+| [on]+[5]    | Remove latest RAM backup                                   |
+| [on]+[2]    | Restore RAM from latest backup                             |
+
 ### Running Programs
 Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
 To run a program, simply press [2ND] or [Enter]. After a program is finished running, it will return to Cesium.

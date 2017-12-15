@@ -95,6 +95,12 @@ GetKeyHook:
 	jr	z,Good
 	cp	a,skStat
 	jr	z,Good
+	cp	a,sk8
+	jr	z,Good
+	cp	a,sk5
+	jr	z,Good
+	cp	a,sk2
+	jr	z,Good
 	ret
 
 Good:
@@ -105,11 +111,15 @@ Good:
 	bit	0,(hl)
 	jr	z,NoOnKey
 	cp	a,skPrgm
-	jr	z,StartCesium
+	jr	z,RelocateHook
 	cp	a,skStat
-	jr	z,StartPassword
-	cp	a,skEnter
-	jr	z,LaunchProgram
+	jr	z,RelocateHook
+	cp	a,sk8
+	jr	z,RelocateHook
+	cp	a,sk5
+	jr	z,RelocateHook
+	cp	a,sk2
+	jr	z,RelocateHook
 	ret
 
 NoOnKey:
@@ -117,10 +127,124 @@ NoOnKey:
 	inc	a
 	ret
 
-LaunchProgram:
-	ld	hl,progCurrent
-	call	_Mov9ToOP1
-	jr	NoOnKey
+RelocateHook:
+	push	af
+	ld	a,$E1
+	ld	($E30800),a
+	ld	a,$E9
+	ld	($E30801),a
+	pop	af
+	ld	bc,HookEnd-HookStart
+	ld	de,Hook
+	push	bc
+	call	$E30800
+	ld	bc,12
+	add	hl,bc
+	pop	bc
+	ldir
+	jp	Hook
+HookStart:
+relocate(pixelshadow2)
+Hook:
+	cp	a,skPrgm
+	jp	z,StartCesium
+	cp	a,skStat
+	jp	z,StartPassword
+	cp	a,sk8
+	jp	z,BackupRAM
+	cp	a,sk5
+	jp	z,ClearOldRAM
+	cp	a,sk2
+	jp	z,RestoreRAM
+	ret
+
+ClearOldRAM:
+	ld	hl,$D00001
+	xor	a,a
+	ld	(hl),a
+	inc	hl
+	ld	(hl),a
+	ld	a,($3C0000)
+	or	a,a
+	ret	z
+	di
+	ld.sis	sp,$ea1f
+	call.is	unlocks & $ffff
+	ld	b,0
+	ld	de,$3C0000
+	call	_WriteFlashByte
+	call.is	locks & $ffff
+	ret
+
+RestoreRAM:
+	di
+	ld	hl,$3C0001
+	ld	a,$A5
+	cp	a,(hl)
+	ret	nz
+	dec	hl
+	ld	a,$5a
+	cp	a,(hl)
+	ret	nz
+	ld	hl,$D00002
+	ld	a,$A5
+	cp	a,(hl)
+	ret	nz
+	dec	hl
+	cp	a,(hl)
+	ret	nz
+	jp	0
+
+BackupRAM:
+	call	_os_ClearStatusBarLow
+	di
+	ld	de,$e71c
+	ld.sis	(drawFGColor & $ffff),de
+	ld.sis	de,(statusBarBGColor & $ffff)
+	ld.sis	(drawBGColor & $ffff),de
+	ld	a,14
+	ld	(penRow),a
+	ld	de,2
+	ld.sis	(penCol & $ffff), de
+	ld	hl,savingstringhook
+	call	_VPutS
+	di					; let's do some crazy flash things so that way we can save the RAM state...
+	ld.sis	sp,$ea1f
+	call.is	unlocks & $ffff
+	ld	a,$3F
+	call	EraseSectorhook			; clean out the flash sectors
+	ld	a,$3E
+	call	EraseSectorhook
+	ld	a,$3D
+	call	EraseSectorhook
+	ld	a,$3C
+	call	EraseSectorhook			; this is so we can store the new RAM data \o/
+	ld	hl,$D00002
+	ld	(hl),$A5
+	dec	hl
+	ld	(hl),$A5
+	dec	hl
+	ld	(hl),$5A			; write some magical bytes
+	ld	de,$3C0000			; we could just write all of ram
+	ld	bc,$40000
+	call	_WriteFlash
+	call.is	locks & $ffff
+	call	_DrawStatusBar
+	dec	a
+	inc	a
+	ret
+EraseSectorhook:
+	ld	bc,$f8
+	push	bc
+	jp	_EraseFlashSector
+savingstringhook:
+#ifdef ENGLISH
+	.db	"Backing up...",0
+#else
+	.db	"Sauvegarde en cours...",0
+#endif
+
+#include "routines/ramhook.asm"
 
 StartCesium:
 	xor	a,a
@@ -150,23 +274,6 @@ StartCesium:
 	jp	_NewContext
 
 StartPassword:
-	ld	bc,reloacted_code_password_end-reloacted_code_password_start
-	ld	de,pixelshadow2
-	push	bc
-	ld	a,$E1
-	ld	($E30800),a
-	ld	a,$E9
-	ld	($E30801),a
-	call	$E30800
-	ld	bc,12
-	add	hl,bc
-	pop	bc
-	ldir
-	jp	FindSettings
-
-reloacted_code_password_start:
-relocate(pixelshadow2)
-FindSettings:
 	ld	hl,CesiumAppvarNameRelocated
 	call	_Mov9ToOP1
 	call	_ChkFindSym
@@ -174,7 +281,7 @@ FindSettings:
 	push	af
 	call	z,_Arc_Unarc			; archive it
 	pop	af
-	jr	z,FindSettings			; now lookup the settings appvar
+	jr	z,StartPassword			; now lookup the settings appvar
 	ex	de,hl
 	ld	de,9
 	push	de
@@ -248,4 +355,5 @@ PasswordStrRelocated:
 PasswordTemp:
 	.dl	0
 endrelocate()
-reloacted_code_password_end:
+HookEnd:
+.echo "Hook Size:\t",HookEnd-HookStart
