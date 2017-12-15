@@ -49,7 +49,7 @@ vatentrytempend			equ pixelShadow2+12+15
 tmpSpriteLoc	equ cursorImage
 
 HomeHookAddr	equ appdata+50
-currSel		equ appdata+200
+currSel		equ appdata+190
 inAppScreen	equ currSel+1
 currSelAbs	equ inAppScreen+1
 scrollamt	equ currSelAbs+3
@@ -66,7 +66,7 @@ shortcutKeys	equ tmpSettings+6
 passLength      equ tmpSettings+7
 passPtr		equ tmpSettings+8
 
-prgmNamePtr	equ tmpSettings+10
+prgmNamePtr	equ tmpSettings+20
 prgmDataPtr	equ prgmNamePtr+3
 actualSizePrgm	equ prgmDataPtr+3
 totalPrgmSize	equ actualSizePrgm+3

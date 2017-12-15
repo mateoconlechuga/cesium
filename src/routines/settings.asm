@@ -21,7 +21,7 @@ CreateDefaultSettings:
 	inc	hl
 	ld	(hl),255			; Enable homescreen hooks
 	inc	hl
-	ld	(hl),4
+	ld	(hl),4				; Length of password
 	inc	hl
 	ld	(hl),sk5
 	inc	hl
@@ -298,6 +298,6 @@ DonePassword2:
 
 	
 settingsAppVar:
-	.db	appVarObj,"CesiumS",0
+	.db	appVarObj,"Cesium",0
 settingsOldAppVar:
-	.db	appVarObj,"CesiumV",0
+	.db	appVarObj,"CesiumS",0

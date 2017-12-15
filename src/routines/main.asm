@@ -26,8 +26,6 @@ LoadSettings:
 	jr	z,LoadSettings			; now lookup the settings appvar
 	ex	de,hl
 	ld	de,9
-	push	de
-	pop	bc
 	add	hl,de
 	ld	e,(hl)
 	add	hl,de
@@ -35,6 +33,7 @@ LoadSettings:
 	inc	hl
 	inc	hl
 	ld	de,TmpSettings
+	ld	bc,14
 	ldir					; copy the temporary settings to the lower stack
 	
 	call	SetKeyHookPtr

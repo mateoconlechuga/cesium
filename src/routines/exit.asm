@@ -37,6 +37,8 @@ CleanUp:
 	ld	bc,250
 	call	_MemClear
 	set	graphdraw,(iy+graphFlags)
+	call	_APDSetup
+	call	_EnableAPD
 	im	1
 	ei
 	ret
