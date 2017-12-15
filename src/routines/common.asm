@@ -90,7 +90,12 @@ _:	ld	hl,OP1                      ; execute app
 	ld	hl,(hl)
 	pop	bc
 	add	hl,bc
-	ld	a,$AA
+	push	hl
+_:	call	_GetCSC
+	or	a,a
+	jr	nz,-_
+	pop	hl
+	ld	a,$aa
 	jp	(hl)
 
 QuitStr1:
