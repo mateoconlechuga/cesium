@@ -75,8 +75,8 @@ MAIN_START_LOOP_1:
 	ld	a,$27
 	ld	(mpLcdCtrl),a			; set LCD to 8bpp
 	call	CopyHL1555Palette		; HIGH=LOW
-MAIN_START_LOOP_SETTINGS:
 	call	sort				; sort the VAT alphabetically
+MAIN_START_LOOP_SETTINGS:
 	call	FindAppsPrograms		; find available programs and apps
 	ld	hl,(numprograms)
 	ld	a,(inAppScreen)

@@ -16,7 +16,7 @@ sort_next:
 	jp	z,firstprogfound
 	push	hl
 	call	skipname
-	pop	de	
+	pop	de
 	push	hl					; to continue from later on
 	ld	hl,(firstprogpointer)
 	jr	searchnext_start			; could speed up sorted list by first checking if it's the last item (not neccessary)
