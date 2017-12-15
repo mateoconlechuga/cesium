@@ -1,4 +1,11 @@
 RenameProgram:
+	ld	a,(listApps)
+	or	a,a
+	jr	z,RenameGood
+	ld	hl,(currSelAbs)
+	call	_ChkHLIs0
+	jr	nz,RenameGood
+	jp	ReturnHome
 RenameGood:
 	ld	hl,skinColor
 	ld	a,(hl)
