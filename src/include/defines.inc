@@ -49,7 +49,7 @@ vatentrytempend			equ pixelShadow2+12+15
 tmpSpriteLoc	equ cursorImage
 
 HomeHookAddr	equ appdata+50
-currSel		equ appdata+190
+currSel		equ appdata+200
 inAppScreen	equ currSel+1
 currSelAbs	equ inAppScreen+1
 scrollamt	equ currSelAbs+3
