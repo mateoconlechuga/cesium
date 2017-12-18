@@ -40,6 +40,9 @@ ASMERROR_HANDLER:
 ASMSTART_HANDLER:
 	ld	hl,0
 	push	hl
+	call	_APDSetup
+	call	_DisableAPD
+	di
 	jp	UserMem				 ; simply call userMem to execute the program
 
 RunBasicProgram:
