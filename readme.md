@@ -24,6 +24,7 @@ Press [enter] to execute.
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
 Once installed, the application cannot be transferred to other calculators. If you wish to transfer Cesium to other calculators after installation, you must resend the installer and transfer the installer to other calculators.
+Another strategy is to make a group object ([2nd][+][8], type in a group name) that contains the installer and a random, small file (L1, for instance).  Then, the group can be transferred and ungrouped (same procedure, just scroll to "UNGROUP" in the menu and select the group with the installer) and the installer run.
 
 ### Controls
 Cesium provides a way to quickly jump to different programs in the program browser. Simply press one of the keys with a green letter above it, and it will take you to the first program with that starts with that letter.
@@ -79,10 +80,16 @@ To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
 
 ### Building
 You can easily build Cesium by navigating in the `src` directory and entering the command:
+**Make sure to place spasm.exe in the `src` folder!
+
+https://github.com/alberthdev/spasm-ng/releases , rename spasm32.exe or spasm64.exe (for 64 bit systems) to spasm.exe
 
     spasm -E -DENGLISH=1 cesium.asm cesium.8xp && mv cesium.8xp ../cesium.8xp && spasm -E -DFRENCH=1 cesium.asm cesium.8xp && mv cesium.8xp ../cesium-french.8xp
+    
+Windows input:
+    
+    spasm -E -DENGLISH=1 cesium.asm cesium.8xp && move cesium.8xp ../cesium.8xp && spasm -E -DFRENCH=1 cesium.asm cesium.8xp && move cesium.8xp ../cesium-french.8xp
 
-The input may differ slightly on a Windows machine.
 
 ### Credits
 (C) October 2017 Matt "MateoConLechuga" Waltz
