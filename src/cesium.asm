@@ -12,11 +12,12 @@ CesiumStart:
 ; program routines
 #include "routines/main.asm"            ; stick the main file right here
 #include "routines/loader.asm"          ; loads a program into memory and runs it
+#include "routines/editor.asm"          ; program editing
 #include "routines/common.asm"          ; common routines used by many relocated chunks
 #include "routines/usefulroutines.asm"  ; common routines
-#include "routines/pgrmoptions.asm"     ; options for prgms
+#include "routines/pgrmoptions.asm"     ; options for programs
 #include "routines/settings.asm"        ; general settings
-#include "routines/delete.asm"          ; prgm deletion stuff
+#include "routines/delete.asm"          ; program deletion stuff
 #include "routines/drawprograms.asm"    ; part of main loop
 #include "routines/drawapps.asm"        ; part of main loop
 #include "routines/search.asm"          ; alphabetizer
@@ -52,7 +53,7 @@ CesiumIcon: ; Signifies a Cesium program (haha)
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 CesiumVersionStr:
  .db "Cesium Version 2.4.3",0
- 
+
 ; program data
 #ifdef ENGLISH
 #include "data/text.asm"               ; text data

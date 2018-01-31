@@ -1,5 +1,50 @@
 StopToken equ $D9-$CE			; "Stop" token
 
+AppChangeHook:
+	.db	83h
+	ld	a,b
+	cp	a,cxPrgmEdit
+	ld	b,a
+	ret	nz
+
+	call	_CursorOff
+	call	_CloseEditEqu
+	call	_PopOP1
+	call	_ChkFindSym
+	jr	c,_edit_no_rearchive
+	ld	a,(EditStatus)
+	or	a,a
+	call	nz,_Arc_Unarc
+_edit_no_rearchive:
+	ld	hl,OP1                      ; execute app
+	ld	(hl),'C'
+	inc	hl
+	ld	(hl),'e'
+	inc	hl
+	ld	(hl),'s'
+	inc	hl
+	ld	(hl),'i'
+	inc	hl
+	ld	(hl),'u'
+	inc	hl
+	ld	(hl),'m'
+	inc	hl
+	ld	(hl),0
+	ld	hl,OP1
+	push	hl
+	call	_os_FindAppStart
+	pop	bc
+	ld	bc,$100                      ; bypass header
+	add	hl,bc
+	push	hl
+	ld	bc,$12                       ; bypass bytes
+	add	hl,bc
+	ld	hl,(hl)
+	pop	bc
+	add	hl,bc
+	ld	a,$aa
+	jp	(hl)
+
 ParserHook:
 	.db	83h			; Required for all hooks
 	cp	a,2
@@ -292,7 +337,7 @@ StartPassword:
 	ld	de,11
 	add	hl,de
 	ld	(PasswordTemp),hl
-	
+
 WrongPassword:
 	call	_CursorOff
 	ld	a,cxCmd
@@ -319,9 +364,9 @@ WrongPassword:
 	ld	b,a
 	ld	c,0
 	inc	hl
-KeyPress: 
+KeyPress:
 	call	GetKeyPress
-	cp	a,(hl) 
+	cp	a,(hl)
 	inc	hl
 	jr	z,Asterisk
 	inc	c
@@ -335,15 +380,15 @@ Asterisk:
 CorrectPassword:
 	ld	a,kClear
 	jp	_SendKPress
-	
+
 GetKeyPress:
 	push	hl
    	call	_GetCSC
 	pop	hl
 	or	a,a
 	jr	z,GetKeyPress
-	ret 
-   
+	ret
+
 CesiumAppvarNameRelocated:
 	.db	appVarObj,"Cesium",0
 PasswordStrRelocated:

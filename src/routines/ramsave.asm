@@ -1,6 +1,6 @@
 
 	.assume	adl = 0
-	
+
 unlock:	ld	a, $8c
 	out0	($24), a
 	ld	c, 4
@@ -17,5 +17,5 @@ lock:	xor	a, a
 	ld	a, $88
 	out0	($24), a
 	ret.l
-	
+
 	.assume adl = 1

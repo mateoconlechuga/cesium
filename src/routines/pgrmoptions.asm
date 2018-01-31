@@ -16,12 +16,12 @@ RenameGood:
 	pop	af
 	ld	(skinColor),a
 	print(NewNameStr,199,173)
-	
+
 	ld	hl,199
 	ld	(posX),hl
 	ld	a,195
 	ld	(posY),a
-	
+
 	ld	a,(currInputMode)
 	call	DrawChar
 	ld	hl,199
@@ -111,7 +111,7 @@ _:	ld	(charTableCur),hl
 	add	hl,de
 	ld	(posX),hl
 	jp	GetNewName
-	
+
 ConfirmRename:
 	ld	a,(cursor)
 	or	a,a
@@ -174,9 +174,9 @@ _:	ex	de,hl
 	pop	hl
 	call	_ChkBCIs0
 	jr	z,+_
-	ldir	
+	ldir
 _:	call	_PopOP1
-jump_SMC =$+1	
+jump_SMC =$+1
 	call	_Arc_Unarc
 	call	_PopOP1
 	call	_ChkFindSym
@@ -246,7 +246,7 @@ _:	call	FullBufCpy
 	cp	a,skEnter
 	jr	nz,-_
 	jp	CheckWhatToDo
- 
+
 incrementOption:
 	call	EraseSel
 	cp	a,2
@@ -272,7 +272,7 @@ decrementOption:
 	dec	a
 	ld	(currMenuSel),a
 	ret
-	
+
 EraseSel:
 	call	GetOptionPixelOffset
 	ld	a,(currMenuSel)
@@ -323,7 +323,7 @@ NotOnLock:
 	ld	a,(ArchiveSet)
 	or	a,a
 	jr	z,_j1
-	drawRectFilled(302,120,307,125) 
+	drawRectFilled(302,120,307,125)
 _j1:
 	ld	a,(LockSet)
 	or	a,a
@@ -377,7 +377,7 @@ Unhide:
 	jr	nc,CheckArchive				; already hidden
 	add	a,64
 	ld	(hl),a
-	
+
 ;-------------------------------------------------------------------------------
 
 CheckArchive:

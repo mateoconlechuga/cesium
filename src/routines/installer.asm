@@ -9,7 +9,7 @@
 ; only matters to show Cesium inside Cesium lol
 
 	jp	StartInstaller
-	
+
 	.db 1, 16,16  ; Indicator, Width, Height
 	.db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0DEh,0D6h,0D6h,0DEh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 	.db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0D6h,0DEh,0DEh,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
@@ -32,15 +32,15 @@
 StartInstaller:
 	di					; disable interrupts
 	call	_PushOP1
-	
+
 	app_create()
 	or	a,a
 	ret	z
-	
+
 	call	_PopOP1
 	call	_ChkFindSym
 	call	_DelVarArc			; delete ourselves
-	
+
 	ld	hl,executeapp_start
 	ld	de,executeapp
 	ld	bc,executeapp_end-executeapp_start
@@ -61,7 +61,7 @@ executeapp:
 	call	_EnoughMem
 	pop	hl
 	jp	c, _ErrMemory
-	
+
 	ld	hl,CesiumNameOfApp
 	ld	de,progToEdit
 	ld	bc,8

@@ -56,7 +56,7 @@ SearchAlphaName:
 	dec	ix
 FindAlphaName:
 	ld	de,(hl)			; pointer to program name size
-	
+
 	push	bc
 	push	ix
 length_SMC =$+1

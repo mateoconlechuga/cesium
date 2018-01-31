@@ -34,7 +34,7 @@ ReturnHereNoError:                          ; handler for returning programs
 	call	_PopErrorHandler
 ReturnHereIfError:                          ; handler for returning programs
 	di                                  ; in case the launched program enabled interrupts...
-	xor	a,a 
+	xor	a,a
 	ld	(kbdGetKy),a                ; flush keys
 	res	progExecuting,(iy+newDispf)
 	res	cmdExec,(iy+cmdFlags)
@@ -43,7 +43,7 @@ ReturnHereIfError:                          ; handler for returning programs
 	res	onInterrupt,(iy+onFlags)
 	call	_ReloadAppEntryVecs
 	call	_DeleteTempPrograms
-	call	_CleanAll	
+	call	_CleanAll
 	call	_RunIndicOff                ; in case the launched program re-enabled it
 	di
 	ld	de,(asm_prgm_size)
@@ -119,7 +119,7 @@ FindAppStart:
 	ld	bc,_app_init_size
 	add	hl,bc
 	ret
-	
+
 CesiumAppName:
 	.db	"Cesium",0
 
@@ -144,7 +144,7 @@ DeletePgrmFromUserMem:
 	ld	(asm_prgm_size),hl		; delete whatever current program was there
 	ld	hl,userMem
 	jp	_DelMem				; HL->place to delete, DE=amount to delete
- 
+
 MovePgrmToUserMem:
 	ld	a,09h				; 'add hl,bc'
 	ld	(offset_SMC),a
@@ -187,7 +187,7 @@ DeleteTempProgramGetName:
 	call	_ChkFindSym
 	call	nc,_DelVarArc			; delete the temp prgm if it exists
 	jp	_PopOP1
-	
+
 NamePtrToOP1:
 	ld	hl,(hl)
 	push	hl				; VAT pointer
@@ -222,7 +222,7 @@ _:	xor	a,a
 	inc	a
 	ret
 
-	
+
 ;-------------------------------------------------------------------------------
 FillRectangle:
 ; bc = width
@@ -321,7 +321,7 @@ FullBufCpy:
 	ld	de,vBuf1
 	ldir
 	ret
-	
+
 DrawString:
 	ld	a,(hl)
 	or	a,a
@@ -461,7 +461,7 @@ CharSpacing:
  .db 7,7,7,7,8,7,7,7,7,7,8,7,7,4,7,8
  .db 3,7,7,7,7,7,7,7,7,4,7,7,4,7,7,7
  .db 7,7,7,7,6,7,7,7,7,7,7,6,2,6,4,7
- 
+
 Char000: .db $00,$00,$00,$00,$00,$00,$00,$00	; .
 Char001: .db $7E,$81,$A5,$81,$BD,$BD,$81,$7E	; .
 Char002: .db $7E,$FF,$DB,$FF,$C3,$C3,$FF,$7E	; .
@@ -494,7 +494,7 @@ Char028: .db $00,$00,$C0,$C0,$C0,$FE,$00,$00	; .
 Char029: .db $00,$24,$66,$FF,$66,$24,$00,$00	; .
 Char030: .db $00,$18,$3C,$7E,$FF,$FF,$00,$00	; .
 Char031: .db $00,$FF,$FF,$7E,$3C,$18,$00,$00	; .
-Char032: .db $00,$00,$00,$00,$00,$00,$00,$00	;  
+Char032: .db $00,$00,$00,$00,$00,$00,$00,$00	;
 Char033: .db $C0,$C0,$C0,$C0,$C0,$00,$C0,$00	; !
 Char034: .db $D8,$D8,$D8,$00,$00,$00,$00,$00	; "
 Char035: .db $6C,$6C,$FE,$6C,$FE,$6C,$6C,$00	; #

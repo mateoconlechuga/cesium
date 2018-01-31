@@ -54,8 +54,10 @@ inAppScreen	equ currSel+1
 currSelAbs	equ inAppScreen+1
 scrollamt	equ currSelAbs+3
 HomeSave	equ scrollamt+3
+EditStatus      equ HomeSave+3
+EditMode        equ EditStatus+1
 
-tmpSettings	equ HomeSave+3
+tmpSettings	equ EditMode+1
 skinColor	equ tmpSettings
 runIndic	equ tmpSettings+1
 prgmCountDisp	equ tmpSettings+2

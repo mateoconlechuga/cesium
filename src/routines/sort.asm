@@ -74,7 +74,7 @@ locationfound:
 	push	hl
 	ld	de,(vatentrysize)
 	or	a,a
-	sbc	hl,de	
+	sbc	hl,de
 	ex	de,hl
 	pop	hl
 	ldir
@@ -95,7 +95,7 @@ nomoveneeded:
 	pop	hl
 	ld	(endofsortedpartpointer),hl
 	jp	sort_next
-	
+
 firstprogfound:
 	set	firstprog,(IY+asm_Flag1)		; to make it only execute once
 	ld	(firstprogpointer),hl
@@ -119,7 +119,7 @@ skipname:
 comparestrings:						; hl and de pointers to strings output=carry if de is first
 	res	prog1Hidden,(iy+hideFlag)
 	res	prog2Hidden,(iy+hideFlag)
-	
+
 	dec	hl
 	dec	de
 	ld	a,(hl)
@@ -181,7 +181,7 @@ prog1NotHiddenChk:
 prog2NotHiddenChk:
 	pop	af
 	ret
-	
+
 findnextitem:						; carry=found nc=notfound
 	ex	de,hl
 	ld	hl,(ptemp)
@@ -208,6 +208,6 @@ findnextitem:						; carry=found nc=notfound
 	dec	hl					; add check: do I need to sort this program (not neccessary)
 	scf
 	ret
-	
+
 programtypes:
 	.db	progobj,protprogobj

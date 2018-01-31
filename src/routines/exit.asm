@@ -11,11 +11,11 @@ ClearOldBackup:
 	di                                       ; let's do some crazy flash things so that way we can save the RAM state...
 	ld.sis	sp,$ea1f
 	call.is	funlock & $ffff
-	
+
 	ld	b,0
 	ld	de,$3C0000
 	call	_WriteFlashByte                  ; this is so we can store the new RAM data \o/
-	
+
 	call.is	flock & $ffff
 
 	ret

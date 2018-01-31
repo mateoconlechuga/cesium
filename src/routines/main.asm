@@ -10,11 +10,13 @@ CESIUM_OS_BEGIN:
 	ld	(inAppScreen),a
 
 LoadSettings:
+	call	_RunIndicOff
+	di
 	ld	hl,settingsOldAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym
 	call	nc,_DelVarArc
-	
+
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym			; now lookup the settings appvar
@@ -35,7 +37,7 @@ LoadSettings:
 	ld	de,TmpSettings
 	ld	bc,14
 	ldir					; copy the temporary settings to the lower stack
-	
+
 	call	SetKeyHookPtr
 	push	hl
 	ld	bc,ParserHook
@@ -64,6 +66,11 @@ LoadSettings:
 	ld	bc,ErrCatchBASIC
 	add	hl,bc
 	ld	(BASICERROR_HANDLER+1),hl
+	or	a,a
+	sbc	hl,bc
+	ld	bc,AppChangeHook
+	add	hl,bc
+	ld	(APP_CHANGE_HOOK+1),hl
 	res	onInterrupt,(iy+OnFlags)	; this bit of stuff just enables the [on] key
 	call	ClearScreens
 	call	_GetBatteryStatus		;> 75%=4 ;50%-75%=3 ;25%-50%=2 ;5%-25%=1 ;< 5%=0
@@ -127,6 +134,8 @@ GetKeys:
 	call	z,DecrementAPD
 	cp	a,skClear
 	jp	z,FullExit
+	cp	a,skPrgm
+	jp	z,EditBasicPrgm
 	cp	a,skDel
 	jp	z,DeletePrgm
 	cp	a,skMode

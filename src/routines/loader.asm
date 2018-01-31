@@ -3,7 +3,7 @@
 ; inputs:
 ;  shortcutKeys - Check if shortcut keys are enabled
 ;  prgmNamePtr - Pointer to program name
-;  
+;
 ; flags:
 ;  bootEnter - Was enter used to launch?
 CesiumLoader:
@@ -91,7 +91,7 @@ BASICSTART_HANDLER:
 	ld	(kbdGetKy),a
 	ei
 	jp	_ParseInp			; run program
-	
+
 SaveRAMState:
 	ld	hl,skinColor
 	ld	a,(hl)
@@ -118,7 +118,7 @@ SaveRAMState:
 	di					; let's do some crazy flash things so that way we can save the RAM state...
 	ld.sis	sp,$ea1f
 	call.is	unlock & $ffff
-	
+
 	ld	a,$3F
 	call	EraseSector			; clean out the flash sectors
 	ld	a,$3E
@@ -135,7 +135,7 @@ SaveRAMState:
 	ld	de,$3C0000			; we could just write all of ram
 	ld	bc,$40000
 	call	_WriteFlash
-	
+
 	call.is	lock & $ffff
 
 	ret

@@ -1,6 +1,6 @@
 
 	.assume	adl = 0
-	
+
 unlocks:
 	ld	a, $8c
 	out0	($24), a
@@ -19,5 +19,5 @@ locks:
 	ld	a, $88
 	out0	($24), a
 	ret.l
-	
+
 	.assume adl = 1
