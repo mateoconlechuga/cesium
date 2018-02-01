@@ -3,10 +3,10 @@ EditBasicPrgm:
 	jp	nz,MAIN_START_LOOP
 	bit	isBasic,(iy+pgrmStatus)
 	jp	z,MAIN_START_LOOP
+	call	GetProgramName
 	ld	a,(OP1)
 	cp	a,5
 	jp	nz,MAIN_START_LOOP
-	call	GetProgramName
 	call	_ChkFindSym
 	xor	a,a
 	jr	EditStart

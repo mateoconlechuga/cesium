@@ -146,9 +146,17 @@ GetKeyHook:
 	jr	z,Good
 	cp	a,sk2
 	jr	z,Good
+	cp	a,skGraph
+	jr	z,Good
 	ret
 
 Good:
+	push	af
+	ld	a,(cxCurApp)
+	cp	a,cxPrgmEdit
+	jr	z,InEditor
+	pop	af
+NotInEditor:
 	di
 	ld	hl,$f0202c
 	ld	(hl),l
@@ -167,6 +175,11 @@ Good:
 	jr	z,RelocateHook
 	ret
 
+InEditor:
+	pop	af
+	cp	a,skGraph
+	jr	nz,NotInEditor
+	jr	RelocateHook
 NoOnKey:
 	dec	a
 	inc	a
@@ -191,6 +204,8 @@ RelocateHook:
 HookStart:
 relocate(pixelshadow2)
 Hook:
+	cp	a,skGraph
+	jp	z,ShowLabels
 	cp	a,skPrgm
 	jp	z,StartCesium
 	cp	a,skStat
@@ -201,6 +216,11 @@ Hook:
 	jp	z,ClearOldRAM
 	cp	a,sk2
 	jp	z,RestoreRAM
+	ret
+
+ShowLabels:
+	dec	a
+	inc	a
 	ret
 
 ClearOldRAM:
