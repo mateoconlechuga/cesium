@@ -24,7 +24,7 @@ Press [enter] to execute.
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
 Once installed, the application cannot be transferred to other calculators. If you wish to transfer Cesium to other calculators after installation, you must resend the installer and transfer the installer to other calculators.
-Another strategy is to make a group object ([2nd][+][8], type in a group name) that contains the installer and a random, small file (L1, for instance).  Then, the group can be transferred and ungrouped (same procedure, just scroll to "UNGROUP" in the menu and select the group with the installer) and the installer run.
+Another strategy is to make a group object (<kbd>2nd</kbd><kbd>+</kbd><kbd>8</kbd>, type in a group name) that contains the installer and a random, small file (`L1`, for instance).  Then, the group can be transferred and ungrouped with the same procedure, just scroll to `UNGROUP` in the menu and select the group with the installer.
 
 ### Controls
 Cesium provides a way to quickly jump to different programs in the program browser. Simply press one of the keys with a green letter above it, and it will take you to the first program with that starts with that letter.
@@ -33,9 +33,12 @@ Cesium provides a way to quickly jump to different programs in the program brows
 |-----------------|--------------------------|
 | [2nd/enter]     | Run, select              |
 | [alpha]         | Edit program options     |
+| [zoom]          | Edit BASIC program       |
+| [y=]            | Create new program       |
+| [graph]         | Rename program           |
 | [mode]          | Enter settings menu      |
 | [up/down]       | Move places              |
-| [Green letters] | Alpha search for program |
+| [green letters] | Alpha search for program |
 
 ### Shortcuts
 Shortcuts are available from the TI-OS system anywhere. Simply hold the [on] key and press the corresponding button to trigger the action.
@@ -66,6 +69,7 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 
 ### Features
 * Running ASM, C, and Basic programs directly, and they can be archived or not
+* Editing Basic programs directly and an instant goto for errors
 * [Un]Archiving, deleting, hiding, and renaming programs
 * Catalog-like searching for programs for quick lookup
 * Ability to hide then run indicator when running Basic programs
@@ -80,22 +84,20 @@ To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
 
 ### Building
 You can easily build Cesium by navigating in the `src` directory and entering the command:
-**Make sure to place spasm.exe in the `src` folder!
 
-https://github.com/alberthdev/spasm-ng/releases , rename spasm32.exe or spasm64.exe (for 64 bit systems) to spasm.exe
+Linux / macOS:
 
     spasm -E -DENGLISH=1 cesium.asm cesium.8xp && mv cesium.8xp ../cesium.8xp && spasm -E -DFRENCH=1 cesium.asm cesium.8xp && mv cesium.8xp ../cesium-french.8xp
-    
-Windows input:
-    
+
+Windows:
+
     spasm -E -DENGLISH=1 cesium.asm cesium.8xp && move cesium.8xp ../cesium.8xp && spasm -E -DFRENCH=1 cesium.asm cesium.8xp && move cesium.8xp ../cesium-french.8xp
 
-
 ### Credits
-(C) October 2017 Matt "MateoConLechuga" Waltz
+(C) February 2018 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
 
 ### Source and Bug Reports
 Source is available here: https://github.com/mateoconlechuga/cesium
 
-If you encounter an unexpected behaviour, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
+If you encounter an unexpected behavior, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
