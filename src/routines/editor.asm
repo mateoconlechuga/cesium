@@ -1,4 +1,6 @@
 EditBasicPrgm:
+	bit	pgrmLocked,(iy+pgrmStatus)
+	jp	nz,MAIN_START_LOOP
 	bit	isBasic,(iy+pgrmStatus)
 	jp	z,MAIN_START_LOOP
 	call	GetProgramName

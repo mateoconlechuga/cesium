@@ -159,7 +159,7 @@ GetKeys:
 	call	z,DecrementAPD
 	cp	a,skClear
 	jp	z,FullExit
-	cp	a,skPrgm
+	cp	a,skZoom
 	jp	z,EditBasicPrgm
 	cp	a,skDel
 	jp	z,DeletePrgm
@@ -177,6 +177,8 @@ GetKeys:
 	jr	nz,GetKeys
 	cp	a,skGraph
 	jp	z,RenameProgram
+	cp	a,skYequ
+	jp	z,AddProgram
 	cp	a,skAlpha
 	jp	z,LoadProgramOptions
 	sub	a,skAdd

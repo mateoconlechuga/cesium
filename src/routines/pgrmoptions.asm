@@ -1,11 +1,19 @@
+AddProgram:
+	ld	a,(inAppScreen)
+	or	a,a
+	jp	nz,MAIN_START_LOOP
+	cpl
+	ld	(TypeSMC+1),a
+	jr	RenameGood
 RenameProgram:
+	xor	a,a
+	ld	(TypeSMC+1),a
 	ld	a,(listApps)
 	or	a,a
 	jr	z,RenameGood
 	ld	hl,(currSelAbs)
 	call	_ChkHLIs0
-	jr	nz,RenameGood
-	jp	ReturnHome
+	jp	z,MAIN_START_LOOP
 RenameGood:
 	ld	hl,skinColor
 	ld	a,(hl)
@@ -15,8 +23,14 @@ RenameGood:
 	drawRectFilled(199,173,313,215)
 	pop	af
 	ld	(skinColor),a
+	ld	a,(TypeSMC+1)
+	or	a,a
+	jr	z,+_
+	print(NewProgramStr,199,173)
+	jr	++_
+_:
 	print(NewNameStr,199,173)
-
+_:
 	ld	hl,199
 	ld	(posX),hl
 	ld	a,195
@@ -41,13 +55,13 @@ GetNewName:
 	or	a,a
 	call	z,DecrementAPD
 	cp	a,skDel
-	jr	z,RenameGood
+	jp	z,RenameGood
 	cp	a,skLeft
-	jr	z,RenameGood
+	jp	z,RenameGood
 	cp	a,skAlpha
 	jr	z,ToggleInput
 	cp	a,skClear
-	jp	z,ReturnHome
+	jp	z,MAIN_START_LOOP
 	cp	a,sk2nd
 	jp	z,ConfirmRename
 	cp	a,skEnter
@@ -116,12 +130,29 @@ ConfirmRename:
 	ld	a,(cursor)
 	or	a,a
 	jp	z,GetNewName
-	ld	hl,(prgmNamePtr)
-	call	NamePtrToOP1				; move the selected name to OP1
-	ld	hl,_Arc_Unarc
-	ld	(jump_SMC),hl
 	ld	hl,(NameBufferPtr)
 	ld	(hl),0
+TypeSMC:
+	ld	a,0
+	or	a,a
+	jr	z,RenamingProgram
+CreatingProgram:
+	ld	hl,NameBuffer
+	ld	(hl),progObj
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	jp	nc,GetNewName			; check if name already exists
+	ld	hl,NameBuffer
+	call	_Mov9ToOP1
+	ld	a,(OP1)
+	or	a,a
+	sbc	hl,hl
+	call	_CreateVar
+	jp	GoHome
+RenamingProgram:
+	call	GetProgramName				; move the selected name to OP1
+	ld	hl,_Arc_Unarc
+	ld	(jump_SMC),hl
 	ld	de,OP1
 	ld	a,(de)
 	ld	hl,NameBuffer
@@ -181,6 +212,7 @@ jump_SMC =$+1
 	call	_PopOP1
 	call	_ChkFindSym
 	call	_DelVarArc
+GoHome:
 	ld	hl,pixelshadow2
 	ld	(programNameLocationsPtr),hl
 	xor	a,a
@@ -188,10 +220,10 @@ jump_SMC =$+1
 	ld	(numprograms),hl
 	call	sort				; sort the VAT alphabetically
 	call	FindPrograms			; find available assembly programs in the VAT
+	ld	hl,(numprograms)
+	ld	(MaxListAmt),hl
 	ld	hl,NameBuffer+1
 	jp	SearchAlphaName
-ReturnHome:
-	jp	MAIN_START_LOOP
 
 NameBuffer	equ CursorImage
 NameBufferPtr:

@@ -28,6 +28,7 @@ CleanUp:
 	res	onInterrupt,(iy+onFlags)        ; [ON] break error destroyed
 	call	_DrawStatusBar
 	call	_ClrParserHook
+	call	_ClrAppChangeHook
 	res	apdWarmStart, (iy + apdFlags)
 	ld	a,(AutoBackup)
 	or	a,a

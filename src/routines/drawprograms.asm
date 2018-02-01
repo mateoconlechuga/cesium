@@ -442,12 +442,8 @@ DrawLowerDescription:
 	ret
 
 DrawStaticInfo:
-	print(DeleteStr,199,195)
-#ifdef ENGLISH
-	ld	de,278
-#else
-	ld	de,262
-#endif
+	print(EditProgramStr,199,195)
+	ld	de,269
 	ld	(posX),de
 	inc	hl
 	call	DrawString
