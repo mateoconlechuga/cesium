@@ -60,7 +60,7 @@ executeapp:
 	ld	hl,$100
 	call	_EnoughMem
 	pop	hl
-	jp	c, _ErrMemory
+	jp	c,_ErrMemory
 
 	ld	hl,CesiumNameOfApp
 	ld	de,progToEdit

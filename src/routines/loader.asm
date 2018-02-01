@@ -36,9 +36,8 @@ SkipSave:
 	bit	isBasic,(iy+pgrmStatus)
 	jp	nz,RunBasicProgram
 	call	MovePgrmToUserMem		; the program is now stored at userMem -- Now we need to check and see what kind of file it is - C or assembly
-ASMERROR_HANDLER:
-	ld	hl,0
-	call	_PushErrorHandler
+	call	InstallAsmErrHandler
+RunAsm:
 ASMSTART_HANDLER:
 	ld	hl,0
 	push	hl
@@ -47,8 +46,111 @@ ASMSTART_HANDLER:
 	di
 	jp	UserMem				 ; simply call userMem to execute the program
 
+InstallAsmErrHandler:
+ASMERROR_HANDLER:
+	ld	hl,0
+	jp	_PushErrorHandler
+
+NeedsSquish:
+	call	GetProgramName
+	ld	de,basic_prog
+	ld	hl,OP1
+	call	_Mov9b
+	call	InstallAsmErrHandler
+	ld	bc,(actualSizePrgm)
+	dec	bc
+	dec	bc
+	push	bc
+	bit	0,c
+	jp	nz,_ErrSyntax
+	srl	b
+	rr	c
+	push	bc
+	push	bc
+	pop	hl
+	call	_EnoughMem
+	pop	hl
+	pop	bc
+	jp	c,_ErrMemory
+	push	bc
+	ld	de,UserMem
+	ld	(asm_prgm_size),hl
+	call	_InsertMem
+	ld	hl,(prgmDataPtr)
+	ld	a,(prgmDataPtr+2)
+	cp	a,$d0
+	jr	c,NotRam
+	call	GetProgramName
+	call	_ChkFindSym
+	ex	de,hl
+	inc	hl
+	inc	hl
+NotRam:
+	inc	hl
+	inc	hl
+	ld	(begPC),hl
+	ld	(curPC),hl
+	ld	de,UserMem
+	pop	bc
+Squishy:
+	ld	a,b
+	or	a,c
+	jp	z,RunAsm
+	push	hl
+	ld	hl,(curPC)
+	inc	hl
+	ld	(curPC),hl
+	pop	hl
+	dec	bc
+	ld	a,(hl)
+	inc	hl
+	cp	a,$3f
+	jr	z,Squishy
+	push	de
+	call	CheckSquishyByte
+	ld	d,a
+	ld	a,(hl)
+	inc	hl
+	call	CheckSquishyByte
+	ld	e,a
+	call	ConvertSquishyByte
+	pop	de
+	ld	(de),a
+	inc	de
+	dec	bc
+	jr	Squishy
+
+ConvertSquishyByte:
+	push	hl
+	ld	a,d
+	call	_SHLAcc
+	add	a,e
+	pop	hl
+	ret
+CheckSquishyByte:
+	cp	a,$30
+	jp	c,_ErrSyntax
+	cp	a,$3A
+	jr	nc,+_
+	sub	a,$30
+	ret
+_:	cp	a,$41
+	jp	c,_ErrSyntax
+	cp	a,$47
+	jp	nc,_ErrSyntax
+	sub	a,$37
+	ret
+
 RunBasicProgram:
-	call	_RunIndicOn
+	ld	hl,(prgmDataPtr)
+	ld	a,(hl)
+	cp	a,$ef
+	jr	nz,+_
+	inc	hl
+	ld	a,(hl)
+	cp	a,$7a
+	jp	z,NeedsSquish
+_:	call	_RunIndicOn
 	call	_DisableAPD
 	ld	a,(RunIndic)
 	or	a,a

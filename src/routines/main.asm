@@ -61,7 +61,7 @@ LoadSettings:
 	ld	(BASICSTART_HANDLER+1),hl
 	or	a,a
 	sbc	hl,bc
-	ld	bc,ReturnHereIfError
+	ld	bc,ReturnHereIfAsmError
 	add	hl,bc
 	ld	(ASMERROR_HANDLER+1),hl
 	or	a,a

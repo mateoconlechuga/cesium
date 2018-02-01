@@ -1,7 +1,10 @@
 ; These are shared routines that are used by many parts of the program
 
 ErrCatchBASIC:
+ReturnHereIfAsmError:
 	call	_boot_ClearVRAM
+	ld	a,$2D
+	ld	(mpLcdCtrl),a
 	call	_DrawStatusBar
 	call	_DispErrorScreen
 	xor	a,a
