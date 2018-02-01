@@ -4,8 +4,10 @@ ErrCatchBASIC:
 	call	_boot_ClearVRAM
 	call	_DrawStatusBar
 	call	_DispErrorScreen
-	ld	hl,1
-	ld	(curRow),hl
+	xor	a,a
+	ld	(curCol),a
+	inc	a
+	ld	(curRow),a
 	ld	hl,OP1
 	ld	(hl),'1'
 	inc	hl
@@ -27,12 +29,101 @@ ErrCatchBASIC:
 	call	_PutS
 	res	textInverse,(iy+textFlags)
 	call	_PutS
-	call	_GetKey
-	jr	ReturnHereIfError
+	ld	hl,OP1
+	ld	(hl),'2'
+	inc	hl
+	ld	(hl),':'
+	inc	hl
+	ld	(hl),'G'
+	inc	hl
+	ld	(hl),'o'
+	inc	hl
+	ld	(hl),'t'
+	inc	hl
+	ld	(hl),'o'
+	inc	hl
+	ld	(hl),0
+	ld	hl,OP1
+	xor	a,a
+	ld	(curCol),a
+	ld	a,2
+	ld	(curRow),a
+	call	_PutS
+	call	_GetCSC
+GetInput:
+	call	_GetCSC
+	cp	a,skUp
+	jr	z,HighlightQuit
+	cp	a,skDown
+	jr	z,HighlightGoto
+	cp	a,sk2
+	jr	z,SetGoto
+	cp	a,sk1
+	jr	z,ReturnHereIfError
+	cp	a,skEnter
+	jr	z,CheckOption
+	jr	GetInput
+HighlightQuit:
+	ld	hl,1
+	ld	de,2
+	ld	a,'1'
+	ld	b,'2'
+HighlightOption:
+	ld.sis	(curRow & $ffff),hl
+	push	bc
+	push	de
+	push	af
+	scf
+	sbc	hl,hl
+	ld	(fillRectColor),hl
+	inc	hl
+	ld	de,25
+	ld	bc,(40<<8) | 96
+	call	_FillRect
+	pop	af
+	pop	de
+	pop	bc
+	ld	hl,OP1
+	ld	(hl),a
+	inc	hl
+	ld	(hl),':'
+	inc	hl
+	ld	(hl),0
+	dec	hl
+	dec	hl
+	push	de
+	set	textInverse,(iy+textFlags)
+	call	_PutS
+	res	textInverse,(iy+textFlags)
+	pop	de
+	ld.sis	(curRow & $ffff),de
+	ld	hl,OP1
+	ld	(hl),b
+	call	_PutS
+	jr	GetInput
+HighlightGoto:
+	ld	hl,2
+	ld	de,1
+	ld	a,'2'
+	ld	b,'1'
+	jr	HighlightOption
+CheckOption:
+	ld	a,(curRow)
+	cp	a,2
+	jr	z,ReturnHereIfError
+SetGoto:
+	ld	a,$bb
+	ld	(EditMode),a
+	jr	SkipOption
 ReturnHereBASIC:
 ReturnHereNoError:                          ; handler for returning programs
 	call	_PopErrorHandler
 ReturnHereIfError:                          ; handler for returning programs
+	ld	a,$aa
+	ld	(EditMode),a
+	jr	SkipOption
+SkipOption:
+	call	_ClrAppChangeHook
 	di                                  ; in case the launched program enabled interrupts...
 	xor	a,a
 	ld	(kbdGetKy),a                ; flush keys
@@ -95,7 +186,7 @@ _:	call	_GetCSC
 	or	a,a
 	jr	nz,-_
 	pop	hl
-	ld	a,$aa
+	ld	a,(EditMode)
 	jp	(hl)
 
 QuitStr1:
@@ -188,6 +279,8 @@ DeleteTempProgramGetName:
 	call	nc,_DelVarArc			; delete the temp prgm if it exists
 	jp	_PopOP1
 
+GetProgramName:
+	ld	hl,(prgmNamePtr)
 NamePtrToOP1:
 	ld	hl,(hl)
 	push	hl				; VAT pointer

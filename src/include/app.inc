@@ -63,8 +63,6 @@ ___app_code_start:
 #define _app_init eval($)
 	push	af
 	res	appTextSave,(iy+appFlags)
-	call	_HomeUp
-	call	_ClrScrn
 	ld	hl,___relocate_end-__relocate_start
 	push	hl
 #if __use_usermem != 0
@@ -142,7 +140,7 @@ _:	ex	de,hl
 	ret
 
 	.assume	adl = 0
-	
+
 _:	ld	a,$8C
 	out0	($24),a
 	ld	c,4
@@ -159,7 +157,7 @@ _:	xor	a,a
 	ld	a,$88
 	out0	($24),a
 	ret.l
-	
+
 	.assume adl = 1
 #endmacro
 

@@ -1,11 +1,14 @@
 EditBasicPrgm:
 	bit	isBasic,(iy+pgrmStatus)
 	jp	z,MAIN_START_LOOP
-	xor	a,a
-	ld	hl,(prgmNamePtr)
-	call	NamePtrToOP1
+	call	GetProgramName
 	call	_ChkFindSym
-_edit_jump:
+	xor	a,a
+	jr	EditStart
+EditGoto:
+	call	SetErrOffset
+	ld	a,$ff
+EditStart:
 	ld	(EditMode),a
 	xor	a,a
 	ld	(EditStatus),a
@@ -65,7 +68,7 @@ APP_CHANGE_HOOK:
 	ldir
 	ld	(editTail),hl
 	ld	(editCursor),de
-	; hm
+	call	_edit_goto_new_line
 _edit_goto_end:
 	call	_DispEOW
 	ld	hl,0100h
@@ -82,3 +85,39 @@ _edit_skip:
 	ld	(MenuCurrent),a
 	set	7,(iy+28h)
 	jp	_Mon
+
+_edit_goto_new_line:
+	ld	hl,(editCursor)
+	ld	a,(hl)
+	cp	a,$3F
+	jr	z,_edit_goto_new_line_back
+_edit_goto_new_line_loop:
+	ld	a,(hl)
+	ld	de,(editTop)
+	or	a,a
+	sbc	hl,de
+	ret	z
+	add	hl,de
+	dec	hl
+	push	af
+	ld	a,(hl)
+	call	_IsA2ByteTok
+	pop	de
+	jr	z,_edit_goto_new_line_back
+	ld	a,d
+	cp	a,$3F
+	jr	z,_edit_goto_new_line_next
+_edit_goto_new_line_back:
+	call	_BufLeft
+	ld	hl,(editCursor)
+	jr	_edit_goto_new_line_loop
+_edit_goto_new_line_next:
+	jp	_BufRight
+
+SetErrOffset:
+	ld	hl,(curPC)
+	ld	bc,(begPC)
+	or	a,a
+	sbc	hl,bc
+	ld	(errOffset),hl
+	ret

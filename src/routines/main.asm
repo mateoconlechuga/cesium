@@ -1,6 +1,8 @@
 CESIUM_OS_BEGIN:
 	cp	a,$aa				; executed program reload
 	jr	z,LoadSettings
+	cp	a,$bb				; goto needed
+	jr	z,LoadSettings
 
 	xor	a,a
 	sbc	hl,hl
@@ -10,6 +12,7 @@ CESIUM_OS_BEGIN:
 	ld	(inAppScreen),a
 
 LoadSettings:
+	push	af
 	call	_RunIndicOff
 	di
 	ld	hl,settingsOldAppVar
@@ -73,6 +76,28 @@ LoadSettings:
 	ld	(APP_CHANGE_HOOK+1),hl
 	res	onInterrupt,(iy+OnFlags)	; this bit of stuff just enables the [on] key
 	call	ClearScreens
+	pop	af
+CheckEdit:
+	cp	a,$bb
+	jr	nz,NoGoto
+	ld	hl,basic_prog+1			; check if temp program
+	ld	de,tmpPrgmName+1
+	ld	b,5
+CompareTheStrings:
+	ld	a,(de)
+	cp	a,(hl)
+	jr	nz,NoMatch
+	inc	hl
+	inc	de
+	djnz	CompareTheStrings
+	ld	hl,EditProgramName
+	jr	+_
+NoMatch:
+	ld	hl,basic_prog
+_:	call	_Mov9ToOP1
+	call	_ChkFindSym
+	jp	nc,EditGoto
+NoGoto:
 	call	_GetBatteryStatus		;> 75%=4 ;50%-75%=3 ;25%-50%=2 ;5%-25%=1 ;< 5%=0
 	sub	a,5
 	cpl

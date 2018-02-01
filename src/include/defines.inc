@@ -80,3 +80,4 @@ ArchiveSet	equ PgrmOptions
 LockSet		equ ArchiveSet+1
 HideSet		equ LockSet+1
 currMenuSel	equ HideSet+1
+editProgramName equ currMenuSel+1

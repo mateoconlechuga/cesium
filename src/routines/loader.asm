@@ -29,8 +29,10 @@ SkipSave:
 	ld	a,$2D
 	ld	(mpLcdCtrl),a			; Set LCD to 16bpp
 	call	_DrawStatusBar
-	ld	hl,(prgmNamePtr)
-	call	NamePtrToOP1
+	call	GetProgramName
+	ld	de,EditProgramName
+	ld	hl,OP1
+	call	_Mov9b
 	bit	isBasic,(iy+pgrmStatus)
 	jp	nz,RunBasicProgram
 	call	MovePgrmToUserMem		; the program is now stored at userMem -- Now we need to check and see what kind of file it is - C or assembly
