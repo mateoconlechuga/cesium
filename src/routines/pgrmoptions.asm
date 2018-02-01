@@ -2,6 +2,8 @@ AddProgram:
 	ld	a,(inAppScreen)
 	or	a,a
 	jp	nz,MAIN_START_LOOP
+	bit	isNLDisabled,(iy+pgrmStatus)
+	jp	nz,MAIN_START_LOOP
 	cpl
 	ld	(TypeSMC+1),a
 	jr	RenameGood
