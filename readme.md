@@ -68,16 +68,49 @@ Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archiv
 To run a program, simply press [2ND] or [Enter]. After a program is finished running, it will return to Cesium.
 
 ### Features
-* Running ASM, C, and Basic programs directly, and they can be archived or not
-* Editing Basic programs directly and an instant goto for errors
-* [Un]Archiving, deleting, hiding, and renaming programs
-* Catalog-like searching for programs for quick lookup
-* Ability to hide then run indicator when running Basic programs
-* Support implemented for relocatable shared C and ASM libraries
-* Customizable icons for all file types (DoorsCS format)
-* Battery indicator and clock
-* Customizable colors/theme
-* Available in French and English
+HUD:
+Displays battery level.
+* Program count. (toggle in settings)
+* Current time. (toggle in settings)
+* Custom color scheme. (changeable in settings)
+
+Backup features:
+* Backup RAM before executing programs (with [2nd] button). If a program crashes, nothing will be deleted or lost! (toggle in settings)
+* Quick launch button (the [enter] button) that skips backup process.
+* External backup, if your calculator crashes outside of Cesium, everything is still protected!
+* Restore External backup feature so you can revert your calculator back to its backed-up state whenever you want.
+* Video of every backup feature and how to use them: https://youtu.be/hZDzV1CDN3k
+
+Basic Features:
+* Quick launch with [ON]+[prgm] (toggle in settings)
+* Quick (adjustable) password lock with [ON]+[stat] (toggle in settings)
+
+* Run ASM programs directly from it.
+* Run Archived programs with any OS.
+* Edit Archived BASIC programs and an instant goto for errors. (Won't edit locked programs)
+* While editing program, you have access to the entire screen (the "PROGRAM:NAME" line isn't there)
+* Turn off loading indicator when running BASIC programs. (toggle in settings)
+
+* Search for programs for a quick lookup.
+* Archive programs.
+* Lock programs from editing.
+* Hide programs from normal [prgm] button.
+* Rename a program.
+* Create a program.
+* Delete a program.
+
+* Folder dedicated to FLASH applications. (No other folder support) (toggle in settings)
+* Automatically quits after a minute of inactivity so it won't drain your battery.
+
+* Displays program details such as:
+* Displays an icon next to the programs name.
+* Language the program was written in.
+* How large a program is.
+* Extra information about a program at the bottom of the HUD.
+
+Language support:
+* English
+* French (Credits to Adriweb for translation) 
 
 ### Uninstalling
 To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
