@@ -16,17 +16,8 @@ ListAppsStr:
  .db "Lister les applications Flash",0
 ShortcutsStr:
  .db "Activer les raccourcis clavier",0
-ErrorStr:
- .db "ERREUR : Version",0
 MinVersionStr:
  .db "Min Version:",0
-LibStr:
- .db "ERREUR : Biblioth",$8A,"que",0
-LibNameStr:
- .db "Nom de la biblioth",$8A,"que : ",0
-DeleteStr:
- .db "Suppr",0
- .db 126,"SUPPR]",0
 SettingsStr:
  .db "Options",0
  .db 126,"MODE]",0
@@ -36,6 +27,9 @@ AttributesStr:
 RenameStr:
  .db "Nom",0
  .db 126,"GRAPHE]",0
+EditProgramStr:
+ .db "Modifier",0
+ .db 126,"ZOOM]",0
 DeleteConfirmStr:
  .db "Supprimer ? ",126,"ZOOM]-Oui ",126,"GRAPH]-Non",0
 LanguageStr:
@@ -66,12 +60,13 @@ ROMFreeStr:
  .db "ROM Libre : ",0
 FileInforamtionStr:
  .db "    Infos fichier",0
+NewProgramStr:
+ .db "Nom -",0
 NewNameStr:
- .db "Nouveau Nom -",0
+ .db "Programme Nom -",0
 CheckIconBASICStr:
  .db $3E,$44,$43,$53,$3F,$2A
 NoProgramsStr:
  .db "Aucun programme trouv",$82,0
 NewPasswordPrompt:
  .db "Saisir le nouveau mot de passe:",0
-

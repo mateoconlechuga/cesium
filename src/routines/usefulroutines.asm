@@ -26,7 +26,7 @@ DrawTime:
 	ld	(posX),bc
 	di
 	ret
- 
+
 ;-------------------------------------------------------------------------------
 DrawMainOSThings:
 	call	ClearVBuf2

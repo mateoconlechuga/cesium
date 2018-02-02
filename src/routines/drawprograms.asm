@@ -76,7 +76,7 @@ NotSelected:
 	push	hl						; HL->lookup table
 	ld	hl,(hl)						; load name pointer
 	push	hl						; push the name pointer
-	inc	hl						; the next byte is the status 
+	inc	hl						; the next byte is the status
 	ld	a,(hl)
 	ld	(archivestatus),a
 	call	_SetDEUToA
@@ -176,7 +176,7 @@ NotHighlighted:
 	ld	de,ez80Str
 	ld	hl,asmFileSprite
 	or	a,a
-	jp	z,AsmOrICEOrCFile			
+	jp	z,AsmOrICEOrCFile
 	; move somewhere else to check for custom icon and things :P. we will return to DrawIcon
 	set	isspecialprog,(iy+asmFlag)
 	ld	de,CStr
@@ -417,7 +417,7 @@ PrintModeSettings:
 	inc	hl
 	call	DrawString
 	ret
-	
+
 DrawLowerDescription:
 	push	bc
 	push	hl
@@ -442,12 +442,8 @@ DrawLowerDescription:
 	ret
 
 DrawStaticInfo:
-	print(DeleteStr,199,195)
-#ifdef ENGLISH
-	ld	de,278
-#else
-	ld	de,262
-#endif
+	print(EditProgramStr,199,195)
+	ld	de,269
 	ld	(posX),de
 	inc	hl
 	call	DrawString

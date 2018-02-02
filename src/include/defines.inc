@@ -32,6 +32,7 @@
 #define isDisabled		04h
 #define isNLDisabled		05h
 #define isOnAppsScreen		06h
+#define bootEnter		07h
 #define cesiumFlags		21h
 
 firstprog			equ 0 ;flag in asm_Flag1
@@ -47,12 +48,16 @@ vatentrytempend			equ pixelShadow2+12+15
 
 tmpSpriteLoc	equ cursorImage
 
+HomeHookAddr	equ appdata+50
 currSel		equ appdata+200
 inAppScreen	equ currSel+1
 currSelAbs	equ inAppScreen+1
 scrollamt	equ currSelAbs+3
+HomeSave	equ scrollamt+3
+EditStatus      equ HomeSave+3
+EditMode        equ EditStatus+1
 
-tmpSettings	equ scrollamt+3
+tmpSettings	equ EditMode+1
 skinColor	equ tmpSettings
 runIndic	equ tmpSettings+1
 prgmCountDisp	equ tmpSettings+2
@@ -63,7 +68,7 @@ shortcutKeys	equ tmpSettings+6
 passLength      equ tmpSettings+7
 passPtr		equ tmpSettings+8
 
-prgmNamePtr	equ tmpSettings+10
+prgmNamePtr	equ tmpSettings+15
 prgmDataPtr	equ prgmNamePtr+3
 actualSizePrgm	equ prgmDataPtr+3
 totalPrgmSize	equ actualSizePrgm+3
@@ -75,3 +80,4 @@ ArchiveSet	equ PgrmOptions
 LockSet		equ ArchiveSet+1
 HideSet		equ LockSet+1
 currMenuSel	equ HideSet+1
+editProgramName equ currMenuSel+1

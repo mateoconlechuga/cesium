@@ -6,7 +6,7 @@
 ; Uses insertion sort to sort the VAT alphabettically.
 ; This is a lot faster than sorting during runtime.
 
-sort:	
+sort:
 	res	firstprog,(iy+asm_Flag1)
 	ld	hl,(progptr)
 sort_next:
@@ -16,7 +16,7 @@ sort_next:
 	jp	z,firstprogfound
 	push	hl
 	call	skipname
-	pop	de	
+	pop	de
 	push	hl					; to continue from later on
 	ld	hl,(firstprogpointer)
 	jr	searchnext_start			; could speed up sorted list by first checking if it's the last item (not neccessary)
@@ -74,7 +74,7 @@ locationfound:
 	push	hl
 	ld	de,(vatentrysize)
 	or	a,a
-	sbc	hl,de	
+	sbc	hl,de
 	ex	de,hl
 	pop	hl
 	ldir
@@ -95,7 +95,7 @@ nomoveneeded:
 	pop	hl
 	ld	(endofsortedpartpointer),hl
 	jp	sort_next
-	
+
 firstprogfound:
 	set	firstprog,(IY+asm_Flag1)		; to make it only execute once
 	ld	(firstprogpointer),hl
@@ -119,7 +119,7 @@ skipname:
 comparestrings:						; hl and de pointers to strings output=carry if de is first
 	res	prog1Hidden,(iy+hideFlag)
 	res	prog2Hidden,(iy+hideFlag)
-	
+
 	dec	hl
 	dec	de
 	ld	a,(hl)
@@ -153,36 +153,39 @@ comparestrings_continue:
 	dec	de
 	ld	a,(de)
 	cp	a,(hl)
-	jr	nz,+_
+	jr	nz,match
 	djnz	comparestrings_continue
-_:	pop	de
+	pop	de
 	pop	hl
-	push	af
 	call	resetHiddenFlags
-	pop	af
-comparestrings_checklength:
 	dec	c
 	ret	nz
 	ccf
 	ret
+match:
+	pop	de
+	pop	hl
 resetHiddenFlags:
+	push	af
 	bit	prog1Hidden,(iy+hideFlag)
-	jr	z,prog1NotHidden_chk
+	jr	z,prog1NotHiddenChk
 	ld	a,(hl)
 	sub	a,64
 	ld	(hl),a
-prog1NotHidden_chk:
+prog1NotHiddenChk:
 	bit	prog2Hidden,(iy+hideFlag)
-	ret	z
+	jr	z,prog2NotHiddenChk
 	ld	a,(de)
 	sub	a,64
 	ld	(de),a
+prog2NotHiddenChk:
+	pop	af
 	ret
-	
+
 findnextitem:						; carry=found nc=notfound
 	ex	de,hl
 	ld	hl,(ptemp)
-	or	a					; reset carry flag
+	or	a,a					; reset carry flag
 	sbc	hl,de
 	ret	z
 	ex	de,hl					; load progptr into hl
@@ -190,7 +193,7 @@ findnextitem:						; carry=found nc=notfound
 	and	1Fh					; mask out state bytes
 	push	hl
 	ld	hl,programtypes
-	ld	bc,3
+	ld	bc,2
 	cpir
 	pop	hl
 	jp	nz,skiptonext6				; skip to next entry
@@ -205,6 +208,6 @@ findnextitem:						; carry=found nc=notfound
 	dec	hl					; add check: do I need to sort this program (not neccessary)
 	scf
 	ret
-	
+
 programtypes:
 	.db	progobj,protprogobj

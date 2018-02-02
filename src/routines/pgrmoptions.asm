@@ -1,4 +1,21 @@
+AddProgram:
+	ld	a,(inAppScreen)
+	or	a,a
+	jp	nz,MAIN_START_LOOP
+	bit	isNLDisabled,(iy+pgrmStatus)
+	jp	nz,MAIN_START_LOOP
+	cpl
+	ld	(TypeSMC+1),a
+	jr	RenameGood
 RenameProgram:
+	xor	a,a
+	ld	(TypeSMC+1),a
+	ld	a,(listApps)
+	or	a,a
+	jr	z,RenameGood
+	ld	hl,(currSelAbs)
+	call	_ChkHLIs0
+	jp	z,MAIN_START_LOOP
 RenameGood:
 	ld	hl,skinColor
 	ld	a,(hl)
@@ -8,13 +25,19 @@ RenameGood:
 	drawRectFilled(199,173,313,215)
 	pop	af
 	ld	(skinColor),a
+	ld	a,(TypeSMC+1)
+	or	a,a
+	jr	z,+_
+	print(NewProgramStr,199,173)
+	jr	++_
+_:
 	print(NewNameStr,199,173)
-	
+_:
 	ld	hl,199
 	ld	(posX),hl
 	ld	a,195
 	ld	(posY),a
-	
+
 	ld	a,(currInputMode)
 	call	DrawChar
 	ld	hl,199
@@ -34,13 +57,13 @@ GetNewName:
 	or	a,a
 	call	z,DecrementAPD
 	cp	a,skDel
-	jr	z,RenameGood
+	jp	z,RenameGood
 	cp	a,skLeft
-	jr	z,RenameGood
+	jp	z,RenameGood
 	cp	a,skAlpha
 	jr	z,ToggleInput
 	cp	a,skClear
-	jp	z,ReturnHome
+	jp	z,MAIN_START_LOOP
 	cp	a,sk2nd
 	jp	z,ConfirmRename
 	cp	a,skEnter
@@ -104,17 +127,34 @@ _:	ld	(charTableCur),hl
 	add	hl,de
 	ld	(posX),hl
 	jp	GetNewName
-	
+
 ConfirmRename:
 	ld	a,(cursor)
 	or	a,a
 	jp	z,GetNewName
-	ld	hl,(prgmNamePtr)
-	call	NamePtrToOP1				; move the selected name to OP1
-	ld	hl,_Arc_Unarc
-	ld	(jump_SMC),hl
 	ld	hl,(NameBufferPtr)
 	ld	(hl),0
+TypeSMC:
+	ld	a,0
+	or	a,a
+	jr	z,RenamingProgram
+CreatingProgram:
+	ld	hl,NameBuffer
+	ld	(hl),progObj
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	jp	nc,GetNewName			; check if name already exists
+	ld	hl,NameBuffer
+	call	_Mov9ToOP1
+	ld	a,(OP1)
+	or	a,a
+	sbc	hl,hl
+	call	_CreateVar
+	jp	GoHome
+RenamingProgram:
+	call	GetProgramName				; move the selected name to OP1
+	ld	hl,_Arc_Unarc
+	ld	(jump_SMC),hl
 	ld	de,OP1
 	ld	a,(de)
 	ld	hl,NameBuffer
@@ -167,13 +207,14 @@ _:	ex	de,hl
 	pop	hl
 	call	_ChkBCIs0
 	jr	z,+_
-	ldir	
+	ldir
 _:	call	_PopOP1
-jump_SMC =$+1	
+jump_SMC =$+1
 	call	_Arc_Unarc
 	call	_PopOP1
 	call	_ChkFindSym
 	call	_DelVarArc
+GoHome:
 	ld	hl,pixelshadow2
 	ld	(programNameLocationsPtr),hl
 	xor	a,a
@@ -181,10 +222,10 @@ jump_SMC =$+1
 	ld	(numprograms),hl
 	call	sort				; sort the VAT alphabetically
 	call	FindPrograms			; find available assembly programs in the VAT
+	ld	hl,(numprograms)
+	ld	(MaxListAmt),hl
 	ld	hl,NameBuffer+1
 	jp	SearchAlphaName
-ReturnHome:
-	jp	MAIN_START_LOOP
 
 NameBuffer	equ CursorImage
 NameBufferPtr:
@@ -239,7 +280,7 @@ _:	call	FullBufCpy
 	cp	a,skEnter
 	jr	nz,-_
 	jp	CheckWhatToDo
- 
+
 incrementOption:
 	call	EraseSel
 	cp	a,2
@@ -265,7 +306,7 @@ decrementOption:
 	dec	a
 	ld	(currMenuSel),a
 	ret
-	
+
 EraseSel:
 	call	GetOptionPixelOffset
 	ld	a,(currMenuSel)
@@ -295,7 +336,7 @@ CheckWhatToDo:
 	ld	a,(prgmbyte)
 	cp	a,$BB					; BASIC programs
 	jr	z,NotOnLock
-	cp	a,$7F					; ICE programs
+	cp	a,$2C					; ICE SRC programs
 	ret	nz
 NotOnLock:
 	ld	a,(currMenuSel)
@@ -316,7 +357,7 @@ NotOnLock:
 	ld	a,(ArchiveSet)
 	or	a,a
 	jr	z,_j1
-	drawRectFilled(302,120,307,125) 
+	drawRectFilled(302,120,307,125)
 _j1:
 	ld	a,(LockSet)
 	or	a,a
@@ -370,7 +411,7 @@ Unhide:
 	jr	nc,CheckArchive				; already hidden
 	add	a,64
 	ld	(hl),a
-	
+
 ;-------------------------------------------------------------------------------
 
 CheckArchive:

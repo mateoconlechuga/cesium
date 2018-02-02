@@ -21,7 +21,7 @@ CreateDefaultSettings:
 	inc	hl
 	ld	(hl),255			; Enable homescreen hooks
 	inc	hl
-	ld	(hl),4
+	ld	(hl),4				; Length of password
 	inc	hl
 	ld	(hl),sk5
 	inc	hl
@@ -100,7 +100,7 @@ RedrawSettings:
 	drawRectOutline(10,98,18,106)
 	drawRectOutline(10,121,18,129)
 	drawRectOutline(10,144,18,152)
-	drawRectOutline(10,167,18,175)				
+	drawRectOutline(10,167,18,175)
 	drawRectOutline(10,190,18,198)		; draw the empty rectangles
 	drawRectFilled(12,54,17,59)
 	ld	a,(runIndic)
@@ -134,7 +134,7 @@ ListAppsNotSet:
 	drawRectFilled(12,192,17,197)
 ShortcutsNotSet:
 	call	HighlightBox
-GetOptions:	
+GetOptions:
 	call	DrawTime
 	call	FullBufCpy
 	call	_GetCSC
@@ -296,8 +296,8 @@ DonePassword2:
 	pop	hl
 	jr	DonePassword
 
-	
+
 settingsAppVar:
-	.db	appVarObj,"CesiumS",0
+	.db	appVarObj,"Cesium",0
 settingsOldAppVar:
-	.db	appVarObj,"CesiumV",0
+	.db	appVarObj,"CesiumS",0

@@ -1,6 +1,6 @@
 
 	.assume	adl = 0
-	
+
 funlock:
 	ld	a, $8c
 	out0	($24), a
@@ -10,7 +10,7 @@ funlock:
 	out0	(6), a
 	out0	($28), c
 	ret.l
-flock:	
+flock:
 	xor	a, a
 	out0	($28), a
 	in0	a, (6)
@@ -19,5 +19,5 @@ flock:
 	ld	a, $88
 	out0	($24), a
 	ret.l
-	
+
 	.assume adl = 1

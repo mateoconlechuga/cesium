@@ -5,18 +5,19 @@
 
 #include "routines/installer.asm"       ; if this is the first run, we want to run the installer
 
-app_start("Cesium", "(C) 2017 Matt \"MateoConLechuga\" Waltz", 0, 1, 0D09466h, 0)
+app_start("Cesium", "(C)  2017 Matt \"MateoConLechuga\" Waltz", 0, 1, 0D09466h, 0)
 
 CesiumStart:
 
 ; program routines
 #include "routines/main.asm"            ; stick the main file right here
 #include "routines/loader.asm"          ; loads a program into memory and runs it
+#include "routines/editor.asm"          ; program editing
 #include "routines/common.asm"          ; common routines used by many relocated chunks
 #include "routines/usefulroutines.asm"  ; common routines
-#include "routines/pgrmoptions.asm"     ; options for prgms
+#include "routines/pgrmoptions.asm"     ; options for programs
 #include "routines/settings.asm"        ; general settings
-#include "routines/delete.asm"          ; prgm deletion stuff
+#include "routines/delete.asm"          ; program deletion stuff
 #include "routines/drawprograms.asm"    ; part of main loop
 #include "routines/drawapps.asm"        ; part of main loop
 #include "routines/search.asm"          ; alphabetizer
@@ -51,8 +52,8 @@ CesiumIcon: ; Signifies a Cesium program (haha)
  .db 0FFh,0FFh,0FFh,0DEh,0FFh,0FFh,094h,0B5h,0B5h,06Bh,0FFh,0FFh,0DEh,0FFh,0FFh,0FFh
  .db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0B6h,08Ch,06Ch,0B5h,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
 CesiumVersionStr:
- .db "Cesium Version 2.3.9",0
- 
+ .db "Cesium Version 2.5.0",0
+
 ; program data
 #ifdef ENGLISH
 #include "data/text.asm"               ; text data

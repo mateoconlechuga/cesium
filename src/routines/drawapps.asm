@@ -66,7 +66,7 @@ NotAppSelected:
 
 	ld	hl,(hl)				; load name pointer
 	ld	(appPtr),hl
-	
+
 	inc	hl
 	inc	hl
 	inc	hl
@@ -83,7 +83,7 @@ DrawAppNameDone:
 	pop	hl
 
 	call	DrawAppIcon
-	
+
 	pop	hl
 	pop	bc
 	inc	hl
@@ -109,7 +109,7 @@ DrawAppIcon:
 	or	a,a
 	jr	z,SpecialAppFolder
 	ld	hl,AppFileSprite
-	
+
 _:	ld	a,(posY)
 	add	a,20
 	ld	(posY),a
@@ -121,15 +121,15 @@ _:	ld	a,(posY)
 	push	hl
 	call	_Sprite8bpp
 	pop	hl
-	
+
 	bit	drawingSelected,(iy+asmFlag)
 	jp	z,NotCurrentlyDrawingApp
-	
+
 	ld	de,(posX)
 	ld	a,(posY)
 	push	de
 	push	af
-	
+
 	ld	bc,(240/2*256)+57
 	call	_Sprite8bpp_2x
 	ld	hl,(appPtr)
@@ -139,8 +139,8 @@ _:	ld	a,(posY)
 	ld	bc,$24
 	add	hl,bc
 	ld	hl,(hl)				; load location of info string
-	add	hl,de 
-	or	a,a 
+	add	hl,de
+	or	a,a
 	sbc	hl,de				; check if HL is 0
 	jr	z,DrawNormalInfo
 	add	hl,de				; add extra bytes
@@ -153,7 +153,7 @@ DrawNormalInfo:
 	SetDefaultTextColor()
 SaveDrawing:
 	call	DrawStaticInfo
-	
+
 	print(LanguageStr,199,107)
 	ld	hl,appStr
 	bit	isAtBox,(iy+asmFlag)

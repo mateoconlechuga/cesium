@@ -1,7 +1,9 @@
 CESIUM_OS_BEGIN:
-	cp	a,$aa
+	cp	a,$aa				; executed program reload
 	jr	z,LoadSettings
-	
+	cp	a,$bb				; goto needed
+	jr	z,LoadSettings
+
 	xor	a,a
 	sbc	hl,hl
 	ld	(currSelAbs),hl
@@ -10,11 +12,14 @@ CESIUM_OS_BEGIN:
 	ld	(inAppScreen),a
 
 LoadSettings:
+	push	af
+	call	_RunIndicOff
+	di
 	ld	hl,settingsOldAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym
 	call	nc,_DelVarArc
-	
+
 	ld	hl,settingsAppVar
 	call	_Mov9ToOP1
 	call	_ChkFindSym			; now lookup the settings appvar
@@ -26,8 +31,6 @@ LoadSettings:
 	jr	z,LoadSettings			; now lookup the settings appvar
 	ex	de,hl
 	ld	de,9
-	push	de
-	pop	bc
 	add	hl,de
 	ld	e,(hl)
 	add	hl,de
@@ -35,8 +38,9 @@ LoadSettings:
 	inc	hl
 	inc	hl
 	ld	de,TmpSettings
+	ld	bc,14
 	ldir					; copy the temporary settings to the lower stack
-	
+
 	call	SetKeyHookPtr
 	push	hl
 	ld	bc,ParserHook
@@ -57,7 +61,7 @@ LoadSettings:
 	ld	(BASICSTART_HANDLER+1),hl
 	or	a,a
 	sbc	hl,bc
-	ld	bc,ReturnHereIfError
+	ld	bc,ReturnHereIfAsmError
 	add	hl,bc
 	ld	(ASMERROR_HANDLER+1),hl
 	or	a,a
@@ -65,18 +69,45 @@ LoadSettings:
 	ld	bc,ErrCatchBASIC
 	add	hl,bc
 	ld	(BASICERROR_HANDLER+1),hl
+	or	a,a
+	sbc	hl,bc
+	ld	bc,AppChangeHook
+	add	hl,bc
+	ld	(APP_CHANGE_HOOK+1),hl
 	res	onInterrupt,(iy+OnFlags)	; this bit of stuff just enables the [on] key
 	call	ClearScreens
+	pop	af
+CheckEdit:
+	cp	a,$bb
+	jr	nz,NoGoto
+	ld	hl,basic_prog+1			; check if temp program
+	ld	de,tmpPrgmName+1
+	ld	b,5
+CompareTheStrings:
+	ld	a,(de)
+	cp	a,(hl)
+	jr	nz,NoMatch
+	inc	hl
+	inc	de
+	djnz	CompareTheStrings
+	ld	hl,EditProgramName
+	jr	+_
+NoMatch:
+	ld	hl,basic_prog
+_:	call	_Mov9ToOP1
+	call	_ChkFindSym
+	jp	nc,EditGoto
+NoGoto:
 	call	_GetBatteryStatus		;> 75%=4 ;50%-75%=3 ;25%-50%=2 ;5%-25%=1 ;< 5%=0
 	sub	a,5
 	cpl
 	ld	(CesiumBatteryStatus),a
 MAIN_START_LOOP_1:
 	call	DeleteTempProgramGetName
-	call	sort				; sort the VAT alphabetically
 	ld	a,$27
 	ld	(mpLcdCtrl),a			; set LCD to 8bpp
 	call	CopyHL1555Palette		; HIGH=LOW
+	call	sort				; sort the VAT alphabetically
 MAIN_START_LOOP_SETTINGS:
 	call	FindAppsPrograms		; find available programs and apps
 	ld	hl,(numprograms)
@@ -120,6 +151,7 @@ _:	ld	hl,(numprograms)
 	sbc	hl,de
 	jp	z,GetKeysNoPrgms
 GetKeys:
+	res	bootEnter,(iy+cesiumFlags)
 	call	DrawTime
 	call	FullBufCpy
 	call	_GetCSC
@@ -127,6 +159,8 @@ GetKeys:
 	call	z,DecrementAPD
 	cp	a,skClear
 	jp	z,FullExit
+	cp	a,skZoom
+	jp	z,EditBasicPrgm
 	cp	a,skDel
 	jp	z,DeletePrgm
 	cp	a,skMode
@@ -138,11 +172,13 @@ GetKeys:
 	cp	a,sk2nd
 	jr	z,BootPrgm
 	cp	a,skEnter
-	jr	z,BootPrgm
+	jr	z,BootPrgmEnter
 	bit	isOnAppsScreen,(iy+cesiumFlags)
 	jr	nz,GetKeys
 	cp	a,skGraph
 	jp	z,RenameProgram
+	cp	a,skYequ
+	jp	z,AddProgram
 	cp	a,skAlpha
 	jp	z,LoadProgramOptions
 	sub	a,skAdd
@@ -150,6 +186,8 @@ GetKeys:
 	cp	a,skMath-skAdd+1
 	jp	nc,GetKeys
 	jp	SearchAlpha
+BootPrgmEnter:
+	set	bootEnter,(iy+cesiumFlags)
 BootPrgm:
 	ld	a,(listApps)
 	or	a,a

@@ -28,9 +28,6 @@ RAMFreeStr:
  .db "RAM Free: ",0
 FileInforamtionStr:
  .db "File Information",0
-DeleteStr:
- .db "Delete",0
- .db 126,"DEL]",0
 SettingsStr:
  .db "Settings",0
  .db 126,"MODE]",0
@@ -40,6 +37,12 @@ AttributesStr:
 RenameStr:
  .db "Rename",0
  .db 126,"GRAPH]",0
+EditProgramStr:
+ .db "Edit Prgm",0
+ .db 126,"ZOOM]"
+MakeProgramStr:
+ .db "New Prgm",0
+ .db 126,"Y=]"
 DeleteConfirmStr:
  .db "Delete?: ",126,"ZOOM]-Yes  ",126,"GRAPH]-No",0
 GenSettingsStr:
@@ -58,14 +61,10 @@ ListAppsStr:
  .db "List Flash applications",0
 ShortcutsStr:
  .db "Enable keypad shortcuts",0
-ErrorStr:
- .db "ERROR: Library Version",0
-LibStr:
- .db "ERROR: Missing Library",0
-LibNameStr:
- .db "Library Name: ",0
 ROMFreeStr:
  .db "ROM Free: ",0
+NewProgramStr:
+ .db "Name -",0
 NewNameStr:
  .db "New Name -",0
 CheckIconBASICStr:
