@@ -442,8 +442,15 @@ DrawLowerDescription:
 	ret
 
 DrawStaticInfo:
+	bit	pgrmLocked,(iy+pgrmStatus)
+	jr	nz,ShowMake
 	print(EditProgramStr,199,195)
 	ld	de,269
+	jr	NoShowMake
+ShowMake:
+	print(MakeProgramStr,199,195)
+	ld	de,287
+NoShowMake:
 	ld	(posX),de
 	inc	hl
 	call	DrawString

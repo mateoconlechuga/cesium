@@ -30,6 +30,9 @@ RenameStr:
 EditProgramStr:
  .db "Modifier",0
  .db 126,"ZOOM]",0
+MakeProgramStr:
+  .db "Nouveau",0
+  .db 126,"Y=]",0
 DeleteConfirmStr:
  .db "Supprimer ? ",126,"ZOOM]-Oui ",126,"GRAPH]-Non",0
 LanguageStr:
