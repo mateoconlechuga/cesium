@@ -25,6 +25,8 @@ Then press [prgm] and choose `CESIUM`. The homescreen should look like this:
 
 Press [enter] to execute.
 
+**NOTE:** If you have OS 5.3+, you can omit the `Asm(` at the beginning
+
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
 Once installed, the application cannot be transferred to other calculators. If you wish to transfer Cesium to other calculators after installation, you must resend the installer and transfer the installer to other calculators.
