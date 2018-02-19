@@ -114,7 +114,7 @@ Language support:
 * French (Credits to Adriweb for translation) 
 
 ### Uninstalling
-To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application.
+To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application and appvar.  
 
 ### Building
 You can easily build Cesium by navigating in the `src` directory and entering the command:
