@@ -19,6 +19,10 @@ Then press [prgm] and choose `CESIUM`. The homescreen should look like this:
 
     Asm(prgmCESIUM
 
+**If you have OS 5.3+, you can just do:
+
+    prgmCESIUM
+
 Press [enter] to execute.
 
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
@@ -34,7 +38,7 @@ Cesium provides a way to quickly jump to different programs in the program brows
 | [2nd/enter]     | Run, select              |
 | [alpha]         | Edit program options     |
 | [zoom]          | Edit BASIC program       |
-| [y=]            | Create new program       |
+| [y=]            | Create new BASIC program |
 | [graph]         | Rename program           |
 | [mode]          | Enter settings menu      |
 | [up/down]       | Move places              |
@@ -71,7 +75,7 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 *HUD:*
 * Displays battery level.
 * Program count. (toggle in settings)
-* Current time. (toggle in settings)
+* Current time. (toggle in settings, the clock MUST be set from TI-OS for the time to be 'correct')
 * Custom color scheme. (changeable in settings)
 
 *Backup features:*
@@ -100,7 +104,7 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 * Create a program.
 * Delete a program.
 
-* Folder dedicated to FLASH applications. (No other folder support) (toggle in settings)
+* Folder dedicated to FLASH applications. (No other folder support, toggle in settings)
 * Automatically quits after a minute of inactivity so it won't drain your battery.
 
 * Displays program details such as:
