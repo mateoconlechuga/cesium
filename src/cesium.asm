@@ -3,28 +3,12 @@ include 'include/fasmg-ez80/tiformat.inc'
 format ti executable 'CESIUM'
 include 'include/ti84pceg.inc'
 include 'include/app.inc'
+include 'include/macros.inc'
 
-; ------------------------------------------------
-; create application
-; returns nz if could not create the application
-; i.e. already installed
-	app_create
-	
-	ret	nz
-	call	_ChkFindSym
-	jp	_DelVarArc		; delete installer code
+include 'installer.asm'
 
-; ------------------------------------------------
-; start of actual application code
-	app_start 'Cesium', '(C) 2018 MateoConLechuga', '0.0.3.0', 3
-	
-	jp	_JForceCmdNoChar
+	app_start cesium_name, cesium_copyright, cesium_version, 3
 
-; ------------------------------------------------
-; Anything placed after app_data is essentially
-; written to ram on start. This can be at most 4kB
-; in size.
-	app_data
-	
-Dummybyte:
-	db	0
+include 'main.asm'
+include 'text.asm'
+include 'data.asm'

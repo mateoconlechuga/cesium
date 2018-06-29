@@ -90,7 +90,7 @@ macro app_private
 	macro export? function
 		app.exports equ function
 	end macro
-	
+
 	macro app_create?
 		di
 		call	.create_code
@@ -113,6 +113,7 @@ macro app_private
 		dec	hl
 		dec	hl
 		push	hl
+		di
 		ld	a,$d1
 		ld	mb,a
 		ld.sis	sp,$987e
@@ -164,7 +165,7 @@ macro app_private
 		ret
 
 		assume	adl = 0
-	
+
 .unlock:
 		ld	a,$8c
 		out0	($24),a
@@ -174,7 +175,7 @@ macro app_private
 		out0	(6),a
 		out0	($28),c
 		ret.l
-.lock:	
+.lock:
 		xor	a
 		out0	($28),a
 		in0	a,(6)
@@ -183,12 +184,12 @@ macro app_private
 		ld	a,$88
 		out0	($24),a
 		ret.l
-	
+
 		assume adl = 1
 .continue:
 	end macro
 
-	macro @ez80.word @value*      
+	macro @ez80.word @value*
 		local value, address
 		value = @value
 		address = $
@@ -199,7 +200,7 @@ macro app_private
 			@ez80.word value
 		end if
 	end macro
-	
+
 end macro
 
 ; ----------------------
