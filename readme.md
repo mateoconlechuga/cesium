@@ -9,13 +9,13 @@ In order to transfer Cesium to your calculator, you must have a linking program,
 1. Plug-in your calculator and Launch TI-Connect CE
 2. Send `cesium.8xp` (or `cesium_french.8xp` if needed)
 3. Drag'n'drop them onto the calculator that should be in the devices list in TI-Connect CE
-4. Press the [Send] button in the window that pops up.
+4. Press the <kbd>Send</kbd> button in the window that pops up.
 
 Congratulations, Cesium is now on your calculator!
 
 ### Running
-For the first run, execute Cesium as you would any other assembly program by pressing [2nd][0] and choosing the `Asm(` token.
-Then press [prgm] and choose `CESIUM`. The homescreen should look like this:
+For the first run, execute Cesium as you would any other assembly program by pressing <kbd>2nd</kbd> + <kbd>0</kbd> and choosing the `Asm(` token.
+Then press <kbd>prgm</kbd> and choose `CESIUM`. The homescreen should look like this:
 
     Asm(prgmCESIUM
 
@@ -23,7 +23,7 @@ Then press [prgm] and choose `CESIUM`. The homescreen should look like this:
 
     prgmCESIUM
 
-Press [enter] to execute.
+Press <kbd>enter</kbd> to execute.
 
 **NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
 
@@ -35,25 +35,25 @@ Cesium provides a way to quickly jump to different programs in the program brows
 
 | Combination     | Action                   |
 |-----------------|--------------------------|
-| [2nd/enter]     | Run, select              |
-| [alpha]         | Edit program options     |
-| [zoom]          | Edit BASIC program       |
-| [y=]            | Create new BASIC program |
-| [graph]         | Rename program           |
-| [mode]          | Enter settings menu      |
-| [up/down]       | Move places              |
-| [green letters] | Alpha search for program |
+| <kbd>2nd</kbd> / <kbd>enter</kbd>     | Run, select              |
+| <kbd>alpha</kbd>         | Edit program options     |
+| <kbd>zoom</kbd>          | Edit BASIC program       |
+| <kbd>y=</kbd>            | Create new BASIC program |
+| <kbd>graph</kbd>         | Rename program           |
+| <kbd>mode</kbd>          | Enter settings menu      |
+| <kbd>up</kbd> / <kbd>down</kbd>       | Move places              |
+| <kbd>green letters</kbd> | Alpha search for program |
 
 ### Shortcuts
-Shortcuts are available from the TI-OS system anywhere. Simply hold the [on] key and press the corresponding button to trigger the action.
+Shortcuts are available from the TI-OS system anywhere. Simply hold the <kbd>on</kbd> key and press the corresponding button to trigger the action.
 Available actions:
 
 | Combination | Action                                                     |
 |-------------|------------------------------------------------------------|
-| [on]+[prgm] | Launch Cesium Application                                  |
-| [on]+[stat] | Power down with password on wake (Default password - 5555) |
+| <kbd>on</kbd> + <kbd>prgm</kbd> | Launch Cesium Application                                  |
+| <kbd>on</kbd> + <kbd>stat</kbd> | Power down with password on wake (Default password - 5555) |
 
-You can change the password from the settings menu (Accessed using [mode]), and pressing the [sto->] button. This will prompt for a new password which will be automatically saved.
+You can change the password from the settings menu (Accessed using <kbd>mode</kbd>), and pressing the <kbd>sto→</kbd> button. This will prompt for a new password which will be automatically saved.
 
 ### External Backup
 Cesium also offers the ability to externally back up the RAM from within the OS. These are also tied to the shortcuts:
@@ -63,13 +63,13 @@ Cesium also offers the ability to externally back up the RAM from within the OS.
 
 | Combination | Action                                                     |
 |-------------|------------------------------------------------------------|
-| [on]+[8]    | Backup RAM from TI-OS                                      |
-| [on]+[5]    | Remove latest RAM backup                                   |
-| [on]+[2]    | Restore RAM from latest backup                             |
+| <kbd>on</kbd> + <kbd>8</kbd>    | Backup RAM from TI-OS                                      |
+| <kbd>on</kbd> + <kbd>5</kbd>    | Remove latest RAM backup                                   |
+| <kbd>on</kbd> + <kbd>2</kbd>    | Restore RAM from latest backup                             |
 
 ### Running Programs
 Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
-To run a program, simply press [2ND] or [Enter]. After a program is finished running, it will return to Cesium.
+To run a program, simply press <kbd>2nd</kbd> or <kbd>Enter</kbd>. After a program is finished running, it will return to Cesium.
 
 ### Features
 *HUD:*
@@ -86,8 +86,8 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 * Video of every backup feature and how to use them: https://youtu.be/hZDzV1CDN3k
 
 *Basic Features:*
-* Quick launch with [ON]+[prgm] (toggle in settings)
-* Quick (adjustable) password lock with [ON]+[stat] (toggle in settings)
+* Quick launch with <kbd>on</kbd> + <kbd>prgm</kbd> (toggle in settings)
+* Quick (adjustable) password lock with <kbd>on</kbd> + <kbd>stat</kbd> (toggle in settings)
 
 * Run ASM programs directly.
 * Run Archived programs with any OS.
@@ -99,7 +99,7 @@ To run a program, simply press [2ND] or [Enter]. After a program is finished run
 * Search for programs for a quick lookup.
 * Archive programs.
 * Lock programs from editing.
-* Hide programs from normal [prgm] button.
+* Hide programs from normal <kbd>prgm</kbd> button.
 * Rename a program.
 * Create a program.
 * Delete a program.
@@ -118,7 +118,7 @@ Language support:
 * French (Credits to Adriweb for translation) 
 
 ### Uninstalling
-To uninstall Cesium, press [2nd][+][2][1] and delete the Cesium Application and appvar.  
+To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar.  
 
 ### Building
 You can easily build Cesium by navigating in the `src` directory and entering the command:
