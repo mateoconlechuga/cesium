@@ -24,16 +24,12 @@
 
 start_installer:
 	call	_PushOP1			; save the program name
-
 	call	.clear_screen
 
 	app_create				; create the application
 
-	push	af
-	call	_PopOP1				; restore program name
-	pop	af
-
 	jr	z,.app_created
+	call	_PopOP1
 	ld	hl,str_cesium_exists_error
 	call	_PutS				; put error string if cesium exists
 	call	_GetKey
@@ -51,6 +47,7 @@ relocate execute_cesium, mpLcdCrsrImage
 	call	_PutS
 	call	_NewLine
 	call	_PutS				; ask the user if they want to delete me
+	call	_PopOP1				; restore installer name
 
 .get_key:
 	call	_GetCSC
@@ -84,7 +81,7 @@ str_cesium_name_installer:
 	db	cesium_name,0
 
 str_delete_installer:
-	db 'Delete installer?',0
+	db 'Delete installer?', 0
 	db 'del - yes',0
 	db '2nd - no',0
 

@@ -23,7 +23,7 @@ macro app_private
 		dl app.size
 	end postpone
 
- 	macro app_start? name,copyright,version,flags
+ 	macro app_start? name,copyright,version
 		local value
 		local freespace
 		app.start = $
@@ -49,7 +49,7 @@ macro app_private
 		db 'eZ8'
 		app.exe = $
 		dq name
-		db 0,flags			; 00Bh,00Ch
+		db 0,3				; 00Bh,00Ch
 		db 0,0				; 00Dh,00Eh
 		dl 0				; 00Fh
 		dl app.code			; 012h

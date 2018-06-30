@@ -1,14 +1,27 @@
-include 'include/fasmg-ez80/ez80.inc'
-include 'include/fasmg-ez80/tiformat.inc'
-format ti executable 'CESIUM'
-include 'include/app.inc'
-include 'include/ti84pceg.inc'
+; cesium
+; slim gui based shell for the ti84+ce and ti83pce calculators
+; feel free to use any code for your own use
+; (c) 2015-2018 matt "mateoconlechuga" waltz
+
 include 'include/macros.inc'
 
+; start by executing the installer code
+; this is run once in order to create the application
 include 'installer.asm'
 
-	app_start cesium_name, cesium_copyright, cesium_version, 3
+; this is the start of the actual application
+	app_start cesium_name, cesium_copyright, cesium_version
+	cesium_code.run
 
-include 'main.asm'
-include 'text.asm'
+relocate cesium_code, cesium_execution_base
+	include 'main.asm'
+	include 'exit.asm'
+	include 'settings.asm'
+	include 'password.asm'
+	include 'gui.asm'
+	include 'util.asm'
+	include 'text.asm'
+	include 'flash.asm'
+end relocate
+
 include 'data.asm'
