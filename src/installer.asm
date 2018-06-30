@@ -23,25 +23,34 @@
 	db 000h
 
 start_installer:
-	call	_PushOP1			; save the prgm name
+	call	_PushOP1			; save the program name
+
+	call	.clear_screen
+
 	app_create				; create the application
+
+	push	af
+	call	_PopOP1				; restore program name
+	pop	af
 
 	jr	z,.app_created
 	ld	hl,str_cesium_exists_error
-	jp	_PutS				; put error string if cesium exists
+	call	_PutS				; put error string if cesium exists
+	call	_GetKey
+.clear_screen:
+	call	_ClrScrn			; clear the homescreen
+	jp	_HomeUp
 .app_created:
 
 	execute_cesium.run
 
 relocate execute_cesium, mpLcdCrsrImage
-	call	_ClrScrn
-	call	_HomeUp
 	ld	hl,str_delete_installer
 	call	_PutS
 	call	_NewLine
 	call	_PutS
 	call	_NewLine
-	call	_PutS
+	call	_PutS				; ask the user if they want to delete me
 
 .get_key:
 	call	_GetCSC

@@ -1,8 +1,8 @@
 include 'include/fasmg-ez80/ez80.inc'
 include 'include/fasmg-ez80/tiformat.inc'
 format ti executable 'CESIUM'
-include 'include/ti84pceg.inc'
 include 'include/app.inc'
+include 'include/ti84pceg.inc'
 include 'include/macros.inc'
 
 include 'installer.asm'

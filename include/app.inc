@@ -46,7 +46,7 @@ macro app_private
 		db $81,$7f,$00
 		dl (value - 6) bswap 3
 		app.header_start = $%
-		db "eZ8"
+		db 'eZ8'
 		app.exe = $
 		dq name
 		db 0,flags			; 00Bh,00Ch
@@ -76,7 +76,7 @@ macro app_private
 	macro app_data?
 		irpv export, app.exports
 			if % = 1
-				dl "LIB",%%
+				dl 'LIB',%%
 				app.library_table = $% - app.header_start
 			end if
 			@ez80.word export
@@ -113,7 +113,6 @@ macro app_private
 		dec	hl
 		dec	hl
 		push	hl
-		di
 		ld	a,$d1
 		ld	mb,a
 		ld.sis	sp,$987e
@@ -136,6 +135,10 @@ macro app_private
 		ld	bc,app.table_offset
 		add	hl,bc
 .relocate:
+		or	a,a
+		sbc	hl,de
+		add	hl,de
+		jr	z,.endrelocate
 		ld	ix,(hl)
 		add	ix,de			; location to overwrite
 		inc	hl
@@ -145,10 +148,9 @@ macro app_private
 		push	de
 		ld	hl,(hl)
 		add	hl,de
-		push	ix
-		pop	de
-		ld	(OP6),hl
-		ld	hl,OP6
+		lea	de,ix
+		ld	($d0062f),hl
+		ld	hl,$d0062f
 		ld	bc,3
 		call	$02e0
 		pop	de
@@ -156,8 +158,8 @@ macro app_private
 		inc	hl
 		inc	hl
 		inc	hl
-		call	_cphlde
-		jr	nz,.relocate
+		jr	.relocate
+.endrelocate:
 		call.is	.lock and $ffff
 		ld	a,$d0
 		ld	mb,a
