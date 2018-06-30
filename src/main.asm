@@ -1,16 +1,95 @@
+; main cesium process routines
 
-	call	_ClrGetKeyHook				; clear key hooks
+main_cesium:
+	call	lcd_init
+	call	main_init
+main_settings:
+	call	settings_load
+main_find:
+	call	find_programs_or_apps
+main_start:
+	call	gui_main
+	call	util_setup_apd
+main_loop:
+	call	util_show_time
+	call	lcd_blit
+	call	util_get_key
+	cp	a,skClear
+	jp	z,exit_full
+	cp	a,skMode
+	jp	z,settings_launch
+	cp	a,skUp
+	jp	z,main_move_up_return
+	cp	a,skDown
+	jp	z,main_move_down_return
+	cp	a,sk2nd
+	jp	z,execute_item
+	cp	a,skEnter
+	jp	z,execute_item_alternate
+	cp	a,skGraph
+	jp	z,feature_item_rename
+	cp	a,skYequ
+	jp	z,feature_item_new
+	cp	a,skAlpha
+	jp	z,feature_item_attributes
+	cp	a,skZoom
+	jp	z,feature_item_edit
+	cp	a,skDel
+	jp	z,feature_item_delete
+	sub	a,skAdd
+	jp	c,main_loop
+	cp	a,skMath - skAdd + 1
+	jp	nc,main_loop
+	jp	search_alpha_item
 
-	xor	a,a
-	sbc	hl,hl
-	ld	(current_selection_absolute),hl		; reset to defaults
+main_move_up_return:
+	ld	hl,main_start
+	push	hl
+main_move_up:
+	ld	hl,(current_selection_absolute)
+	compare_hl_zero
+	ret	z					; check if we are at the top
+	dec	hl
+	ld	(current_selection_absolute),hl
+	ld	a,(current_selection)
+	or	a,a
+	jr	nz,.dont_scroll
+	ld	hl,(scroll_amount)
+	dec	hl
 	ld	(scroll_amount),hl
+.dont_scroll:
+	dec	a
 	ld	(current_selection),a
-
-	call	_RunIndicOff
-	di
-
-	call	settings_load				; load the settings
-	call	exit_full
 	ret
-	
+
+main_move_down_return:
+	ld	hl,main_start
+	push	hl
+main_move_down:
+	ld	hl,(current_selection_absolute)
+	ld	de,0
+selection_max := $-3
+	dec	de
+	compare_hl_de
+	ret	z
+	inc	hl
+	ld	(current_selection_absolute),hl
+	ld	a,(current_selection)
+	cp	a,9					; limit items per screen
+	jr	nz,dont_scroll
+	ld	hl,(scroll_amount)
+	inc	hl
+	ld	(scroll_amount),hl
+dont_scroll:
+	inc	a
+	ld	(current_selection),a
+	ret
+
+main_init:
+	call	_ClrGetKeyHook				; clear key hooks
+	call	util_init_selection_screen		; zero items
+
+	ld	a,screen_programs
+	ld	(current_screen),a			; start on the programs screen
+
+	jp	util_get_battery			; get the battery level

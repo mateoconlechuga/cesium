@@ -3,6 +3,12 @@
 ;
 ; uses insertion sort to sort the vat alphabetically
 
+sort_first_item_found_ptr := mpLcdCrsrImage
+sort_end_of_part_ptr := mpLcdCrsrImage + 3
+sort_vat_entry_size := mpLcdCrsrImage + 6
+sort_vat_entry_new_loc := mpLcdCrsrImage + 9
+sort_vat_entry_temp_end := mpLcdCrsrImage + 12 + 15
+
 sort_vat:
 	res	sort_first_item_found,(iy + asm_Flag1)
 	ld	hl,(progptr)
@@ -15,11 +21,11 @@ sort_vat:
 	call	.skip_name
 	pop	de
 	push	hl					; to continue from later on
-	ld	hl,(sort_first_item_found_pointer)
+	ld	hl,(sort_first_item_found_ptr)
 	jr	.search_next_start			; could speed up sorted list by first checking if it's the last item (not neccessary)
 .search_next:
 	call	.skip_name
-	ld	bc,(endofsortedpartpointer)
+	ld	bc,(sort_end_of_part_ptr)
 	or	a,a					; reset carry flag
 	push	hl
 	sbc	hl,bc
@@ -44,8 +50,8 @@ sort_vat:
 	ld	bc,6					; rewind six bytes
 	add	hl,bc					; A=number of bytes to move
 	ld	c,a					; HL->bytes to move
-	ld	(vatentrysize),bc			; DE->move to location
-	ld	(vatentrynewloc),de
+	ld	(sort_vat_entry_size),bc			; DE->move to location
+	ld	(sort_vat_entry_new_loc),de
 	push	de
 	push	hl
 	or	a,a
@@ -54,10 +60,10 @@ sort_vat:
 	pop	de
 	jr	z,.no_move_needed
 	push	hl
-	ld	de,vatentrytempend
-	lddr						; copy entry to move to vatentrytempend
+	ld	de,sort_vat_entry_temp_end
+	lddr						; copy entry to move to sort_vat_entry_temp_end
 
-	ld	hl,(vatentrynewloc)
+	ld	hl,(sort_vat_entry_new_loc)
 	pop	bc
 	push	bc
 	or	a,a
@@ -67,42 +73,42 @@ sort_vat:
 	pop	hl
 	inc	hl
 	push	hl
-	ld	de,(vatentrysize)
+	ld	de,(sort_vat_entry_size)
 	or	a,a
 	sbc	hl,de
 	ex	de,hl
 	pop	hl
 	ldir
 
-	ld	hl,vatentrytempend
-	ld	bc,(vatentrysize)
-	ld	de,(vatentrynewloc)
+	ld	hl,sort_vat_entry_temp_end
+	ld	bc,(sort_vat_entry_size)
+	ld	de,(sort_vat_entry_new_loc)
 	lddr
-	ld	hl,(endofsortedpartpointer)
-	ld	bc,(vatentrysize)
+	ld	hl,(sort_end_of_part_ptr)
+	ld	bc,(sort_vat_entry_size)
 	or	a,a
 	sbc	hl,bc
-	ld	(endofsortedpartpointer),hl
+	ld	(sort_end_of_part_ptr),hl
 	pop	hl					; pointer to continue from
 	jp	.sort_next				; to skip name and rest of entry
 
 .no_move_needed:
 	pop	hl
-	ld	(endofsortedpartpointer),hl
+	ld	(sort_end_of_part_ptr),hl
 	jp	.sort_next
 
 .first_found:
 	set	sort_first_item_found,(iy + asm_Flag1)		; to make it only execute once
-	ld	(sort_first_item_found_pointer),hl
+	ld	(sort_first_item_found_ptr),hl
 	call	.skip_name
-	ld	(endofsortedpartpointer),hl
+	ld	(sort_end_of_part_ptr),hl
 	jp	.sort_next
 
 .skip_to_next:
 	ld	bc,-6
 	add	hl,bc
 	call	.skip_name
-	jp	find_next_item				; look for next item
+	jp	.find_next_item				; look for next item
 .skip_name:
 	ld	bc,0
 	ld	c,(hl)					; number of bytes in name
@@ -120,18 +126,18 @@ sort_vat:
 	ld	b,64
 	ld	a,(hl)
 	cp	a,b
-	jr	nc,first_not_hidden			; check if files are hidden
+	jr	nc,.first_not_hidden			; check if files are hidden
 	add	a,b
 	ld	(hl),a
 	set	sort_first_hidden,(iy + sort_flag)
-first_not_hidden:
+.first_not_hidden:
 	ld	a,(de)
 	cp	a,b
-	jr	nc,second_not_hidden
+	jr	nc,.second_not_hidden
 	add	a,b
 	ld	(de),a
 	set	sort_second_hidden,(iy + sort_flag)
-second_not_hidden:
+.second_not_hidden:
 	push	hl
 	push	de
 	inc	hl

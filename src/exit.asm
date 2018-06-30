@@ -1,7 +1,10 @@
 ; application exit handling routines
 
 exit_full:
-	bit	settings_ram_backup,(iy + settings_flag)
+	exit_cleanup.run
+
+relocate exit_cleanup, mpLcdCrsrImage
+	bit	setting_ram_backup,(iy + settings_flag)
 	jr	z,.dont_clear_backup
 	ld	b,$00
 	ld	de,$3c0000
@@ -9,7 +12,9 @@ exit_full:
 	call	_WriteFlashByte				; clear old backup
 	flash_lock_m
 .dont_clear_backup:
-	ld	a,lcdBpp16
+	call	lcd_fill
+	call	lcd_blit
+	ld	a,$2d
 	ld	(mpLcdCtrl),a
 	call	_DrawStatusBar
 	call	_ClrParserHook
@@ -19,15 +24,6 @@ exit_full:
 	res	useTokensInString,(iy + clockFlags)
 	res	onInterrupt,(iy + onFlags)
 	set	graphDraw,(iy + graphFlags)
-	res	apdWarmStart,(iy + apdFlags)
-	call	_APDSetup
-	call	_EnableAPD				; restore apd
-	im	1
-	ei
-
-	wipe_safe_ram.run				; we are going to clear this
-
-relocate wipe_safe_ram, mpLcdCrsrImage
 	ld	hl,pixelShadow
 	ld	bc,69090
 	call	_MemClear
@@ -37,6 +33,11 @@ relocate wipe_safe_ram, mpLcdCrsrImage
 	ld	a,cxErase
 	call	_NewContext0				; trigger a defrag as needed
 .no_defrag:
+	res	apdWarmStart,(iy + apdFlags)
+	call	_APDSetup
+	call	_EnableAPD				; restore apd
+	im	1
+	ei
 	ld	a,kClear
 	jp	_JForceCmd				; exit the application for good
 end relocate

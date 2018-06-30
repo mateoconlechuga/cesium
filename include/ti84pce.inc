@@ -3621,7 +3621,7 @@ keyModeScan		equ 3
 pBlLevel		equ 0B024h
 mpBlLevel		equ 0F60024h
 
-;Character Font Equates  
+;Character Font Equates
 ;-------------------------------------
 LrecurN			equ 001h
 LrecurU			equ 002h
@@ -4549,7 +4549,7 @@ kSelectA		equ kE2BT+147
 kZFitA			equ kE2BT+148
 kE2BT_End		equ kZFitA
 
-;More 2 Byte Keys 
+;More 2 Byte Keys
 ;-------------------------------------
 kE2BT2			equ 00h
 kGDB1			equ kE2BT2
@@ -5104,7 +5104,7 @@ tFact			equ tPost ;2Dh '!'
 tCubicR			equ 2Eh
 tQuartR			equ 2Fh
 
-;Number Tokens 
+;Number Tokens
 ;---------------------------------------
 NUMS			equ 30h
 ;
@@ -5382,7 +5382,7 @@ tDrInv			equ GRCMDS+36 ;A8h 'DrInv_'
 tDrawF			equ GRCMDS+37 ;A9h 'DrawF_'
 tVarStrng		equ 0AAh
 
-;Functions with No Arguments								
+;Functions with No Arguments
 ;--------------------------------------------------
 NOARG			equ 0ABh
 tRand			equ NOARG ;ABh 'rand'
@@ -5951,7 +5951,7 @@ tLcapIAcute		equ 0CDh
 tGarbagec		equ 0CEh
 LastToken		equ 0CEh ;tLAST TOKEN IN THIS VERSION...
 
-;Data Type Equates												
+;Data Type Equates
 ;---------------------------------------------------------------------
 RealObj			equ 0
 ListObj			equ 1
@@ -5978,7 +5978,7 @@ AppVarObj		equ 15h	;application variable
 TempProgObj		equ 16h ;program, home deletes when finished
 GroupObj		equ 17h ;group.
 
-;System Error Codes												
+;System Error Codes
 ;-----------------------------------------------------------
 E_EDITF			equ 7 ;allow re-entering application
 E_EDIT			equ 1<<E_EDITF
@@ -6131,7 +6131,7 @@ E_MS			equ E_SS + FPLEN
 ;System Flags
 ;----------------------------------------------------------------------
 ioDelFlag		equ 0h
-inDelete		equ 0		;1 = DELETE SCREEN 
+inDelete		equ 0		;1 = DELETE SCREEN
 
 trigFlags		equ 0h		;Trigonometry mode settings
 trigDeg			equ 2		;1 = degrees, 0=radians
@@ -6437,7 +6437,7 @@ silentLinkHookActive	equ 7		;1 = silent link hook active
 hookflags5		equ 3Ah
 usbActivityHookActive	equ 0		;1 = USB activity hook active
 ;----------------------------------------------------------------------
-plotFlag3		equ 3Ch  
+plotFlag3		equ 3Ch
 bufferOnly		equ 0
 useFastCirc		equ 4
 ;----------------------------------------------------------------------

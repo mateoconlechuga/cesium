@@ -18,10 +18,10 @@ settings_get_data:
 	inc	hl
 	inc	hl
 	inc	hl
-	ld	a,(hl)
-	ld	(settings_color),a
-	inc	hl
-	ld	a,(hl)
+	ld	de,settings_data
+	ld	bc,settings_size
+	ldir
+	ld	a,(setting_config)
 	ld	(iy + settings_flag),a
 	ret
 
@@ -32,11 +32,16 @@ settings_create_default:
 	pop	hl
 	jp	c,exit_full
 	call	_CreateAppVar
+	inc	de
+	inc	de
 	ex	de,hl
-	ld	de,color_bg_default
+	ld	(hl),color_primary_default
 	inc	hl
+	ld	(hl),color_secondary_default
 	inc	hl
-	ld	(hl),de				; default color index, settings, password length
+	ld	(hl),setting_config_default
+	inc	hl
+	ld	(hl),0
 	jr	settings_load
 
 settings_save:
@@ -47,19 +52,19 @@ settings_save:
 	call	nz,_Arc_Unarc
 	pop	af
 	jr	nz,settings_save
-	inc	de
-	inc	de
-	ld	a,(settings_color)
-	ld	(de),a
-	inc	de
 	ld	a,(iy + settings_flag)
-	ld	(de),a
-	ld	hl,settings_password
-	ld	bc,password_max_length + 1
+	ld	(setting_config),a
+	inc	de
+	inc	de
+	ld	hl,settings_data
+	ld	bc,settings_size
 	ldir
 	ld	hl,settings_appvar
 	call	util_find_var
 	jp	_Arc_Unarc
+
+settings_launch:
+	jp	main_settings
 
 settings_appvar:
 	db	appvarObj, cesium_name, 0

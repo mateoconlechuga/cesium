@@ -1,28 +1,28 @@
 ; duplicated icon; this is deleted anyway so it doesn't really matter
 ; only matters to show cesium inside cesium
 
-	jp	start_installer
+	jp	installer_start
 
-	db 1, 16,16  ; indicator, width, height
-	db 0ffh,0ffh,0ffh,0ffh,0ffh,0ffh,0deh,0d6h,0d6h,0deh,0ffh,0ffh,0ffh,0ffh,0ffh,0ffh
-	db 0ffh,0ffh,0ffh,0ffh,0ffh,0ffh,0d6h,0deh,0deh,0b5h,0ffh,0ffh,0ffh,0ffh,0ffh,0ffh
-	db 0ffh,0ffh,0deh,0d6h,0d6h,0ffh,0d6h,0deh,0deh,0b5h,0ffh,0b5h,0b5h,0b6h,0ffh,0ffh
-	db 0ffh,0deh,0deh,0feh,0deh,0b6h,0b5h,0d6h,0d6h,0b5h,0b5h,0d6h,0deh,0b5h,0b6h,0ffh
-	db 0ffh,0deh,0b6h,0deh,0d6h,0deh,0deh,0d6h,0d6h,0deh,0d6h,0d6h,0d6h,06ch,0b5h,0ffh
-	db 0ffh,0ffh,0deh,0d6h,0d6h,0d6h,0b5h,094h,094h,0b5h,0b6h,0b5h,0b5h,0b5h,0ffh,0ffh
-	db 0d6h,0d6h,0b6h,0deh,0d6h,0b5h,094h,0deh,0deh,0b5h,0b6h,0b5h,0d6h,094h,094h,094h
-	db 0b6h,0deh,0d6h,0d6h,0d6h,0b4h,0deh,0ffh,0ffh,0deh,0b5h,0b6h,0b5h,0b6h,0deh,06bh
-	db 0b5h,0deh,0d6h,0b6h,0d6h,0b5h,0deh,0ffh,0ffh,0deh,0b5h,0b5h,0b5h,0b5h,0d6h,06bh
-	db 0b5h,094h,0b4h,0d6h,0b6h,0d6h,0b5h,0deh,0deh,0b5h,0b5h,0b5h,0b5h,06bh,06bh,06bh
-	db 0ffh,0ffh,0d6h,0b6h,0b5h,0b6h,0b6h,0b5h,0b5h,0b5h,0b5h,0b5h,0b5h,0b5h,0ffh,0ffh
-	db 0ffh,0d6h,0b4h,0d6h,0b6h,0d6h,0d6h,0d6h,0b6h,0d6h,0b6h,0b5h,0d6h,06bh,0b5h,0ffh
-	db 0ffh,0d6h,0b5h,0deh,0b4h,093h,093h,0b6h,0b5h,06bh,06bh,0b4h,0d6h,08ch,0b5h,0ffh
-	db 0ffh,0ffh,0b5h,06bh,06bh,0ffh,094h,0d6h,0b6h,06bh,0feh,06bh,04ah,094h,0ffh,0ffh
-	db 0ffh,0ffh,0ffh,0deh,0ffh,0ffh,094h,0b5h,0b5h,06bh,0ffh,0ffh,0deh,0ffh,0ffh,0ffh
-	db 0ffh,0ffh,0ffh,0ffh,0ffh,0ffh,0b6h,08ch,06ch,0b5h,0ffh,0ffh,0ffh,0ffh,0ffh,0ffh
-	db 000h
+	db 1, 16,16	; indicator, width, height
+	db $ff,$ff,$ff,$ff,$ff,$ff,$de,$d6,$d6,$de,$ff,$ff,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$ff,$d6,$de,$de,$b5,$ff,$ff,$ff,$ff,$ff,$ff
+	db $ff,$ff,$de,$d6,$d6,$ff,$d6,$de,$de,$b5,$ff,$b5,$b5,$b6,$ff,$ff
+	db $ff,$de,$de,$fe,$de,$b6,$b5,$d6,$d6,$b5,$b5,$d6,$de,$b5,$b6,$ff
+	db $ff,$de,$b6,$de,$d6,$de,$de,$d6,$d6,$de,$d6,$d6,$d6,$6c,$b5,$ff
+	db $ff,$ff,$de,$d6,$d6,$d6,$b5,$94,$94,$b5,$b6,$b5,$b5,$b5,$ff,$ff
+	db $d6,$d6,$b6,$de,$d6,$b5,$94,$de,$de,$b5,$b6,$b5,$d6,$94,$94,$94
+	db $b6,$de,$d6,$d6,$d6,$b4,$de,$ff,$ff,$de,$b5,$b6,$b5,$b6,$de,$6b
+	db $b5,$de,$d6,$b6,$d6,$b5,$de,$ff,$ff,$de,$b5,$b5,$b5,$b5,$d6,$6b
+	db $b5,$94,$b4,$d6,$b6,$d6,$b5,$de,$de,$b5,$b5,$b5,$b5,$6b,$6b,$6b
+	db $ff,$ff,$d6,$b6,$b5,$b6,$b6,$b5,$b5,$b5,$b5,$b5,$b5,$b5,$ff,$ff
+	db $ff,$d6,$b4,$d6,$b6,$d6,$d6,$d6,$b6,$d6,$b6,$b5,$d6,$6b,$b5,$ff
+	db $ff,$d6,$b5,$de,$b4,$93,$93,$b6,$b5,$6b,$6b,$b4,$d6,$8c,$b5,$ff
+	db $ff,$ff,$b5,$6b,$6b,$ff,$94,$d6,$b6,$6b,$fe,$6b,$4a,$94,$ff,$ff
+	db $ff,$ff,$ff,$de,$ff,$ff,$94,$b5,$b5,$6b,$ff,$ff,$de,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$ff,$b6,$8c,$6c,$b5,$ff,$ff,$ff,$ff,$ff,$ff
+	db $00	; description
 
-start_installer:
+installer_start:
 	call	_PushOP1			; save the program name
 	call	.clear_screen
 
@@ -38,9 +38,9 @@ start_installer:
 	jp	_HomeUp
 .app_created:
 
-	execute_cesium.run
+	installer_execute_cesium.run
 
-relocate execute_cesium, mpLcdCrsrImage
+relocate installer_execute_cesium, mpLcdCrsrImage
 	ld	hl,str_delete_installer
 	call	_PutS
 	call	_NewLine
