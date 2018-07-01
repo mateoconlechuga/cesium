@@ -63,14 +63,16 @@ gui_draw_option:
 	ld	a,h
 	sub	a,4
 	ld	(.recompute),a
+	inc	l				; Ty + 3
 	inc	l
-	inc	l				; Ty + 2
 	ld	h,lcdWidth / 2
 	mlt	hl
 	add	hl,hl
 	pop	de
 	add	hl,de
 	ex	de,hl				; recompute offset
+	inc	e
+	inc	e
 	pop	af
 	ld	a,0
 .recompute := $-1

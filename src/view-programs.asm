@@ -88,8 +88,8 @@ current_prgm_drawing := $-1
 	ex	de,hl
 	ld	de,9
 	add	hl,de
-	pop	de
-	pop	bc
+	pop	de					; lookup table
+	pop	bc					; name pointer
 	ld	a,(bc)
 	push	bc
 	push	de
@@ -153,7 +153,7 @@ color_save := $-1
 	ld	(prgm_type),a
 .dont_set_type:
 	inc	hl
-	push	hl
+	push	hl					; save location in list
 	ld	de,string_directory
 	ld	hl,sprite_directory
 	cp	a,file_dir
@@ -213,7 +213,7 @@ temp_prgm_data_ptr := $-3
 	ld	a,(hl)
 	cp	a,byte_cesium				; cesium indicator byte
 	jr	nz,.no_custom_icon
-	pop	hl					; pop the old icon
+	pop	de					; pop the old icon
 	inc	hl
 	bit	drawing_selected,(iy + item_flag)	; check if the description should be drawn
 	jr	z,.icon
@@ -283,8 +283,8 @@ draw_listed_program:
 	ld	ix,(lcd_x)
 	push	ix					; save_cursor
 	ld	(tmp_y),a
-	push	de
-	push	hl
+	push	de					; save language string
+	push	hl					; save icon pointer
 	call	lcd_sprite
 	ld	a,0
 tmp_y := $-1
@@ -331,7 +331,7 @@ tmp_y := $-1
 
 	print string_language, 199, 107
 	pop	hl
-	call	lcd_string				; language string
+	call	lcd_string				; hl -> language string
 
 	print string_attributes, 199, 173
 	ld	de,262
@@ -351,11 +351,11 @@ end if
 
 	bit	prgm_locked,(iy + prgm_flag)
 	jr	nz,.is_locked
-	print	string_edit_prgm, 199, 195
+	print	string_edit_prgm, 199, 183
 	ld	de,269
 	jr	.no_new
 .is_locked:
-	print	string_new_prgm, 199, 195
+	print	string_new_prgm, 199, 183
 	ld	de,287
 .no_new:
 	ld	(lcd_x),de
@@ -367,12 +367,15 @@ end if
 	inc	hl
 	call	lcd_string
 
+	push	de
 .not_selected:
+	pop	de					; description may not have been popped
 	pop	bc
 	ld	(lcd_x),bc
 	pop	af
 	ld	(lcd_y),a				; restore_cursor
-	pop	hl
+
+	pop	hl					; restore list location
 	pop	bc
 	dec	bc
 	ld	a,b

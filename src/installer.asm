@@ -3,7 +3,7 @@
 
 	jp	installer_start
 
-	db 1, 16,16	; indicator, width, height
+	db 1,16,16	; indicator, width, height
 	db $ff,$ff,$ff,$ff,$ff,$ff,$de,$d6,$d6,$de,$ff,$ff,$ff,$ff,$ff,$ff
 	db $ff,$ff,$ff,$ff,$ff,$ff,$d6,$de,$de,$b5,$ff,$ff,$ff,$ff,$ff,$ff
 	db $ff,$ff,$de,$d6,$d6,$ff,$d6,$de,$de,$b5,$ff,$b5,$b5,$b6,$ff,$ff
@@ -20,7 +20,7 @@
 	db $ff,$ff,$b5,$6b,$6b,$ff,$94,$d6,$b6,$6b,$fe,$6b,$4a,$94,$ff,$ff
 	db $ff,$ff,$ff,$de,$ff,$ff,$94,$b5,$b5,$6b,$ff,$ff,$de,$ff,$ff,$ff
 	db $ff,$ff,$ff,$ff,$ff,$ff,$b6,$8c,$6c,$b5,$ff,$ff,$ff,$ff,$ff,$ff
-	db $00	; description
+	db 'Cesium Installer Version ',cesium_version,$00	; description
 
 installer_start:
 	call	_PushOP1			; save the program name

@@ -214,7 +214,7 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 find_application_directory_name:
 	db	4
 find_directory_ptr:
-	dl	0
+	dl	find_directory_ptr bswap 3
 	db	0,0,5
 find_program_directory_name:
 	db	0,0,0,"Programs",0

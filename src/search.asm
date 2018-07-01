@@ -10,7 +10,7 @@ search_alpha_item:
 	ld	(.search_character),a
 	call	util_init_selection_screen
 	ld	hl,item_location_base
-	ld	bc,(selection_max)		; loop through the prgms
+	ld	bc,(number_of_items)		; loop through the prgms
 .find:
 	ld	de,(hl)				; pointer to program name size
 	dec	de
@@ -45,7 +45,7 @@ search_name:
 	push	hl
 	call	util_init_selection_screen
 	ld	hl,item_location_base
-	ld	bc,(selection_max)		; loop through the items
+	ld	bc,(number_of_items)		; loop through the items
 	pop	ix
 	dec	ix
 .find:

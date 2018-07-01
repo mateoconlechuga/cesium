@@ -58,12 +58,12 @@ util_set_cursor:
 	ret
 
 util_save_cursor:
-	pop	hl
+	pop	ix
 	ld	bc,(lcd_x)
 	push	bc
 	ld	a,(lcd_y)
 	push	af
-	jp	(hl)
+	jp	(ix)
 
 util_restore_cursor:
 	pop	hl

@@ -40,7 +40,9 @@ main_loop:
 	jp	c,main_loop
 	cp	a,skMath - skAdd + 1
 	jp	nc,main_loop
-	jp	search_alpha_item
+	call	search_alpha_item
+	jp	z,main_loop
+	jp	main_start
 
 main_move_up_return:
 	ld	hl,main_start
@@ -67,8 +69,7 @@ main_move_down_return:
 	push	hl
 main_move_down:
 	ld	hl,(current_selection_absolute)
-	ld	de,0
-selection_max := $-3
+	ld	de,(number_of_items)
 	dec	de
 	compare_hl_de
 	ret	z
