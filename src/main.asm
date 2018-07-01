@@ -17,7 +17,7 @@ main_loop:
 	cp	a,skClear
 	jp	z,exit_full
 	cp	a,skMode
-	jp	z,settings_launch
+	jp	z,settings_show
 	cp	a,skUp
 	jp	z,main_move_up_return
 	cp	a,skDown

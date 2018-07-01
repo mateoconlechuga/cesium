@@ -125,10 +125,17 @@ end macro
 
 macro draw_option? Lx, Ty, Rx, By
 	ld	bc,Rx - Lx + 1
-	ld	d,By - Ty + 1
-	ld	e,Ty
+	ld	de,((By - Ty + 1) * 256) + Ty
 	ld	hl,Lx
 	call	gui_draw_option
+end macro
+
+macro draw_highlightable_option? Lx, Ty, Rx, By, num
+	ld	bc,Rx - Lx + 1
+	ld	de,((By - Ty + 1) * 256) + Ty
+	ld	hl,Lx
+	ld	a,num
+	call	gui_draw_highlightable_option
 end macro
 
 macro flash_unlock_m
@@ -191,7 +198,7 @@ setting_basic_indicator := 0
 setting_list_count := 1
 setting_clock := 2
 setting_ram_backup := 3
-setting_special_directories := 2
+setting_special_directories := 4
 setting_enable_shortcuts := 5
 
 settings_appvar_size := 30
@@ -242,7 +249,8 @@ setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
 setting_config := setting_color_secondary + 1
 setting_password := setting_config + 1
-current_selection_absolute := setting_password + password_max_length + 1
+current_option_selection := setting_password + password_max_length + 1
+current_selection_absolute := current_option_selection + 1
 current_selection := current_selection_absolute + 3
 scroll_amount := current_selection + 3
 current_screen := scroll_amount + 3
