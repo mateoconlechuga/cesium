@@ -159,7 +159,50 @@ gui_draw_color_tables:
 	pop	bc
 	ld	de,(72 shl 8) or 164
 	djnz	.double
+
+gui_draw_color_box:
+	ld	bc,6					; width
+	ld	a,(color_selection_y)
+	ld	e,a
+	ld	d,c
+	mlt	de
+	ld	a,e
+	add	a,72
+	ld	e,a					; y
+	ld	a,(color_selection_x)
+	ld	l,a
+	ld	h,c
+	mlt	hl
+	ld	bc,61
+color_table_active := $-3
+	add	hl,bc					; x
+	ld	c,6
+	ld	d,c
+.store_color:
+	push	hl
+	push	de
+	push	bc
+	call	lcd_compute
+	ld	de,lcdWidth * 2 + 3
+	add	hl,de
+	ld	a,(hl)					; get the new color
+	ld	(hl),0
+	ld	hl,(color_ptr)
+	ld	(hl),a
+	pop	bc
+	pop	de
+	pop	hl
+	ld	a,(color_secondary)
+	push	af
+	ld	a,0
+	ld	(color_secondary),a
+	call	lcd_rectangle_outline.computed
+	pop	af
+	ld	(color_secondary),a
 	ret
+
+color_ptr := $
+	dl	0
 
 gui_clear_status_bar:
 	draw_rectangle 1, 225, 319, 239

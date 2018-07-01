@@ -182,7 +182,7 @@ lcd_rectangle:
 ; hl = x coordinate
 ; e = y coordinate
 ; bc = width
-; a = height
+; d = height
 lcd_rectangle_outline:
 .computed:
 	ld	a,(color_secondary)		; always use secondary color

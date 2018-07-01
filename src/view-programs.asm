@@ -104,6 +104,8 @@ current_prgm_drawing := $-1
 	jr	z,.not_locked
 	set	temp_prgm_locked,(iy + temp_prgm_flag)
 .not_locked:
+	ld	a,(lcd_text_fg)
+	ld	(color_save),a
 	pop	hl
 	ld	b,(hl)
 	dec	hl
@@ -113,8 +115,9 @@ current_prgm_drawing := $-1
 	add	a,64
 	ld	(hl),a
 	set	temp_prgm_hidden,(iy + temp_prgm_flag)
-	ld	a,(lcd_text_fg)
-	ld	(color_save),a
+	ld	a,(color_secondary)
+	cp	a,color_secondary_default
+	jr	nz,.draw_prgm
 	set_text_fg_color color_hidden
 .draw_prgm:
 	push hl

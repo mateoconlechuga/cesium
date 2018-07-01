@@ -128,7 +128,7 @@ setting_move_up:
 setting_toggle:
 	ld	a,(ix)
 	or	a,a
-	jr	z,setting_open_colors	; convert the option to one-hot
+	jr	z,setting_change_colors	; convert the option to one-hot
 	ld	b,a
 	xor	a, a
 .one_hot:
@@ -138,6 +138,12 @@ setting_toggle:
 	ld	(iy + settings_flag),a
 	ret
 
+setting_change_colors:
+	ld	bc,61
+	ld	(color_table_active),bc
+	ld	hl,color_primary
+	ld	(color_ptr),hl
+	call	setting_color_get_xy
 setting_open_colors:
 	call	setting_draw_options
 	call	gui_draw_color_tables
@@ -155,10 +161,6 @@ setting_open_colors:
 	jr	z,setting_color_down
 	cp	a,skUp
 	jr	z,setting_color_up
-	cp	a,sk2nd
-	jr	z,setting_color_select
-	cp	a,skEnter
-	jr	z,setting_color_select
 	cp	a,skMode
 	jr	z,setting_color_swap
 	pop	hl
@@ -169,16 +171,70 @@ setting_open_colors:
 	jr	.loop
 
 setting_color_left:
+	ld	a,(color_selection_x)
+	or	a,a
+	ret	z
+	dec	a
+	ld	(color_selection_x),a
 	ret
+
 setting_color_right:
+	ld	a,0
+color_selection_x := $-1
+	cp	a,15
+	ret	z
+	inc	a
+	ld	(color_selection_x),a
 	ret
+
 setting_color_down:
+	ld	a,(color_selection_y)
+	cp	a,15
+	ret	z
+	inc	a
+	ld	(color_selection_y),a
 	ret
+
 setting_color_up:
+	ld	a,0
+color_selection_y := $-1
+	or	a,a
+	ret	z
+	dec	a
+	ld	(color_selection_y),a
 	ret
-setting_color_select:
+
+setting_color_get_xy:
+	ld	hl,(color_ptr)
+	ld	a,(hl)
+setting_color_index_to_xy:
+	ld	b,a
+	srl	a
+	srl	a
+	srl	a
+	srl	a		; index / 16
+	and	a,$f		; got y
+	ld	(color_selection_y),a
+	ld	a,b
+	and	a,$f
+	ld	(color_selection_x),a
 	ret
+
 setting_color_swap:
+	ld	hl,color_primary
+	ld	b,61
+	ld	a,(color_table_active)
+	cp	a,b
+	jr	nz,.swap
+	ld	hl,color_secondary
+	ld	a,164
+	jr	.done
+.swap:
+	ld	a,b
+.done:
+	ld	(color_table_active),a
+	ld	(color_ptr),hl
+	call	setting_color_get_xy
 	ret
 
 setting_draw_options:
