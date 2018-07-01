@@ -24,15 +24,18 @@ relocate cesium_code, cesium_execution_base
 	include 'settings.asm'
 	include 'password.asm'
 	include 'execute.asm'
+	include 'squish.asm'
 	include 'gui.asm'
 	include 'lcd.asm'
 	include 'util.asm'
 	include 'find.asm'
 	include 'sort.asm'
-	include 'flash.asm'
 	include 'luts.asm'
 	include 'sprites.asm'
 	include 'strings.asm'
+	include 'flash.asm'
 end relocate
 
+; we want to keep these things in flash
+include 'hooks.asm'
 include 'data.asm'

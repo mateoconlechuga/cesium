@@ -16,11 +16,22 @@ string_directory:
 	db	'Dir',0
 string_basic:
 	db	'Basic',0
+string_error_stop:
+	db	'Stop',0
+string_error_stop_end:
+string_mode_select:
+db	'   < ',$7e,'MODE] >',0
 
 ; english configuration
 
 if config_english
 
+string_primary_color:
+	db	'Primary Color',0
+string_secondary_color:
+	db	'Secondary Color',0
+string_tertiary_color:
+	db	'Tertiary Color',0
 string_language:
 	db	'Language: ',0
 string_archived:
@@ -83,6 +94,12 @@ string_new_password:
 
 else
 
+string_primary_color:
+	db	'Primary Color',0
+string_secondary_color:
+	db	'Secondary Color',0
+string_tertiary_color:
+	db	'Tertiary Color',0
 string_language:
 	db	'Langage : ',0
 string_archived:

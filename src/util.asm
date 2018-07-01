@@ -170,3 +170,59 @@ util_prgm_ptr_to_op1:
 	xor	a,a
 	ld	(de),a				; terminate the string
 	ret
+
+util_move_prgm_to_usermem:
+	ld	a,$9				; 'add hl,bc'
+	ld	(.smc),a
+	call	_ChkFindSym
+	call	_ChkInRam
+	ex	de,hl
+	jr	z,.in_ram
+	xor	a,a
+	ld	(.smc),a
+	ld	de,9
+	add	hl,de
+	ld	e,(hl)
+	add	hl,de
+	inc	hl
+.in_ram:					; hl -> size bytes
+	call	_LoadDEInd_s
+	inc	hl
+	inc	hl				; bypass tExtTok, tAsm84CECmp
+	push	hl
+	push	de
+	ex	de,hl
+	call	_ErrNotEnoughMem		; check and see if we have enough memory
+	pop	hl
+	ld	(asm_prgm_size),hl		; store the size of the program
+	ld	de,userMem
+	push	de
+	call	_InsertMem			; insert memory into usermem
+	pop	de
+	pop	hl				; hl -> start of program
+	ld	bc,(asm_prgm_size)		; load size of current program
+.smc := $
+	add	hl,bc				; if not in ram smc it so it doesn't execute
+	ldir					; copy the program to userMem
+	ret					; return
+
+util_install_error_handler:
+	ld	hl,0
+reloc_asm_error_handler := $-3
+	jp	_PushErrorHandler
+
+util_backup_prgm_name:
+	ld	hl,OP1
+	ld	de,edit_program_name
+	jp	_Mov9b
+
+util_delete_temp_program_get_name:
+	ld	hl,util_temp_program_object
+	call	_Mov9ToOP1
+	call	_PushOP1
+	call	_ChkFindSym
+	call	nc,_DelVarArc			; delete the temp prgm if it exists
+	jp	_PopOP1
+
+util_temp_program_object:
+	db	tempProgObj, 'ZAGTZ', 0

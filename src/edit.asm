@@ -19,7 +19,6 @@ app_change_hook_ptr =$-3
 	call	_CursorOff
 	call	_RunIndicOff
 	call	lcd_normal
-	call	_DrawStatusBar
 	call	_PushOP1
 	ld	hl,OP1
 	ld	(hl),5

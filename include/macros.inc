@@ -172,6 +172,7 @@ byte_ice_source := $2c
 byte_ice := $7f
 byte_c := $00
 byte_dir := file_dir
+byte_edit_return := $aa
 
 item_location_base := pixelShadow
 
@@ -183,8 +184,8 @@ vRamBuffer := vRam + ((vRamEnd - vRam) / 2)
 
 color_primary_default := 107
 color_secondary_default := 107
+color_tertiary_default := 230
 color_white := 255
-color_highlight := 230
 color_hidden := 181
 
 ; password
@@ -230,11 +231,13 @@ prgm_flag := $30
 prgm_archived := 0
 prgm_locked := 1
 prgm_hidden := 2
+prgm_is_basic := 3
 
 temp_prgm_flag := $31
 temp_prgm_archived := 0
 temp_prgm_locked := 1
 temp_prgm_hidden := 2
+temp_prgm_is_basic := 3
 
 ; location of items
 
@@ -245,11 +248,13 @@ clock_y := 7
 
 edit_status := appdata
 edit_mode := edit_status + 1
-
-settings_data := edit_mode + 1
+edit_program_name := edit_mode + 1
+hook_backup_location := edit_program_name + 11
+settings_data := hook_backup_location + 3
 setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
-setting_config := setting_color_secondary + 1
+setting_color_tertiary := setting_color_secondary + 1
+setting_config := setting_color_tertiary + 1
 setting_password := setting_config + 1
 current_option_selection := setting_password + password_max_length + 1
 current_selection_absolute := current_option_selection + 1
@@ -272,6 +277,7 @@ settings_size := setting_password + password_max_length + 1 - settings_data
 
 color_primary := setting_color_primary
 color_secondary := setting_color_secondary
+color_tertiary := setting_color_tertiary
 
 ; constants
 
@@ -280,3 +286,10 @@ screen_apps := 1
 screen_usb := 2
 screen_settings := 3
 screen_password := 4
+
+; these should go in ti84pce.inc
+
+sysHookFlg := 52
+appInpPrmptInit := 0
+appInpPrmptDone := 1
+appWantHome := 4

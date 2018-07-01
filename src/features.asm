@@ -239,7 +239,7 @@ feature_item_delete:
 	cp	a,screen_apps
 	jr	z,.delete_app
 .delete_program:
-	call	util_move_prgm_name_to_op1		; move the selected name to op1
+	call	util_move_prgm_name_to_op1	; move the selected name to op1
 	call	_ChkFindSym
 	call	_DelVarArc
 	jr	.refresh
@@ -248,10 +248,10 @@ feature_item_delete:
 	ld	bc,0 - $100
 	add	hl,bc
 	call	_DeleteApp
-	set	3,(iy + $25)				; defrag on exit
+	set	3,(iy + $25)			; defrag on exit
 .refresh:
 	call	main_move_up
-	jp	main_find				; reload everything
+	jp	main_find			; reload everything
 
 feature_item_attributes:
 	call	feature_check_valid
@@ -260,7 +260,8 @@ feature_item_attributes:
 	xor	a,a
 	ld	(current_option_selection),a
 .show_edit:
-	set_text_bg_color color_highlight
+	ld	a,(color_tertiary)
+	ld	(lcd_text_bg),a			; highlight the currently selected item
 	call	.get_option_metadata
 	set_normal_text
 .loop:
@@ -337,9 +338,9 @@ feature_item_attributes:
 	dec	a
 	jr	nz,.checked_lockable
 	ld	a,(prgm_type)
-	cp	a,file_basic				; basic programs
+	cp	a,file_basic			; basic programs
 	jr	z,.checked_lockable
-	cp	a,file_ice_source			; ice source programs
+	cp	a,file_ice_source		; ice source programs
 	ret	nz
 .checked_lockable:
 	ld	a,(current_option_selection)
@@ -360,23 +361,23 @@ feature_item_attributes:
 	ld	(hl),a
 	ld	hl,(prgm_ptr)
 	ld	hl,(hl)
-	dec	hl					; bypass name byte
+	dec	hl				; bypass name byte
 	ld	a,(hl)
 	bit	prgm_hidden,(iy + prgm_flag)
 	jr	z,.unhide
 	cp	a,64
-	jr	c,.check_archived			; already hidden
+	jr	c,.check_archived		; already hidden
 	sub	a,64
 	ld	(hl),a
 	jr	.check_archived
 .unhide:
 	cp	a,64
-	jr	nc,.check_archived			; not hidden
+	jr	nc,.check_archived		; not hidden
 	add	a,64
 	ld	(hl),a
 	;jr	.check_archived
 .check_archived:
-	call	util_move_prgm_name_to_op1		; if needed, archive it
+	call	util_move_prgm_name_to_op1	; if needed, archive it
 	call	_ChkFindSym
 	call	_ChkInRam
 	push	af
@@ -398,4 +399,4 @@ feature_check_valid:
 	compare_hl_zero
 	ret	nz
 	pop	hl
-	jp	main_loop				; don't allow deletion of directories
+	jp	main_loop			; don't allow deletion of directories

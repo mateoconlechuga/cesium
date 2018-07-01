@@ -26,6 +26,16 @@ settings_get_data:
 	ret
 
 settings_create_default:
+	ld	hl,setting_color_primary	; initialize default settings
+	ld	(hl),color_primary_default
+	ld	hl,setting_color_secondary
+	ld	(hl),color_secondary_default
+	ld	hl,setting_color_tertiary
+	ld	(hl),color_tertiary_default
+	ld	hl,setting_config
+	ld	(hl),setting_config_default
+	ld	hl,setting_password
+	ld	(hl),0				; zero length
 	ld	hl,settings_appvar_size * 2	; just have at least double this
 	push	hl
 	call	_EnoughMem
@@ -34,14 +44,9 @@ settings_create_default:
 	call	_CreateAppVar
 	inc	de
 	inc	de
-	ex	de,hl
-	ld	(hl),color_primary_default
-	inc	hl
-	ld	(hl),color_secondary_default
-	inc	hl
-	ld	(hl),setting_config_default
-	inc	hl
-	ld	(hl),0
+	ld	hl,settings_data
+	ld	bc,settings_size
+	ldir
 	jr	settings_load
 
 settings_save:
@@ -133,16 +138,16 @@ setting_toggle:
 	ret
 
 setting_change_colors:
-	ld	a,61
+	xor	a,a
 	ld	hl,color_primary
 	ld	(color_table_active),a
 	ld	(color_ptr),hl
 	call	setting_color_get_xy
-	call	gui_draw_color_tables		; temporarily draw tables to compute color
+	call	gui_draw_color_table		; temporarily draw tables to compute color
 setting_open_colors:
 	call	gui_color_box.compute
 	call	setting_draw_options
-	call	gui_draw_color_tables
+	call	gui_draw_color_table
 .loop:
 	call	util_get_key
 	ld	hl,setting_open_colors
@@ -207,17 +212,15 @@ color_selection_y := $-1
 
 setting_color_swap:
 	ld	hl,color_primary
-	ld	b,61
-	ld	a,(color_table_active)
-	cp	a,b
-	jr	nz,.swap
-	ld	hl,color_secondary
-	ld	a,164
-	jr	.done
-.swap:
-	ld	a,b
-.done:
+	ld	a,0
+color_table_active := $-1
+	cp	a,2
+	jr	nz,.incr
+	ld	a,-1
+.incr:
+	inc	a
 	ld	(color_table_active),a
+	call	_AddHLAndA
 	ld	(color_ptr),hl
 	;jq	setting_color_get_xy
 

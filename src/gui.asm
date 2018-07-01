@@ -65,7 +65,8 @@ gui_draw_highlightable_option:
 	ld	a,(ix)
 	ld	(.color_save),a
 	jr	nz,.no_highlight
-	ld	(ix),color_highlight
+	ld	a,(color_tertiary)
+	ld	(ix),a
 .no_highlight:
 	pop	af
 	call	gui_draw_option
@@ -114,15 +115,25 @@ gui_draw_option:
 	call	lcd_rectangle.computed
 	jp	util_restore_primary
 
-gui_draw_color_tables:
-	draw_rectangle_outline 60, 71, 157, 168
-	draw_rectangle_outline 163, 71, 260, 168
-	ld	de,(72 shl 8) or 61
-	ld	b,2
-.double:
-	push	bc
-	ld	a,e
-	ld	(.x),a
+gui_draw_color_table:
+	call	gui_clear_status_bar
+	ld	a,(color_table_active)
+	ld	hl,string_primary_color
+	or	a,a
+	jr	z,.got_string
+	ld	hl,string_secondary_color
+	dec	a
+	jr	z,.got_string
+	ld	hl,string_tertiary_color
+	.got_string:
+	set_inverted_text
+	set_cursor 4, 228
+	call	lcd_string
+	ld	hl,string_mode_select
+	call	lcd_string
+	set_normal_text
+	draw_rectangle_outline 111, 71, 208, 168
+	ld	de,(72 shl 8) or 112
 	xor	a,a
 	ld	b,16
 .loop:
@@ -157,17 +168,13 @@ gui_draw_color_tables:
 	inc	a
 	djnz	.horiz
 	sub	a,16
-	ld	e,0
-.x := $-1
+	ld	e,112
 	inc	d
 	pop	bc
 	djnz	.vert
 	pop	bc
 	add	a,16
 	djnz	.loop
-	pop	bc
-	ld	de,(72 shl 8) or 164
-	djnz	.double
 	call	gui_color_box.compute
 	jq	gui_color_box.draw
 
@@ -185,8 +192,7 @@ gui_color_box:
 	ld	l,a
 	ld	h,c
 	mlt	hl
-	ld	bc,61
-color_table_active := $-3
+	ld	bc,112
 	add	hl,bc					; x
 	ld	c,6
 	ld	d,c
@@ -228,3 +234,22 @@ gui_draw_item_options:
 	bit	prgm_hidden,(iy + prgm_flag)
 	draw_option 300, 140, 308, 148
 	ret
+
+gui_backup_ram_to_flash:
+	ld	a,color_white
+	call	util_set_primary
+if config_english
+	draw_rectangle 114, 105, 206, 121
+	draw_rectangle_outline 113, 104, 207, 121
+	set_cursor 119, 109
+else
+	draw_rectangle 89, 105, 256, 121
+	draw_rectangle_outline 88, 104, 257, 121
+	set_cursor 95, 109
+end if
+	call	util_restore_primary
+	set_normal_text
+	ld	hl,string_ram_backup
+	call	lcd_string
+	call	lcd_blit
+	jp	flash_backup_ram

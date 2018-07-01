@@ -5,15 +5,8 @@ exit_full:
 
 relocate exit_cleanup, mpLcdCrsrImage
 	bit	setting_ram_backup,(iy + settings_flag)
-	jr	z,.dont_clear_backup
-	ld	b,$00
-	ld	de,$3c0000
-	flash_unlock_m
-	call	_WriteFlashByte				; clear old backup
-	flash_lock_m
-.dont_clear_backup:
+	call	nz,flash_clear_backup
 	call	lcd_normal
-	call	_DrawStatusBar
 	call	_ClrParserHook
 	call	_ClrAppChangeHook
 	call	_ClrScrn

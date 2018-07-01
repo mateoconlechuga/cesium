@@ -30,7 +30,7 @@ lcd_normal:
 	call	lcd_clear
 	ld	a,$2d
 	ld	(mpLcdCtrl),a
-	ret
+	jp	_DrawStatusBar
 
 lcd_clear:
 	ld	hl,vRam

@@ -48,7 +48,8 @@ current_prgm_drawing := $-1
 	jr	nz,.not_selected
 	set	drawing_selected,(iy + item_flag)
 	ld	(prgm_ptr),hl
-	set_text_bg_color color_highlight		; highlight the currently selected item
+	ld	a,(color_tertiary)
+	ld	(lcd_text_bg),a				; highlight the currently selected item
 .not_selected:
 	ld	a,e
 	inc	a
@@ -173,6 +174,7 @@ color_save := $-1
 	ld	hl,sprite_file_ice
 	cp	a,file_ice
 	jr	z,file_uneditable
+	set	temp_prgm_is_basic,(iy + temp_prgm_flag)
 	ld	de,string_ice_source
 	cp	a,file_ice_source
 	jp	z,file_editable
@@ -180,8 +182,8 @@ color_save := $-1
 	ld	hl,sprite_file_basic
 	cp	a,file_basic
 	jr	z,file_editable
-.no_programs:
-	ret
+	jp	exit_full		; abort
+
 .set_more_flag:
 	set	scroll_down_available,(iy + item_flag)
 	ret
