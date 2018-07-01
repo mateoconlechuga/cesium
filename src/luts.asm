@@ -1,5 +1,11 @@
 ; lookup tables for characters
 
+lut_basic_icon:
+	db	$3E,$44,$43,$53,$3F,$2A
+
+lut_color_basic:
+	db	$ff,$18,$e0,$00,$f8,$24,$e3,$61,$09,$13,$e6,$ff,$b5,$6b,$6a,$4a
+
 lut_character_standard:
 	db	0,'WRMH',0,0   		; + - × ÷ ^ undefined
 	db	0,'Z'+ 1,'VQLG',0,0 	; (-) 3 6 9 ) TAN VARS undefined

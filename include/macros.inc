@@ -31,9 +31,8 @@ end macro
 
 macro set_cursor? x, y
 	ld	bc,x
-	ld	(lcd_x),bc
 	ld	a,y
-	ld	(lcd_y),a
+	call	util_set_cursor
 end macro
 
 macro save_cursor?
@@ -52,11 +51,6 @@ end macro
 macro set_text_bg_color? index
 	ld	a,index
 	ld	(lcd_text_bg),a
-end macro
-
-macro set_fill_color? index
-	ld	a,index
-	ld	(lcd_fill_color),a
 end macro
 
 macro set_inverted_text?
@@ -86,7 +80,7 @@ macro draw_rectangle_outline? Lx, Ty, Rx, By
 	ld	d,By - Ty + 1
 	ld	e,Ty
 	ld	hl,Lx
-	call	lcd_rectangle_outline
+	call	lcd_rectangle_outline.computed
 end macro
 
 macro draw_rectangle_outline_double? Lx, Ty, Rx, By
@@ -112,6 +106,11 @@ macro draw_sprite? sprite, x, y
 	call	lcd_sprite
 end macro
 
+macro draw_sprite_2x? x, y
+	ld	bc,(256 * x) + y
+	call	lcd_sprite_2x
+end macro
+
 macro compare_hl_zero?
 	add	hl,de
 	or	a,a
@@ -124,9 +123,12 @@ macro compare_hl_de?
 	add	hl,de
 end macro
 
-macro set_color? color_type
-	ld	a,(color_type)
-	ld	(color_current),a
+macro draw_option? Lx, Ty, Rx, By
+	ld	bc,Rx - Lx + 1
+	ld	d,By - Ty + 1
+	ld	e,Ty
+	ld	hl,Lx
+	call	gui_draw_option
 end macro
 
 macro flash_unlock_m
@@ -146,17 +148,23 @@ cesium_name := 'Cesium'
 cesium_copyright := '(C) 2018 MateoConLechuga'
 cesium_execution_base := $d09466
 
+config_english := 1
+
 ; file management
 
-file_asm := 1
-file_c := 2
-file_basic := 4
-file_ice := 8
-file_ice_source := 16
+file_asm := 0
+file_c := 1
+file_basic := 2
+file_ice := 3
+file_ice_source := 4
+file_dir := 5
 
+byte_cesium := $01
+byte_jp := $c3
 byte_ice_source := $2c
 byte_ice := $7f
 byte_c := $00
+byte_dir := file_dir
 
 item_location_base := pixelShadow
 
@@ -169,6 +177,8 @@ vRamBuffer := vRam + ((vRamEnd - vRam) / 2)
 color_primary_default := 107
 color_secondary_default := 107
 color_white := 255
+color_highlight := 230
+color_hidden := 181
 
 ; password
 
@@ -201,6 +211,25 @@ cesium_is_disabled := 3
 cesium_is_nl_disabled := 4
 cesium_execute_alt := 5
 
+; program flags
+
+prgm_flag := $30
+prgm_archived := 0
+prgm_locked := 1
+prgm_hidden := 2
+prgm_basic := 3
+
+temp_prgm_flag := $31
+temp_prgm_archived := 0
+temp_prgm_locked := 1
+temp_prgm_hidden := 2
+temp_prgm_basic := 3
+
+item_flag := $30
+drawing_selected := 4
+scroll_down_available := 5
+scroll_up_available := 6
+
 ; location of items
 
 clock_x := 255
@@ -217,6 +246,13 @@ current_selection_absolute := setting_password + password_max_length + 1
 current_selection := current_selection_absolute + 3
 scroll_amount := current_selection + 3
 current_screen := scroll_amount + 1
+prgm_ptr := current_screen + 1
+prgm_data_ptr := prgm_ptr + 3
+prgm_size := prgm_data_ptr + 3
+prgm_real_size := prgm_size + 3
+prgm_type := prgm_real_size + 3
+
+sprite_temp := mpLcdCrsrImage
 
 settings_size := setting_password + password_max_length + 1 - settings_data
 

@@ -2,7 +2,7 @@ string_cesium:
 	db	cesium_name,0
 string_language:
 	db	'Language: ',0
-string_ez80:
+string_asm:
 	db	'eZ80',0
 string_c:
 	db	'C',0

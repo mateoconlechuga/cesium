@@ -166,7 +166,7 @@ lcd_rectangle:
 	lea	de,ix
 	ld	bc,0
 .width := $-3
-	ld	hl,color_current
+	ld	hl,color_primary		; always just fill with the primary color
 	ldi					; check if we only need to draw 1 pixel
 	jp	po,.skip
 	scf
@@ -184,7 +184,8 @@ lcd_rectangle:
 ; bc = width
 ; a = height
 lcd_rectangle_outline:
-	ld	a,(color_current)		; color index to use
+.computed:
+	ld	a,(color_secondary)		; always use secondary color
 	push	bc
 	push	hl
 	push	de
@@ -220,8 +221,6 @@ lcd_vertical:
 	ret
 
 lcd_compute:
-	ld	a,0
-color_current := $-1
 	ld	d,lcdWidth / 2
 	mlt	de
 	add	hl,de

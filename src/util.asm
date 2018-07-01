@@ -47,9 +47,15 @@ util_string_inverted:
 ; bc = x
 ; a = y
 util_string_xy:
+	call	util_set_cursor
+	jp	lcd_string
+
+; bc = x
+; a = y
+util_set_cursor:
 	ld	(lcd_x),bc
 	ld	(lcd_y),a
-	jp	lcd_string
+	ret
 
 util_save_cursor:
 	pop	hl

@@ -18,6 +18,7 @@ find_programs_or_apps:
 	inc	hl
 	inc	hl
 	inc	hl
+	ld	(hl),byte_dir
 	inc	hl
 	ld	(item_locations_ptr),hl
 	ld	bc,1
