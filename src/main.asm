@@ -11,8 +11,6 @@ main_start:
 	call	gui_main
 	call	util_setup_apd
 main_loop:
-	call	util_show_time
-	call	lcd_blit
 	call	util_get_key
 	cp	a,skClear
 	jp	z,exit_full

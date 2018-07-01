@@ -12,10 +12,7 @@ relocate exit_cleanup, mpLcdCrsrImage
 	call	_WriteFlashByte				; clear old backup
 	flash_lock_m
 .dont_clear_backup:
-	call	lcd_fill
-	call	lcd_blit
-	ld	a,$2d
-	ld	(mpLcdCtrl),a
+	call	lcd_normal
 	call	_DrawStatusBar
 	call	_ClrParserHook
 	call	_ClrAppChangeHook

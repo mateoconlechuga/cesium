@@ -74,7 +74,16 @@ gui_draw_highlightable_option:
 	ld	(color_secondary),a
 	ret
 
+; z flag not set = fill
 gui_draw_option:
+	push	af
+	ld	a,(color_primary)
+	ld	(util_restore_primary.color),a
+	jr	nz,.no_fix
+	ld	a,color_white
+	call	util_set_primary
+.no_fix:
+	pop	af
 	push	af
 	push	hl
 	push	bc
@@ -102,8 +111,8 @@ gui_draw_option:
 	pop	af
 	ld	a,0
 .recompute := $-1
-	jp	nz,lcd_rectangle.computed
-	ret
+	call	lcd_rectangle.computed
+	jp	util_restore_primary
 
 gui_draw_color_tables:
 	draw_rectangle_outline 60, 71, 157, 168
@@ -209,4 +218,13 @@ color_ptr := $
 
 gui_clear_status_bar:
 	draw_rectangle 1, 225, 319, 239
+	ret
+
+gui_draw_item_options:
+	bit	prgm_archived,(iy + prgm_flag)
+	draw_option 300, 118, 308, 126
+	bit	prgm_locked,(iy + prgm_flag)
+	draw_option 300, 129, 308, 137
+	bit	prgm_hidden,(iy + prgm_flag)
+	draw_option 300, 140, 308, 148
 	ret

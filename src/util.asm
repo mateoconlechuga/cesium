@@ -25,6 +25,19 @@ util_show_time:
 	restore_cursor
 	ret
 
+util_set_primary:
+	ld	a,(color_primary)
+	ld	(util_restore_primary.color),a
+	ld	a,color_white
+	ld	(color_primary),a
+	ret
+
+util_restore_primary:
+	ld	a,0
+.color := $-1
+	ld	(color_primary),a
+	ret
+
 util_show_free_mem:
 	call	gui_clear_status_bar
 	set_inverted_text
@@ -93,6 +106,8 @@ util_get_battery:
 	ret
 
 util_get_key:
+	call	util_show_time
+	call	lcd_blit
 	call	_GetCSC
 	or	a,a
 	ret	nz
@@ -115,10 +130,43 @@ apd_timer := $-3
 	ret	nz
 	jp	exit_full
 
+util_to_one_hot:
+	ld	b,a
+	xor	a,a
+	scf
+.loop:
+	rla
+	djnz	.loop
+	ret
+
 util_init_selection_screen:
 	xor	a,a
 	sbc	hl,hl
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
 	ld	(scroll_amount),hl
+	ret
+
+util_move_prgm_name_to_op1:
+	ld	hl,(prgm_ptr)
+util_prgm_ptr_to_op1:
+	ld	hl,(hl)
+	push	hl				; vat pointer
+	ld	de,6
+	add	hl,de
+	ld	a,(hl)				; get the type byte
+	pop	hl
+	ld	de,OP1				; store to op1
+	ld	(de),a
+	inc	de
+	ld	b,(hl)
+	dec	hl
+.copy:
+	ld	a,(hl)
+	ld	(de),a
+	inc	de
+	dec	hl
+	djnz	.copy
+	xor	a,a
+	ld	(de),a				; terminate the string
 	ret

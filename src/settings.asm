@@ -70,9 +70,7 @@ settings_show:
 	call	setting_draw_options
 
 settings_get:
-	call	util_show_time
-	call	lcd_blit
-	call	_GetCSC
+	call	util_get_key
 	ld	hl,settings_show.draw
 	push	hl
 	ld	ix,current_option_selection
@@ -129,11 +127,7 @@ setting_toggle:
 	ld	a,(ix)
 	or	a,a
 	jr	z,setting_change_colors	; convert the option to one-hot
-	ld	b,a
-	xor	a, a
-.one_hot:
-	rla
-	djnz	.one_hot
+	call	util_to_one_hot
 	xor	a,(iy + settings_flag)
 	ld	(iy + settings_flag),a
 	ret
@@ -150,9 +144,7 @@ setting_open_colors:
 	call	setting_draw_options
 	call	gui_draw_color_tables
 .loop:
-	call	util_show_time
-	call	lcd_blit
-	call	_GetCSC
+	call	util_get_key
 	ld	hl,setting_open_colors
 	push	hl
 	cp	a,skLeft
@@ -166,10 +158,17 @@ setting_open_colors:
 	cp	a,skMode
 	jr	z,setting_color_swap
 	pop	hl
+	ld	hl,settings_show.draw
+	push	hl
+	cp	a,sk2nd
+	ret	z
+	cp	a,skEnter
+	ret	z
 	cp	a,skClear
-	jp	z,settings_show.draw
+	ret	z
 	cp	a,skDel
-	jp	z,settings_show.draw
+	ret	z
+	pop	hl
 	jr	.loop
 
 setting_color_left:

@@ -16,6 +16,7 @@ include 'installer.asm'
 relocate cesium_code, cesium_execution_base
 	include 'main.asm'
 	include 'exit.asm'
+	include 'edit.asm'
 	include 'search.asm'
 	include 'view-programs.asm'
 	include 'view-apps.asm'

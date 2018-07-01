@@ -202,7 +202,7 @@ setting_special_directories := 4
 setting_enable_shortcuts := 5
 
 settings_appvar_size := 30
-setting_config_default := 0
+setting_config_default := (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts)
 
 ; sorting flags
 
@@ -220,22 +220,21 @@ cesium_execute_alt := 5
 
 ; program flags
 
+item_flag := $2f
+drawing_selected := 0
+scroll_down_available := 1
+scroll_up_available := 2
+item_renaming := 3
+
 prgm_flag := $30
 prgm_archived := 0
 prgm_locked := 1
 prgm_hidden := 2
-prgm_basic := 3
 
 temp_prgm_flag := $31
 temp_prgm_archived := 0
 temp_prgm_locked := 1
 temp_prgm_hidden := 2
-temp_prgm_basic := 3
-
-item_flag := $30
-drawing_selected := 4
-scroll_down_available := 5
-scroll_up_available := 6
 
 ; location of items
 
@@ -244,7 +243,10 @@ clock_y := 7
 
 ; location of variables
 
-settings_data := appdata
+edit_status := appdata
+edit_mode := edit_status + 1
+
+settings_data := edit_mode + 1
 setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
 setting_config := setting_color_secondary + 1
@@ -259,8 +261,10 @@ prgm_data_ptr := prgm_ptr + 3
 prgm_size := prgm_data_ptr + 3
 prgm_real_size := prgm_size + 3
 prgm_type := prgm_real_size + 3
+item_ptr := prgm_type + 1;
 
 sprite_temp := mpLcdCrsrImage
+string_temp := mpLcdCrsrImage
 
 settings_size := setting_password + password_max_length + 1 - settings_data
 

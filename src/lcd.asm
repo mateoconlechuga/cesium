@@ -26,6 +26,12 @@ lcd_init:
 	jr	nz,.loop
 	ret
 
+lcd_normal:
+	call	lcd_clear
+	ld	a,$2d
+	ld	(mpLcdCtrl),a
+	ret
+
 lcd_clear:
 	ld	hl,vRam
 	ld	bc,((lcdWidth * lcdHeight) * 2) - 1
@@ -316,23 +322,43 @@ lcd_text_bg := $+2
 	pop	hl
 	ret
 
+; a = amount of characters to display
 lcd_num_7:
-	ld	bc,-1000000
-	call	lcd_num.aqu
+	ld	a,1
+	jr	lcd_num
 lcd_num_6:
-	ld	bc,-100000
-	call	lcd_num.aqu
+	ld	a,2
+	jr	lcd_num
 lcd_num_5:
-	ld	bc,-10000
-	call	lcd_num.aqu
+	ld	a,3
+	jr	lcd_num
 lcd_num_4:
-	ld	bc,-1000
-	call	lcd_num.aqu
-	ld	bc,-100
-	call	lcd_num.aqu
-	ld	c,-10
-	call	lcd_num.aqu
+	ld	a,4
+	jr	lcd_num
 lcd_num:
+	dec	a
+	push	af
+	ld	de,string_temp
+	push	de
+	call	lcd_num_conv
+	pop	hl
+	pop	af
+	call	_AddHLAndA
+	jp	lcd_string
+
+lcd_num_conv:
+	ld	bc,-1000000
+	call	.aqu
+	ld	bc,-100000
+	call	.aqu
+	ld	bc,-10000
+	call	.aqu
+	ld	bc,-1000
+	call	.aqu
+	ld	bc,-100
+	call	.aqu
+	ld	c,-10
+	call	.aqu
 	ld	c,b
 .aqu:
 	ld	a,'0' - 1
@@ -341,4 +367,6 @@ lcd_num:
 	add	hl,bc
 	jr	c,.under
 	sbc	hl,bc
-	jp	lcd_char
+	ld	(de),a
+	inc	de
+	ret

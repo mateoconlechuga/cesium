@@ -306,7 +306,7 @@ tmp_y := $-1
 	ld	b,a
 	ld	hl,sprite_archived
 	bit	temp_prgm_archived,(iy + temp_prgm_flag)
-	call	z,lcd_sprite
+	call	nz,lcd_sprite
 	bit	drawing_selected,(iy + item_flag)
 	pop	hl					; hl -> program icon
 	jp	z,.not_selected
@@ -321,12 +321,7 @@ tmp_y := $-1
 	print string_locked, 199, 129
 	print string_hidden, 199, 140
 
-	bit	prgm_archived,(iy + prgm_flag)
-	draw_option 300, 118, 308, 126
-	bit	prgm_locked,(iy + prgm_flag)
-	draw_option 300, 129, 308, 137
-	bit	prgm_hidden,(iy + prgm_flag)
-	draw_option 300, 140, 308, 148
+	call	gui_draw_item_options
 
 	print string_size, 199, 151
 	ld	hl,(prgm_size)
