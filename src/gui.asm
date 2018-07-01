@@ -159,8 +159,11 @@ gui_draw_color_tables:
 	pop	bc
 	ld	de,(72 shl 8) or 164
 	djnz	.double
+	call	gui_color_box.compute
+	jq	gui_color_box.draw
 
-gui_draw_color_box:
+gui_color_box:
+.compute:
 	ld	bc,6					; width
 	ld	a,(color_selection_y)
 	ld	e,a
@@ -178,7 +181,6 @@ color_table_active := $-3
 	add	hl,bc					; x
 	ld	c,6
 	ld	d,c
-.store_color:
 	push	hl
 	push	de
 	push	bc
@@ -186,12 +188,13 @@ color_table_active := $-3
 	ld	de,lcdWidth * 2 + 3
 	add	hl,de
 	ld	a,(hl)					; get the new color
-	ld	(hl),0
 	ld	hl,(color_ptr)
 	ld	(hl),a
 	pop	bc
 	pop	de
 	pop	hl
+	ret
+.draw:
 	ld	a,(color_secondary)
 	push	af
 	ld	a,0

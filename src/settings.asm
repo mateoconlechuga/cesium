@@ -139,12 +139,14 @@ setting_toggle:
 	ret
 
 setting_change_colors:
-	ld	bc,61
-	ld	(color_table_active),bc
+	ld	a,61
 	ld	hl,color_primary
+	ld	(color_table_active),a
 	ld	(color_ptr),hl
 	call	setting_color_get_xy
+	call	gui_draw_color_tables		; temporarily draw tables to compute color
 setting_open_colors:
+	call	gui_color_box.compute
 	call	setting_draw_options
 	call	gui_draw_color_tables
 .loop:
@@ -204,22 +206,6 @@ color_selection_y := $-1
 	ld	(color_selection_y),a
 	ret
 
-setting_color_get_xy:
-	ld	hl,(color_ptr)
-	ld	a,(hl)
-setting_color_index_to_xy:
-	ld	b,a
-	srl	a
-	srl	a
-	srl	a
-	srl	a		; index / 16
-	and	a,$f		; got y
-	ld	(color_selection_y),a
-	ld	a,b
-	and	a,$f
-	ld	(color_selection_x),a
-	ret
-
 setting_color_swap:
 	ld	hl,color_primary
 	ld	b,61
@@ -234,7 +220,22 @@ setting_color_swap:
 .done:
 	ld	(color_table_active),a
 	ld	(color_ptr),hl
-	call	setting_color_get_xy
+	;jq	setting_color_get_xy
+
+setting_color_get_xy:
+	ld	hl,(color_ptr)
+	ld	a,(hl)
+setting_color_index_to_xy:
+	ld	b,a
+	srl	a
+	srl	a
+	srl	a
+	srl	a		; index / 16
+	and	a,$f		; got y
+	ld	(color_selection_y),a
+	ld	a,b
+	and	a,$f
+	ld	(color_selection_x),a
 	ret
 
 setting_draw_options:
