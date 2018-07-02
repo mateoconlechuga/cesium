@@ -8,27 +8,6 @@ include 'ti84pceg.inc'
 
 ; useful macros
 
-macro relocate? name, address*
-	name.source? := $
-	name.destination? := address
-	org name.destination?
-	macro name.copy?
-		ld	hl, name.source?
-		ld	de, name.destination?
-		ld	bc, name.length?
-		ldir
-	end macro
-	macro name.run
-		name.copy
-		jp	name.destination?
-		end macro
-	macro end?.relocate?
-		name.length? := $ - name.destination?
-		org name.source? + name.length?
-		purge end?.relocate?
-	end macro
-end macro
-
 macro set_cursor? x, y
 	ld	bc,x
 	ld	a,y

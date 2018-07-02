@@ -191,11 +191,39 @@ macro app_private
 .continue:
 	end macro
 
+	macro relocate? name, address*
+		name.source? := $
+		name.destination? := address
+		org name.destination?
+		macro name.copy?
+			ld	hl, name.source?
+			ld	de, name.destination?
+			ld	bc, name.length?
+			ldir
+		end macro
+		macro name.run
+			name.copy
+			jp	name.destination?
+		end macro
+		app.relocation equ name
+		macro end?.relocate?
+			name.length? := $ - name.destination?
+			org name.source? + name.length?
+			restore app.relocation
+			purge end?.relocate?
+		end macro
+	end macro
+
 	macro @ez80.word @value*
 		local value, address
 		value = @value
-		address = $
 		if value relativeto app.base
+			address = $
+			match relocation, app.relocation
+				if defined address - relocation.destination? + relocation.source?
+					address = address - relocation.destination? + relocation.source?
+				end if
+			end match
 			app.relocations equ address-app.base, value-app.base
 			@ez80.word $ffffff
 		else
