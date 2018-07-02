@@ -216,6 +216,10 @@ util_backup_prgm_name:
 	ld	de,edit_program_name
 	jp	_Mov9b
 
+util_set_more_items_flag:
+	set	scroll_down_available,(iy + item_flag)
+	ret
+
 util_delete_temp_program_get_name:
 	ld	hl,util_temp_program_object
 	call	_Mov9ToOP1

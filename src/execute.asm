@@ -16,13 +16,13 @@ execute_program_check:
 	jr	nz,execute_program			; check if on directory
 	ld	a,screen_apps
 	ld	(current_screen),a
-	jp	main_start
+	jp	main_find
 execute_app_check:
 	compare_hl_zero
 	jr	nz,execute_app				; check if on directory
 	ld	a,screen_programs
 	ld	(current_screen),a
-	jp	main_start				; abort!
+	jp	main_find				; abort!
 
 execute_app:
 	jp	exit_full

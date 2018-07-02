@@ -1,17 +1,7 @@
 ; process for displaying the list of programs
 
 view_programs:
-	bit	setting_list_count,(iy + settings_flag)
-	jr	z,.no_count_display
-	ld	hl,(number_of_items)
-	bit	setting_special_directories,(iy + settings_flag)
-	jr	z,.no_extra_directories
-	dec	hl
-.no_extra_directories:
-	set_cursor 195, 7
-	set_inverted_text
-	call	lcd_num_4
-.no_count_display:
+	call	gui_show_item_count
 	set_normal_text
 	set_cursor 24, 30
 	xor	a,a
@@ -56,7 +46,7 @@ current_prgm_drawing := $-1
 	ld	(current_prgm_drawing),a
 	ld	a,(lcd_y)
 	cp	a,220
-	jp	nc,.set_more_flag			; more to scroll, so draw an arrow or something later
+	jp	nc,util_set_more_items_flag			; more to scroll, so draw an arrow or something later
 	push	bc					; bc = number of programs left to draw
 	push	hl					; hl -> lookup table
 	ld	hl,(hl)					; load name pointer
@@ -183,10 +173,6 @@ color_save := $-1
 	cp	a,file_basic
 	jr	z,file_editable
 	jp	exit_full		; abort
-
-.set_more_flag:
-	set	scroll_down_available,(iy + item_flag)
-	ret
 
 file_directory:
 	push	hl
@@ -361,11 +347,8 @@ end if
 	ld	(lcd_x),de
 	inc	hl
 	call	lcd_string
-	print	string_settings, 199, 206
-	ld	de,270
-	ld	(lcd_x),de
-	inc	hl
-	call	lcd_string
+
+	call	gui_draw_static_options
 
 	push	de
 .not_selected:

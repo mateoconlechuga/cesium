@@ -1,13 +1,17 @@
 ; routines for building lists of available programs and applications
 
-find_programs_or_apps:
+find_lists:
 	call	.reset_lists
 	call	.check_apps
 	ld	a,(current_screen)
 	cp	a,screen_apps
 	jp	z,.find_apps
 	call	sort_vat			; sort the vat before trying anything
-	;jp	.find_programs
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jp	z,.find_programs
+
+.find_appvars:
 
 .find_programs:
 	bit	setting_special_directories,(iy + settings_flag)
@@ -138,9 +142,17 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	inc	hl
 	inc	hl
 	inc	hl
+	inc	hl
+	ld	de,find_appvars_directory_name
+	ld	(hl),de
+	inc	hl
+	inc	hl
+	inc	hl
+	inc	hl
 	ld	(item_locations_ptr),hl
 	ld	hl,number_of_items
 	ld	de,(hl)
+	inc	de
 	inc	de
 	ld	(hl),de
 	call	_ZeroOP3
@@ -163,6 +175,7 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	ex	de,hl
 	ld	hl,(item_locations_ptr)
 	ld	(hl),de
+	inc	hl
 	inc	hl
 	inc	hl
 	inc	hl
@@ -213,8 +226,13 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	db	"SPPA"
 find_application_directory_name:
 	db	4
-find_directory_ptr:
-	dl	find_directory_ptr bswap 3
+.ptr:
+	dl	.ptr bswap 3
 	db	0,0,5
 find_program_directory_name:
-	db	0,0,0,"Programs",0
+	db	0,0,0,"All Programs",0
+.ptr:
+	dl	.ptr bswap 3
+	db	0,0,5
+find_appvars_directory_name:
+	db	0,0,0,"AppVars",0

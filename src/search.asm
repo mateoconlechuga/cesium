@@ -12,13 +12,24 @@ search_alpha_item:
 	ld	hl,item_location_base
 	ld	bc,(number_of_items)		; loop through the prgms
 .find:
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jr	z,.find_program_list
+.find_app_list:
+	ld	de,(hl)
+	inc	de
+	inc	de
+	inc	de
+	ld	a,(de)
+	jr	.compare
+.find_program_list:
 	ld	de,(hl)				; pointer to program name size
 	dec	de
 	ld	a,(de)
 	cp	a,64
-	jr	nc,.hidden
+	jr	nc,.compare
 	add	a,64
-.hidden:
+.compare:
 	cp	a,0
 .search_character := $-1
 	jr	nc,search_complete

@@ -202,7 +202,7 @@ current_input_mode := $-1
 	call	_ChkFindSym
 	call	_DelVarArc
 .goto_main:
-	call	find_programs_or_apps
+	call	find_lists
 	ld	hl,name_buffer + 1
 	call	search_name
 	jp	main_start

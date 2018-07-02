@@ -6,7 +6,7 @@ main_cesium:
 main_settings:
 	call	settings_load
 main_find:
-	call	find_programs_or_apps
+	call	find_lists
 main_start:
 	call	gui_main
 	call	util_setup_apd

@@ -205,6 +205,7 @@ drawing_selected := 0
 scroll_down_available := 1
 scroll_up_available := 2
 item_renaming := 3
+item_is_directory := 4
 
 prgm_flag := $30
 prgm_archived := 0
@@ -262,9 +263,8 @@ color_tertiary := setting_color_tertiary
 
 screen_programs := 0
 screen_apps := 1
-screen_usb := 2
-screen_settings := 3
-screen_password := 4
+screen_appvars := 2
+screen_usb := 3
 
 ; these should go in ti84pce.inc
 

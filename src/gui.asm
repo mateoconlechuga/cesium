@@ -55,6 +55,13 @@ gui_show_description:
 	pop	bc
 	ret
 
+gui_draw_static_options:
+	print	string_settings, 199, 206
+	ld	de,270
+	ld	(lcd_x),de
+	inc	hl
+	jp	lcd_string
+
 ; z flag set = option is on
 ; a = index
 gui_draw_highlightable_option:
@@ -234,6 +241,22 @@ gui_draw_item_options:
 	bit	prgm_hidden,(iy + prgm_flag)
 	draw_option 300, 140, 308, 148
 	ret
+
+gui_show_item_count:
+	bit	setting_list_count,(iy + settings_flag)
+	ret	z
+	ld	hl,(number_of_items)
+	bit	setting_special_directories,(iy + settings_flag)
+	jr	z,.no_extra_directories
+	dec	hl
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jr	z,.no_extra_directories
+	dec	hl
+.no_extra_directories:
+	set_cursor 195, 7
+	set_inverted_text
+	jp	lcd_num_4
 
 gui_backup_ram_to_flash:
 	ld	a,color_white
