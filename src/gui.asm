@@ -120,12 +120,12 @@ gui_draw_color_table:
 	ld	a,(color_table_active)
 	ld	hl,string_primary_color
 	or	a,a
-	jr	z,.got_string
+	jr	z,.string
 	ld	hl,string_secondary_color
 	dec	a
-	jr	z,.got_string
+	jr	z,.string
 	ld	hl,string_tertiary_color
-	.got_string:
+.string:
 	set_inverted_text
 	set_cursor 4, 228
 	call	lcd_string

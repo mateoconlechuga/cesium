@@ -13,6 +13,12 @@ include 'installer.asm'
 	app_start cesium_name, cesium_copyright, cesium_version
 	cesium_code.run
 
+relocate bad_fasmg, $d00000
+	call	bad_label
+end relocate
+
+bad_label:
+
 relocate cesium_code, cesium_execution_base
 	include 'main.asm'
 	include 'exit.asm'
