@@ -73,13 +73,13 @@ search_name:
 	inc	ix
 	ld	a,(de)
 	cp	a,(ix)
-	jr	nz,.loop
+	jr	nz,.next
 	djnz	.compare
 	pop	ix
 	pop	bc
 	jr	search_complete
 
-.loop:
+.next:
 	pop	ix
 	pop	bc
 	push	hl
@@ -93,4 +93,5 @@ search_name:
 	ld	a,b
 	or	a,c
 	jr	nz,.find
+	call	find_lists.reset_selection
 	jr	search_complete

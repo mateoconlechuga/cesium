@@ -111,23 +111,33 @@ setting_set_and_save:
 	ld	a,screen_programs
 	ld	(current_screen),a
 settings_return:
+	ld	a,return_settings
+	ld	(return_info),a
 	jp	main_settings
 
 setting_down:
 	ld	a,(ix)
-	cp	a,7
-	ret	z
+	cp	a,8
+	jr	z,.top
 	inc	a
+.done:
 	ld	(ix),a
 	ret
+.top:
+	xor	a,a
+	jr	.done
 
 setting_up:
 	ld	a,(ix)
 	or	a,a
-	ret	z
+	jr	z,.bottom
 	dec	a
+.done:
 	ld	(ix),a
 	ret
+.bottom:
+	ld	a,8
+	jr	.done
 
 setting_left:
 	call	setting_brightness_check
@@ -296,16 +306,9 @@ setting_draw_options:
 	print	string_setting_ram_backup, 25, 131
 	print	string_setting_special_directories, 25, 151
 	print	string_setting_enable_shortcuts, 25, 171
-	print	string_settings_brightness, 25, 191
-	push	hl
-	xor	a,a
-	sbc	hl,hl
-	ld	a,(mpBlLevel)
-	ld	l,a
-	call	lcd_num_3
-	pop	hl
-	inc	hl
-	call	lcd_string
+	print	string_settings_delete_confirm, 25, 191
+	print	string_settings_brightness, 25, 211
+	call	util_print_brightness
 
 	xor	a,a
 	inc	a				; color is always set
@@ -322,9 +325,11 @@ setting_draw_options:
 	draw_highlightable_option 10, 150, 5
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	draw_highlightable_option 10, 170, 6
+	bit	setting_delete_confirm,(iy + settings_flag)
+	draw_highlightable_option 10, 190, 7
 	xor	a,a
 	inc	a
-	draw_highlightable_option 10, 190, 7	; brightness is always set
+	draw_highlightable_option 10, 210, 8	; brightness is always set
 	ret
 
 settings_appvar:

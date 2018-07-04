@@ -11,7 +11,16 @@ find_files:
 	srl	h
 	rr	l
 	ld	(number_of_items),hl		; divide by 4 to compute number of stored items
-	ret
+	ld	hl,return_info
+	ld	a,(hl)
+	ld	(hl),0
+	cp	a,return_prgm
+	jr	z,.restore_selection
+	cp	a,return_goto
+	ret	nz
+.restore_selection:
+	ld	hl,backup_prgm_name + 1
+	jp	search_name
 
 find_lists:
 	call	.reset
@@ -29,13 +38,22 @@ find_lists:
 .reset:
 	ld	hl,item_location_base
 	ld	(item_locations_ptr),hl
+	xor	a,a
+	sbc	hl,hl
+	ld	(number_of_items),hl
 .reset_selection:
+	ld	a,(return_info)
+	cp	a,return_settings
+	jr	z,.reset_offset
 	xor	a,a
 	sbc	hl,hl
 	ld	(current_selection),a
 	ld	(scroll_amount),hl
-	ld	(number_of_items),hl
 	ld	(current_selection_absolute),hl
+	ret
+.reset_offset:
+	xor	a,a
+	ld	(return_info),a
 	ret
 
 find_appvars:

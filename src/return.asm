@@ -10,10 +10,14 @@ return_asm_error:
 	ld	hl,1
 	ld	(curRow),hl
 	ld	hl,data_string_quit1
-	set	textInverse,(iy+textFlags)
+	set	textInverse,(iy + textFlags)
 	call	_PutS
-	res	textInverse,(iy+textFlags)
+	res	textInverse,(iy + textFlags)
 	call	_PutS
+	ld	hl,backup_prgm_name
+	ld	a,(hl)					; check if correct program
+	cp	a,protProgObj
+	jp	z,.only_allow_quit
 	xor	a,a
 	ld	(curCol),a
 	ld	a,2
@@ -31,7 +35,7 @@ return_asm_error:
 	cp	a,sk2
 	jr	z,.goto
 	cp	a,sk1
-	jr	z,return.quit
+	jp	z,return.quit
 	cp	a,skEnter
 	jr	z,.get_option
 	jr	.input
@@ -67,9 +71,9 @@ return_asm_error:
 	ld	bc,(40 shl 8) or 96
 	call	_FillRect
 	pop	hl
-	set	textInverse,(iy+textFlags)
+	set	textInverse,(iy + textFlags)
 	call	_PutS
-	res	textInverse,(iy+textFlags)
+	res	textInverse,(iy + textFlags)
 	pop	de
 	pop	bc
 	ld.sis	(curRow and $ffff),de
@@ -84,6 +88,13 @@ return_asm_error:
 .goto:
 	ld	a,return_goto
 	jr	return.skip
+.only_allow_quit:
+	call	_GetCSC
+	cp	a,sk1
+	jr	z,return.quit
+	cp	a,skEnter
+	jr	z,return.quit
+	jr	.only_allow_quit
 return_basic:
 return_asm:					; handler for assembly / basic return
 return:
@@ -115,10 +126,10 @@ return:
 	call	_ClrHomescreenHook
 	call	_ForceFullScreen
 	res	appWantHome,(iy + sysHookFlg)
-	ld	a,(hook_backup_location)
+	ld	a,(backup_home_hook_location)
 	or	a,a
 	jr	z,.no_hook_restore
-	ld	hl,(hook_backup_location)
+	ld	hl,(backup_home_hook_location)
 	call	_SetHomescreenHook
 	set	appWantHome,(iy + sysHookFlg)
 

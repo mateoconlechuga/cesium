@@ -37,6 +37,7 @@ execute_app:
 	call	lcd_normal
 	call	_ClrParserHook
 	call	_ClrAppChangeHook
+	call	util_setup_shortcuts
 	res	useTokensInString,(iy + clockFlags)
 	res	onInterrupt,(iy + onFlags)
 	set	graphDraw,(iy + graphFlags)
@@ -92,8 +93,8 @@ execute_program:
 	call	util_move_prgm_name_to_op1
 	call	util_backup_prgm_name
 	bit	prgm_is_basic,(iy + prgm_flag)
-	jp	nz,execute_basic_program	; execute basic program
-	call	util_move_prgm_to_usermem	; execute assembly program
+	jp	nz,execute_basic_program		; execute basic program
+	call	util_move_prgm_to_usermem		; execute assembly program
 	call	util_install_error_handler
 execute_assembly_program:
 	ld	hl,return_asm
@@ -104,30 +105,30 @@ execute_basic_program:
 	ld	hl,(prgm_data_ptr)
 	ld	a,(hl)
 	cp	a,tExtTok
-	jr	nz,.not_unsquished		; check if actually an unsquished assembly program
+	jr	nz,.not_unsquished			; check if actually an unsquished assembly program
 	inc	hl
 	ld	a,(hl)
 	cp	a,tAsm84CePrgm
-	jr	nz,.not_unsquished
-	call	squish_program			; we've already installed an error handler
+	jp	z,squish_program			; we've already installed an error handler
 	jr	execute_assembly_program
 .not_unsquished:
 	call	_RunIndicOn
-	call	_ApdSetup
-	call	_DisableAPD
 	bit	setting_basic_indicator,(iy + settings_flag)
 	call	nz,_RunIndicOff
+	call	_APDSetup
+	call	_EnableAPD
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.in_ram
 	call	util_delete_temp_program_get_name
 	ld	hl,(prgm_real_size)
 	push	hl
-	call	_CreateProg			; create a temp program so we can execute
+	ld	a,tempProgObj
+	call	_CreateVar				; create a temp program so we can execute
 	inc	de
 	inc	de
 	pop	bc
 	call	_ChkBCIs0
-	jr	z,.in_rom			; there's nothing to copy
+	jr	z,.in_rom				; there's nothing to copy
 	ld	hl,(prgm_data_ptr)
 	ldi
 	jp	po,.in_rom
@@ -139,18 +140,18 @@ execute_basic_program:
 	ld	hl,string_error_stop
 	ld	bc,string_error_stop_end - string_error_stop
 	ldir
-	set	graphdraw,(iy+graphFlags)
+	set	graphdraw,(iy + graphFlags)
 	ld	hl,return_basic_error
 	call	_PushErrorHandler
-	res	apptextsave,(iy+appflags)	;text goes to textshadow
-	set	progExecuting,(iy+newdispf)
-	set	allowProgTokens,(iy+newDispF)
+	res	apptextsave,(iy + appflags)		; text goes to textshadow
+	set	progExecuting,(iy + newdispf)
+	set	allowProgTokens,(iy + newDispF)
 	res	7,(iy + $45)
-	set	cmdExec,(iy+cmdFlags) 		; set these flags to execute BASIC prgm
-	res	onInterrupt,(iy+onflags)
+	set	cmdExec,(iy + cmdFlags) 		; set these flags to execute basic program
+	res	onInterrupt,(iy + onflags)
 	ld	hl,return_basic
 	push	hl
 	sub	a,a
 	ld	(kbdGetKy),a
 	ei
-	jp	_ParseInp			; run program
+	jp	_ParseInp				; run program

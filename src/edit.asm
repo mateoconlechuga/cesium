@@ -1,40 +1,34 @@
 edit_basic_program_goto:
 	call	compute_error_offset
-	ld	a,$ff
+	ld	a,edit_goto
 edit_basic_program:
 	ld	(edit_mode),a
 	xor	a,a
 	ld	(edit_status),a
 	call	_ChkInRam
 	jr	z,.not_archived
-	ld	a,$ff
+	ld	a,edit_archived
 	ld	(edit_status),a
 	call	_Arc_Unarc
 .not_archived:
-	ld	hl,0
-app_change_hook_ptr =$-3
+	ld	hl,hook_app_change
 	call	_SetAppChangeHook
 	xor	a,a
 	ld	(menuCurrent),a
 	call	_CursorOff
 	call	_RunIndicOff
 	call	lcd_normal
-	call	_PushOP1
+	call	_PushOP1			; save return
 	ld	hl,OP1
-	ld	(hl),5
+	ld	(hl),progObj
 	inc	hl
 	ld	de,progToEdit
-	ld	bc,9
-	ldir
-	xor	a,a
-	ld	(de),a
+	call	_Mov9b
 	ld	hl,OP1
 	ld	de,basic_prog
-	ld	bc,9
-	ldir
-	xor	a,a
-	ld	(de),a
-	ld	a,kPrgmEd
+	call	_Mov9b
+	call	util_backup_prgm_name
+	ld	a,cxPrgmEdit
 	call	_NewContext
 	xor	a,a
 	ld	(winTop),a

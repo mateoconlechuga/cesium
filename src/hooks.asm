@@ -15,10 +15,14 @@ hook_parser:
 
 hook_app_change:
 	db	$83
+	;ld	c,a			; huh
 	ld	a,b
 	cp	a,cxPrgmEdit		; only allow when editing
 	ld	b,a
 	ret	nz
+	;ld	a,c
+	;cp	a,kEnter		; wut ti, this is how you run a program?
+	;ret	z
 
 	call	_CursorOff
 	call	_CloseEditEqu
@@ -29,23 +33,16 @@ hook_app_change:
 	or	a,a
 	call	nz,_Arc_Unarc
 .dont_archive:
-	ld	hl,data_string_cesium_name	; execute app
-	call	_os_FindAppStart
-	ld	bc,$100				; bypass header
-	add	hl,bc
-	push	hl
-	ld	bc,$12				; bypass bytes
-	add	hl,bc
-	ld	hl,(hl)
-	pop	bc
-	add	hl,bc
-	ld	a,byte_edit_return		; signifies we returned from editing
-	jp	(hl)
+	ld	a,return_prgm
+	ld	(return_info),a
+	jp	cesium_start
 
 hook_get_key:
 	db	$83
 	cp	a,$1b
-        ret	nz
+	ret	nz
+	ld	a,b
+	push	af
 	push	hl
 	ld	hl,$f0202c
 	ld	(hl),l
@@ -53,10 +50,14 @@ hook_get_key:
 	bit	0,(hl)
 	pop	hl
 	jr	nz,.check_for_shortcut_key
-	dec	a
-	inc	a
-	ret
+	pop	af
+        cp	a,sk2nd
+        ret	nz
+        ld	a,sk2nd - 1				; maybe some other day
+        inc	a
+        ret
 .check_for_shortcut_key:
+	pop	af
 	cp	a,skGraph
 	jp	z,hook_show_labels
 	cp	a,skPrgm
@@ -228,7 +229,7 @@ hook_home:
 	call	_ForceFullScreen
 	res	appWantHome,(iy + sysHookFlg)
 	pop	bc
-	ld	hl,hook_backup_location
+	ld	hl,backup_home_hook_location
 	ld	a,(hl)
 	or	a,a
 	ret	z
@@ -245,7 +246,7 @@ hook_home:
 	jr	z,.done
 	ld	hl,(homescreenHookPtr)
 .done:
-	ld	(hook_backup_location),hl
+	ld	(backup_home_hook_location),hl
 	ret
 
 .put_away:

@@ -9,6 +9,7 @@ relocate exit_cleanup, mpLcdCrsrImage
 	call	lcd_normal
 	call	_ClrParserHook
 	call	_ClrAppChangeHook
+	call	util_setup_shortcuts
 	call	_ClrScrn
 	call	_HomeUp
 	res	useTokensInString,(iy + clockFlags)

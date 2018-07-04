@@ -42,7 +42,7 @@ squish_program:
 .squish_me:
 	ld	a,b
 	or	a,c
-	ret	z
+	jp	z,execute_assembly_program
 	push	hl
 	ld	hl,(curPC)
 	inc	hl
@@ -68,11 +68,13 @@ squish_program:
 	jr	.squish_me
 
 .squishy_convert_byte:
+	push	bc
 	push	hl
 	ld	a,d
 	call	_SHLAcc
 	add	a,e
 	pop	hl
+	pop	bc
 	ret
 .squishy_check_byte:
 	cp	a,$30
@@ -81,7 +83,8 @@ squish_program:
 	jr	nc,.skip
 	sub	a,$30
 	ret
-.skip:	cp	a,$41
+.skip:
+	cp	a,$41
 	jp	c,_ErrSyntax
 	cp	a,$47
 	jp	nc,_ErrSyntax

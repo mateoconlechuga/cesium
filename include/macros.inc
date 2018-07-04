@@ -125,11 +125,11 @@ macro draw_option? Lx, Ty, Rx, By
 	call	gui_draw_option
 end macro
 
-macro draw_highlightable_option? Lx, Ty, num
+macro draw_highlightable_option? Lx, Ty, index
 	ld	bc,Lx + 8 - Lx + 1
 	ld	de,((Ty + 8 - Ty + 1) * 256) + Ty
 	ld	hl,Lx
-	ld	a,num
+	ld	a,index
 	call	gui_draw_highlightable_option
 end macro
 
@@ -194,9 +194,10 @@ setting_clock := 2
 setting_ram_backup := 3
 setting_special_directories := 4
 setting_enable_shortcuts := 5
+setting_delete_confirm := 6
 
 settings_appvar_size := 30
-setting_config_default := (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts)
+setting_config_default := (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm)
 
 ; sorting flags
 
@@ -242,15 +243,18 @@ clock_y := 7
 
 return_goto := $aa
 return_prgm := $bb
+return_settings := $cc
+edit_archived := $ff
+edit_goto := $ff
 
 ; location of variables
 
 edit_status := appdata
 edit_mode := edit_status + 1
 return_info := edit_mode			; yes this is right
-edit_program_name := edit_mode + 1
-hook_backup_location := edit_program_name + 11
-settings_data := hook_backup_location + 3
+backup_prgm_name := edit_mode + 1
+backup_home_hook_location := backup_prgm_name + 11
+settings_data := backup_home_hook_location + 3
 setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
 setting_color_tertiary := setting_color_secondary + 1

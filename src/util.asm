@@ -200,9 +200,8 @@ util_move_prgm_to_usermem:
 
 util_setup_shortcuts:
 	ld	hl,hook_get_key
-	ld	(getKeyHookPtr),hl
 	bit	setting_enable_shortcuts,(iy + settings_flag)
-	call	nz,_SetGetKeyHook
+	call	nz,_SetGetCSCHook
 	ret
 
 util_install_error_handler:
@@ -211,7 +210,7 @@ util_install_error_handler:
 
 util_backup_prgm_name:
 	ld	hl,OP1
-	ld	de,edit_program_name
+	ld	de,backup_prgm_name
 	jp	_Mov9b
 
 util_set_more_items_flag:
@@ -226,5 +225,32 @@ util_delete_temp_program_get_name:
 	call	nc,_DelVarArc			; delete the temp prgm if it exists
 	jp	_PopOP1
 
+util_get_archived_name:
+	ld	de,util_temp_program_object + 1
+	ld	b,8
+.compare:
+	ld	a,(de)
+	cp	a,(hl)
+	jr	nz,.no_match
+	inc	hl
+	inc	de
+	djnz	.compare
+	ld	hl,backup_prgm_name
+	ret
+.no_match:
+	ld	hl,basic_prog
+	ret
+
+util_print_brightness:
+	push	hl
+	xor	a,a
+	sbc	hl,hl
+	ld	a,(mpBlLevel)
+	ld	l,a
+	call	lcd_num_3
+	pop	hl
+	inc	hl
+	jp	lcd_string
+
 util_temp_program_object:
-	db	tempProgObj, 'ZAGTZ', 0
+	db	tempProgObj, 'ZAGTQZTB', 0
