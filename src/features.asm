@@ -154,7 +154,7 @@ current_input_mode := $-1
 	jp	nc,.get_name			; check if name already exists
 	ld	hl,name_buffer
 	call	_Mov9ToOP1
-	ld	a,(name_buffer)
+	ld	a,progObj
 	or	a,a
 	sbc	hl,hl
 	call	_CreateVar

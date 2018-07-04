@@ -7,10 +7,8 @@ return_asm_error:
 	ld	(mpLcdCtrl),a
 	call	_DrawStatusBar
 	call	_DispErrorScreen
-	xor	a,a
-	ld	(curCol),a
-	inc	a
-	ld	(curRow),a
+	ld	hl,1
+	ld	(curRow),hl
 	ld	hl,data_string_quit1
 	set	textInverse,(iy+textFlags)
 	call	_PutS
@@ -42,22 +40,17 @@ return_asm_error:
 	ld	de,2
 	ld	a,'1'
 	ld	b,'2'
+	jr	.highlight
+.highlight_2:
+	ld	hl,2
+	ld	de,1
+	ld	a,'2'
+	ld	b,'1'
 .highlight:
-	ld.sis	(curRow and $ffff),hl
 	push	bc
 	push	de
-	push	af
-	scf
-	sbc	hl,hl
-	ld	(fillRectColor),hl
-	inc	hl
-	ld	de,25
-	ld	bc,(40 shl 8) or 96
-	call	_FillRect
-	pop	af
-	pop	de
-	pop	bc
-	ld	hl,OP1
+	ld.sis	(curRow and $ffff),hl
+	ld	hl,OP6
 	ld	(hl),a
 	inc	hl
 	ld	(hl),':'
@@ -65,22 +58,25 @@ return_asm_error:
 	ld	(hl),0
 	dec	hl
 	dec	hl
-	push	de
+	push	hl
+	scf
+	sbc	hl,hl
+	ld	(fillRectColor),hl
+	inc	hl
+	ld	de,25
+	ld	bc,(40 shl 8) or 96
+	call	_FillRect
+	pop	hl
 	set	textInverse,(iy+textFlags)
 	call	_PutS
 	res	textInverse,(iy+textFlags)
 	pop	de
+	pop	bc
 	ld.sis	(curRow and $ffff),de
-	ld	hl,OP1
+	ld	hl,OP6
 	ld	(hl),b
 	call	_PutS
 	jr	.input
-.highlight_2:
-	ld	hl,2
-	ld	de,1
-	ld	a,'2'
-	ld	b,'1'
-	jr	.highlight
 .get_option:
 	ld	a,(curRow)
 	dec	a
@@ -133,10 +129,4 @@ return:
 	jr	nz,.debounce			; debounce keys
 	xor	a,a
 	ld	(kbdGetKy),a			; flush keys
-
-	ld	hl,data_string_cesium_name
-	ld	de,progToEdit
-	ld	bc,8
-	ldir
-	ld	a,cxExtApps
-	jp	_NewContext
+	jp	cesium_start

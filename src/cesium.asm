@@ -15,6 +15,7 @@ include 'installer.asm'
 
 ; this is the start of the actual application
 	app_start cesium_name, cesium_copyright
+cesium_start:
 	cesium_code.run
 
 relocate cesium_code, cesium_execution_base
