@@ -15,7 +15,7 @@ execute_item:
 
 execute_vat_check:
 	compare_hl_zero
-	jr	nz,execute_program			; check if on directory
+	jp	nz,execute_program			; check if on directory
 	ld	a,screen_apps
 	ld	(current_screen),a
 	jp	main_find
@@ -32,7 +32,49 @@ execute_app_check:
 	jp	main_find				; abort!
 
 execute_app:
-	jp	exit_full
+	bit	setting_ram_backup,(iy + settings_flag)
+	call	nz,flash_clear_backup
+	call	lcd_normal
+	call	_ClrParserHook
+	call	_ClrAppChangeHook
+	res	useTokensInString,(iy + clockFlags)
+	res	onInterrupt,(iy + onFlags)
+	set	graphDraw,(iy + graphFlags)
+	call	_ResetStacks
+	call	_ReloadAppEntryVecs
+	call	_AppSetup
+	set	appRunning,(iy+APIFlg)			; turn on apps
+	set	6,(iy+$28)
+	res	0,(iy+$2C)				; set some app flags
+	set	appAllowContext,(iy+APIFlg)		; turn on apps
+	ld	hl,$d1787c				; copy to ram data location
+	ld	bc,$fff
+	call	_MemClear				; zero out the ram data section
+	ld	hl,(item_ptr)				; hl -> start of app
+	push	hl					; de -> start of code for app
+	ex	de,hl
+	ld	hl,$18					; find the start of the data to copy to ram
+	add	hl,de
+	ld	hl,(hl)
+	compare_hl_zero					; initialize the bss if it exists
+	jr	z,.no_bss
+	push	hl
+	pop	bc
+	ld	hl,$15
+	add	hl,de
+	ld	hl,(hl)
+	add	hl,de
+	ld	de,$d1787c				; copy it in
+	ldir
+.no_bss:
+	pop	hl
+	push	hl
+	pop	de
+	ld	bc,$1b					; offset
+	add	hl,bc
+	ld	hl,(hl)
+	add	hl,de
+	jp	(hl)
 
 execute_program:
 	bit	cesium_execute_alt,(iy + cesium_flag)
@@ -40,10 +82,10 @@ execute_program:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,gui_backup_ram_to_flash
 .skip_backup:
-	;call	hook_home.save
-	;ld	hl,hook_home
-	;call	_SetHomescreenHook
-	;call	hook_home.establish
+	call	hook_home.save
+	ld	hl,hook_home
+	call	_SetHomescreenHook
+	call	hook_home.establish
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	call	nz,_ClrGetKeyHook
 	call	lcd_normal
@@ -54,8 +96,7 @@ execute_program:
 	call	util_move_prgm_to_usermem	; execute assembly program
 	call	util_install_error_handler
 execute_assembly_program:
-	ld	hl,0
-reloc_asm_return_location := $-3
+	ld	hl,return_asm
 	push	hl
 	jp	userMem
 
@@ -99,8 +140,7 @@ execute_basic_program:
 	ld	bc,string_error_stop_end - string_error_stop
 	ldir
 	set	graphdraw,(iy+graphFlags)
-	ld	hl,0
-reloc_basic_error_handler := $-3
+	ld	hl,return_basic_error
 	call	_PushErrorHandler
 	res	apptextsave,(iy+appflags)	;text goes to textshadow
 	set	progExecuting,(iy+newdispf)
@@ -108,8 +148,7 @@ reloc_basic_error_handler := $-3
 	res	7,(iy + $45)
 	set	cmdExec,(iy+cmdFlags) 		; set these flags to execute BASIC prgm
 	res	onInterrupt,(iy+onflags)
-	ld	hl,0
-reloc_basic_return_handler := $-3
+	ld	hl,return_basic
 	push	hl
 	sub	a,a
 	ld	(kbdGetKy),a

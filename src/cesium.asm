@@ -41,5 +41,6 @@ relocate cesium_code, cesium_execution_base
 end relocate
 
 ; we want to keep these things in flash
+include 'return.asm'
 include 'hooks.asm'
 include 'data.asm'

@@ -90,4 +90,39 @@ main_init:
 	ld	a,screen_programs
 	ld	(current_screen),a			; start on the programs screen
 
-	jp	util_get_battery			; get the battery level
+	ld	hl,util_get_battery
+	push	hl					; return here
+
+	ld	a,(return_info)				; let's check if returned from execution
+	cp	a,return_prgm
+	jr	nz,.dont_backup_selection
+
+
+	ret
+.dont_backup_selection:
+	cp	a,return_goto
+	ret	nz
+	ld	hl,basic_prog
+	ld	a,(hl)				; check if correct program
+	cp	a,protProgObj
+	ret	z
+	pop	bc				; pop return location
+	inc	hl
+	ld	de,util_temp_program_object + 1
+	ld	b,5
+.compare:
+	ld	a,(de)
+	cp	a,(hl)
+	jr	nz,.no_match
+	inc	hl
+	inc	de
+	djnz	.compare
+	ld	hl,edit_program_name
+	jr	.match
+.no_match:
+	ld	hl,basic_prog
+.match:
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	jp	nc,edit_basic_program_goto
+	jp	util_get_battery

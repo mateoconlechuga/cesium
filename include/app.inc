@@ -207,6 +207,10 @@ macro app_private
 			name.copy
 			jp	name.destination?
 		end macro
+		macro name.call
+			name.copy
+			call	name.destination?
+		end macro
 		app.relocation equ name
 		macro end?.relocate?
 			name.length? := $ - name.destination?

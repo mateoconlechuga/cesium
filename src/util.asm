@@ -198,9 +198,15 @@ util_move_prgm_to_usermem:
 	ldir					; copy the program to userMem
 	ret					; return
 
+util_setup_shortcuts:
+	ld	hl,hook_get_key
+	ld	(getKeyHookPtr),hl
+	bit	setting_enable_shortcuts,(iy + settings_flag)
+	call	nz,_SetGetKeyHook
+	ret
+
 util_install_error_handler:
-	ld	hl,0
-reloc_asm_error_handler := $-3
+	ld	hl,return_asm_error
 	jp	_PushErrorHandler
 
 util_backup_prgm_name:

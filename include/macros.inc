@@ -238,10 +238,16 @@ temp_prgm_is_basic := 3
 clock_x := 255
 clock_y := 7
 
+; return flags
+
+return_goto := $aa
+return_prgm := $bb
+
 ; location of variables
 
 edit_status := appdata
 edit_mode := edit_status + 1
+return_info := edit_mode			; yes this is right
 edit_program_name := edit_mode + 1
 hook_backup_location := edit_program_name + 11
 settings_data := hook_backup_location + 3

@@ -23,7 +23,7 @@ settings_get_data:
 	ldir
 	ld	a,(setting_config)
 	ld	(iy + settings_flag),a
-	ret
+	jp	util_setup_shortcuts
 
 settings_create_default:
 	ld	hl,setting_color_primary	; initialize default settings
