@@ -14,18 +14,8 @@ feature_item_rename:
 	cp	a,file_dir
 	jp	z,main_loop
 .setup_name:
-	ld	a,color_white
-	call	util_set_primary
-	draw_rectangle 199, 173, 313, 215
-	call	util_restore_primary
-	bit	item_renaming,(iy + item_flag)
-	jr	z,.rename_string
-	print	string_rename, 199, 173
-	jr	.skip_string
-.rename_string:
-	print	string_new_prgm, 199, 173
-.skip_string:
-	set_cursor 199, 195
+	call	.clear
+.cleared:
 	ld	a,(current_input_mode)
 	call	lcd_char
 	ld	hl,199
@@ -40,11 +30,11 @@ name_buffer := mpLcdCrsrImage + 1000
 .get_name:
 	call	util_get_key
 	cp	a,skDel
-	jp	z,.setup_name
+	jr	z,.backspace
 	cp	a,skLeft
-	jp	z,.setup_name
+	jr	z,.backspace
 	cp	a,skAlpha
-	jr	z,.change_input_mode
+	jp	z,.change_input_mode
 	cp	a,skClear
 	jp	z,main_start
 	cp	a,sk2nd
@@ -53,28 +43,28 @@ name_buffer := mpLcdCrsrImage + 1000
 	jp	z,.confirm
 	sub	a,skAdd
 	jp	c,.get_name
-	cp	a,skMath-skAdd+1
+	cp	a,skMath - skAdd + 1
 	jp	nc,.get_name
+	ld	hl,.get_name
+	push	hl
 	ld	hl,lut_character_standard
 .current_character_lut := $-1
 	call	_AddHLAndA		; find the offset
+.insert_char:
 	ld	a,(hl)
 	or	a,a
-	jr	z,.get_name
+	ret	z
 	ld	e,a
 	ld	a,0
 cursor_position := $-1
 	cp	a,8
-	jr	z,.get_name
-	or	a,a
-	jr	nz,.got_name
+	ret	z
 	push	de
 	ld	hl,(.current_character_lut)
 	ld	de,lut_character_numbers
 	compare_hl_de
-	pop	bc
-	jr	z,.get_name
-	ld	e,c
+	pop	de
+	ret	z
 .got_name:
 	ld	a,e
 	ld	hl,0
@@ -93,7 +83,42 @@ current_input_mode := $-1
 	ld	hl,(name_buffer_ptr)
 	inc	hl
 	ld	(name_buffer_ptr),hl
+	ret
+.backspace:
+	ld	hl,cursor_position
+	ld	a,(hl)
+	ld	(hl),0
+	or	a,a
+	jp	z,.get_name
+	push	af
+	call	.clear
+	pop	af
+	dec	a
+	or	a,a
+	jp	z,.cleared
+	ld	b,a
+	ld	hl,name_buffer + 1
+.redraw:
+	push	bc
+	push	hl
+	ld	a,(hl)
+	call	.insert_char
+	pop	hl
+	pop	bc
+	inc	hl
+	djnz	.redraw
 	jp	.get_name
+
+.clear:
+	draw_rectangle_color 199, 173, 313, 215, color_white
+	bit	item_renaming,(iy + item_flag)
+	ld	hl,string_rename
+	jr	nz,.rename
+	ld	hl,string_new_prgm
+.rename:
+	print_xy 199, 173
+	set_cursor 199, 195
+	ret
 
 .change_input_mode:
 	ld	hl,lut_character_standard
@@ -202,7 +227,7 @@ current_input_mode := $-1
 	call	_ChkFindSym
 	call	_DelVarArc
 .goto_main:
-	call	find_lists
+	call	find_files
 	ld	hl,name_buffer + 1
 	call	search_name
 	jp	main_start
@@ -255,6 +280,15 @@ feature_item_delete:
 
 feature_item_attributes:
 	call	feature_check_valid
+	ld	hl,.max_options
+	ld	(hl),2
+	ld	a,(current_screen)
+	cp	a,screen_apps
+	jp	z,main_loop
+	cp	a,screen_programs
+	jr	z,.programs
+	ld	(hl),0
+.programs:
 	ld	a,(iy + prgm_flag)
 	ld	(iy + temp_prgm_flag),a
 	xor	a,a
@@ -292,6 +326,7 @@ feature_item_attributes:
 .move_option_down:
 	call	.clear_current_selection
 	cp	a,2
+.max_options := $-1
 	ret	z
 	inc	a
 	ld	(current_option_selection),a
@@ -352,6 +387,9 @@ feature_item_attributes:
 
 .set_options:
 	call	util_move_prgm_name_to_op1
+	ld	a,(current_screen)
+	cp	a,screen_appvars
+	jr	z,.check_archived		; appvars can only be (un)archived
 	call	_ChkFindSym
 	ld	a,progObj
 	bit	prgm_locked,(iy + prgm_flag)

@@ -1,4 +1,4 @@
-; included general files
+; useful macros / includes
 
 include 'fasmg-ez80/ez80.inc'
 include 'fasmg-ez80/tiformat.inc'
@@ -6,7 +6,10 @@ format ti executable 'CESIUM'
 include 'app.inc'
 include 'ti84pceg.inc'
 
-; useful macros
+macro set_cursor_x? x, y
+	ld	bc,x
+	ld	(lcd_x),bc
+end macro
 
 macro set_cursor? x, y
 	ld	bc,x
@@ -47,6 +50,12 @@ macro print? string, x, y
 	call	util_string_xy
 end macro
 
+macro print_xy? x, y
+	ld	bc,x
+	ld	a,y
+	call	util_string_xy
+end macro
+
 macro draw_rectangle Lx, Ty, Rx, By
 	ld	bc,Rx - Lx
 	ld	de,(lcdWidth * Ty) + Lx
@@ -60,6 +69,13 @@ macro draw_rectangle_outline? Lx, Ty, Rx, By
 	ld	e,Ty
 	ld	hl,Lx
 	call	lcd_rectangle_outline.computed
+end macro
+
+macro draw_rectangle_color? Lx, Ty, Rx, By, index
+	ld	a,index
+	call	util_set_primary
+	draw_rectangle Lx, Ty, Rx, By
+	call	util_restore_primary
 end macro
 
 macro draw_rectangle_outline_double? Lx, Ty, Rx, By
@@ -109,9 +125,9 @@ macro draw_option? Lx, Ty, Rx, By
 	call	gui_draw_option
 end macro
 
-macro draw_highlightable_option? Lx, Ty, Rx, By, num
-	ld	bc,Rx - Lx + 1
-	ld	de,((By - Ty + 1) * 256) + Ty
+macro draw_highlightable_option? Lx, Ty, num
+	ld	bc,Lx + 8 - Lx + 1
+	ld	de,((Ty + 8 - Ty + 1) * 256) + Ty
 	ld	hl,Lx
 	ld	a,num
 	call	gui_draw_highlightable_option
@@ -129,9 +145,6 @@ end macro
 
 ; general
 
-cesium_version := '3.0'
-cesium_name := 'Cesium'
-cesium_copyright := '(C) 2018 MateoConLechuga'
 cesium_execution_base := $d09466
 
 config_english := 1
@@ -144,6 +157,7 @@ file_basic := 2
 file_ice := 3
 file_ice_source := 4
 file_dir := 5
+file_appvar := 6
 
 byte_cesium := $01
 byte_jp := $c3
@@ -235,7 +249,8 @@ setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
 setting_color_tertiary := setting_color_secondary + 1
 setting_config := setting_color_tertiary + 1
-setting_password := setting_config + 1
+setting_brightness := setting_config + 1
+setting_password := setting_brightness + 1
 current_option_selection := setting_password + password_max_length + 1
 current_selection_absolute := current_option_selection + 1
 current_selection := current_selection_absolute + 3
@@ -247,6 +262,7 @@ prgm_size := prgm_data_ptr + 3
 prgm_real_size := prgm_size + 3
 prgm_type := prgm_real_size + 3
 item_ptr := prgm_type + 1;
+number_of_items := item_ptr + 3
 
 sprite_temp := mpLcdCrsrImage
 string_temp := mpLcdCrsrImage

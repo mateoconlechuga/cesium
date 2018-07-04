@@ -1,35 +1,82 @@
 ; routines for building lists of available programs and applications
 
+find_files:
+	call	find_lists
+	ld	hl,(item_locations_ptr)
+	ld	de,item_location_base
+	or	a,a
+	sbc	hl,de
+	srl	h
+	rr	l
+	srl	h
+	rr	l
+	ld	(number_of_items),hl		; divide by 4 to compute number of stored items
+	ret
+
 find_lists:
-	call	.reset_lists
-	call	.check_apps
+	call	.reset
+	call	find_check_apps
 	ld	a,(current_screen)
 	cp	a,screen_apps
-	jp	z,.find_apps
+	jp	z,find_apps
 	call	sort_vat			; sort the vat before trying anything
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jp	z,.find_programs
+	jp	z,find_programs
+	cp	a,screen_appvars
+	jp	z,find_appvars
+	jp	exit_full			; abort
+.reset:
+	ld	hl,item_location_base
+	ld	(item_locations_ptr),hl
+.reset_selection:
+	xor	a,a
+	sbc	hl,hl
+	ld	(current_selection),a
+	ld	(scroll_amount),hl
+	ld	(number_of_items),hl
+	ld	(current_selection_absolute),hl
+	ret
 
-.find_appvars:
-
-.find_programs:
-	bit	setting_special_directories,(iy + settings_flag)
-	jr	z,.no_apps_directory
+find_appvars:
+	call	find_app_directory
+	ld	hl,(progptr)
+.loop:
+	ld	de,(ptemp)			; check to see if at end of symbol table
+	or	a,a
+	sbc	hl,de
+	ret	z
+	ret	c
+	add	hl,de				; restore hl
+	ld	a,(hl)				; check the [t] of entry, take appropriate action
+	ld	de,6
+	or	a,a
+	sbc	hl,de
+	and	a,$1f				; bitmask off bits 7-5 to get type only.
+	cp	a,appVarObj			; check if appvar
+	jr	nz,.skip
+	ex	de,hl
 	ld	hl,(item_locations_ptr)
-	ld	de,find_application_directory_name
 	ld	(hl),de
 	inc	hl
 	inc	hl
 	inc	hl
-	ld	(hl),byte_dir
-	inc	hl
+	ld	(hl),file_appvar
+	inc	hl				; 4 bytes per entry - pointer to name + dummy
 	ld	(item_locations_ptr),hl
-	ld	bc,1
-	ld	(number_of_items),bc
-.no_apps_directory:
+	ex	de,hl
+	ld	de,0
+.skip:
+	ld	e,(hl)				; e = name length
+	inc	e				; add 1 to go to [t] of next entry
+	or	a,a
+	sbc	hl,de
+	jr	.loop
+
+find_programs:
+	call	find_app_directory
 	ld	hl,(progptr)
-.find_programs_loop:
+.loop:
 	ld	de,(ptemp)			; check to see if at end of symbol table
 	or	a,a
 	sbc	hl,de
@@ -62,7 +109,7 @@ find_lists:
 	call	_SetDEUToA
 	dec	hl
 	push	hl
-	call	.get_program_data_ptr
+	call	find_data_ptr
 	inc	hl
 	inc	hl
 	ld	a,(hl)
@@ -102,10 +149,6 @@ find_lists:
 	jr	nc,.not_hidden
 	add	a,64				; i honestly have no idea why this has to be here, but it does
 .not_hidden:
-	ld	bc,0
-number_of_items := $-3
-	inc	bc
-	ld	(number_of_items),bc		; increase the number of programs found
 	inc	hl
 	ex	de,hl
 	ld	hl,0
@@ -133,9 +176,23 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	ld	e,(hl)				; put name length in e to skip
 	inc	e				; add 1 to go to [t] of next entry
 	sbc	hl,de
-	jp	.find_programs_loop
+	jp	.loop
 
-.find_apps:
+find_app_directory:
+	bit	setting_special_directories,(iy + settings_flag)
+	ret	z
+	ld	hl,(item_locations_ptr)
+	ld	de,find_application_directory_name
+	ld	(hl),de
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	(hl),byte_dir
+	inc	hl
+	ld	(item_locations_ptr),hl
+	ret
+
+find_apps:
 	ld	hl,(item_locations_ptr)
 	ld	de,find_program_directory_name
 	ld	(hl),de
@@ -150,15 +207,10 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	inc	hl
 	inc	hl
 	ld	(item_locations_ptr),hl
-	ld	hl,number_of_items
-	ld	de,(hl)
-	inc	de
-	inc	de
-	ld	(hl),de
 	call	_ZeroOP3
 	ld	a,appObj
 	ld	(OP3),a
-.find_appsLoop:
+.loop:
 	call	_OP3ToOP1
 	call	_FindAppUp
 	push	hl
@@ -167,9 +219,6 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	pop	hl
 	pop	de
 	ret	c
-	ld	bc,(number_of_items)
-	inc	bc
-	ld	(number_of_items),bc
 	ld	bc,$100				; bypass some header info
 	add	hl,bc
 	ex	de,hl
@@ -180,9 +229,9 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	inc	hl
 	inc	hl
 	ld	(item_locations_ptr),hl
-	jr	.find_appsLoop
+	jr	.loop
 
-.get_program_data_ptr:				; gets a pointer to the data of an archived program
+find_data_ptr:				; gets a pointer to the data of an archived program
 	cp	a,$d0
 	ex 	de,hl
 	ret	nc
@@ -193,7 +242,7 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	inc	hl				; size of name
 	ret
 
-.check_apps:
+find_check_apps:
 	res	cesium_is_disabled,(iy + cesium_flag)
 	res	cesium_is_nl_disabled,(iy + cesium_flag)
 	ld	de,$c00
@@ -213,14 +262,6 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 .skip:
 	set	cesium_is_nl_disabled,(iy + cesium_flag)
 	pop	hl
-	ret
-
-.reset_lists:
-	ld	hl,item_location_base
-	ld	(item_locations_ptr),hl
-	xor	a,a
-	sbc	hl,hl
-	ld	(number_of_items),hl
 	ret
 
 	db	"SPPA"

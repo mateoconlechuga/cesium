@@ -4,23 +4,30 @@ execute_item:
 	ld	hl,(current_selection_absolute)
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jr	z,execute_program_check
+	jr	z,execute_vat_check
+	cp	a,screen_appvars
+	jr	z,execute_vat_check
 	cp	a,screen_apps
 	jr	z,execute_app_check
 	;cp	a,screen_usb
 	;jr	z,execute_usb_check
 	jp	exit_full
 
-execute_program_check:
+execute_vat_check:
 	compare_hl_zero
 	jr	nz,execute_program			; check if on directory
 	ld	a,screen_apps
 	ld	(current_screen),a
 	jp	main_find
 execute_app_check:
-	compare_hl_zero
-	jr	nz,execute_app				; check if on directory
 	ld	a,screen_programs
+	compare_hl_zero
+	jr	z,.new					; check if on directory
+	ld	a,screen_appvars
+	dec	hl
+	compare_hl_zero
+	jr	nz,execute_app
+.new:
 	ld	(current_screen),a
 	jp	main_find				; abort!
 

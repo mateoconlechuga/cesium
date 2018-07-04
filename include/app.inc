@@ -4,6 +4,8 @@ macro app_private
 	local app
 	element app.base
 
+	min_version := '5.0.0.0.0'
+
 	postpone
 		virtual
 			irpv relocation, app.relocations
@@ -23,7 +25,7 @@ macro app_private
 		dl app.size
 	end postpone
 
- 	macro app_start? name,copyright,version
+ 	macro app_start? name,copyright
 		local value
 		local freespace
 		app.start = $
@@ -33,7 +35,7 @@ macro app_private
 		db $81,$0f,$00
 		dl (value - 6) bswap 3
 		db $81,$12,$13,$0f
-		db $81,$2d,lengthof version + 1,version,$00
+		db $81,$2d,lengthof min_version + 1,min_version,$00
 		db $81,$32,$59,$00
 		db $81,lengthof name,name
 		db $81,$a1,$07

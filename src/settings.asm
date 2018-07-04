@@ -82,13 +82,13 @@ settings_get:
 	cp	a,skStore
 	jp	z,password_modify
 	cp	a,skLeft
-	jp	z,setting_color_left
+	jp	z,setting_left
 	cp	a,skRight
-	jp	z,setting_color_right
+	jp	z,setting_right
 	cp	a,skDown
-	jp	z,setting_move_down
+	jp	z,setting_down
 	cp	a,skUp
-	jp	z,setting_move_up
+	jp	z,setting_up
 	cp	a,sk2nd
 	jp	z,setting_toggle
 	cp	a,skEnter
@@ -106,26 +106,50 @@ setting_set_and_save:
 	jr	z,settings_return
 	bit	setting_special_directories,(iy + settings_flag)
 	jr	nz,settings_return
-	call	util_init_selection_screen
+	call	find_lists.reset_selection
 	ld	a,screen_programs
 	ld	(current_screen),a
 settings_return:
 	jp	main_settings
 
-setting_move_down:
+setting_down:
 	ld	a,(ix)
-	cp	a,6
+	cp	a,7
 	ret	z
 	inc	a
 	ld	(ix),a
 	ret
 
-setting_move_up:
+setting_up:
 	ld	a,(ix)
 	or	a,a
 	ret	z
 	dec	a
 	ld	(ix),a
+	ret
+
+setting_left:
+	call	setting_brightness_check
+	dec	a
+.done:
+	ld	(hl),a
+	ld	(mpBlLevel),a
+	ret
+
+setting_right:
+	call	setting_brightness_check
+	inc	a
+	jr	setting_left.done
+
+setting_brightness_check:
+	ld	a,(ix)
+	cp	a,7
+	jr	nz,.fail
+	ld	hl,setting_brightness
+	ld	a,(hl)
+	ret
+.fail:
+	pop	hl
 	ret
 
 setting_toggle:
@@ -244,29 +268,33 @@ setting_draw_options:
 	call	gui_draw_cesium_info
 
 	print	string_general_settings, 10, 30
-	print	string_setting_color, 25, 53
-	print	string_setting_indicator, 25, 76
-	print	string_setting_list_count, 25, 99
-	print	string_setting_clock, 25, 122
-	print	string_setting_ram_backup, 25, 145
-	print	string_setting_special_directories, 25, 168
-	print	string_setting_enable_shortcuts, 25, 191
+	print	string_setting_color, 25, 51
+	print	string_setting_indicator, 25, 71
+	print	string_setting_list_count, 25, 91
+	print	string_setting_clock, 25, 111
+	print	string_setting_ram_backup, 25, 131
+	print	string_setting_special_directories, 25, 151
+	print	string_setting_enable_shortcuts, 25, 171
+	print	string_settings_brightness, 25, 191
 
 	xor	a,a
 	inc	a				; color is always set
-	draw_highlightable_option 10, 52, 18, 60, 0
+	draw_highlightable_option 10, 50, 0
 	bit	setting_basic_indicator,(iy + settings_flag)
-	draw_highlightable_option 10, 75, 18, 83, 1
+	draw_highlightable_option 10, 70, 1
 	bit	setting_list_count,(iy + settings_flag)
-	draw_highlightable_option 10, 98, 18, 106, 2
+	draw_highlightable_option 10, 90, 2
 	bit	setting_clock,(iy + settings_flag)
-	draw_highlightable_option 10, 121, 18, 129, 3
+	draw_highlightable_option 10, 110, 3
 	bit	setting_ram_backup,(iy + settings_flag)
-	draw_highlightable_option 10, 144, 18, 152, 4
+	draw_highlightable_option 10, 130, 4
 	bit	setting_special_directories,(iy + settings_flag)
-	draw_highlightable_option 10, 167, 18, 175, 5
+	draw_highlightable_option 10, 150, 5
 	bit	setting_enable_shortcuts,(iy + settings_flag)
-	draw_highlightable_option 10, 190, 18, 198, 6
+	draw_highlightable_option 10, 170, 6
+	xor	a,a
+	inc	a
+	draw_highlightable_option 10, 190, 7	; brightness is always set
 	ret
 
 settings_appvar:

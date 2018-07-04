@@ -7,7 +7,9 @@ gui_main:
 	print	string_file_information, 199, 27
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jp	z,view_programs
+	jp	z,view_vat_items
+	cp	a,screen_appvars
+	jp	z,view_vat_items
 	cp	a,screen_apps
 	jp	z,view_apps
 	;cp	a,screen_usb
@@ -58,6 +60,14 @@ gui_show_description:
 gui_draw_static_options:
 	print	string_settings, 199, 206
 	ld	de,270
+	ld	(lcd_x),de
+	inc	hl
+	call	lcd_string
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	ret	z
+	print	string_delete, 199, 195
+	ld	de,278
 	ld	(lcd_x),de
 	inc	hl
 	jp	lcd_string
@@ -236,6 +246,9 @@ gui_clear_status_bar:
 gui_draw_item_options:
 	bit	prgm_archived,(iy + prgm_flag)
 	draw_option 300, 118, 308, 126
+	ld	a,(current_screen)
+	cp	a,screen_appvars
+	ret	z
 	bit	prgm_locked,(iy + prgm_flag)
 	draw_option 300, 129, 308, 137
 	bit	prgm_hidden,(iy + prgm_flag)

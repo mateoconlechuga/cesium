@@ -95,6 +95,25 @@ sprite_file_app:
 	db $ff,$ff,$ff,$13,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$13
 	db $ff,$ff,$ff,018,$13,$13,$13,$13,$13,$13,$13,$13,$13,$13,$13,018
 
+sprite_file_appvar:
+	db 16,16
+	db $ff,$ff,$ff,$5d,$7d,$7d,$7d,$7d,$7d,$7d,$13,$13,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$7d,$ff,$ff,$df,$df,$df,$df,$7d,$13,$13,$ff,$ff,$ff
+	db $ff,$ff,$ff,$7d,$ff,$ff,$ff,$df,$df,$df,$df,$7d,$7d,$13,$ff,$ff
+	db $ff,$ff,$ff,$7d,$ff,$ff,$ff,$df,$df,$df,$df,$7d,$ff,$7d,$13,$ff
+	db $ff,$ff,$ff,$7d,$ff,$ff,$ff,$ff,$df,$df,$df,$7d,191,191,$7d,$13
+	db $ff,$ff,$ff,$7d,$ff,$ff,$ff,$ff,$ff,$df,$df,$df,$df,$df,$7d,$13
+	db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$13
+	db $00,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$00,$13
+	db $00,$ff,$a8,$ff,$a8,$ff,$a8,$a8,$a8,$ff,$a8,$a8,$a8,$ff,$00,$13
+	db $00,$ff,$a8,$ff,$a8,$ff,$a8,$ff,$a8,$ff,$a8,$ff,$a8,$ff,$00,$13
+	db $00,$ff,$a8,$ff,$a8,$ff,$a8,$a8,$a8,$ff,$a8,$a8,$ff,$ff,$00,$13
+	db $00,$ff,$ff,$a8,$ff,$ff,$a8,$ff,$a8,$ff,$a8,$ff,$a8,$ff,$00,$13
+	db $00,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$00,$13
+	db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$13
+	db $ff,$ff,$ff,$13,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$13
+	db $ff,$ff,$ff,018,$13,$13,$13,$13,$13,$13,$13,$13,$13,$13,$13,018
+
 sprite_file_basic:
 	db 16,16
 	db $ff,$ff,$ff,$5d,$7d,$7d,$7d,$7d,$7d,$7d,$13,$13,$ff,$ff,$ff,$ff

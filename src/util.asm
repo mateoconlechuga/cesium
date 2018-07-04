@@ -139,14 +139,6 @@ util_to_one_hot:
 	djnz	.loop
 	ret
 
-util_init_selection_screen:
-	xor	a,a
-	sbc	hl,hl
-	ld	(current_selection),a
-	ld	(current_selection_absolute),hl
-	ld	(scroll_amount),hl
-	ret
-
 util_move_prgm_name_to_op1:
 	ld	hl,(prgm_ptr)
 util_prgm_ptr_to_op1:

@@ -8,21 +8,23 @@ search_alpha_item:
 	or	a,a
 	ret	z
 	ld	(.search_character),a
-	call	util_init_selection_screen
+	call	find_lists.reset_selection
 	ld	hl,item_location_base
 	ld	bc,(number_of_items)		; loop through the prgms
 .find:
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jr	z,.find_program_list
-.find_app_list:
+	jr	z,.vat_list
+	cp	a,screen_appvars
+	jr	z,.vat_list
+.app_list:
 	ld	de,(hl)
 	inc	de
 	inc	de
 	inc	de
 	ld	a,(de)
 	jr	.compare
-.find_program_list:
+.vat_list:
 	ld	de,(hl)				; pointer to program name size
 	dec	de
 	ld	a,(de)
@@ -54,7 +56,7 @@ search_name:
 	ld	a,c
 	ld	(.length),a
 	push	hl
-	call	util_init_selection_screen
+	call	find_lists.reset_selection
 	ld	hl,item_location_base
 	ld	bc,(number_of_items)		; loop through the items
 	pop	ix

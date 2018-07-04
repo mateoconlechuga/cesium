@@ -3,6 +3,10 @@
 ; feel free to use any code for your own use
 ; (c) 2015-2018 matt "mateoconlechuga" waltz
 
+cesium_name := 'Cesium'
+cesium_version := '3.0'
+cesium_copyright := '(C)  2015-2018 matt waltz'
+
 include 'include/macros.inc'
 
 ; start by executing the installer code
@@ -10,7 +14,7 @@ include 'include/macros.inc'
 include 'installer.asm'
 
 ; this is the start of the actual application
-	app_start cesium_name, cesium_copyright, cesium_version
+	app_start cesium_name, cesium_copyright
 	cesium_code.run
 
 relocate cesium_code, cesium_execution_base
@@ -18,7 +22,7 @@ relocate cesium_code, cesium_execution_base
 	include 'exit.asm'
 	include 'edit.asm'
 	include 'search.asm'
-	include 'view-programs.asm'
+	include 'view-vat-items.asm'
 	include 'view-apps.asm'
 	include 'features.asm'
 	include 'settings.asm'

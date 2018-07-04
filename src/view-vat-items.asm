@@ -1,6 +1,6 @@
-; process for displaying the list of programs
+; process for displaying the list of programs / appvars
 
-view_programs:
+view_vat_items:
 	call	gui_show_item_count
 	set_normal_text
 	set_cursor 24, 30
@@ -46,7 +46,7 @@ current_prgm_drawing := $-1
 	ld	(current_prgm_drawing),a
 	ld	a,(lcd_y)
 	cp	a,220
-	jp	nc,util_set_more_items_flag			; more to scroll, so draw an arrow or something later
+	jp	nc,util_set_more_items_flag		; more to scroll, so draw an arrow or something later
 	push	bc					; bc = number of programs left to draw
 	push	hl					; hl -> lookup table
 	ld	hl,(hl)					; load name pointer
@@ -91,8 +91,8 @@ current_prgm_drawing := $-1
 	inc	hl
 	inc	hl
 	ld	a,(hl)					; previously stored type of program
-	cp	a,progObj
-	jr	z,.not_locked
+	cp	a,protProgObj
+	jr	nz,.not_locked
 	set	temp_prgm_locked,(iy + temp_prgm_flag)
 .not_locked:
 	ld	a,(lcd_text_fg)
@@ -102,23 +102,23 @@ current_prgm_drawing := $-1
 	dec	hl
 	ld	a,(hl)
 	cp	a,64
-	jr	nc,.draw_prgm
+	jr	nc,.draw_item
 	add	a,64
 	ld	(hl),a
 	set	temp_prgm_hidden,(iy + temp_prgm_flag)
 	ld	a,(color_secondary)
 	cp	a,color_secondary_default
-	jr	nz,.draw_prgm
+	jr	nz,.draw_item
 	set_text_fg_color color_hidden
-.draw_prgm:
+.draw_item:
 	push hl
-.draw_prgm_name:
+.draw_item_name:
 	ld	a,(hl)
 	dec	hl
 	push	bc
 	call	lcd_char
 	pop	bc
-	djnz	.draw_prgm_name
+	djnz	.draw_item_name
 	pop	hl
 	bit	temp_prgm_hidden,(iy + temp_prgm_flag)
 	jr	z,.not_hidden
@@ -152,6 +152,10 @@ color_save := $-1
 	ld	hl,sprite_directory
 	cp	a,file_dir
 	jp	z,file_directory
+	ld	de,string_appvar
+	ld	hl,sprite_file_appvar
+	cp	a,file_appvar
+	jr	z,file_uneditable
 	ld	de,string_asm
 	ld	hl,sprite_file_asm
 	cp	a,file_asm
@@ -305,25 +309,27 @@ tmp_y := $-1
 	draw_sprite_2x 120, 57
 	set_text_bg_color color_white
 
-	print string_archived, 199, 118
-	print string_locked, 199, 129
-	print string_hidden, 199, 140
-
-	call	gui_draw_item_options
+	print	string_language, 199, 107
+	pop	hl
+	call	lcd_string				; hl -> language string
 
 	print string_size, 199, 151
 	ld	hl,(prgm_size)
 	call	lcd_num_5
 
-	print string_language, 199, 107
-	pop	hl
-	call	lcd_string				; hl -> language string
-
 	print string_attributes, 199, 173
-	ld	de,262
-	ld	(lcd_x),de
+	set_cursor_x 262
 	inc	hl
 	call	lcd_string
+
+	print string_archived, 199, 118
+
+	ld	a,(current_screen)
+	cp	a,screen_appvars			; don't draw things that appvars can't handle
+	jr	z,.dont_draw_extras
+
+	print string_locked, 199, 129
+	print string_hidden, 199, 140
 
 	print string_rename, 199, 194
 if config_english
@@ -348,6 +354,9 @@ end if
 	inc	hl
 	call	lcd_string
 
+.dont_draw_extras:
+
+	call	gui_draw_item_options
 	call	gui_draw_static_options
 
 	push	de
@@ -363,7 +372,7 @@ end if
 	dec	bc
 	ld	a,b
 	or	a,c
-	jp	nz,view_programs.loop
+	jp	nz,view_vat_items.loop
 	ret
 
 .file_directory:

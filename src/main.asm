@@ -6,7 +6,7 @@ main_cesium:
 main_settings:
 	call	settings_load
 main_find:
-	call	find_lists
+	call	find_files
 main_start:
 	call	gui_main
 	call	util_setup_apd
@@ -86,7 +86,6 @@ dont_scroll:
 
 main_init:
 	call	_ClrGetKeyHook				; clear key hooks
-	call	util_init_selection_screen		; zero items
 
 	ld	a,screen_programs
 	ld	(current_screen),a			; start on the programs screen

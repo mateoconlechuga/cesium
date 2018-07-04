@@ -25,6 +25,7 @@ view_apps:
 	xor	a,a
 	ld	(iy + temp_prgm_flag),a		; reset temp flags
 	res	drawing_selected,(iy + item_flag)
+	res	item_is_directory,(iy + item_flag)
 	ld	e,0
 current_app := $-1
 	ld	a,(current_selection)
@@ -156,11 +157,9 @@ application_ptr := $-3
 	bit	item_is_directory,(iy + item_flag)
 	call	z,_os_GetAppVersionString
 	pop	de
-	add	hl,de
-	or	a,a
-	sbc	hl,de
+	compare_hl_zero
 	jr	nz,.custom_version
-	ld	hl,string_temp_min_version
+	ld	hl,string_min_os_version
 .custom_version:
 	set_cursor 199, 140
 	call	lcd_string

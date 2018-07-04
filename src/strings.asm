@@ -18,9 +18,11 @@ string_basic:
 	db	'Basic',0
 string_application:
 	db	'App',0
+string_appvar:
+	db	'Data',0
 string_mode_select:
 	db	'   < ',$7e,'MODE] >',0
-string_temp_min_version:
+string_min_os_version:
 	db	'5.0.0.0.0',0
 string_error_stop:
 	db	'Stop',0
@@ -57,6 +59,9 @@ string_file_information:
 string_settings:
 	db	'Settings',0
 	db	$7e,'MODE]',0
+string_delete:
+	db	'Delete',0
+	db	$7e,'DEL]',0
 string_attributes:
 	db	'Attrib',0
 	db	$7e,'ALPHA]',0
@@ -87,6 +92,8 @@ string_setting_special_directories:
 	db	'Show special directories',0
 string_setting_enable_shortcuts:
 	db	'Enable keypad shortcuts',0
+string_settings_brightness:
+	db	'LCD brightness level (use <>)',0
 string_set_name:
 	db	'Name -',0
 string_new_name:
@@ -125,6 +132,9 @@ string_file_information:
 string_settings:
 	db	'Options',0
 	db	$7e,'MODE]',0
+string_delete:
+	db	'Delete',0
+	db	$7e,'DEL]',0
 string_attributes:
 	db	'Attrib',0
 	db	$7e,'ALPHA]',0
@@ -155,6 +165,8 @@ string_setting_special_directories:
 	db	'Afficher les répertoires spéciaux',0
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
+string_settings_brightness:
+	db	'LCD brightness level (use <>)',0
 string_set_name:
 	db	'Nom -',0
 string_new_name:
