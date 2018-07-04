@@ -96,10 +96,6 @@ string_settings_brightness:
 	db	'LCD brightness level (use <',0,'>)',0
 string_settings_delete_confirm:
 	db	'Show item deletion confirmation prompt',0
-string_set_name:
-	db	'Name -',0
-string_new_name:
-	db	'New Name -',0
 string_new_password:
 	db	'Input new password: ',0
 
@@ -108,11 +104,11 @@ string_new_password:
 else
 
 string_primary_color:
-	db	'Primary Color',0
+	db	'Couleur primaire',0
 string_secondary_color:
-	db	'Secondary Color',0
+	db	'Couleur secondaire',0
 string_tertiary_color:
-	db	'Tertiary Color',0
+	db	'Couleur tertiaire',0
 string_language:
 	db	'Langage : ',0
 string_archived:
@@ -135,8 +131,8 @@ string_settings:
 	db	'Options',0
 	db	$7e,'MODE]',0
 string_delete:
-	db	'Delete',0
-	db	$7e,'DEL]',0
+	db	'Effacer',0
+	db	$7e,'SUPPR]',0
 string_attributes:
 	db	'Attrib',0
 	db	$7e,'ALPHA]',0
@@ -156,25 +152,21 @@ string_general_settings:
 string_setting_color:
 	db	'Couleur de Cesium',0
 string_setting_indicator:
-	db	'Cacher l'indicateur de calcul en BASIC',0
+	db	'Cacher l',$27,'indicateur de calcul en BASIC',0
 string_setting_list_count:
 	db	'Afficher le nombre de programmes',0
 string_setting_clock:
-	db	'Afficher l'horloge',0
+	db	'Afficher l',$27,'horloge',0
 string_setting_ram_backup:
 	db	'Sauver la RAM avant de lancer des prgms',0
 string_setting_special_directories:
-	db	'Afficher les répertoires spéciaux',0
+	db	'Afficher les r',$82,'pertoires sp',$82,'ciaux',0
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
 string_settings_brightness:
-	db	'LCD brightness level (use <',0,'>)',0
+	db	'Luminosit',$82,' LCD (Touches <',0,'>)',0
 string_settings_delete_confirm:
-	db	'Show item deletion confirmation prompt',0
-string_set_name:
-	db	'Nom -',0
-string_new_name:
-	db	'Programme Nom -',0
+	db	'Afficher l',$27,'invite de suppression',0
 string_new_password:
 	db	'Saisir le nouveau mot de passe : ',0
 

@@ -83,8 +83,8 @@ if config_english
 	db 'Delete installer?', 0
 	db 'del - yes',0
 else
-	db 'Delete installer?', 0
-	db 'del - yes',0
+	db 'Suppr. l',$27,'installateur?', 0
+	db 'suppr - oui',0
 end if
 
 end relocate
@@ -93,5 +93,5 @@ str_cesium_exists_error:
 if config_english
 	db 'Cesium already installed, Please delete first.',0
 else
-	db 'Cesium already installed, Please delete first.',0
+	db 'Cesium d',$96,'j',$8f,' install',$96,',     veuillez supprimer.',0
 end if;

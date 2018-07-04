@@ -9,7 +9,7 @@ data_string_password:
 if config_english
 	db	'Password:',0
 else
-	db	'Mot de passe:'',0
+	db	'Mot de passe:',0
 end if
 
 data_string_quit1:

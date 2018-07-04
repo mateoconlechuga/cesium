@@ -346,11 +346,7 @@ tmp_y := $-1
 	print string_hidden, 199, 140
 
 	print string_rename, 199, 194
-if config_english
 	ld	de,262
-else
-	ld	de,254
-end if
 	ld	(lcd_x),de
 	inc	hl
 	call	lcd_string

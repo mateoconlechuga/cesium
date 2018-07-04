@@ -67,7 +67,11 @@ gui_draw_static_options:
 	cp	a,screen_programs
 	ret	z
 	print	string_delete, 199, 195
+if config_english
 	ld	de,278
+else
+	ld	de,262
+end if
 	ld	(lcd_x),de
 	inc	hl
 	jp	lcd_string

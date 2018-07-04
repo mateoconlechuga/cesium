@@ -147,8 +147,6 @@ end macro
 
 cesium_execution_base := $d09466
 
-config_english := 1
-
 ; file management
 
 file_asm := 0

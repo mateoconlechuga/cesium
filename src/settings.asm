@@ -154,7 +154,7 @@ setting_right:
 setting_brightness_check:
 	ld	c,a
 	ld	a,(ix)
-	cp	a,7
+	cp	a,8
 	jr	nz,.fail
 	ld	a,c
 	ld	b,0
