@@ -256,20 +256,23 @@ gui_draw_item_options:
 	ret
 
 gui_show_item_count:
+	ld	hl,(number_of_items)
 	bit	setting_list_count,(iy + settings_flag)
 	ret	z
-	ld	hl,(number_of_items)
 	bit	setting_special_directories,(iy + settings_flag)
 	jr	z,.no_extra_directories
 	dec	hl
 	ld	a,(current_screen)
-	cp	a,screen_programs
-	jr	z,.no_extra_directories
+	cp	a,screen_apps
+	jr	nz,.no_extra_directories
 	dec	hl
 .no_extra_directories:
+	push	hl
 	set_cursor 195, 7
 	set_inverted_text
-	jp	lcd_num_4
+	call	lcd_num_4
+	pop	hl
+	ret
 
 gui_backup_ram_to_flash:
 	ld	a,color_white

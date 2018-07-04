@@ -44,8 +44,6 @@ relocate installer_execute_cesium, mpLcdCrsrImage
 	ld	hl,str_delete_installer
 	call	_PutS
 	call	_NewLine
-	call	_PutS
-	call	_NewLine
 	call	_PutS				; ask the user if they want to delete me
 	call	_PopOP1				; restore installer name
 
@@ -81,11 +79,19 @@ str_cesium_name_installer:
 	db	cesium_name,0
 
 str_delete_installer:
+if config_english
 	db 'Delete installer?', 0
 	db 'del - yes',0
-	db '2nd - no',0
+else
+	db 'Delete installer?', 0
+	db 'del - yes',0
+end if
 
 end relocate
 
 str_cesium_exists_error:
+if config_english
 	db 'Cesium already installed, Please delete first.',0
+else
+	db 'Cesium already installed, Please delete first.',0
+end if;

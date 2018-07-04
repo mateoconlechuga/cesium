@@ -233,6 +233,7 @@ current_input_mode := $-1
 	jp	main_start
 
 feature_item_edit:
+	call	feature_check_valid
 	bit	prgm_locked,(iy + prgm_flag)
 	jp	nz,main_loop
 	ld	a,(prgm_type)
@@ -277,7 +278,13 @@ feature_item_delete:
 	call	_DeleteApp
 	set	3,(iy + $25)			; defrag on exit
 .refresh:
-	call	main_move_up
+	ld	hl,(current_selection_absolute)
+	ld	de,(number_of_items)
+	inc	hl
+	compare_hl_de
+	call	z,main_move_up
+	ld	a,return_settings
+	ld	(return_info),a
 	jp	main_find			; reload everything
 
 feature_item_attributes:
@@ -434,9 +441,15 @@ feature_item_attributes:
 
 feature_check_valid:
 	bit	setting_special_directories,(iy + settings_flag)
-	ret	z
+	jr	z,.empty_check
 	ld	hl,(current_selection_absolute)
 	compare_hl_zero
 	ret	nz
 	pop	hl
 	jp	main_loop			; don't allow deletion of directories
+.empty_check:
+	ld	hl,(number_of_items)
+	compare_hl_zero
+	ret	nz
+	pop	hl
+	jp	main_loop

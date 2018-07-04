@@ -133,6 +133,25 @@ sprite_file_basic:
 	db $ff,$ff,$ff,$13,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$13
 	db $ff,$ff,$ff,018,$13,$13,$13,$13,$13,$13,$13,$13,$13,$13,$13,018
 
+sprite_egg:
+	db 16,16
+	db $ff,$ff,$ff,$ff,$ff,$ff,$f7,$d6,$d5,$d6,$ff,$ff,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$f7,$f6,$d5,$ad,$8c,$ac,$fe,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$f6,$d6,$b5,$ad,$8c,$8b,$6b,$6c,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$d6,$d5,$d5,$ac,$ac,$6b,$6b,$6b,$4a,$b5,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ad,$cd,$8c,$8c,$8b,$6b,$6b,$4a,$6a,$6b,$ff,$ff,$ff
+	db $ff,$ff,$d6,$ac,$ac,$8c,$8b,$6b,$6b,$6b,$42,$6a,$6a,$d6,$ff,$ff
+	db $ff,$ff,$ad,$8c,$8c,$8b,$6b,$6b,$6a,$6a,$42,$6a,$6a,$94,$ff,$ff
+	db $ff,$ff,$ad,$8c,$6b,$8b,$22,$42,$6a,$6a,$4a,$6a,$6a,$8c,$ff,$ff
+	db $ff,$ff,$ac,$8b,$6b,$6b,$42,$4a,$6a,$6a,$6a,$6a,$6b,$8c,$ff,$ff
+	db $ff,$ff,$8c,$6b,$6b,$6b,$6a,$6a,$6a,$6a,$4a,$6a,$6b,$8c,$ff,$ff
+	db $ff,$ff,$94,$6b,$6a,$6a,$6a,$6a,$4a,$6a,$4a,$6b,$6b,$94,$ff,$ff
+	db $ff,$ff,$b5,$6a,$6a,$6a,$6a,$6a,$4a,$4a,$22,$6b,$8c,$b5,$ff,$ff
+	db $ff,$ff,$de,$6b,$6a,$6a,$4a,$6a,$6a,$6a,$6a,$8b,$ac,$fe,$ff,$ff
+	db $ff,$ff,$ff,$b5,$6a,$6a,$6a,$6a,$6a,$6a,$6b,$8b,$b5,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$b5,$6b,$6a,$6a,$6a,$6b,$8b,$b5,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$de,$b4,$8c,$8c,$b5,$de,$ff,$ff,$ff,$ff,$ff
+
 sprite_locked:
 	db 6,8
 	db $ff,$4b,$4b,$4b,$4b,$ff

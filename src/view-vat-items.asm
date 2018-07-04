@@ -3,6 +3,20 @@
 view_vat_items:
 	call	gui_show_item_count
 	set_normal_text
+	compare_hl_zero
+	jr	nz,.can_view
+	bit	setting_special_directories,(iy + settings_flag)
+	jr	nz,.can_view				; can't show anything
+	call	gui_draw_static_options
+	ld	hl,sprite_egg
+	draw_sprite_2x 120, 57
+	print	string_new_prgm, 199, 194
+	ld	de,287
+.no_new:
+	ld	(lcd_x),de
+	inc	hl
+	call	lcd_string
+.can_view:
 	set_cursor 24, 30
 	xor	a,a
 	sbc	hl,hl

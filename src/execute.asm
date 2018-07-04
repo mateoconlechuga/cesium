@@ -16,6 +16,8 @@ execute_item:
 execute_vat_check:
 	compare_hl_zero
 	jp	nz,execute_program			; check if on directory
+	bit	setting_special_directories,(iy + settings_flag)
+	jp	z,main_find
 	ld	a,screen_apps
 	ld	(current_screen),a
 	jp	main_find
