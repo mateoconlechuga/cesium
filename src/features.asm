@@ -248,6 +248,8 @@ feature_item_edit:
 
 feature_item_delete:
 	call	feature_check_valid
+	bit	setting_delete_confirm,(iy + settings_flag)
+	jr	z,.delete
 	call	gui_clear_status_bar
 	set_inverted_text
 	print	string_delete_confirmation, 4, 228
