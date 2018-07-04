@@ -57,6 +57,7 @@ main_move_up:
 	ld	hl,(scroll_amount)
 	dec	hl
 	ld	(scroll_amount),hl
+	ret
 .dont_scroll:
 	dec	a
 	ld	(current_selection),a
@@ -79,6 +80,7 @@ main_move_down:
 	ld	hl,(scroll_amount)
 	inc	hl
 	ld	(scroll_amount),hl
+	ret
 dont_scroll:
 	inc	a
 	ld	(current_selection),a
