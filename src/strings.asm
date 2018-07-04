@@ -93,7 +93,7 @@ string_setting_special_directories:
 string_setting_enable_shortcuts:
 	db	'Enable keypad shortcuts',0
 string_settings_brightness:
-	db	'LCD brightness level (use <>)',0
+	db	'LCD brightness level (use <',0,'>)',0
 string_set_name:
 	db	'Name -',0
 string_new_name:
@@ -166,7 +166,7 @@ string_setting_special_directories:
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
 string_settings_brightness:
-	db	'LCD brightness level (use <>)',0
+	db	'LCD brightness level (use <',0,'>)',0
 string_set_name:
 	db	'Nom -',0
 string_new_name:

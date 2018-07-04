@@ -71,6 +71,7 @@ settings_save:
 settings_show:
 	xor	a,a
 	ld	(current_option_selection),a			; start on the first menu item
+	ld	(setting_brightness_check.counter),a
 .draw:
 	call	setting_draw_options
 
@@ -130,22 +131,42 @@ setting_up:
 
 setting_left:
 	call	setting_brightness_check
-	dec	a
+	sub	a,b
 .done:
 	ld	(hl),a
-	ld	(mpBlLevel),a
 	ret
 
 setting_right:
 	call	setting_brightness_check
-	inc	a
+	add	a,b
 	jr	setting_left.done
 
 setting_brightness_check:
+	ld	c,a
 	ld	a,(ix)
 	cp	a,7
 	jr	nz,.fail
-	ld	hl,setting_brightness
+	ld	a,c
+	ld	b,0
+.prev_key := $-1
+	cp	a,b
+	jr	z,.no_reset
+	xor	a,a
+	jr	.reset
+.no_reset:
+	ld	a,0
+.counter := $-1
+	cp	a,10
+	ld	b,10
+	jr	z,.fast
+.reset:
+	inc	a
+	ld	(.counter),a
+	ld	b,1
+.fast:
+	ld	a,c
+	ld	(.prev_key),a
+	ld	hl,mpBlLevel
 	ld	a,(hl)
 	ret
 .fail:
@@ -276,6 +297,15 @@ setting_draw_options:
 	print	string_setting_special_directories, 25, 151
 	print	string_setting_enable_shortcuts, 25, 171
 	print	string_settings_brightness, 25, 191
+	push	hl
+	xor	a,a
+	sbc	hl,hl
+	ld	a,(mpBlLevel)
+	ld	l,a
+	call	lcd_num_3
+	pop	hl
+	inc	hl
+	call	lcd_string
 
 	xor	a,a
 	inc	a				; color is always set

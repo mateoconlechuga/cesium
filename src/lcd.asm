@@ -335,6 +335,9 @@ lcd_num_5:
 lcd_num_4:
 	ld	a,4
 	jr	lcd_num
+lcd_num_3:
+	ld	a,5
+	jr	lcd_num
 lcd_num:
 	dec	a
 	push	af
