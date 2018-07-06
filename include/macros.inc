@@ -6,6 +6,33 @@ format ti executable 'CESIUM'
 include 'app.inc'
 include 'ti84pceg.inc'
 
+macro relocate? name, address*
+	name.source? := $
+	name.destination? := address
+	org name.destination?
+	macro name.copy?
+		ld	hl, name.source?
+		ld	de, name.destination?
+		ld	bc, name.length?
+		ldir
+	end macro
+	macro name.run
+		name.copy
+		jp	name.destination?
+	end macro
+	macro name.call
+		name.copy
+		call	name.destination?
+	end macro
+	app.relocation equ name
+	macro end?.relocate?
+		name.length? := $ - name.destination?
+		org name.source? + name.length?
+		restore app.relocation
+		purge end?.relocate?
+	end macro
+end macro
+
 macro set_cursor_x? x, y
 	ld	bc,x
 	ld	(lcd_x),bc
