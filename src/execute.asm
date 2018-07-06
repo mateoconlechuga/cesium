@@ -1,6 +1,9 @@
 execute_item_alternate:
 	set	cesium_execute_alt,(iy + cesium_flag)
+	jr	execute_item.alt
 execute_item:
+	res	cesium_execute_alt,(iy + cesium_flag)
+.alt:
 	ld	hl,(current_selection_absolute)
 	ld	a,(current_screen)
 	cp	a,screen_programs
@@ -34,6 +37,7 @@ execute_app_check:
 	jp	main_find				; abort!
 
 execute_app:
+	call	flash_code_copy
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal
@@ -140,7 +144,7 @@ execute_basic_program:
 .in_ram:
 	ld	de,apperr1
 	ld	hl,string_error_stop
-	ld	bc,string_error_stop_end - string_error_stop
+	ld	bc,string_error_stop.length
 	ldir
 	set	graphdraw,(iy + graphFlags)
 	ld	hl,return_basic_error

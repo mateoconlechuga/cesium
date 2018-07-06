@@ -4,6 +4,7 @@ exit_full:
 	exit_cleanup.run
 
 relocate exit_cleanup, mpLcdCrsrImage
+	call	flash_code_copy
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal

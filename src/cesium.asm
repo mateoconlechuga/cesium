@@ -6,7 +6,7 @@
 cesium_name := 'Cesium'
 cesium_version := '3.0'
 cesium_copyright := '(C)  2015-2018 matt waltz'
-config_english := 0
+config_english := 1
 
 include 'include/macros.inc'
 
@@ -39,10 +39,10 @@ relocate cesium_code, cesium_execution_base
 	include 'luts.asm'
 	include 'sprites.asm'
 	include 'strings.asm'
-	include 'flash.asm'
 end relocate
 
 ; we want to keep these things in flash
+include 'flash.asm'
 include 'return.asm'
 include 'hooks.asm'
 include 'data.asm'

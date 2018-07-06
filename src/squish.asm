@@ -1,9 +1,12 @@
 squish_program:
+	call	util_install_error_handler
 	call	util_move_prgm_name_to_op1
 	ld	de,basic_prog
 	ld	hl,OP1
 	call	_Mov9b
-	call	util_install_error_handler
+	ld	hl,OP1
+	ld	de,backup_prgm_name
+	call	_Mov9b
 	ld	bc,(prgm_real_size)
 	dec	bc
 	dec	bc

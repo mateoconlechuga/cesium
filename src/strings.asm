@@ -26,7 +26,7 @@ string_min_os_version:
 	db	'5.0.0.0.0',0
 string_error_stop:
 	db	'Stop',0
-string_error_stop_end:
+.length := $-.
 
 ; english configuration
 

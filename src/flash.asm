@@ -1,3 +1,12 @@
+; the os can't do 16 bit relocations... which means we need to copy flash code to ram before running :/
+; call this before calling any flash_* functions as necessary
+
+flash_code_copy:
+	flash_code.copy
+	ret
+
+relocate flash_code, mpLcdCrsrImage
+
 assume	adl = 0
 
 ; modifies - a,c
@@ -74,3 +83,5 @@ if config_english
 else
 	db	'Sauvegarde en cours...',0
 end if
+
+end relocate
