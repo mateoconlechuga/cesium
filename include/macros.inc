@@ -24,11 +24,9 @@ macro relocate? name, address*
 		name.copy
 		call	name.destination?
 	end macro
-	app.relocation equ name
 	macro end?.relocate?
 		name.length? := $ - name.destination?
 		org name.source? + name.length?
-		restore app.relocation
 		purge end?.relocate?
 	end macro
 end macro
