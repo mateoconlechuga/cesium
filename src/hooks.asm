@@ -78,6 +78,7 @@ hook_show_labels:
 	ret
 
 hook_clear_backup:
+	call	flash_code_copy
 	jp	flash_clear_backup
 
 hook_restore_ram:
@@ -112,6 +113,7 @@ hook_backup_ram:
 	ld.sis	(penCol and $ffff), de
 	ld	hl,string_ram_backup
 	call	_VPutS
+	call	flash_code_copy
 	call	flash_backup_ram
 	call	_DrawStatusBar
 	dec	a

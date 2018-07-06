@@ -1,10 +1,10 @@
 ; application exit handling routines
 
 exit_full:
+	call	flash_code_copy
 	exit_cleanup.run
 
-relocate exit_cleanup, mpLcdCrsrImage
-	call	flash_code_copy
+relocate exit_cleanup, mpLcdCrsrImage + 500
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal

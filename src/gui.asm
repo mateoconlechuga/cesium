@@ -295,4 +295,5 @@ end if
 	ld	hl,string_ram_backup
 	call	lcd_string
 	call	lcd_blit
+	call	flash_code_copy
 	jp	flash_backup_ram
