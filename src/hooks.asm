@@ -20,10 +20,14 @@ hook_app_change:
 	cp	a,cxPrgmEdit		; only allow when editing
 	ld	b,a
 	ret	nz
-	;ld	a,c
-	;cp	a,kEnter		; wut ti, this is how you run a program?
-	;ret	z
-
+	ld	a,c
+	jp	a,kEnter		; wut ti, this is how you run a program?
+	jr	nz,.wut
+	push	hl
+	call	_PopOP1
+	pop	hl
+	ret
+.wut:
 	call	_CursorOff
 	call	_CloseEditEqu
 	call	_PopOP1
@@ -58,18 +62,18 @@ hook_get_key:
         ret
 .check_for_shortcut_key:
 	pop	af
-	cp	a,skGraph
-	jp	z,hook_show_labels
-	cp	a,skPrgm
-	jp	z,hook_execute_cesium
 	cp	a,skStat
 	jp	z,hook_password
+	cp	a,skGraph
+	jr	z,hook_show_labels
+	cp	a,skPrgm
+	jr	z,hook_execute_cesium
 	cp	a,sk8
-	jp	z,hook_backup_ram
+	jr	z,hook_backup_ram
 	cp	a,sk5
-	jp	z,hook_clear_backup
+	jr	z,hook_clear_backup
 	cp	a,sk2
-	jp	z,hook_restore_ram
+	jr	z,hook_restore_ram
 	ret
 
 hook_show_labels:
@@ -82,7 +86,6 @@ hook_clear_backup:
 	jp	flash_clear_backup
 
 hook_restore_ram:
-	di
 	ld	hl,$3c0001
 	ld	a,$a5
 	cp	a,(hl)

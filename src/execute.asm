@@ -4,6 +4,7 @@ execute_item_alternate:
 execute_item:
 	res	cesium_execute_alt,(iy + cesium_flag)
 .alt:
+	call	flash_code_copy
 	ld	hl,(current_selection_absolute)
 	ld	a,(current_screen)
 	cp	a,screen_programs
@@ -37,7 +38,6 @@ execute_app_check:
 	jp	main_find				; abort!
 
 execute_app:
-	call	flash_code_copy
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal

@@ -160,12 +160,17 @@ end macro
 
 macro flash_unlock_m
 	di
+	ld	a,$e3
+	ld	mb,a
 	ld.sis	sp,$ea1f
 	call.is	flash_unlock and $ffff
 end macro
 
 macro flash_lock_m
+	di
 	call.is	flash_lock and $ffff
+	ld	a,$d0
+	ld	mb,a
 end macro
 
 ; general

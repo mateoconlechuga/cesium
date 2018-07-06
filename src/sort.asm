@@ -48,9 +48,9 @@ sort_vat:
 	ld	a,(hl)
 	add	a,7
 	ld	bc,6					; rewind six bytes
-	add	hl,bc					; A=number of bytes to move
-	ld	c,a					; HL->bytes to move
-	ld	(sort_vat_entry_size),bc			; DE->move to location
+	add	hl,bc					; a = number of bytes to move
+	ld	c,a					; hl -> bytes to move
+	ld	(sort_vat_entry_size),bc		; de -> move to location
 	ld	(sort_vat_entry_new_loc),de
 	push	de
 	push	hl
@@ -98,7 +98,7 @@ sort_vat:
 	jp	.sort_next
 
 .first_found:
-	set	sort_first_item_found,(iy + asm_Flag1)		; to make it only execute once
+	set	sort_first_item_found,(iy + asm_Flag1)	; to make it only execute once
 	ld	(sort_first_item_found_ptr),hl
 	call	.skip_name
 	ld	(sort_end_of_part_ptr),hl
@@ -184,7 +184,7 @@ sort_vat:
 	pop	af
 	ret
 
-.find_next_item:					; carry=found nc=notfound
+.find_next_item:					; carry = found, nc = notfound
 	ex	de,hl
 	ld	hl,(ptemp)
 	or	a,a					; reset carry flag
@@ -195,7 +195,7 @@ sort_vat:
 	and	a,$1f					; mask out state bytes
 	push	hl
 	ld	hl,.sort_types
-	ld	bc,.sort_types_end - .sort_types
+	ld	bc,.sort_types.length
 	cpir
 	pop	hl
 	jp	nz,.skip_to_next			; skip to next entry
@@ -213,4 +213,4 @@ sort_vat:
 
 .sort_types:
 	db	progObj, protProgObj, appVarObj		; types to sort
-.sort_types_end:
+.length := $-.
