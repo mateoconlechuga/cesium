@@ -70,6 +70,7 @@ Cesium also offers the ability to externally back up the RAM from within the OS.
 ### Running Programs
 Cesium can run programs written in ASM, C, ICE, or BASIC, either from the archive or not. It is prefered that you place programs in the archive, as it will protect them against RAM clears.
 To run a program, simply press <kbd>2nd</kbd> or <kbd>Enter</kbd>. After a program is finished running, it will return to Cesium.
+Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if the "Backup RAM" option is enabled in the Cesium settings. Otherwise, the program will be run without backing up the RAM.
 
 ### Features
 *HUD:*
@@ -93,13 +94,13 @@ To run a program, simply press <kbd>2nd</kbd> or <kbd>Enter</kbd>. After a progr
 * Run Archived programs with any OS.
 * Edit Archived BASIC programs and an instant goto for errors. (Won't edit locked programs)
 * While editing program, you have access to the entire screen (the "PROGRAM:NAME" line isn't there)
-* Turn off loading indicator when running BASIC programs. (toggle in settings)
+* Turn off run/busy indicator when running BASIC programs. (toggle in settings)
 
 *Program Features:*
 * Search for programs for a quick lookup.
 * Archive programs.
 * Lock programs from editing.
-* Hide programs from normal <kbd>prgm</kbd> button.
+* Hide programs from normal <kbd>prgm</kbd> button (the TI-OS program menu).
 * Rename a program.
 * Create a program.
 * Delete a program.
