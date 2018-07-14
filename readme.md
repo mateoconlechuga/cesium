@@ -25,7 +25,7 @@ Then press <kbd>prgm</kbd> and choose `CESIUM`. The homescreen should look like 
 
 Press <kbd>enter</kbd> to execute.
 
-**NOTE:** The `Cesium` application is accessible with the [apps] button; *not* with the [prgm] button.
+**NOTE:** The `Cesium` application is accessible with the <kbd>apps</kbd> button; *not* with the <kbd>prgm</kbd> button.
 
 Once installed, the application cannot be transferred to other calculators. If you wish to transfer Cesium to other calculators after installation, you must transfer the installer itself to other calculators.
 
