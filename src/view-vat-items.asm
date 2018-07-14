@@ -254,7 +254,7 @@ file_editable:
 	inc	de
 	jr	nz,.no_custom_icon
 	djnz	.verify_icon
-	pop	hl					; remove default icon
+	pop	de					; remove default icon
 	ld	de,sprite_temp
 	ld	a,16
 	ld	(de),a
