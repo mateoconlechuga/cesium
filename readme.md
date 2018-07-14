@@ -19,7 +19,7 @@ Then press <kbd>prgm</kbd> and choose `CESIUM`. The homescreen should look like 
 
     Asm(prgmCESIUM
 
-**If you have OS 5.3+, you can just do:
+*If you have OS 5.3+, you can just do:*
 
     prgmCESIUM
 
