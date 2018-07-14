@@ -115,7 +115,7 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * How large a program is.
 * Extra information about a program at the bottom of the HUD.
 
-Language support:
+*Language support:*
 * English
 * French (Credits to Adriweb for translation)
 
