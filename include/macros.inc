@@ -305,6 +305,7 @@ item_ptr := prgm_type + 1;
 number_of_items := item_ptr + 3
 
 sprite_temp := mpLcdCrsrImage
+string_temp := mpLcdCrsrImage
 
 settings_size := setting_password + password_max_length + 1 - settings_data
 
