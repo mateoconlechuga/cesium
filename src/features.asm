@@ -49,7 +49,7 @@ name_buffer := mpLcdCrsrImage + 1000
 	push	hl
 	ld	hl,lut_character_standard
 .current_character_lut := $-1
-	call	_AddHLAndA		; find the offset
+	call	_AddHLAndA			; find the offset
 .insert_char:
 	ld	a,(hl)
 	or	a,a
@@ -171,7 +171,7 @@ current_input_mode := $-1
 	inc	hl
 	ld	a,(de)
 	cp	a,65
-	jr	nc,.not_hidden				; check if program is hidden
+	jr	nc,.not_hidden			; check if program is hidden
 	ld	a,(hl)
 	sub	a,64
 	ld	(hl),a

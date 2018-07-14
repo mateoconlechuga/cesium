@@ -56,6 +56,8 @@ relocate installer_execute_cesium, mpLcdCrsrImage
 
 	call	_ChkFindSym			; delete the installer if needed
 	call	_DelVarArc
+	call	_ClrScrn
+	call	_HomeUp
 
 .no_delete:
 	ld	de,(asm_prgm_size)		; load this program size

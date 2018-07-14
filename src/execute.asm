@@ -89,10 +89,6 @@ execute_program:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,gui_backup_ram_to_flash
 .skip_backup:
-	call	hook_home.save
-	ld	hl,hook_home
-	call	_SetHomescreenHook
-	call	hook_home.establish
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	call	nz,_ClrGetKeyHook
 	call	lcd_normal
@@ -105,6 +101,7 @@ execute_program:
 execute_assembly_program:
 	ld	hl,return_asm
 	push	hl
+	set	appAutoScroll,(iy + appflags)		; allow scrolling
 	jp	userMem
 
 execute_basic_program:
@@ -118,11 +115,15 @@ execute_basic_program:
 	jp	z,squish_program			; we've already installed an error handler
 	jr	execute_assembly_program
 .not_unsquished:
+	call	_ClrTxtShd
+	call	_HomeUp
 	call	_RunIndicOn
 	bit	setting_basic_indicator,(iy + settings_flag)
 	call	nz,_RunIndicOff
 	call	_APDSetup
 	call	_EnableAPD
+	call	hook_home.save
+	call	hook_home.set
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.in_ram
 	call	util_delete_temp_program_get_name
@@ -142,7 +143,7 @@ execute_basic_program:
 .in_rom:
 	call	_OP4ToOP1
 .in_ram:
-	ld	de,apperr1
+	ld	de,appErr1
 	ld	hl,string_error_stop
 	ld	bc,string_error_stop.length
 	ldir
@@ -153,6 +154,7 @@ execute_basic_program:
 	set	progExecuting,(iy + newdispf)
 	set	allowProgTokens,(iy + newDispF)
 	res	7,(iy + $45)
+	set	appAutoScroll,(iy + appflags)		; allow scrolling
 	set	cmdExec,(iy + cmdFlags) 		; set these flags to execute basic program
 	res	onInterrupt,(iy + onflags)
 	ld	hl,return_basic

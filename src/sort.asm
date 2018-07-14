@@ -194,8 +194,8 @@ sort_vat:
 	ld	a,(hl)
 	and	a,$1f					; mask out state bytes
 	push	hl
-	ld	hl,.sort_types
-	ld	bc,.sort_types.length
+	ld	hl,sort_types
+	ld	bc,sort_types.length
 	cpir
 	pop	hl
 	jp	nz,.skip_to_next			; skip to next entry
@@ -211,6 +211,6 @@ sort_vat:
 	scf
 	ret
 
-.sort_types:
+sort_types:
 	db	progObj, protProgObj, appVarObj		; types to sort
 .length := $-.

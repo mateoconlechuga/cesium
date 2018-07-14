@@ -20,7 +20,7 @@ relocate exit_cleanup, mpLcdCrsrImage + 500
 	ld	bc,69090
 	call	_MemClear
 	call	_ClrTxtShd				; clear text shadow
-	bit	3,(iy+$25)
+	bit	3,(iy + $25)
 	jr	z,.no_defrag
 	ld	a,cxErase
 	call	_NewContext0				; trigger a defrag as needed

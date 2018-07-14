@@ -124,7 +124,6 @@ return:
 	call	_DelMem				; delete user program
 
 	call	_ClrHomescreenHook
-	call	_ForceFullScreen
 	res	appWantHome,(iy + sysHookFlg)
 	ld	a,(backup_home_hook_location)
 	or	a,a

@@ -21,7 +21,7 @@ hook_app_change:
 	ld	b,a
 	ret	nz
 	ld	a,c
-	jp	a,kEnter		; wut ti, this is how you run a program?
+	cp	a,kEnter		; wut ti, this is how you run a program?
 	jr	nz,.wut
 	push	hl
 	call	_PopOP1
@@ -55,11 +55,11 @@ hook_get_key:
 	pop	hl
 	jr	nz,.check_for_shortcut_key
 	pop	af
-        cp	a,sk2nd
-        ret	nz
-        ld	a,sk2nd - 1				; maybe some other day
-        inc	a
-        ret
+	cp	a,sk2nd
+	ret	nz
+	ld	a,sk2nd - 1				; maybe some other day
+	inc	a
+	ret
 .check_for_shortcut_key:
 	pop	af
 	cp	a,skStat
@@ -77,31 +77,36 @@ hook_get_key:
 	ret
 
 hook_show_labels:
-	dec	a
-	inc	a
-	ret
+	jr	hook_get_key_none
 
 hook_clear_backup:
 	call	flash_code_copy
-	jp	flash_clear_backup
+	call	flash_clear_backup
+	jr	hook_get_key_none
 
 hook_restore_ram:
+	push	hl
+	push	af
 	ld	hl,$3c0001
 	ld	a,$a5
 	cp	a,(hl)
-	ret	nz
+	jr	nz,.none
 	dec	hl
 	ld	a,$5a
 	cp	a,(hl)
-	ret	nz
-	ld	hl,$d00002
-	ld	a,$a5
-	cp	a,(hl)
-	ret	nz
-	dec	hl
-	cp	a,(hl)
-	ret	nz
-	jp	0
+	jp	z,0
+.none:
+	pop	af
+	pop	hl
+	inc	a
+	dec	a
+	ret
+
+hook_get_key_none:
+	xor	a,a
+	inc	a
+	dec	a
+	ret
 
 hook_backup_ram:
 	call	_os_ClearStatusBarLow
@@ -119,9 +124,7 @@ hook_backup_ram:
 	call	flash_code_copy
 	call	flash_backup_ram
 	call	_DrawStatusBar
-	dec	a
-	inc	a
-	ret
+	jr	hook_get_key_none
 
 hook_execute_cesium:
 	xor	a,a
@@ -217,23 +220,32 @@ hook_home:
 	ret	nz
 	bit	appInpPrmptDone,(iy + apiFlg2)
 	res	appInpPrmptDone,(iy + apiFlg2)
+	ld	a,b
 	ld	b,0
 	jr	z,.restore_home_hooks
 .establish:
 	call	_ReloadAppEntryVecs
 	ld	hl,.vectors
 	call	_AppInit
-	call	_ForceFullScreen
 	or	a,1
 	ld	a,cxExtApps
 	ld	(cxCurApp),a
 	ret
+.set:
+	ld	hl,hook_home
+	call	_SetHomescreenHook
+	jr	.establish
 .restore_home_hooks:
+	push	af
 	push	bc
 	call	_ClrHomescreenHook
-	call	_ForceFullScreen
 	res	appWantHome,(iy + sysHookFlg)
 	pop	bc
+	pop	af
+	cp	a,cxError
+	jp	z,return_basic
+	cp	a,cxPrgmInput
+	jp	z,return_basic
 	ld	hl,backup_home_hook_location
 	ld	a,(hl)
 	or	a,a
@@ -245,7 +257,7 @@ hook_home:
 	pop	bc
 	ret
 .save:
-	or	a,a
+	xor	a,a
 	sbc	hl,hl
 	bit	appWantHome,(iy + sysHookFlg)
 	jr	z,.done
@@ -260,7 +272,6 @@ hook_home:
 	bit    appInpPrmptInit,(iy + apiFlg2)
 	jr     nz,.skip
 	call	_ClrHomescreenHook
-	call	_ForceFullScreen
 .skip:
 	call	_ReloadAppEntryVecs
 	call	_PutAway
@@ -273,3 +284,4 @@ hook_home:
 	dl	_RstrShadow
 	dl	$f8
 	dl	$f8
+	db	0

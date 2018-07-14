@@ -162,7 +162,7 @@ macro flash_unlock_m
 	di
 	ld	a,$e3
 	ld	mb,a
-	ld.sis	sp,$ea1f
+	ld.sis	sp,$0bfc
 	call.is	flash_unlock and $ffff
 end macro
 
@@ -195,7 +195,7 @@ byte_c := $00
 byte_dir := file_dir
 byte_edit_return := $aa
 
-item_location_base := pixelShadow
+item_location_base := pixelShadow2
 
 ; lcd
 
@@ -286,7 +286,8 @@ settings_data := backup_home_hook_location + 3
 setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
 setting_color_tertiary := setting_color_secondary + 1
-setting_config := setting_color_tertiary + 1
+setting_color_quaternary := setting_color_tertiary + 1
+setting_config := setting_color_quaternary + 1
 setting_brightness := setting_config + 1
 setting_password := setting_brightness + 1
 current_option_selection := setting_password + password_max_length + 1
