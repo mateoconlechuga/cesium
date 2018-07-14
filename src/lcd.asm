@@ -341,7 +341,7 @@ lcd_num_3:
 lcd_num:
 	dec	a
 	push	af
-	ld	de,string_temp
+	ld	de,lcd_string_temp
 	push	de
 	call	lcd_num_conv
 	pop	hl
@@ -373,3 +373,6 @@ lcd_num_conv:
 	ld	(de),a
 	inc	de
 	ret
+
+lcd_string_temp:
+	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
