@@ -87,16 +87,16 @@ util_restore_cursor:
 	jp	(hl)
 
 util_set_inverted_text_color:
-	ld	a,(setting_color_primary)
+	ld	a,(color_primary)
 	ld	(lcd_text_bg),a
-	ld	a,color_white
+	ld	a,(color_quaternary)
 	ld	(lcd_text_fg),a
 	ret
 
 util_set_normal_text_color:
 	ld	a,color_white
 	ld	(lcd_text_bg),a
-	ld	a,(setting_color_secondary)
+	ld	a,(color_secondary)
 	ld	(lcd_text_fg),a
 	ret
 

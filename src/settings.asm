@@ -32,6 +32,8 @@ settings_create_default:
 	ld	(hl),color_secondary_default
 	ld	hl,setting_color_tertiary
 	ld	(hl),color_tertiary_default
+	ld	hl,setting_color_quaternary
+	ld	(hl),color_quaternary_default
 	ld	hl,setting_config
 	ld	(hl),setting_config_default
 	ld	hl,setting_password
@@ -269,7 +271,7 @@ setting_color_swap:
 	ld	hl,color_primary
 	ld	a,0
 color_table_active := $-1
-	cp	a,2
+	cp	a,3
 	jr	nz,.incr
 	ld	a,-1
 .incr:

@@ -38,6 +38,8 @@ string_secondary_color:
 	db	'Secondary Color',0
 string_tertiary_color:
 	db	'Tertiary Color',0
+string_quaternary_color:
+	db	'Quaternary Color',0
 string_language:
 	db	'Language: ',0
 string_archived:
@@ -109,6 +111,8 @@ string_secondary_color:
 	db	'Couleur secondaire',0
 string_tertiary_color:
 	db	'Couleur tertiaire',0
+string_quaternary_color:
+	db	'Couleur Quaternaire',0
 string_language:
 	db	'Langage : ',0
 string_archived:

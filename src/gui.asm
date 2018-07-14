@@ -146,6 +146,9 @@ gui_draw_color_table:
 	dec	a
 	jr	z,.string
 	ld	hl,string_tertiary_color
+	dec	a
+	jr	z,.string
+	ld	hl,string_quaternary_color
 .string:
 	set_inverted_text
 	set_cursor 4, 228

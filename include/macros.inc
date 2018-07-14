@@ -206,6 +206,7 @@ vRamBuffer := vRam + ((vRamEnd - vRam) / 2)
 color_primary_default := 107
 color_secondary_default := 107
 color_tertiary_default := 230
+color_quaternary_default := 255
 color_white := 255
 color_hidden := 181
 
@@ -313,6 +314,7 @@ settings_size := setting_password + password_max_length + 1 - settings_data
 color_primary := setting_color_primary
 color_secondary := setting_color_secondary
 color_tertiary := setting_color_tertiary
+color_quaternary := setting_color_quaternary
 
 ; constants
 
