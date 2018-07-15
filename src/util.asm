@@ -110,7 +110,7 @@ util_get_key:
 	call	lcd_blit
 	call	_GetCSC
 	or	a,a
-	ret	nz
+	jr	nz,util_setup_apd
 	call	util_handle_apd
 	jr	util_get_key
 
