@@ -138,6 +138,11 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE.
 
 ### Building
+
+Cesium uses submodules to build, so be sure to clone the project like so:
+
+    git clone --recursive https://github.com/mateoconlechuga/cesium.git
+
 Linux / macOS / Windows:
 
 You can build the example application using the following line with `fasmg`: (Available for your os near the bottom of [this page](https://flatassembler.net/download.php)).
