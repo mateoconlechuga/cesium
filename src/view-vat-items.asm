@@ -120,9 +120,6 @@ current_prgm_drawing := $-1
 	add	a,64
 	ld	(hl),a
 	set	temp_prgm_hidden,(iy + temp_prgm_flag)
-	ld	a,(color_secondary)
-	cp	a,color_secondary_default
-	jr	nz,.draw_item
 	ld	a,(color_quinary)
 	ld	(lcd_text_fg),a
 .draw_item:
