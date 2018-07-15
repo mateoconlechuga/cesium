@@ -105,7 +105,7 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Edit a program directly.
 
 * Folder dedicated to FLASH applications.
-* Folder dedicated to AppVar management. (You can "run" them, but they won't do anything except returning you to the program menu unless it's a specific appvar that is executable)
+* Folder dedicated to AppVar management.
 * Automatically quits after a minute of inactivity so it won't drain your battery.
 
 * Displays program details such as:
@@ -128,14 +128,14 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Toggle showing special directories (Applications and AppVars).
 * Enable/disable keyboard short cuts (Open Cesium hook, turn off with password hook, and external backup hooks).
 * Toggle show item deletion confirmation to prevent accidentally deleting something you don't want to.
-* Change LCD brightness 
+* Change LCD brightness
 
 *Language support:*
 * English
 * French (Credits to Adriweb for translation)
 
 ### Uninstalling
-To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE. 
+To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE.
 
 ### Building
 Linux / macOS / Windows:
