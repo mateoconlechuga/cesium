@@ -80,22 +80,22 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 *Backup features:*
 * Backup RAM before executing programs (with [2nd] button). If a program crashes, nothing will be deleted or lost! (toggle in settings)
 * Quick launch button (the [enter] button) that skips backup process.
-* External backup, if your calculator crashes outside of Cesium, everything is still protected!
-* Restore External backup feature so you can revert your calculator back to its backed-up state whenever you want.
+* External backup, if your calculator crashes outside of Cesium, everything is still protected! (done from homescreen)
+* Restore External backup feature so you can revert your calculator back to its backed-up state whenever you want. (also done from homescreen)
 * Video of every backup feature and how to use them: https://youtu.be/hZDzV1CDN3k
 
 *Basic Features:*
 * Quick launch with <kbd>on</kbd> + <kbd>prgm</kbd> (toggle in settings)
 * Quick (adjustable) password lock with <kbd>on</kbd> + <kbd>stat</kbd> (toggle in settings)
 
-* Run ASM programs directly.
+* Run ASM , C, and ICE programs directly.
 * Run Archived programs with any OS.
 * Edit Archived BASIC programs and an instant goto for errors. (Won't edit locked programs)
-* While editing program, you have access to the entire screen (the "PROGRAM:NAME" line isn't there)
+* While editing program, you have access to the entire screen (the "PROGRAM:NAME" line isn't there for more space)
 * Turn off run/busy indicator when running BASIC programs. (toggle in settings)
 
 *Program Features:*
-* Search for programs for a quick lookup.
+* Search for programs for a quick lookup. (press the letter with the green letter above it corresponding to the first letter of the program you're searching for)
 * Archive programs.
 * Lock programs from editing.
 * Hide programs from normal <kbd>prgm</kbd> button (the TI-OS program menu).
@@ -105,22 +105,37 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Edit a program directly.
 
 * Folder dedicated to FLASH applications.
-* Folder dedicated to AppVar management.
+* Folder dedicated to AppVar management. (You can "run" them, but they won't do anything except returning you to the program menu unless it's a specific appvar that is executable)
 * Automatically quits after a minute of inactivity so it won't drain your battery.
-* Brightness configurations in settings menu.
 
 * Displays program details such as:
-* Displays an icon next to the programs name.
+* Displays an icon next to the programs name and above extra information.
 * Language the program was written in.
 * How large a program is.
 * Extra information about a program at the bottom of the HUD.
+
+*Settings*
+* Color selection (toggle with <kbd>mode</kbd>:
+* Theme color (primary color).
+* Main text color (secondary color).
+* Highlight color (tertiary color).
+* Cesium top and bottom bar text color (quaternary color).
+
+* Disableing busy run indicator in Basic programs.
+* Toggle show program/directory item count.
+* Toggle display clock.
+* Toggle running with RAM backup.
+* Toggle showing special directories (Applications and AppVars).
+* Enable/disable keyboard short cuts (Open Cesium hook, turn off with password hook, and external backup hooks).
+* Toggle show item deletion confirmation to prevent accidentally deleting something you don't want to.
+* Change LCD brightness 
 
 *Language support:*
 * English
 * French (Credits to Adriweb for translation)
 
 ### Uninstalling
-To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar.  
+To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE. 
 
 ### Building
 Linux / macOS / Windows:
