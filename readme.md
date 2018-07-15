@@ -123,7 +123,7 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Hidden programs color.
 * Background color.
 
-* Disableing busy run indicator in Basic programs.
+* Disabling busy run indicator in Basic programs.
 * Toggle show program/directory item count.
 * Toggle display clock.
 * Toggle running with RAM backup.
@@ -134,9 +134,11 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 
 *Language support:*
 * English
-* French (Credits to Adriweb for translation)
+* French (Credits to Adriweb for translation!)
 
-### Uninstalling
+### Uninstalling 
+<sup><sub>First off, why would you ever want to delete such an awesome shell?</sub></sup>
+
 To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE.
 
 ### Building
