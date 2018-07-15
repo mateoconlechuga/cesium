@@ -149,7 +149,7 @@ Cesium uses submodules to build, so be sure to clone the project like so:
 
 Linux / macOS / Windows:
 
-You can build the example application using the following line with `fasmg`: (Available for your os near the bottom of [this page](https://flatassembler.net/download.php)).
+You can build the example application using the following line with `fasmg`: (Available for your OS near the bottom of [this page](https://flatassembler.net/download.php)).
 
     fasmg src/cesium.asm cesium.8xp
 
@@ -157,7 +157,10 @@ You can build the example application using the following line with `fasmg`: (Av
 (C) October 2015 - July 2018 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
 
-### Source and Bug Reports
+### Source
 Source is available here: https://github.com/mateoconlechuga/cesium
 
-If you encounter an unexpected behavior, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
+### Bug Reports and Feature Requests
+Make a GitHub issue here: https://github.com/mateoconlechuga/cesium/issues
+
+If you encounter an unexpected behavior, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. (If there isn't a GitHub issue for a bug, it will likely be ignored) Thanks!
