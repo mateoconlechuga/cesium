@@ -37,9 +37,13 @@ string_primary_color:
 string_secondary_color:
 	db	'Secondary Color',0
 string_tertiary_color:
-	db	'Tertiary Color',0
+	db	'Highlight Color',0
 string_quaternary_color:
-	db	'Quaternary Color',0
+	db	'Inversion Color',0
+string_quinary_color:
+	db	'Hidden Program Color',0
+string_senary_color:
+	db	'Background Color',0
 string_language:
 	db	'Language: ',0
 string_archived:
@@ -110,9 +114,13 @@ string_primary_color:
 string_secondary_color:
 	db	'Couleur secondaire',0
 string_tertiary_color:
-	db	'Couleur tertiaire',0
+	db	'Couleur surligner',0
 string_quaternary_color:
-	db	'Couleur Quaternaire',0
+	db	'Couleur invers',$82,0
+string_quinary_color:
+	db	'Couleur programme cach',$82,0
+string_senary_color:
+	db	'Couleur contexte',0
 string_language:
 	db	'Langage : ',0
 string_archived:

@@ -28,7 +28,7 @@ util_show_time:
 util_set_primary:
 	ld	a,(color_primary)
 	ld	(util_restore_primary.color),a
-	ld	a,color_white
+	ld	a,(color_senary)
 	ld	(color_primary),a
 	ret
 
@@ -94,7 +94,7 @@ util_set_inverted_text_color:
 	ret
 
 util_set_normal_text_color:
-	ld	a,color_white
+	ld	a,(color_senary)
 	ld	(lcd_text_bg),a
 	ld	a,(color_secondary)
 	ld	(lcd_text_fg),a
@@ -115,7 +115,7 @@ util_get_key:
 	jr	util_get_key
 
 util_setup_apd:
-	ld	hl,$fffff
+	ld	hl,$4ff
 	ld	(apd_timer),hl
 	ret
 

@@ -84,6 +84,9 @@ execute_app:
 	jp	(hl)
 
 execute_program:
+	ld	a,(current_screen)
+	cp	a,screen_appvars
+	jp	z,main_loop
 	bit	cesium_execute_alt,(iy + cesium_flag)
 	jr	nz,.skip_backup
 	bit	setting_ram_backup,(iy + settings_flag)

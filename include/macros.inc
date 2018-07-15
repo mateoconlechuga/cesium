@@ -96,8 +96,7 @@ macro draw_rectangle_outline? Lx, Ty, Rx, By
 	call	lcd_rectangle_outline.computed
 end macro
 
-macro draw_rectangle_color? Lx, Ty, Rx, By, index
-	ld	a,index
+macro draw_rectangle_color? Lx, Ty, Rx, By
 	call	util_set_primary
 	draw_rectangle Lx, Ty, Rx, By
 	call	util_restore_primary
@@ -187,7 +186,8 @@ file_ice_source := 4
 file_dir := 5
 file_appvar := 6
 
-byte_cesium := $01
+byte_icon := $01
+byte_description := $02
 byte_jp := $c3
 byte_ice_source := $2c
 byte_ice := $7f
@@ -200,15 +200,6 @@ item_location_base := pixelShadow2
 ; lcd
 
 vRamBuffer := vRam + ((vRamEnd - vRam) / 2)
-
-; colors
-
-color_primary_default := 107
-color_secondary_default := 107
-color_tertiary_default := 230
-color_quaternary_default := 255
-color_white := 255
-color_hidden := 181
 
 ; password
 
@@ -288,7 +279,9 @@ setting_color_primary := settings_data
 setting_color_secondary := setting_color_primary + 1
 setting_color_tertiary := setting_color_secondary + 1
 setting_color_quaternary := setting_color_tertiary + 1
-setting_config := setting_color_quaternary + 1
+setting_color_quinary := setting_color_quaternary + 1
+setting_color_senary := setting_color_quinary + 1
+setting_config := setting_color_senary + 1
 setting_brightness := setting_config + 1
 setting_password := setting_brightness + 1
 current_option_selection := setting_password + password_max_length + 1
@@ -315,6 +308,15 @@ color_primary := setting_color_primary
 color_secondary := setting_color_secondary
 color_tertiary := setting_color_tertiary
 color_quaternary := setting_color_quaternary
+color_quinary := setting_color_quinary
+color_senary := setting_color_senary
+
+color_primary_default := 107
+color_secondary_default := 107
+color_tertiary_default := 230
+color_quaternary_default := 255
+color_quinary_default := 181
+color_senary_default := 255
 
 ; constants
 

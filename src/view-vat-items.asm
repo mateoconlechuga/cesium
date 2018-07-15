@@ -123,7 +123,8 @@ current_prgm_drawing := $-1
 	ld	a,(color_secondary)
 	cp	a,color_secondary_default
 	jr	nz,.draw_item
-	set_text_fg_color color_hidden
+	ld	a,(color_quinary)
+	ld	(lcd_text_fg),a
 .draw_item:
 	push hl
 .draw_item_name:
@@ -220,8 +221,16 @@ temp_prgm_data_ptr := $-3
 	inc	hl
 	inc	hl					; hl -> icon indicator byte, hopefully
 	ld	a,(hl)
-	cp	a,byte_cesium				; cesium indicator byte
+	cp	a,byte_icon				; cesium indicator byte
+	jr	z,.valid_icon
+	cp	a,byte_description
 	jr	nz,.no_custom_icon
+	bit	drawing_selected,(iy + item_flag)	; check if the description should be drawn
+	jr	z,.no_custom_icon
+	inc	hl
+	call	gui_show_description
+	jr	.no_custom_icon
+.valid_icon:
 	pop	de					; pop the old icon
 	inc	hl
 	bit	drawing_selected,(iy + item_flag)	; check if the description should be drawn
@@ -284,7 +293,7 @@ file_editable:
 	pop	hl
 	pop	de
 	pop	bc
-	;jp	draw_listed_program
+	;jq	draw_listed_program
 
 draw_listed_program:
 	ld	a,(lcd_y)
@@ -321,7 +330,8 @@ tmp_y := $-1
 	ld	(iy + prgm_flag),a			; load the program info
 
 	draw_sprite_2x 120, 57
-	set_text_bg_color color_white
+	ld	a,(color_senary)
+	ld	(lcd_text_bg),a
 
 	print	string_language, 199, 107
 	pop	hl

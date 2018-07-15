@@ -110,7 +110,8 @@ current_input_mode := $-1
 	jp	.get_name
 
 .clear:
-	draw_rectangle_color 199, 173, 313, 215, color_white
+	ld	a,(color_senary)
+	draw_rectangle_color 199, 173, 313, 215
 	bit	item_renaming,(iy + item_flag)
 	ld	hl,string_rename
 	jr	nz,.rename

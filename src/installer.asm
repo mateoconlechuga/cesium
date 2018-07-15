@@ -3,24 +3,7 @@
 
 	jp	installer_start
 
-	db 1,16,16	; indicator, width, height
-	db $ff,$ff,$ff,$ff,$ff,$ff,$de,$d6,$d6,$de,$ff,$ff,$ff,$ff,$ff,$ff
-	db $ff,$ff,$ff,$ff,$ff,$ff,$d6,$de,$de,$b5,$ff,$ff,$ff,$ff,$ff,$ff
-	db $ff,$ff,$de,$d6,$d6,$ff,$d6,$de,$de,$b5,$ff,$b5,$b5,$b6,$ff,$ff
-	db $ff,$de,$de,$fe,$de,$b6,$b5,$d6,$d6,$b5,$b5,$d6,$de,$b5,$b6,$ff
-	db $ff,$de,$b6,$de,$d6,$de,$de,$d6,$d6,$de,$d6,$d6,$d6,$6c,$b5,$ff
-	db $ff,$ff,$de,$d6,$d6,$d6,$b5,$94,$94,$b5,$b6,$b5,$b5,$b5,$ff,$ff
-	db $d6,$d6,$b6,$de,$d6,$b5,$94,$de,$de,$b5,$b6,$b5,$d6,$94,$94,$94
-	db $b6,$de,$d6,$d6,$d6,$b4,$de,$ff,$ff,$de,$b5,$b6,$b5,$b6,$de,$6b
-	db $b5,$de,$d6,$b6,$d6,$b5,$de,$ff,$ff,$de,$b5,$b5,$b5,$b5,$d6,$6b
-	db $b5,$94,$b4,$d6,$b6,$d6,$b5,$de,$de,$b5,$b5,$b5,$b5,$6b,$6b,$6b
-	db $ff,$ff,$d6,$b6,$b5,$b6,$b6,$b5,$b5,$b5,$b5,$b5,$b5,$b5,$ff,$ff
-	db $ff,$d6,$b4,$d6,$b6,$d6,$d6,$d6,$b6,$d6,$b6,$b5,$d6,$6b,$b5,$ff
-	db $ff,$d6,$b5,$de,$b4,$93,$93,$b6,$b5,$6b,$6b,$b4,$d6,$8c,$b5,$ff
-	db $ff,$ff,$b5,$6b,$6b,$ff,$94,$d6,$b6,$6b,$fe,$6b,$4a,$94,$ff,$ff
-	db $ff,$ff,$ff,$de,$ff,$ff,$94,$b5,$b5,$6b,$ff,$ff,$de,$ff,$ff,$ff
-	db $ff,$ff,$ff,$ff,$ff,$ff,$b6,$8c,$6c,$b5,$ff,$ff,$ff,$ff,$ff,$ff
-	db 'Cesium Installer Version ',cesium_version,$00	; description
+	db byte_description, 'Cesium Installer Version ', cesium_version, 0
 
 installer_start:
 	call	_PushOP1			; save the program name

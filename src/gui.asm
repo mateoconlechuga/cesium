@@ -102,7 +102,7 @@ gui_draw_option:
 	ld	a,(color_primary)
 	ld	(util_restore_primary.color),a
 	jr	nz,.no_fix
-	ld	a,color_white
+	ld	a,(color_senary)
 	call	util_set_primary
 .no_fix:
 	pop	af
@@ -149,6 +149,12 @@ gui_draw_color_table:
 	dec	a
 	jr	z,.string
 	ld	hl,string_quaternary_color
+	dec	a
+	jr	z,.string
+	ld	hl,string_quinary_color
+	dec	a
+	jr	z,.string
+	ld	hl,string_senary_color
 .string:
 	set_inverted_text
 	set_cursor 4, 228
@@ -281,8 +287,78 @@ gui_show_item_count:
 	pop	hl
 	ret
 
+gui_fixup_sprites:
+	ld	a,(color_senary)
+	ld	hl,sprite_directory_mask
+	ld	de,sprite_directory + 2
+	call	.fix
+	ld	hl,sprite_file_mask
+	ld	de,sprite_file_ice + 2
+	call	.fix
+	ld	de,sprite_file_c + 2
+	call	.fix
+	ld	de,sprite_file_asm + 2
+	call	.fix
+	ld	de,sprite_file_app + 2
+	call	.fix
+	ld	de,sprite_file_basic + 2
+	call	.fix
+	ld	de,sprite_file_appvar + 2
+	call	.fix
+	ld	(sprite_locked + 2),a
+	ld	de,sprite_locked + 2 + 5
+	ld	(de),a
+	inc	de
+	ld	(de),a
+	inc	de
+	inc	de
+	ld	(de),a
+	inc	de
+	ld	(de),a
+	ld	de,sprite_locked + 2 + 11
+	ld	(de),a
+	inc	de
+	ld	(de),a
+	inc	de
+	inc	de
+	ld	(de),a
+	inc	de
+	ld	(de),a
+	ld	(sprite_locked + 2 + 17),a
+	ret
+
+.fix:
+	push	hl
+	ld	b,16
+.loop:
+	push	bc
+	ld	c,(hl)
+	ld	b,8
+.loop1:
+	rlc	c
+	jr	nc,.skip1
+	ld	(de),a
+.skip1:
+	inc	de
+	djnz	.loop1
+	inc	hl
+	ld	c,(hl)
+	ld	b,8
+.loop2:
+	rlc	c
+	jr	nc,.skip2
+	ld	(de),a
+.skip2:
+	inc	de
+	djnz	.loop2
+	inc	hl
+	pop	bc
+	djnz	.loop
+	pop	hl
+	ret
+
 gui_backup_ram_to_flash:
-	ld	a,color_white
+	ld	a,(color_senary)
 	call	util_set_primary
 if config_english
 	draw_rectangle 114, 105, 206, 121

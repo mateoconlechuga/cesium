@@ -41,7 +41,7 @@ lcd_fill:
 	ld	hl,vRamBuffer
 	ld	bc,lcdWidth * lcdHeight - 1
 .clear:
-	ld	a,color_white
+	ld	a,(color_senary)
 	jp	_MemSet
 
 lcd_blit:

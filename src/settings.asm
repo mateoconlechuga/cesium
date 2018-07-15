@@ -23,17 +23,22 @@ settings_get_data:
 	ldir
 	ld	a,(setting_config)
 	ld	(iy + settings_flag),a
+	call	gui_fixup_sprites
 	jp	util_setup_shortcuts
 
 settings_create_default:
 	ld	hl,setting_color_primary	; initialize default settings
 	ld	(hl),color_primary_default
-	ld	hl,setting_color_secondary
+	inc	hl
 	ld	(hl),color_secondary_default
-	ld	hl,setting_color_tertiary
+	inc	hl
 	ld	(hl),color_tertiary_default
-	ld	hl,setting_color_quaternary
+	inc	hl
 	ld	(hl),color_quaternary_default
+	inc	hl
+	ld	(hl),color_quinary_default
+	inc	hl
+	ld	(hl),color_senary_default
 	ld	hl,setting_config
 	ld	(hl),setting_config_default
 	ld	hl,setting_password
@@ -220,18 +225,19 @@ setting_open_colors:
 	cp	a,skMode
 	jr	z,setting_color_swap
 	pop	hl
-	ld	hl,settings_show.draw
-	push	hl
 	cp	a,sk2nd
-	ret	z
+	jr	.complete
 	cp	a,skEnter
-	ret	z
+	jr	.complete
 	cp	a,skClear
-	ret	z
+	jr	.complete
 	cp	a,skDel
-	ret	z
+	jr	.complete
 	pop	hl
 	jr	.loop
+.complete:
+	call	gui_fixup_sprites
+	jp	settings_show.draw
 
 setting_color_left:
 	ld	a,(color_selection_x)
@@ -271,7 +277,7 @@ setting_color_swap:
 	ld	hl,color_primary
 	ld	a,0
 color_table_active := $-1
-	cp	a,3
+	cp	a,5
 	jr	nz,.incr
 	ld	a,-1
 .incr:
