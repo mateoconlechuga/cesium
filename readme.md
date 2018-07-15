@@ -115,11 +115,13 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Extra information about a program at the bottom of the HUD.
 
 *Settings*
-* Color selection (toggle with <kbd>mode</kbd>:
+* Color selection (toggle with <kbd>mode</kbd>):
 * Theme color (primary color).
 * Main text color (secondary color).
-* Highlight color (tertiary color).
-* Cesium top and bottom bar text color (quaternary color).
+* Highlight color.
+* Inversion color.
+* Hidden programs color.
+* Background color.
 
 * Disableing busy run indicator in Basic programs.
 * Toggle show program/directory item count.
