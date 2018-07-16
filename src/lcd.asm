@@ -27,7 +27,10 @@ lcd_init:
 	ret
 
 lcd_normal:
-	call	lcd_clear
+	ld	hl,vRam
+	ld	bc,((lcdWidth * lcdHeight) * 2) - 1
+	ld	a,255
+	call	_MemSet
 	ld	a,$2d
 	ld	(mpLcdCtrl),a
 	jp	_DrawStatusBar
