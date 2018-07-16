@@ -115,13 +115,15 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Extra information about a program at the bottom of the HUD.
 
 *Settings*
-* Color selection (toggle with <kbd>mode</kbd>:
+* Color selection (toggle with <kbd>mode</kbd>):
 * Theme color (primary color).
 * Main text color (secondary color).
-* Highlight color (tertiary color).
-* Cesium top and bottom bar text color (quaternary color).
+* Highlight color.
+* Inversion color.
+* Hidden programs color.
+* Background color.
 
-* Disableing busy run indicator in Basic programs.
+* Disabling busy run indicator in Basic programs.
 * Toggle show program/directory item count.
 * Toggle display clock.
 * Toggle running with RAM backup.
@@ -132,9 +134,11 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 
 *Language support:*
 * English
-* French (Credits to Adriweb for translation)
+* French (Credits to Adriweb for translation!)
 
-### Uninstalling
+### Uninstalling 
+<sup><sub>First off, why would you ever want to delete such an awesome shell?</sub></sup>
+
 To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE.
 
 ### Building
@@ -145,7 +149,7 @@ Cesium uses submodules to build, so be sure to clone the project like so:
 
 Linux / macOS / Windows:
 
-You can build the example application using the following line with `fasmg`: (Available for your os near the bottom of [this page](https://flatassembler.net/download.php)).
+You can build the example application using the following line with `fasmg`: (Available for your OS near the bottom of [this page](https://flatassembler.net/download.php)).
 
     fasmg src/cesium.asm cesium.8xp
 
@@ -153,7 +157,10 @@ You can build the example application using the following line with `fasmg`: (Av
 (C) October 2015 - July 2018 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
 
-### Source and Bug Reports
+### Source
 Source is available here: https://github.com/mateoconlechuga/cesium
 
-If you encounter an unexpected behavior, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. Thanks!
+### Bug Reports and Feature Requests
+Make a GitHub issue here: https://github.com/mateoconlechuga/cesium/issues
+
+If you encounter an unexpected behavior, please make an issue on GitHub and/or post a topic on TI community websites detailing exactly went wrong and when. (If there isn't a GitHub issue for a bug, it will likely be ignored) Thanks!
