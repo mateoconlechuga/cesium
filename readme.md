@@ -106,7 +106,7 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 
 * Folder dedicated to FLASH applications.
 * Folder dedicated to AppVar management.
-* Automatically quits after a minute of inactivity so it won't drain your battery.
+* Automatically quits after about 20 to 25 seconds of inactivity so it won't drain your battery.
 
 * Displays program details such as:
 * Displays an icon next to the programs name and above extra information.
