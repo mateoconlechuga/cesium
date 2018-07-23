@@ -19,7 +19,7 @@ Then press <kbd>prgm</kbd> and choose `CESIUM`. The homescreen should look like 
 
     Asm(prgmCESIUM
 
-*If you have OS 5.3+, you can just do:*
+*If you have OS 5.3 or above, you can just do:*
 
     prgmCESIUM
 
@@ -52,7 +52,8 @@ Available actions:
 | <kbd>on</kbd> + <kbd>prgm</kbd> | Launch Cesium Application                              |
 | <kbd>on</kbd> + <kbd>stat</kbd> | Power down with password on wake (No Default Password) |
 
-You can change the password from the settings menu (Accessed using <kbd>mode</kbd>), and pressing the <kbd>sto→</kbd> button. This will prompt for a new password which will be automatically saved.
+You can change the password from the settings menu (Accessed using <kbd>mode</kbd>), and pressing the <kbd>sto→</kbd> button. This will prompt for a new password which will be automatically saved. 
+*Note: There is no default password as before.*
 
 ### External Backup
 Cesium also offers the ability to externally back up the RAM from within the OS. These are also tied to the shortcuts:
