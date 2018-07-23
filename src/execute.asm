@@ -116,7 +116,6 @@ execute_basic_program:
 	ld	a,(hl)
 	cp	a,tAsm84CePrgm
 	jp	z,squish_program			; we've already installed an error handler
-	jr	execute_assembly_program
 .not_unsquished:
 	call	_ClrTxtShd
 	call	_HomeUp
