@@ -110,20 +110,19 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Automatically quits after about 20 to 25 seconds of inactivity so it won't drain your battery.
 
 * Displays program details such as:
-* Displays an icon next to the programs name and above extra information.
-* Language the program was written in.
-* How large a program is.
-* Extra information about a program at the bottom of the HUD.
+    * Displays an icon next to the programs name and above extra information.
+    * Language the program was written in.
+    * How large a program is.
+    * Extra information about a program at the bottom of the HUD.
 
 *Settings*
 * Color selection (toggle with <kbd>mode</kbd>):
-* Theme color (primary color).
-* Main text color (secondary color).
-* Highlight color.
-* Inversion color.
-* Hidden programs color.
-* Background color.
-
+    * Theme color (primary color).
+    * Main text color (secondary color).
+    * Highlight color.
+    * Inversion color.
+    * Hidden programs color.
+    * Background color.
 * Disabling busy run indicator in Basic programs.
 * Toggle show program/directory item count.
 * Toggle display clock.
@@ -140,7 +139,10 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 ### Uninstalling 
 <sup><sub>First off, why would you ever want to delete such an awesome shell?</sub></sup>
 
-To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connecct CE.
+To uninstall Cesium, press <kbd>2nd</kbd> + <kbd>+</kbd> + <kbd>2</kbd> + <kbd>1</kbd> and delete the Cesium Application and appvar. Or you can delete anything Cesium from TI-Connect CE.
+
+You can also delete the Cesium AppVar from Cesium, then delete the App itself.  Exit Cesium to finish.
+NOTE: The "show special directories" box MUST be selected in order to see the AppVars/ Apps folder!!
 
 ### Building
 
