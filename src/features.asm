@@ -30,7 +30,7 @@ name_buffer := mpLcdCrsrImage + 1000
 .get_name:
 	call	util_get_key
 	cp	a,skDel
-	jr	z,.backspace
+	jq	z,.backspace
 	cp	a,skLeft
 	jr	z,.backspace
 	cp	a,skAlpha
@@ -48,9 +48,8 @@ name_buffer := mpLcdCrsrImage + 1000
 	ld	hl,.get_name
 	push	hl
 	ld	hl,lut_character_standard
-.current_character_lut := $-1
+.current_character_lut := $-3
 	call	_AddHLAndA			; find the offset
-.insert_char:
 	ld	a,(hl)
 	or	a,a
 	ret	z
@@ -64,9 +63,13 @@ cursor_position := $-1
 	ld	de,lut_character_numbers
 	compare_hl_de
 	pop	de
+	jr	nz,.got_name
+	ld	a,(cursor_position)
+	or	a,a
 	ret	z
 .got_name:
 	ld	a,e
+.insert_char:
 	ld	hl,0
 name_buffer_ptr := $-3
 	ld	(hl),a
