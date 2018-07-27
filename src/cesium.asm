@@ -1,11 +1,11 @@
 ; cesium
 ; slim gui based shell for the ti84+ce and ti83pce calculators
 ; feel free to use any code for your own use
-; (c) 2015-2018 matt "mateoconlechuga" waltz
+; (c) 2015-2018 Matt "Mateoconlechuga" Waltz
 
 cesium_name := 'Cesium'
 cesium_version := '3.0.1'
-cesium_copyright := '(C)  2015-2018 matt waltz'
+cesium_copyright := '(C)  2015-2018 Matt Waltz'
 config_english := 1
 
 include 'include/macros.inc'
