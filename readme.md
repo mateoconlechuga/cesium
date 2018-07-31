@@ -147,6 +147,7 @@ NOTE: The "show special directories" box MUST be selected in order to see the Ap
 ### Building
 
 Cesium uses submodules to build, so be sure to clone the project like so:
+Go to a new folder, then run the following command(s):
 
     git clone --recursive https://github.com/mateoconlechuga/cesium.git
 
