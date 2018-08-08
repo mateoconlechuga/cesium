@@ -209,8 +209,18 @@ gui_draw_color_table:
 	call	gui_color_box.compute
 	call	gui_color_box.draw
 	ld	hl,(color_ptr)
+	ld	b,$ff
+	ld	a,b
+	ld	(lcd_text_fg),a
 	ld	a,(hl)
 	ld	(lcd_text_bg),a
+	cp	a,b
+	jr	nz,.nochange
+	push	af
+	xor	a,a
+	ld	(lcd_text_fg),a
+	pop	af
+.nochange:
 	push	af
 	draw_rectangle_color 113, 169, 207, 179		; code to show color
 	pop	af
