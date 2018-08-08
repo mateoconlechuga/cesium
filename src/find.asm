@@ -16,6 +16,8 @@ find_files:
 	ld	(hl),0
 	cp	a,return_prgm
 	jr	z,.restore_selection
+	cp	a,return_edit
+	jr	z,.restore_selection
 	cp	a,return_goto
 	ret	nz
 .restore_selection:

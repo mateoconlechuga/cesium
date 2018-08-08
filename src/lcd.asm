@@ -345,37 +345,8 @@ lcd_num_3:
 lcd_num:
 	dec	a
 	push	af
-	ld	de,string_temp
-	push	de
-	call	lcd_num_conv
-	xor	a,a
-	ld	(de),a
-	pop	hl
+	call	util_num_convert
+	ex	de,hl
 	pop	af
 	call	_AddHLAndA
 	jp	lcd_string
-
-lcd_num_conv:
-	ld	bc,-1000000
-	call	.aqu
-	ld	bc,-100000
-	call	.aqu
-	ld	bc,-10000
-	call	.aqu
-	ld	bc,-1000
-	call	.aqu
-	ld	bc,-100
-	call	.aqu
-	ld	c,-10
-	call	.aqu
-	ld	c,b
-.aqu:
-	ld	a,'0' - 1
-.under:
-	inc	a
-	add	hl,bc
-	jr	c,.under
-	sbc	hl,bc
-	ld	(de),a
-	inc	de
-	ret

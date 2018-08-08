@@ -62,7 +62,7 @@ search_name:
 	pop	ix
 	dec	ix
 .find:
-	ld	de,(hl)				; pointer to program name size
+	ld	de,(hl)				; pointer to program name
 
 	push	bc
 	push	ix

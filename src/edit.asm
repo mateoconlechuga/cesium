@@ -1,10 +1,92 @@
+; entry points
+; required: OP1 = name of program to edit
 edit_basic_program_goto:
 	call	compute_error_offset
 	ld	a,edit_goto
-edit_basic_program:
 	ld	(edit_mode),a
+	jr	edit_basic_program.entry
+edit_basic_program:
+	xor	a,a
+	sbc	hl,hl
+	ld	(error_offset),hl		; perhaps in future restore location?
+	ld	(edit_mode),a
+.entry:
 	xor	a,a
 	ld	(edit_status),a
+	call	util_backup_prgm_name
+	call	util_op1_to_temp
+	call	_PushOP1
+	ld	hl,edit_prgm_name
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	push	af
+	call	_PopOP1
+	pop	af
+	jp	c,.no_external_editor
+	call	_AnsName			; need to write new ans variable
+	call 	_FindSym
+	call	nc,_DelVar
+	call	_AnsName			; write to ans
+	ld	bc,0
+	ld	hl,string_temp
+.namelen:
+	ld	a,(hl)
+	or	a,a
+	jr	z,.namedone
+	inc	bc
+	inc	hl
+	jr	.namelen
+.namedone:					; hl -> end of string
+	push	bc
+	push	hl
+	ld	hl,(error_offset)		; check if append offset
+	compare_hl_zero
+	pop	hl
+	jr	nz,.addoffset
+	xor	a,a
+	sbc	hl,hl				; no length to add
+	jr	.noaddoffset
+.addoffset:
+	ld	(hl),tColon
+	inc	hl
+	push	hl
+	ld	hl,(error_offset)
+	call	util_num_convert		; de -> number string
+	pop	hl				; hl -> output string
+	ld	bc,1
+.numlen:
+	ld	a,(de)
+	or	a,a
+	jr	z,.numdone
+	cp	a,'0'
+	jr	z,.numskip
+	ld	(hl),a
+	inc	hl
+	inc	bc
+.numskip:
+	inc	de
+	jr	.numlen
+.numdone:					; hl -> end of string
+	push	bc
+	pop	hl				; hl = appended length
+.noaddoffset:
+	pop	bc
+	add	hl,bc
+	push	hl
+	call	_CreateStrng
+	pop	bc
+	inc	de
+	inc	de
+	ld	hl,string_temp
+	ldir					; copied name to ans
+	ld	hl,edit_prgm_name
+	call	_Mov9ToOP1
+	res	prgm_is_basic,(iy + prgm_flag)	; not a basic program
+	jp	execute_program.entry		; launch the editor
+
+.no_external_editor:
+	call	_PushOP1			; for restoring in hook
+	call	_ChkFindSym
 	call	_ChkInRam
 	jr	z,.not_archived
 	ld	a,edit_archived
@@ -18,24 +100,14 @@ edit_basic_program:
 	call	_CursorOff
 	call	_RunIndicOff
 	call	lcd_normal
-	ld	hl,OP1
-	ld	(hl),progObj
+	ld	hl,string_temp			; contains OP1
 	push	hl
-	call	_PushOP1			; save return
-	ld	hl,edit_prgm_name
-	call	_Mov9ToOP1
-	call	_ChkFindSym
-	jr	c,.no_external_edit
-.no_external_edit:
-	call	_PopOP1
-	pop	hl
-	inc	hl
 	ld	de,progToEdit
 	call	_Mov9b
-	ld	hl,OP1
+	pop	hl
+	dec	hl
 	ld	de,basic_prog
 	call	_Mov9b
-	call	util_backup_prgm_name
 	ld	a,cxPrgmEdit
 	call	_NewContext
 	xor	a,a
@@ -117,3 +189,4 @@ compute_error_offset:
 
 edit_prgm_name:
 	db	protProgObj,"KEDIT",0
+.length :=$-edit_prgm_name

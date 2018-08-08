@@ -151,11 +151,13 @@ Go to a new folder, then run the following command(s):
 
     git clone --recursive https://github.com/mateoconlechuga/cesium.git
 
-Linux / macOS / Windows:
+Download `fasmg` and place it in the root directory of the repository (Available for your OS near the bottom of [this page](https://flatassembler.net/download.php)), or add it to your global PATH variable.
 
-You can build the example application using the following line with `fasmg`: (Available for your OS near the bottom of [this page](https://flatassembler.net/download.php)).
+Build Cesium using the following `make` commands, depending on what language you want:
 
-    fasmg src/cesium.asm cesium.8xp
+    make
+    make english
+    make french
 
 ### Credits
 (C) October 2015 - July 2018 Matt "MateoConLechuga" Waltz

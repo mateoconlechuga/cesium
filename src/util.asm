@@ -211,6 +211,7 @@ util_install_error_handler:
 
 util_backup_prgm_name:
 	ld	hl,OP1
+.entry:
 	ld	de,backup_prgm_name
 	jp	_Mov9b
 
@@ -242,6 +243,23 @@ util_get_archived_name:
 	ld	hl,basic_prog
 	ret
 
+util_op1_to_temp:
+	ld	de,string_temp
+	push	de
+	call	_ZeroOP
+	ld	hl,OP1 + 1
+	pop	de
+.handle:
+	push	de
+	call	_Mov8b
+	pop	hl
+	ret
+
+util_temp_to_op1:
+	ld	hl,string_temp
+	ld	de,OP1
+	jr	util_op1_to_temp.handle
+
 util_print_brightness:
 	push	hl
 	xor	a,a
@@ -252,6 +270,39 @@ util_print_brightness:
 	pop	hl
 	inc	hl
 	jp	lcd_string
+
+util_num_convert:
+	ld	de,string_other_temp
+	push	de
+	call	.entry
+	xor	a,a
+	ld	(de),a
+	pop	de
+	ret
+.entry:
+	ld	bc,-1000000
+	call	.aqu
+	ld	bc,-100000
+	call	.aqu
+	ld	bc,-10000
+	call	.aqu
+	ld	bc,-1000
+	call	.aqu
+	ld	bc,-100
+	call	.aqu
+	ld	c,-10
+	call	.aqu
+	ld	c,b
+.aqu:
+	ld	a,'0' - 1
+.under:
+	inc	a
+	add	hl,bc
+	jr	c,.under
+	sbc	hl,bc
+	ld	(de),a
+	inc	de
+	ret
 
 util_temp_program_object:
 	db	tempProgObj, 'ZAGTQZTB', 0

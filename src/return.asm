@@ -99,6 +99,9 @@ return_basic:
 return_asm:					; handler for assembly / basic return
 return:
 	call	_PopErrorHandler
+	ld	a,(return_info)
+	cp	a,return_edit
+	jr	z,.skip				; return properly from external editors
 .quit:
 .error:						; error handler for returning programs
 	ld	a,return_prgm

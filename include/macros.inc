@@ -4,6 +4,7 @@ include 'fasmg-ez80/ez80.inc'
 include 'fasmg-ez80/tiformat.inc'
 format ti executable 'CESIUM'
 include 'app.inc'
+#include 'fasmg-ez80/symbol_table.inc' ; used for debugging
 include 'ti84pceg.inc'
 
 macro relocate? name, address*
@@ -264,8 +265,9 @@ clock_y := 7
 return_goto := $aa
 return_prgm := $bb
 return_settings := $cc
-edit_archived := $ff
-edit_goto := $ff
+return_edit := $ee
+edit_archived := $ff				; edit_status
+edit_goto := return_edit			; edit_mode
 
 ; location of variables
 
@@ -299,6 +301,7 @@ number_of_items := item_ptr + 3
 
 sprite_temp := mpLcdCrsrImage
 string_temp := mpLcdCrsrImage
+string_other_temp := mpLcdCrsrImage + 512
 
 settings_size := setting_password + password_max_length + 1 - settings_data
 

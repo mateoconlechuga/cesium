@@ -92,11 +92,12 @@ execute_program:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,gui_backup_ram_to_flash
 .skip_backup:
-	bit	setting_enable_shortcuts,(iy + settings_flag)
-	call	nz,_ClrGetKeyHook
 	call	lcd_normal
 	call	util_move_prgm_name_to_op1
 	call	util_backup_prgm_name
+.entry:							; entry point, OP1 = name
+	bit	setting_enable_shortcuts,(iy + settings_flag)
+	call	nz,_ClrGetKeyHook
 	bit	prgm_is_basic,(iy + prgm_flag)
 	jp	nz,execute_basic_program		; execute basic program
 	call	util_move_prgm_to_usermem		; execute assembly program

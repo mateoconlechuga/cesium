@@ -247,8 +247,6 @@ feature_item_edit:
 	jp	nz,main_loop
 .good:
 	call	util_move_prgm_name_to_op1
-	call	_ChkFindSym
-	xor	a,a
 	jp	edit_basic_program
 
 feature_item_delete:
