@@ -26,9 +26,10 @@ util_show_time:
 	ret
 
 util_set_primary:
+	push	af
 	ld	a,(color_primary)
 	ld	(util_restore_primary.color),a
-	ld	a,(color_senary)
+	pop	af
 	ld	(color_primary),a
 	ret
 

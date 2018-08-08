@@ -434,6 +434,7 @@ feature_item_attributes:
 	push	af
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.unarchive
+.archive:
 	pop	af
 	call	z,_Arc_Unarc
 	jr	.return

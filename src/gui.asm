@@ -1,4 +1,5 @@
 gui_main:
+	call	lcd_init.setup
 	call	gui_draw_core
 	draw_rectangle_outline 193, 24, 316, 221
 	draw_rectangle_outline 237, 54, 274, 91
@@ -207,18 +208,18 @@ gui_draw_color_table:
 	djnz	.loop
 	call	gui_color_box.compute
 	call	gui_color_box.draw
-	
-	;Extended code to show color values.
-
-	draw_rectangle 112,169,207,179
-	ld hl,(color_ptr)
-	ld a,(hl)
-	or a,a
-	sbc hl,hl
-	ld l,a
-	set_cursor 113,170
+	ld	hl,(color_ptr)
+	ld	a,(hl)
+	ld	(lcd_text_bg),a
+	push	af
+	draw_rectangle_color 113, 169, 207, 179		; code to show color
+	pop	af
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	set_cursor 114, 170
 	set_inverted_text
-	jq lcd_num_3
+	jp	lcd_num_3
 
 gui_color_box:
 .compute:

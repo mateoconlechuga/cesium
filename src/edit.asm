@@ -18,9 +18,17 @@ edit_basic_program:
 	call	_CursorOff
 	call	_RunIndicOff
 	call	lcd_normal
-	call	_PushOP1			; save return
 	ld	hl,OP1
 	ld	(hl),progObj
+	push	hl
+	call	_PushOP1			; save return
+	ld	hl,edit_prgm_name
+	call	_Mov9ToOP1
+	call	_ChkFindSym
+	jr	c,.no_external_edit
+.no_external_edit:
+	call	_PopOP1
+	pop	hl
 	inc	hl
 	ld	de,progToEdit
 	call	_Mov9b
@@ -106,3 +114,6 @@ compute_error_offset:
 	sbc	hl,bc
 	ld	(error_offset),hl
 	ret
+
+edit_prgm_name:
+	db	protProgObj,"KEDIT",0

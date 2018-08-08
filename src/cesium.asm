@@ -6,7 +6,6 @@
 cesium_name := 'Cesium'
 cesium_version := '3.0.1'
 cesium_copyright := '(C)  2015-2018 Matt Waltz'
-config_english := 1
 
 include 'include/macros.inc'
 

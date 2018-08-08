@@ -4,6 +4,7 @@ lcd_init:
 	call	_RunIndicOff
 	di					; turn off indicator
 	call	lcd_clear
+.setup:
 	ld	a,lcdBpp8
 	ld	(mpLcdCtrl),a			; operate in 8bpp
 	ld	hl,mpLcdPalette

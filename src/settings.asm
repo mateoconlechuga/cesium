@@ -43,7 +43,7 @@ settings_create_default:
 	ld	(hl),setting_config_default
 	ld	hl,setting_password
 	ld	(hl),0				; zero length
-	ld	hl,settings_appvar_size * 2	; just have at least double this
+	ld	hl,settings_appvar_size + 5	; random size increment for safety
 	push	hl
 	call	_EnoughMem
 	pop	hl
