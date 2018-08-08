@@ -163,7 +163,7 @@ gui_draw_color_table:
 	ld	hl,string_mode_select
 	call	lcd_string
 	set_normal_text
-	draw_rectangle_outline 111, 71, 208, 180  ; old values 111, 71, 208, 168
+	draw_rectangle_outline 111, 71, 208, 180
 	ld	de,(72 shl 8) or 112
 	xor	a,a
 	ld	b,16
@@ -218,7 +218,6 @@ gui_draw_color_table:
 	sbc	hl,hl
 	ld	l,a
 	set_cursor 114, 170
-	set_inverted_text
 	jp	lcd_num_3
 
 gui_color_box:
