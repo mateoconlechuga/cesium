@@ -19,6 +19,3 @@ data_string_quit2:
 
 ; data in this location is allowed to be modified at runtime
 	app_data
-
-editable_prgm_name_buffer:
-	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
