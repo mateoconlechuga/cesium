@@ -105,6 +105,7 @@ execute_program:
 execute_assembly_program:
 	ld	hl,return_asm
 	push	hl
+	call	_DisableAPD
 	set	appAutoScroll,(iy + appflags)		; allow scrolling
 	jp	userMem
 
@@ -123,8 +124,7 @@ execute_basic_program:
 	call	_RunIndicOn
 	bit	setting_basic_indicator,(iy + settings_flag)
 	call	nz,_RunIndicOff
-	call	_APDSetup
-	call	_EnableAPD
+	call	_DisableAPD
 	call	hook_home.save
 	call	hook_home.set
 	bit	prgm_archived,(iy + prgm_flag)
@@ -164,5 +164,6 @@ execute_basic_program:
 	push	hl
 	sub	a,a
 	ld	(kbdGetKy),a
+	call	_DisableAPD
 	ei
 	jp	_ParseInp				; run program
