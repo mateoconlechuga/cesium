@@ -248,18 +248,14 @@ gui_color_box:
 	add	hl,bc					; x
 	ld	c,6
 	ld	d,c
-	push	hl
-	push	de
-	push	bc
+	push	hl, de, bc
 	call	lcd_compute
 	ld	de,lcdWidth * 2 + 3
 	add	hl,de
 	ld	a,(hl)					; get the new color
 	ld	hl,(color_ptr)
 	ld	(hl),a
-	pop	bc
-	pop	de
-	pop	hl
+	pop	bc, de, hl
 	ret
 .draw:
 	ld	a,(color_secondary)
