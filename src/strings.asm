@@ -80,6 +80,8 @@ string_edit_prgm:
 string_new_prgm:
 	db	'New Prgm',0
 	db	$7e,'Y=]'
+string_editor_name:
+	db	'Prgm Editor',0
 string_delete_confirmation:
 	db	'Delete?: ',$7e,'ZOOM]-Yes  ',$7e,'GRAPH]-No',0
 string_general_settings:
@@ -157,6 +159,8 @@ string_edit_prgm:
 string_new_prgm:
 	db	'Nouveau',0
 	db	$7e,'Y=]',0
+string_editor_name:
+	db	'Editeur de prgm',0
 string_delete_confirmation:
 	db	'Supprimer ? ',$7e,'ZOOM]-Oui ',$7e,'GRAPH]-Non',0
 string_general_settings:

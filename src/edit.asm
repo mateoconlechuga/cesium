@@ -16,7 +16,7 @@ edit_basic_program:
 	call	util_backup_prgm_name
 	call	util_op1_to_temp
 	call	_PushOP1
-	ld	hl,edit_prgm_name
+	ld	hl,setting_editor_name
 	call	_Mov9ToOP1
 	call	_ChkFindSym
 	push	af
@@ -79,7 +79,7 @@ edit_basic_program:
 	inc	de
 	ld	hl,string_temp
 	ldir					; copied name to ans
-	ld	hl,edit_prgm_name
+	ld	hl,setting_editor_name
 	call	_Mov9ToOP1
 	res	prgm_is_basic,(iy + prgm_flag)	; not a basic program
 	jp	execute_program.entry		; launch the editor
@@ -187,6 +187,3 @@ compute_error_offset:
 	ld	(error_offset),hl
 	ret
 
-edit_prgm_name:
-	db	protProgObj,"KEDIT",0
-.length :=$-edit_prgm_name

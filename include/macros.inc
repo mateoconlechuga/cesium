@@ -242,6 +242,7 @@ scroll_down_available := 1
 scroll_up_available := 2
 item_renaming := 3
 item_is_directory := 4
+item_set_editor := 5
 
 prgm_flag := $30
 prgm_archived := 0
@@ -285,7 +286,8 @@ setting_color_quinary := setting_color_quaternary + 1
 setting_color_senary := setting_color_quinary + 1
 setting_config := setting_color_senary + 1
 setting_brightness := setting_config + 1
-setting_password := setting_brightness + 1
+setting_editor_name := setting_brightness + 1
+setting_password := setting_editor_name + 10
 current_option_selection := setting_password + password_max_length + 1
 current_selection_absolute := current_option_selection + 1
 current_selection := current_selection_absolute + 3

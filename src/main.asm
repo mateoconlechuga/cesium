@@ -34,6 +34,8 @@ main_loop:
 	jp	z,feature_item_edit
 	cp	a,skDel
 	jp	z,feature_item_delete
+	cp	a,skTrace
+	jp	z,feater_setup_editor
 	sub	a,skAdd
 	jp	c,main_loop
 	cp	a,skMath - skAdd + 1

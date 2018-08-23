@@ -99,7 +99,7 @@ execute_program:
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	call	nz,_ClrGetKeyHook
 	bit	prgm_is_basic,(iy + prgm_flag)
-	jp	nz,execute_basic_program		; execute basic program
+	jr	nz,execute_basic_program		; execute basic program
 	call	util_move_prgm_to_usermem		; execute assembly program
 	call	util_install_error_handler
 execute_assembly_program:

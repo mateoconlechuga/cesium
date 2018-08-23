@@ -19,3 +19,4 @@ data_string_quit2:
 
 ; data in this location is allowed to be modified at runtime
 	app_data
+

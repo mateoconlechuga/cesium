@@ -8,7 +8,7 @@ settings_load:
 	push	af
 	call	z,_Arc_Unarc			; archive it
 	pop	af
-	jr	z,settings_load			; find it again
+	jq	z,settings_load			; find it again
 settings_get_data:
 	ex	de,hl
 	ld	de,9
@@ -43,7 +43,11 @@ settings_create_default:
 	ld	(hl),setting_config_default
 	ld	hl,setting_password
 	ld	(hl),0				; zero length
-	ld	hl,settings_appvar_size + 5	; random size increment for safety
+	ld	hl,settings_editor_default_prgm_name
+	ld	de,setting_editor_name
+	ld	bc,settings_editor_default_prgm_name.length
+	ldir
+	ld	hl,settings_appvar_size + 2	; increment for safety
 	push	hl
 	call	_EnoughMem
 	pop	hl
@@ -54,7 +58,7 @@ settings_create_default:
 	ld	hl,settings_data
 	ld	bc,settings_size
 	ldir
-	jr	settings_load
+	jq	settings_load
 
 settings_save:
 	ld	hl,settings_appvar
@@ -342,3 +346,8 @@ setting_draw_options:
 
 settings_appvar:
 	db	appvarObj, cesium_name, 0
+
+settings_editor_default_prgm_name:
+	db	protProgObj,"KEDIT",0
+.length :=$-settings_editor_default_prgm_name
+

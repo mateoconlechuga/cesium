@@ -1,14 +1,20 @@
 ; features offered by cesium
 
+feater_setup_editor:
+	res	item_renaming,(iy + item_flag)
+	set	item_set_editor,(iy + item_flag)
+	jr	feature_item_rename.setup_name
 feature_item_new:
 	ld	a,(current_screen)
 	cp	a,screen_programs
 	jp	nz,main_loop
 	bit	cesium_is_nl_disabled,(iy + cesium_flag)
 	jp	nz,main_loop
+	res	item_set_editor,(iy + item_flag)
 	res	item_renaming,(iy + item_flag)
 	jr	feature_item_rename.setup_name
 feature_item_rename:
+	res	item_set_editor,(iy + item_flag)
 	set	item_renaming,(iy + item_flag)
 	ld	a,(prgm_type)
 	cp	a,file_dir
@@ -115,6 +121,9 @@ current_input_mode := $-1
 .clear:
 	ld	a,(color_senary)
 	draw_rectangle_color 199, 173, 313, 215
+	ld	hl,string_editor_name
+	bit	item_set_editor,(iy + item_flag)
+	jr	nz,.rename
 	bit	item_renaming,(iy + item_flag)
 	ld	hl,string_rename
 	jr	nz,.rename
@@ -151,6 +160,8 @@ current_input_mode := $-1
 	ld	(hl),0
 	bit	item_renaming,(iy + item_flag)
 	jr	nz,.renaming
+	bit	item_set_editor,(iy + item_flag)
+	jq	nz,.setting_editor_name
 	ld	hl,name_buffer
 	ld	(hl),progObj			; already in op1
 	call	_Mov9ToOP1
@@ -234,6 +245,13 @@ current_input_mode := $-1
 	call	find_files
 	ld	hl,name_buffer + 1
 	call	search_name
+	jp	main_start
+.setting_editor_name:
+	ld	hl,name_buffer
+	ld	(hl),protProgObj
+	ld	de,setting_editor_name
+	call	_Mov9b
+	call	settings_save
 	jp	main_start
 
 feature_item_edit:
