@@ -107,6 +107,7 @@ util_get_battery:
 	ret
 
 util_get_key:
+	call	_DisableAPD                 ; disable to os apd and use our own
 	call	util_show_time
 	call	lcd_blit
 	call	_GetCSC
