@@ -164,6 +164,6 @@ execute_basic_program:
 	push	hl
 	sub	a,a
 	ld	(kbdGetKy),a
-	call	_DisableAPD
+	call	_EnableAPD
 	ei
 	jp	_ParseInp				; run program
