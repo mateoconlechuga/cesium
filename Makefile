@@ -13,5 +13,8 @@ english:
 french:
 	fasmg $(FLAGS_FRENCH) $(SRC) $(BIN_FRENCH)
 
-.PHONY: all english french
+clean:
+	rm -f $(BIN_ENGLISH) $(BIN_FRENCH)
+
+.PHONY: all english french clean
 
