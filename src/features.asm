@@ -320,8 +320,14 @@ feature_item_attributes:
 .programs:
 	ld	a,(iy + prgm_flag)
 	ld	(iy + temp_prgm_flag),a
+	ld	a,$c9
+	ld	hl,.check_hide_smc
+	ld	(hl),a
 	xor	a,a
 	ld	(current_option_selection),a
+	bit	prgm_archived,(iy + prgm_flag)
+	jr	nz,.show_edit
+	ld	(hl),a
 .show_edit:
 	ld	a,(color_tertiary)
 	ld	(lcd_text_bg),a			; highlight the currently selected item
@@ -400,13 +406,21 @@ feature_item_attributes:
 	push	hl
 	ld	a,(current_option_selection)
 	dec	a
-	jr	nz,.checked_lockable
+	jr	z,.check_lock
+	dec	a
+	jr	z,.check_hide
+	jr	.toggle_option
+.check_hide:
+	ret
+.check_hide_smc := $ - 1
+	jr	.toggle_option
+.check_lock:
 	ld	a,(prgm_type)
 	cp	a,file_basic			; basic programs
-	jr	z,.checked_lockable
+	jr	z,.toggle_option
 	cp	a,file_ice_source		; ice source programs
 	ret	nz
-.checked_lockable:
+.toggle_option:
 	ld	a,(current_option_selection)
 	inc	a
 	call	util_to_one_hot
