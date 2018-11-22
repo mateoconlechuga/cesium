@@ -63,11 +63,13 @@ search_name:
 	dec	ix
 .find:
 	ld	de,(hl)				; pointer to program name
-
 	push	bc
 	push	ix
 	ld	b,0
 .length := $-1
+	ld	a,(de)
+	cp	a,b
+	jr	nz,.next			; check lengths
 .compare:
 	dec	de
 	inc	ix
