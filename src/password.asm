@@ -9,12 +9,12 @@ password_modify:
 	push	bc
 	call	lcd_blit
 .get_key:
-	call	_GetCSC
+	call	ti.GetCSC
 	or	a,a
 	jr	z,.get_key
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	jr	z,.done_fill
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jr	z,.done_fill
 	push	af
 	ld	a,'*'

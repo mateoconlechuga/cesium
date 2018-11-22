@@ -84,7 +84,7 @@ end macro
 
 macro draw_rectangle Lx, Ty, Rx, By
 	ld	bc,Rx - Lx
-	ld	de,(lcdWidth * Ty) + Lx
+	ld	de,(ti.lcdWidth * Ty) + Lx
 	ld	a,By - Ty
 	call	lcd_rectangle.computed
 end macro
@@ -109,13 +109,13 @@ macro draw_rectangle_outline_double? Lx, Ty, Rx, By
 end macro
 
 macro draw_horiz? x, y, length
-	ld	hl,(lcdWidth * y) + vRamBuffer + x
+	ld	hl,(ti.lcdWidth * y) + vRamBuffer + x
 	ld	bc,length
 	call	lcd_horizontal.computed
 end macro
 
 macro draw_vert? x, y, length
-	ld	hl,(lcdWidth * y) + vRamBuffer + x
+	ld	hl,(ti.lcdWidth * y) + vRamBuffer + x
 	ld	b,length
 	call	lcd_vertical.computed
 end macro
@@ -196,11 +196,11 @@ byte_c := $00
 byte_dir := file_dir
 byte_edit_return := $aa
 
-item_location_base := pixelShadow2
+item_location_base := ti.pixelShadow2
 
 ; lcd
 
-vRamBuffer := vRam + ((vRamEnd - vRam) / 2)
+vRamBuffer := ti.vRam + ((ti.vRamEnd - ti.vRam) / 2)
 
 ; password
 
@@ -272,7 +272,7 @@ edit_goto := return_edit			; edit_mode
 
 ; location of variables
 
-edit_status := appdata
+edit_status := ti.appData
 edit_mode := edit_status + 1
 return_info := edit_mode			; yes this is right
 backup_prgm_name := edit_mode + 1
@@ -301,9 +301,9 @@ prgm_type := prgm_real_size + 3
 item_ptr := prgm_type + 1;
 number_of_items := item_ptr + 3
 
-sprite_temp := mpLcdCrsrImage
-string_temp := mpLcdCrsrImage
-string_other_temp := mpLcdCrsrImage + 512
+sprite_temp := ti.mpLcdCrsrImage
+string_temp := ti.mpLcdCrsrImage
+string_other_temp := ti.mpLcdCrsrImage + 512
 
 settings_size := setting_password + password_max_length + 1 - settings_data
 

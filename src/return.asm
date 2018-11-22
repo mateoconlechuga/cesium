@@ -2,41 +2,41 @@
 
 return_basic_error:
 return_asm_error:
-	call	_boot_ClearVRAM
+	call	ti.boot.ClearVRAM
 	ld	a,$2d
-	ld	(mpLcdCtrl),a
-	call	_DrawStatusBar
-	call	_DispErrorScreen
+	ld	(ti.mpLcdCtrl),a
+	call	ti.DrawStatusBar
+	call	ti.DispErrorScreen
 	ld	hl,1
-	ld	(curRow),hl
+	ld	(ti.curRow),hl
 	ld	hl,data_string_quit1
-	set	textInverse,(iy + textFlags)
-	call	_PutS
-	res	textInverse,(iy + textFlags)
-	call	_PutS
+	set	ti.textInverse,(iy + ti.textFlags)
+	call	ti.PutS
+	res	ti.textInverse,(iy + ti.textFlags)
+	call	ti.PutS
 	ld	hl,backup_prgm_name
 	ld	a,(hl)					; check if correct program
-	cp	a,protProgObj
+	cp	a,ti.ProtProgObj
 	jp	z,.only_allow_quit
 	xor	a,a
-	ld	(curCol),a
+	ld	(ti.curCol),a
 	ld	a,2
-	ld	(curRow),a
+	ld	(ti.curRow),a
 	ld	hl,data_string_quit2
-	call	_PutS
-	call	_PutS
-	call	_GetCSC
+	call	ti.PutS
+	call	ti.PutS
+	call	ti.GetCSC
 .input:
-	call	_GetCSC
-	cp	a,skUp
+	call	ti.GetCSC
+	cp	a,ti.skUp
 	jr	z,.highlight_1
-	cp	a,skDown
+	cp	a,ti.skDown
 	jr	z,.highlight_2
-	cp	a,sk2
+	cp	a,ti.sk2
 	jr	z,.goto
-	cp	a,sk1
+	cp	a,ti.sk1
 	jp	z,return.quit
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jr	z,.get_option
 	jr	.input
 .highlight_1:
@@ -53,8 +53,8 @@ return_asm_error:
 .highlight:
 	push	bc
 	push	de
-	ld.sis	(curRow and $ffff),hl
-	ld	hl,OP6
+	ld.sis	(ti.curRow and $ffff),hl
+	ld	hl,ti.OP6
 	ld	(hl),a
 	inc	hl
 	ld	(hl),':'
@@ -65,81 +65,81 @@ return_asm_error:
 	push	hl
 	scf
 	sbc	hl,hl
-	ld	(fillRectColor),hl
+	ld	(ti.fillRectColor),hl
 	inc	hl
 	ld	de,25
 	ld	bc,(40 shl 8) or 96
-	call	_FillRect
+	call	ti.FillRect
 	pop	hl
-	set	textInverse,(iy + textFlags)
-	call	_PutS
-	res	textInverse,(iy + textFlags)
+	set	ti.textInverse,(iy + ti.textFlags)
+	call	ti.PutS
+	res	ti.textInverse,(iy + ti.textFlags)
 	pop	de
 	pop	bc
-	ld.sis	(curRow and $ffff),de
-	ld	hl,OP6
+	ld.sis	(ti.curRow and $ffff),de
+	ld	hl,ti.OP6
 	ld	(hl),b
-	call	_PutS
+	call	ti.PutS
 	jr	.input
 .get_option:
-	ld	a,(curRow)
+	ld	a,(ti.curRow)
 	dec	a
 	jr	nz,return.quit
 .goto:
 	ld	a,return_goto
 	jr	return.skip
 .only_allow_quit:
-	call	_GetCSC
-	cp	a,sk1
+	call	ti.GetCSC
+	cp	a,ti.sk1
 	jr	z,return.quit
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jr	z,return.quit
 	jr	.only_allow_quit
 return_basic:
-return_asm:					; handler for assembly / basic return
+return_asm:						; handler for assembly / basic return
 return:
-	call	_PopErrorHandler
+	call	ti.PopErrorHandler
 	ld	a,(return_info)
 	cp	a,return_edit
-	jr	z,.skip				; return properly from external editors
+	jr	z,.skip					; return properly from external editors
 .quit:
-.error:						; error handler for returning programs
-	ld	a,return_prgm
+.error:
+	ld	a,return_prgm				; error handler for returning programs
 .skip:
 	ld	(return_info),a
-	call	_RunIndicOff			; in case the launched program re-enabled it
-	di					; in case the launched program enabled interrupts...
-	call	_ClrAppChangeHook		; clear me!
-	res	progExecuting,(iy + newDispf)
-	res	cmdExec,(iy + cmdFlags)
-	res	textInverse,(iy + textFlags)
-	res	allowProgTokens,(iy + newDispF)
-	res	onInterrupt,(iy + onFlags)
-	call	_ReloadAppEntryVecs
-	call	_DeleteTempPrograms
-	call	_CleanAll
+	call	ti.RunIndicOff				; in case the launched program re-enabled it
+	di						; in case the launched program enabled interrupts...
+	call	ti.ClrAppChangeHook			; clear me!
+	res	ti.progExecuting,(iy + ti.newDispF)
+	res	ti.cmdExec,(iy + ti.cmdFlags)
+	res	ti.textInverse,(iy + ti.textFlags)
+	res	ti.allowProgTokens,(iy + ti.newDispF)
+	res	ti.onInterrupt,(iy + ti.onFlags)
+	call	ti.ReloadAppEntryVecs
+	call	ti.DeleteTempPrograms
+	call	ti.CleanAll
 	di
-	ld	de,(asm_prgm_size)
+	ld	de,(ti.asm_prgm_size)
 	or	a,a
 	sbc	hl,hl
-	ld	(asm_prgm_size),hl
-	ld	hl,userMem
-	call	_DelMem				; delete user program
+	ld	(ti.asm_prgm_size),hl
+	ld	hl,ti.userMem
+	call	ti.DelMem				; delete user program
 
-	call	_ClrHomescreenHook
+	call	ti.ClrHomescreenHook
 	res	appWantHome,(iy + sysHookFlg)
 	ld	a,(backup_home_hook_location)
 	or	a,a
 	jr	z,.no_hook_restore
 	ld	hl,(backup_home_hook_location)
-	call	_SetHomescreenHook
+	call	ti.SetHomescreenHook
 	set	appWantHome,(iy + sysHookFlg)
 
 .no_hook_restore:
 .debounce:
-	call	_GetCSC
+	call	ti.GetCSC
 	or	a,a
-	jr	nz,.debounce			; debounce keys
+	jr	nz,.debounce				; debounce keys
 	xor	a,a
-	ld	(kbdGetKy),a			; flush keys
+	ld	(ti.kbdGetKy),a				; flush keys
 	jp	cesium_start

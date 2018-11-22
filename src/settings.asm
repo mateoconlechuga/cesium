@@ -4,9 +4,9 @@ settings_load:
 	ld	hl,settings_appvar
 	call	util_find_var			; lookup the settings appvar
 	jr	c,settings_create_default	; create it if it doesn't exist
-	call	_ChkInRam
+	call	ti.ChkInRam
 	push	af
-	call	z,_Arc_Unarc			; archive it
+	call	z,ti.Arc_Unarc			; archive it
 	pop	af
 	jq	z,settings_load			; find it again
 settings_get_data:
@@ -49,10 +49,10 @@ settings_create_default:
 	ldir
 	ld	hl,settings_appvar_size + 2	; increment for safety
 	push	hl
-	call	_EnoughMem
+	call	ti.EnoughMem
 	pop	hl
 	jp	c,exit_full
-	call	_CreateAppVar
+	call	ti.CreateAppVar
 	inc	de
 	inc	de
 	ld	hl,settings_data
@@ -63,9 +63,9 @@ settings_create_default:
 settings_save:
 	ld	hl,settings_appvar
 	call	util_find_var
-	call	_ChkInRam
+	call	ti.ChkInRam
 	push	af
-	call	nz,_Arc_Unarc
+	call	nz,ti.Arc_Unarc
 	pop	af
 	jr	nz,settings_save
 	ld	a,(iy + settings_flag)
@@ -77,7 +77,7 @@ settings_save:
 	ldir
 	ld	hl,settings_appvar
 	call	util_find_var
-	jp	_Arc_Unarc
+	jp	ti.Arc_Unarc
 
 settings_show:
 	xor	a,a
@@ -91,24 +91,24 @@ settings_get:
 	ld	hl,settings_show.draw
 	push	hl
 	ld	ix,current_option_selection
-	cp	a,skStore
+	cp	a,ti.skStore
 	jp	z,password_modify
-	cp	a,skLeft
+	cp	a,ti.skLeft
 	jp	z,setting_left
-	cp	a,skRight
+	cp	a,ti.skRight
 	jp	z,setting_right
-	cp	a,skDown
+	cp	a,ti.skDown
 	jp	z,setting_down
-	cp	a,skUp
+	cp	a,ti.skUp
 	jp	z,setting_up
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	jp	z,setting_toggle
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jp	z,setting_toggle
 	pop	hl
-	cp	a,skDel
+	cp	a,ti.skDel
 	jr	z,setting_set_and_save
-	cp	a,skClear
+	cp	a,ti.skClear
 	jr	z,setting_set_and_save
 	jr	settings_get
 setting_set_and_save:
@@ -187,7 +187,7 @@ setting_brightness_check:
 .fast:
 	ld	a,c
 	ld	(.prev_key),a
-	ld	hl,mpBlLevel
+	ld	hl,ti.mpBlLevel
 	ld	a,(hl)
 	ret
 .fail:
@@ -218,24 +218,24 @@ setting_open_colors:
 	call	util_get_key
 	ld	hl,setting_open_colors
 	push	hl
-	cp	a,skLeft
+	cp	a,ti.skLeft
 	jr	z,setting_color_left
-	cp	a,skRight
+	cp	a,ti.skRight
 	jr	z,setting_color_right
-	cp	a,skDown
+	cp	a,ti.skDown
 	jr	z,setting_color_down
-	cp	a,skUp
+	cp	a,ti.skUp
 	jr	z,setting_color_up
-	cp	a,skMode
+	cp	a,ti.skMode
 	jr	z,setting_color_swap
 	pop	hl
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	jr	.complete
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jr	.complete
-	cp	a,skClear
+	cp	a,ti.skClear
 	jr	.complete
-	cp	a,skDel
+	cp	a,ti.skDel
 	jr	.complete
 	pop	hl
 	jr	.loop
@@ -287,7 +287,7 @@ color_table_active := $-1
 .incr:
 	inc	a
 	ld	(color_table_active),a
-	call	_AddHLAndA
+	call	ti.AddHLAndA
 	ld	(color_ptr),hl
 	;jq	setting_color_get_xy
 
@@ -345,9 +345,9 @@ setting_draw_options:
 	ret
 
 settings_appvar:
-	db	appvarObj, cesium_name, 0
+	db	ti.AppVarObj, cesium_name, 0
 
 settings_editor_default_prgm_name:
-	db	protProgObj,"KEDIT",0
+	db	ti.ProtProgObj,"KEDIT",0
 .length :=$-settings_editor_default_prgm_name
 

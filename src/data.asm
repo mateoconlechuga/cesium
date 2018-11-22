@@ -1,7 +1,7 @@
 ; unrelocated data
 
 data_cesium_appvar:
-	db	appVarObj
+	db	ti.AppVarObj
 data_string_cesium_name:
 	db	cesium_name,0
 

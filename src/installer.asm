@@ -6,59 +6,59 @@
 	db byte_description, 'Cesium Installer Version ', cesium_version, 0
 
 installer_start:
-	call	_PushOP1			; save the program name
+	call	ti.PushOP1			; save the program name
 	call	.clear_screen
 
 	app_create				; create the application
 
 	jr	z,.app_created
-	call	_PopOP1
+	call	ti.PopOP1
 	ld	hl,str_cesium_exists_error
-	call	_PutS				; put error string if cesium exists
-	call	_GetKey
+	call	ti.PutS				; put error string if cesium exists
+	call	ti.GetKey
 .clear_screen:
-	call	_ClrScrn			; clear the homescreen
-	jp	_HomeUp
+	call	ti.ClrScrn			; clear the homescreen
+	jp	ti.HomeUp
 .app_created:
 
 	installer_execute_cesium.run
 
-relocate installer_execute_cesium, mpLcdCrsrImage
+relocate installer_execute_cesium, ti.mpLcdCrsrImage
 	ld	hl,str_delete_installer
-	call	_PutS
-	call	_NewLine
-	call	_PutS				; ask the user if they want to delete me
-	call	_PopOP1				; restore installer name
+	call	ti.PutS
+	call	ti.NewLine
+	call	ti.PutS				; ask the user if they want to delete me
+	call	ti.PopOP1			; restore installer name
 
 .get_key:
-	call	_GetCSC
+	call	ti.GetCSC
 	or	a,a
 	jr	z,.get_key
-	cp	a,skDel
+	cp	a,ti.skDel
 	jr	nz,.no_delete
 
-	call	_ChkFindSym			; delete the installer if needed
-	call	_DelVarArc
-	call	_ClrScrn
-	call	_HomeUp
+	call	ti.ChkFindSym			; delete the installer if needed
+	call	ti.DelVarArc
+	call	ti.ClrScrn
+	call	ti.HomeUp
 
 .no_delete:
-	ld	de,(asm_prgm_size)		; load this program size
-	ld	hl,userMem
-	call	_DelMem
+	ld	de,(ti.asm_prgm_size)		; load this program size
+	ld	hl,ti.userMem
+	call	ti.DelMem
 	or	a,a
 	sbc	hl,hl
-	ld	(asm_prgm_size),hl
+	ld	(ti.asm_prgm_size),hl
 	inc	h
-	call	_EnoughMem
-	jp	c,_ErrMemory
+	call	ti.EnoughMem
+	jp	c,ti.ErrMemory
 
 	ld	hl,str_cesium_name_installer
-	ld	de,progToEdit
+	ld	de,ti.progToEdit
 	ld	bc,8
 	ldir
-	ld	a,cxExtApps
-	jp	_NewContext
+	ld	a,ti.kExtApps
+	jp	ti.NewContext
 
 str_cesium_name_installer:
 	db	cesium_name,0

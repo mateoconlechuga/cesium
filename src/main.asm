@@ -12,33 +12,33 @@ main_start:
 	call	util_setup_apd
 main_loop:
 	call	util_get_key
-	cp	a,skClear
+	cp	a,ti.skClear
 	jp	z,exit_full
-	cp	a,skMode
+	cp	a,ti.skMode
 	jp	z,settings_show
-	cp	a,skUp
+	cp	a,ti.skUp
 	jp	z,main_move_up_return
-	cp	a,skDown
+	cp	a,ti.skDown
 	jp	z,main_move_down_return
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	jp	z,execute_item
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jp	z,execute_item_alternate
-	cp	a,skGraph
+	cp	a,ti.skGraph
 	jp	z,feature_item_rename
-	cp	a,skYequ
+	cp	a,ti.skYequ
 	jp	z,feature_item_new
-	cp	a,skAlpha
+	cp	a,ti.skAlpha
 	jp	z,feature_item_attributes
-	cp	a,skZoom
+	cp	a,ti.skZoom
 	jp	z,feature_item_edit
-	cp	a,skDel
+	cp	a,ti.skDel
 	jp	z,feature_item_delete
-	cp	a,skTrace
+	cp	a,ti.skTrace
 	jp	z,feater_setup_editor
-	sub	a,skAdd
+	sub	a,ti.skAdd
 	jp	c,main_loop
-	cp	a,skMath - skAdd + 1
+	cp	a,ti.skMath - ti.skAdd + 1
 	jp	nc,main_loop
 	call	search_alpha_item
 	jp	z,main_loop
@@ -89,7 +89,7 @@ dont_scroll:
 	ret
 
 main_init:
-	call	_ClrGetKeyHook				; clear key hooks
+	call	ti.ClrGetKeyHook			; clear key hooks
 
 	ld	a,screen_programs
 	ld	(current_screen),a			; start on the programs screen
@@ -100,14 +100,14 @@ main_init:
 	ld	a,(return_info)				; let's check if returned from execution
 	cp	a,return_goto
 	ret	nz
-	ld	hl,basic_prog
+	ld	hl,ti.basic_prog
 	ld	a,(hl)					; check if correct program
-	cp	a,protProgObj
+	cp	a,ti.ProtProgObj
 	ret	z
 	pop	bc					; pop return location
 	inc	hl
 	call	util_get_archived_name
-	call	_Mov9ToOP1
-	call	_ChkFindSym
+	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
 	jp	nc,edit_basic_program_goto
 	jp	util_get_battery

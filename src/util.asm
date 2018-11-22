@@ -1,23 +1,23 @@
 util_find_var:
-	call	_Mov9ToOP1
-	jp	_ChkFindSym
+	call	ti.Mov9ToOP1
+	jp	ti.ChkFindSym
 
 util_delete_program_from_usermem:
 	or	a,a
 	sbc	hl,hl
-	ld	de,(asm_prgm_size)		; get program size
-	ld	(asm_prgm_size),hl		; delete whatever was there
-	ld	hl,userMem
-	jp	_DelMem
+	ld	de,(ti.asm_prgm_size)		; get program size
+	ld	(ti.asm_prgm_size),hl		; delete whatever was there
+	ld	hl,ti.userMem
+	jp	ti.DelMem
 
 util_show_time:
 	bit	setting_clock,(iy + settings_flag)
 	ret	z
-	set	clockOn,(iy + clockFlags)
-	set	useTokensInString,(iy + clockFlags)
-	ld	de,OP6
+	set	ti.clockOn,(iy + ti.clockFlags)
+	set	ti.useTokensInString,(iy + ti.clockFlags)
+	ld	de,ti.OP6
 	push	de
-	call	_FormTime
+	call	ti.FormTime
 	pop	hl
 	save_cursor
 	set_cursor clock_x, clock_y
@@ -43,11 +43,11 @@ util_show_free_mem:
 	call	gui_clear_status_bar
 	set_inverted_text
 	print	string_ram_free, 4, 228
-	call	_MemChk
+	call	ti.MemChk
 	call	lcd_num_6
 	print	string_rom_free, 196, 228
-	call	_ArcChk
-	ld	hl,(tempFreeArc)
+	call	ti.ArcChk
+	ld	hl,(ti.tempFreeArc)
 	call	lcd_num_7
 	set_normal_text
 	ret
@@ -102,15 +102,15 @@ util_set_normal_text_color:
 	ret
 
 util_get_battery:
-	call	_GetBatteryStatus
+	call	ti.GetBatteryStatus
 	ld	(battery_status),a
 	ret
 
 util_get_key:
-	call	_DisableAPD                 ; disable to os apd and use our own
+	call	ti.DisableAPD			; disable to os apd and use our own
 	call	util_show_time
 	call	lcd_blit
-	call	_GetCSC
+	call	ti.GetCSC
 	or	a,a
 	jr	nz,util_setup_apd
 	call	util_handle_apd
@@ -150,7 +150,7 @@ util_prgm_ptr_to_op1:
 	add	hl,de
 	ld	a,(hl)				; get the type byte
 	pop	hl
-	ld	de,OP1				; store to op1
+	ld	de,ti.OP1			; store to op1
 	ld	(de),a
 	inc	de
 	ld	b,(hl)
@@ -168,8 +168,8 @@ util_prgm_ptr_to_op1:
 util_move_prgm_to_usermem:
 	ld	a,$9				; 'add hl,bc'
 	ld	(.smc),a
-	call	_ChkFindSym
-	call	_ChkInRam
+	call	ti.ChkFindSym
+	call	ti.ChkInRam
 	ex	de,hl
 	jr	z,.in_ram
 	xor	a,a
@@ -180,21 +180,21 @@ util_move_prgm_to_usermem:
 	add	hl,de
 	inc	hl
 .in_ram:					; hl -> size bytes
-	call	_LoadDEInd_s
+	call	ti.LoadDEInd_s
 	inc	hl
 	inc	hl				; bypass tExtTok, tAsm84CECmp
 	push	hl
 	push	de
 	ex	de,hl
-	call	_ErrNotEnoughMem		; check and see if we have enough memory
+	call	ti.ErrNotEnoughMem		; check and see if we have enough memory
 	pop	hl
-	ld	(asm_prgm_size),hl		; store the size of the program
-	ld	de,userMem
+	ld	(ti.asm_prgm_size),hl		; store the size of the program
+	ld	de,ti.userMem
 	push	de
-	call	_InsertMem			; insert memory into usermem
+	call	ti.InsertMem			; insert memory into usermem
 	pop	de
 	pop	hl				; hl -> start of program
-	ld	bc,(asm_prgm_size)		; load size of current program
+	ld	bc,(ti.asm_prgm_size)		; load size of current program
 .smc := $
 	add	hl,bc				; if not in ram smc it so it doesn't execute
 	ldir					; copy the program to userMem
@@ -203,18 +203,18 @@ util_move_prgm_to_usermem:
 util_setup_shortcuts:
 	ld	hl,hook_get_key
 	bit	setting_enable_shortcuts,(iy + settings_flag)
-	call	nz,_SetGetCSCHook
+	call	nz,ti.SetGetCSCHook
 	ret
 
 util_install_error_handler:
 	ld	hl,return_asm_error
-	jp	_PushErrorHandler
+	jp	ti.PushErrorHandler
 
 util_backup_prgm_name:
-	ld	hl,OP1
+	ld	hl,ti.OP1
 .entry:
 	ld	de,backup_prgm_name
-	jp	_Mov9b
+	jp	ti.Mov9b
 
 util_set_more_items_flag:
 	set	scroll_down_available,(iy + item_flag)
@@ -222,11 +222,11 @@ util_set_more_items_flag:
 
 util_delete_temp_program_get_name:
 	ld	hl,util_temp_program_object
-	call	_Mov9ToOP1
-	call	_PushOP1
-	call	_ChkFindSym
-	call	nc,_DelVarArc			; delete the temp prgm if it exists
-	jp	_PopOP1
+	call	ti.Mov9ToOP1
+	call	ti.PushOP1
+	call	ti.ChkFindSym
+	call	nc,ti.DelVarArc			; delete the temp prgm if it exists
+	jp	ti.PopOP1
 
 util_get_archived_name:
 	ld	de,util_temp_program_object + 1
@@ -241,31 +241,31 @@ util_get_archived_name:
 	ld	hl,backup_prgm_name
 	ret
 .no_match:
-	ld	hl,basic_prog
+	ld	hl,ti.basic_prog
 	ret
 
 util_op1_to_temp:
 	ld	de,string_temp
 	push	de
-	call	_ZeroOP
-	ld	hl,OP1 + 1
+	call	ti.ZeroOP
+	ld	hl,ti.OP1 + 1
 	pop	de
 .handle:
 	push	de
-	call	_Mov8b
+	call	ti.Mov8b
 	pop	hl
 	ret
 
 util_temp_to_op1:
 	ld	hl,string_temp
-	ld	de,OP1
+	ld	de,ti.OP1
 	jr	util_op1_to_temp.handle
 
 util_print_brightness:
 	push	hl
 	xor	a,a
 	sbc	hl,hl
-	ld	a,(mpBlLevel)
+	ld	a,(ti.mpBlLevel)
 	ld	l,a
 	call	lcd_num_3
 	pop	hl
@@ -306,4 +306,4 @@ util_num_convert:
 	ret
 
 util_temp_program_object:
-	db	tempProgObj, 'ZAGTQZTB', 0
+	db	ti.TempProgObj, 'ZAGTQZTB', 0

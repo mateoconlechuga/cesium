@@ -30,32 +30,32 @@ feature_item_rename:
 	ld	(cursor_position),a
 	dec	a
 	ld	(current_input_mode),a
-name_buffer := mpLcdCrsrImage + 1000
+name_buffer := ti.mpLcdCrsrImage + 1000
 	ld	hl,name_buffer + 1
 	ld	(name_buffer_ptr),hl
 .get_name:
 	call	util_get_key
-	cp	a,skDel
+	cp	a,ti.skDel
 	jq	z,.backspace
-	cp	a,skLeft
+	cp	a,ti.skLeft
 	jr	z,.backspace
-	cp	a,skAlpha
+	cp	a,ti.skAlpha
 	jp	z,.change_input_mode
-	cp	a,skClear
+	cp	a,ti.skClear
 	jp	z,main_start
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	jp	z,.confirm
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jp	z,.confirm
-	sub	a,skAdd
+	sub	a,ti.skAdd
 	jp	c,.get_name
-	cp	a,skMath - skAdd + 1
+	cp	a,ti.skMath - ti.skAdd + 1
 	jp	nc,.get_name
 	ld	hl,.get_name
 	push	hl
 	ld	hl,lut_character_standard
 .current_character_lut := $-3
-	call	_AddHLAndA			; find the offset
+	call	ti.AddHLAndA			; find the offset
 	ld	a,(hl)
 	or	a,a
 	ret	z
@@ -163,22 +163,22 @@ current_input_mode := $-1
 	bit	item_set_editor,(iy + item_flag)
 	jq	nz,.setting_editor_name
 	ld	hl,name_buffer
-	ld	(hl),progObj			; already in op1
-	call	_Mov9ToOP1
-	call	_ChkFindSym
+	ld	(hl),ti.ProgObj			; already in op1
+	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
 	jp	nc,.get_name			; check if name already exists
 	ld	hl,name_buffer
-	call	_Mov9ToOP1
-	ld	a,progObj
+	call	ti.Mov9ToOP1
+	ld	a,ti.ProgObj
 	or	a,a
 	sbc	hl,hl
-	call	_CreateVar
+	call	ti.CreateVar
 	jp	.goto_main
 .renaming:
 	call	util_move_prgm_name_to_op1	; move the current name to op1
-	ld	hl,_Arc_Unarc
+	ld	hl,ti.Arc_Unarc
 	ld	(.jump_smc),hl
-	ld	de,OP1
+	ld	de,ti.OP1
 	ld	a,(de)
 	ld	hl,name_buffer
 	ld	(hl),a
@@ -191,23 +191,23 @@ current_input_mode := $-1
 	sub	a,64
 	ld	(hl),a
 .not_hidden:
-	call	_PushOP1
+	call	ti.PushOP1
 	ld	hl,name_buffer
-	call	_Mov9ToOP1
-	call	_ChkFindSym
+	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
 	push	af
-	call	_PopOP1
+	call	ti.PopOP1
 	pop	af
 	jp	nc,.get_name			; check if name already exists
 .locate_program:
-	call	_ChkFindSym
-	call	_ChkInRam
+	call	ti.ChkFindSym
+	call	ti.ChkInRam
 	jr	nz,.in_archive
 	ld	hl,$f8				; _ret
 	ld	(.jump_smc),hl
-	call	_PushOP1
-	call	_Arc_Unarc
-	call	_PopOP1
+	call	ti.PushOP1
+	call	ti.Arc_Unarc
+	call	ti.PopOP1
 	jr	.locate_program
 .in_archive:
 	ex	de,hl
@@ -216,31 +216,31 @@ current_input_mode := $-1
 	ld	e,(hl)
 	add	hl,de
 	inc	hl				; size of name
-	call	_LoadDEInd_s
+	call	ti.LoadDEInd_s
 	push	hl
 	push	de
-	call	_PushOP1
+	call	ti.PushOP1
 	ld	hl,name_buffer
-	call	_Mov9ToOP1
-	call	_PushOP1
+	call	ti.Mov9ToOP1
+	call	ti.PushOP1
 	pop	hl
 	push	hl
-	ld	a,(OP1)
-	call	_CreateVar
+	ld	a,(ti.OP1)
+	call	ti.CreateVar
 	inc	de
 	inc	de
 	pop	bc
 	pop	hl
-	call	_ChkBCIs0
+	call	ti.ChkBCIs0
 	jr	z,.is_zero
 	ldir
 .is_zero:
-	call	_PopOP1
-	call	_Arc_Unarc
+	call	ti.PopOP1
+	call	ti.Arc_Unarc
 .jump_smc := $-3
-	call	_PopOP1
-	call	_ChkFindSym
-	call	_DelVarArc
+	call	ti.PopOP1
+	call	ti.ChkFindSym
+	call	ti.DelVarArc
 .goto_main:
 	call	find_files
 	ld	hl,name_buffer + 1
@@ -248,9 +248,9 @@ current_input_mode := $-1
 	jp	main_start
 .setting_editor_name:
 	ld	hl,name_buffer
-	ld	(hl),protProgObj
+	ld	(hl),ti.ProtProgObj
 	ld	de,setting_editor_name
-	call	_Mov9b
+	call	ti.Mov9b
 	call	settings_save
 	jp	main_start
 
@@ -277,9 +277,9 @@ feature_item_delete:
 	set_normal_text
 .loop:
 	call	util_get_key
-	cp	a,skZoom
+	cp	a,ti.skZoom
 	jr	z,.delete
-	cp	a,skGraph
+	cp	a,ti.skGraph
 	jp	z,main_start
 	jr	.loop
 .delete:
@@ -288,14 +288,14 @@ feature_item_delete:
 	jr	z,.delete_app
 .delete_program:
 	call	util_move_prgm_name_to_op1	; move the selected name to op1
-	call	_ChkFindSym
-	call	_DelVarArc
+	call	ti.ChkFindSym
+	call	ti.DelVarArc
 	jr	.refresh
 .delete_app:
 	ld	hl,(item_ptr)
 	ld	bc,0 - $100
 	add	hl,bc
-	call	_DeleteApp
+	call	ti.DeleteApp
 	set	3,(iy + $25)			; defrag on exit
 .refresh:
 	ld	hl,(current_selection_absolute)
@@ -330,25 +330,25 @@ feature_item_attributes:
 .loop:
 	call	util_show_time
 	call	lcd_blit
-	call	_GetCSC
+	call	ti.GetCSC
 	ld	hl,.show_edit
 	push	hl
-	cp	a,skDown
+	cp	a,ti.skDown
 	jp	z,.move_option_down
-	cp	a,skUp
+	cp	a,ti.skUp
 	jp	z,.move_option_up
 	pop	hl
-	cp	a,skAlpha
+	cp	a,ti.skAlpha
 	jp	z,.set_options
-	cp	a,skMode
+	cp	a,ti.skMode
 	jp	z,.set_options
-	cp	a,skClear
+	cp	a,ti.skClear
 	jp	z,.set_options
-	cp	a,skDel
+	cp	a,ti.skDel
 	jp	z,.set_options
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	jp	z,.check_what_to_do
-	cp	a,skEnter
+	cp	a,ti.skEnter
 	jr	nz,.loop
 	jp	.check_what_to_do
 
@@ -419,8 +419,8 @@ feature_item_attributes:
 	ld	a,(current_screen)
 	cp	a,screen_appvars
 	jr	z,.check_archived		; appvars can only be (un)archived
-	call	_ChkFindSym
-	ld	a,progObj
+	call	ti.ChkFindSym
+	ld	a,ti.ProgObj
 	bit	prgm_locked,(iy + prgm_flag)
 	jr	z,.unlock
 	inc	a
@@ -445,18 +445,18 @@ feature_item_attributes:
 	;jr	.check_archived
 .check_archived:
 	call	util_move_prgm_name_to_op1	; if needed, archive it
-	call	_ChkFindSym
-	call	_ChkInRam
+	call	ti.ChkFindSym
+	call	ti.ChkInRam
 	push	af
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.unarchive
 .archive:
 	pop	af
-	call	z,_Arc_Unarc
+	call	z,ti.Arc_Unarc
 	jr	.return
 .unarchive:
 	pop	af
-	call	nz,_Arc_Unarc
+	call	nz,ti.Arc_Unarc
 .return:
 	jp	main_start
 

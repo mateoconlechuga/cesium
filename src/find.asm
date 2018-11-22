@@ -60,9 +60,9 @@ find_lists:
 
 find_appvars:
 	call	find_app_directory
-	ld	hl,(progptr)
+	ld	hl,(ti.progPtr)
 .loop:
-	ld	de,(ptemp)			; check to see if at end of symbol table
+	ld	de,(ti.pTemp)			; check to see if at end of symbol table
 	or	a,a
 	sbc	hl,de
 	ret	z
@@ -73,7 +73,7 @@ find_appvars:
 	or	a,a
 	sbc	hl,de
 	and	a,$1f				; bitmask off bits 7-5 to get type only.
-	cp	a,appVarObj			; check if appvar
+	cp	a,ti.AppVarObj			; check if appvar
 	jr	nz,.skip
 	ex	de,hl
 	ld	hl,(item_locations_ptr)
@@ -95,9 +95,9 @@ find_appvars:
 
 find_programs:
 	call	find_app_directory
-	ld	hl,(progptr)
+	ld	hl,(ti.progPtr)
 .loop:
-	ld	de,(ptemp)			; check to see if at end of symbol table
+	ld	de,(ti.pTemp)			; check to see if at end of symbol table
 	or	a,a
 	sbc	hl,de
 	ret	z
@@ -105,9 +105,9 @@ find_programs:
 	add	hl,de				; restore hl
 	ld	a,(hl)				; check the [t] of entry, take appropriate action
 	and	a,$1f				; bitmask off bits 7-5 to get type only.
-	cp	a,progObj			; check if program
+	cp	a,ti.ProgObj			; check if program
 	jr	z,.normal_program
-	cp	a,protProgObj			; check if protected progrm
+	cp	a,ti.ProtProgObj			; check if protected progrm
 	jp	nz,.skip_program
 .normal_program:				; at this point, hl -> [t], so we'll move back six bytes to [nl]
 	dec	hl
@@ -126,14 +126,14 @@ find_programs:
 	ld	d,(hl)
 	dec	hl
 	ld	a,(hl)
-	call	_SetDEUToA
+	call	ti.SetDEUToA
 	dec	hl
 	push	hl
 	call	find_data_ptr
 	inc	hl
 	inc	hl
 	ld	a,(hl)
-	cp	a,tExtTok			; is it an assembly program
+	cp	a,ti.tExtTok			; is it an assembly program
 	jr	z,.check_if_is_asm
 .program_is_basic:
 	cp	a,byte_ice_source		; actually it is ice source
@@ -144,7 +144,7 @@ find_programs:
 .check_if_is_asm:
 	inc	hl
 	ld	a,(hl)
-	cp	a,tAsm84CECmp
+	cp	a,ti.tAsm84CeCmp
 	jr	nz,.program_is_basic		; is it a basic program
 	inc	hl
 	ld	a,(hl)
@@ -227,15 +227,15 @@ find_apps:
 	inc	hl
 	inc	hl
 	ld	(item_locations_ptr),hl
-	call	_ZeroOP3
-	ld	a,appObj
-	ld	(OP3),a
+	call	ti.ZeroOP3
+	ld	a,ti.AppObj
+	ld	(ti.OP3),a
 .loop:
-	call	_OP3ToOP1
-	call	_FindAppUp
+	call	ti.OP3ToOP1
+	call	ti.FindAppUp
 	push	hl
 	push	de
-	call	_OP1ToOP3
+	call	ti.OP1ToOP3
 	pop	hl
 	pop	de
 	ret	c

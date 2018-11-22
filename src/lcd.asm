@@ -1,13 +1,13 @@
 ; lcd handling routines for the pl1111
 
 lcd_init:
-	call	_RunIndicOff
+	call	ti.RunIndicOff
 	di					; turn off indicator
 	call	lcd_clear
 .setup:
-	ld	a,lcdBpp8
-	ld	(mpLcdCtrl),a			; operate in 8bpp
-	ld	hl,mpLcdPalette
+	ld	a,ti.lcdBpp8
+	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
+	ld	hl,ti.mpLcdPalette
 	ld	b,0
 .loop:
 	ld	d,b
@@ -28,30 +28,30 @@ lcd_init:
 	ret
 
 lcd_normal:
-	ld	hl,vRam
-	ld	bc,((lcdWidth * lcdHeight) * 2) - 1
+	ld	hl,ti.vRam
+	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) - 1
 	ld	a,255
-	call	_MemSet
+	call	ti.MemSet
 	ld	a,$2d
-	ld	(mpLcdCtrl),a
-	jp	_DrawStatusBar
+	ld	(ti.mpLcdCtrl),a
+	jp	ti.DrawStatusBar
 
 lcd_clear:
-	ld	hl,vRam
-	ld	bc,((lcdWidth * lcdHeight) * 2) - 1
+	ld	hl,ti.vRam
+	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) - 1
 	jr	lcd_fill.clear
 
 lcd_fill:
 	ld	hl,vRamBuffer
-	ld	bc,lcdWidth * lcdHeight - 1
+	ld	bc,ti.lcdWidth * ti.lcdHeight - 1
 .clear:
 	ld	a,(color_senary)
-	jp	_MemSet
+	jp	ti.MemSet
 
 lcd_blit:
 	ld	hl,vRamBuffer
-	ld	de,vRam
-	ld	bc,lcdWidth * lcdHeight
+	ld	de,ti.vRam
+	ld	bc,ti.lcdWidth * ti.lcdHeight
 	ldir
 	ret
 
@@ -65,7 +65,7 @@ lcd_sprite:
 	add	hl,hl
 	ld	de,vRamBuffer
 	add	hl,de
-	ld	b,lcdWidth / 2
+	ld	b,ti.lcdWidth / 2
 	mlt	bc
 	add	hl,bc
 	add	hl,bc				; draw location
@@ -83,7 +83,7 @@ lcd_sprite:
 	add	ix,de
 	lea	de,ix
 	ldir
-	ld	de,lcdWidth
+	ld	de,ti.lcdWidth
 	dec	a				; for height
 	jr	nz,.loop
 	ret
@@ -100,14 +100,14 @@ lcd_sprite_2x:
 	ld	de,0
 	add	a,a
 	ld	e,a
-	ld	hl,lcdWidth
+	ld	hl,ti.lcdWidth
 	sbc	hl,de
 	ld	(.incr),hl
 	pop	hl
 	inc	hl
 	push	hl
 	ld	l,c
-	ld	h,lcdWidth / 2
+	ld	h,ti.lcdWidth / 2
 	mlt	hl
 	add	hl,hl
 	ld	de,vRamBuffer
@@ -163,7 +163,7 @@ lcd_sprite_2x:
 ; e = y coordinate
 ; a = height
 lcd_rectangle:
-	ld	d,lcdWidth / 2
+	ld	d,ti.lcdWidth / 2
 	mlt	de
 	add	hl,de
 	add	hl,de
@@ -184,7 +184,7 @@ lcd_rectangle:
 	add	hl,de
 	ldir					; draw the current line
 .skip:
-	ld	de,lcdWidth			; move to next line
+	ld	de,ti.lcdWidth			; move to next line
 	dec	a
 	jr	nz,.loop
 	ret
@@ -208,14 +208,14 @@ lcd_rectangle_outline:
 	ld	e,c
 	call	lcd_vertical			; right vertical line
 	pop	bc
-	jp	_MemSet				; bottom horizontal line
+	jr	lcd_horizontal.computed		; bottom horizontal line
 
 ; hl = x
 ; e = y
 lcd_horizontal:
 	call	lcd_compute			; hl -> drawing location
 .computed:
-	jp	_MemSet
+	jp	ti.MemSet
 
 ; hl = x
 ; e = y
@@ -223,7 +223,7 @@ lcd_vertical:
 	dec	b
 	call	lcd_compute			; hl -> drawing location
 .computed:
-	ld	de,lcdWidth
+	ld	de,ti.lcdWidth
 .loop:
 	ld	(hl),a				; loop for height
 	add	hl,de
@@ -231,7 +231,7 @@ lcd_vertical:
 	ret
 
 lcd_compute:
-	ld	d,lcdWidth / 2
+	ld	d,ti.lcdWidth / 2
 	mlt	de
 	add	hl,de
 	add	hl,de
@@ -240,7 +240,7 @@ lcd_compute:
 	ret
 
 lcd_string:
-	ld	de,lcdWidth - 10
+	ld	de,ti.lcdWidth - 10
 .loop:
 	ld	a,(hl)
 	or	a,a
@@ -267,7 +267,7 @@ lcd_x := $-3
 	push	bc
 	ld	l,0
 lcd_y := $-1
-	ld	h,lcdWidth / 2
+	ld	h,ti.lcdWidth / 2
 	mlt	hl
 	add	hl,hl
 	ld	de,vRamBuffer
@@ -301,7 +301,7 @@ lcd_text_bg := $+2
 	inc	hl
 	djnz	.horiz_loop
 	ld	(hl),d
-	ld	bc,lcdWidth - character_width
+	ld	bc,ti.lcdWidth - character_width
 	add	hl,bc
 	pop	de
 	ex	de,hl
@@ -316,7 +316,7 @@ lcd_text_bg := $+2
 	xor	a,a
 .too_big:
 	ld	hl,lut_character_spacing
-	call	_AddHLAndA
+	call	ti.AddHLAndA
 	ld	a,(hl)				; amount to step per character
 	or	a,a
 	sbc	hl,hl
@@ -348,5 +348,5 @@ lcd_num:
 	call	util_num_convert
 	ex	de,hl
 	pop	af
-	call	_AddHLAndA
+	call	ti.AddHLAndA
 	jp	lcd_string

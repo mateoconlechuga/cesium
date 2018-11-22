@@ -67,7 +67,7 @@ current_prgm_drawing := $-1
 	push	hl					; push the name pointer
 	inc	hl					; the next byte is the status
 	ld	a,(hl)
-	call	_SetDEUToA
+	call	ti.SetDEUToA
 	inc	hl
 	ld	d,(hl)
 	inc	hl
@@ -83,7 +83,7 @@ current_prgm_drawing := $-1
 	add	hl,de
 	inc	hl
 .in_ram:
-	call	_LoadDEInd_s
+	call	ti.LoadDEInd_s
 	ld	(temp_prgm_data_ptr),hl
 	bit	drawing_selected,(iy + item_flag)
 	jr	z,.not_drawing_selected
@@ -98,14 +98,14 @@ current_prgm_drawing := $-1
 	ld	a,(bc)
 	push	bc
 	push	de
-	call	_AddHLAndA
+	call	ti.AddHLAndA
 	ld	(prgm_size),hl
 	pop	hl
 	inc	hl
 	inc	hl
 	inc	hl
 	ld	a,(hl)					; previously stored type of program
-	cp	a,protProgObj
+	cp	a,ti.ProtProgObj
 	jr	nz,.not_locked
 	set	temp_prgm_locked,(iy + temp_prgm_flag)
 .not_locked:
@@ -277,7 +277,7 @@ file_editable:
 .no_overflow:						; rather than doing an actual routine, just do this
 	push	hl
 	ld	hl,lut_color_basic
-	call	_AddHLAndA
+	call	ti.AddHLAndA
 	ld	a,(hl)
 	pop	hl
 	ld	(de),a

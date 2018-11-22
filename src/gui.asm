@@ -32,7 +32,7 @@ battery_status := $-1
 	or	a,a
 	ret	z
 	ld	bc,4
-	ld	de,(lcdWidth * 8) + 7
+	ld	de,(ti.lcdWidth * 8) + 7
 	jp	lcd_rectangle.computed
 
 gui_draw_cesium_info:
@@ -123,7 +123,7 @@ gui_draw_option:
 	ld	(.recompute),a
 	inc	l				; Ty + 3
 	inc	l
-	ld	h,lcdWidth / 2
+	ld	h,ti.lcdWidth / 2
 	mlt	hl
 	add	hl,hl
 	pop	de
@@ -172,7 +172,7 @@ gui_draw_color_table:
 	ld	b,6
 .vert:
 	push	bc
-	ld	l,lcdWidth / 2
+	ld	l,ti.lcdWidth / 2
 	ld	h,d
 	mlt	hl
 	add	hl,hl
@@ -250,7 +250,7 @@ gui_color_box:
 	ld	d,c
 	push	hl, de, bc
 	call	lcd_compute
-	ld	de,lcdWidth * 2 + 3
+	ld	de,ti.lcdWidth * 2 + 3
 	add	hl,de
 	ld	a,(hl)					; get the new color
 	ld	hl,(color_ptr)

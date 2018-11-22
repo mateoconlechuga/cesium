@@ -15,18 +15,18 @@ edit_basic_program:
 	ld	(edit_status),a
 	call	util_backup_prgm_name
 	call	util_op1_to_temp
-	call	_PushOP1
+	call	ti.PushOP1
 	ld	hl,setting_editor_name
-	call	_Mov9ToOP1
-	call	_ChkFindSym
+	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
 	push	af
-	call	_PopOP1
+	call	ti.PopOP1
 	pop	af
 	jp	c,.no_external_editor
-	call	_AnsName			; need to write new ans variable
-	call 	_FindSym
-	call	nc,_DelVar
-	call	_AnsName			; write to ans
+	call	ti.AnsName			; need to write new ans variable
+	call 	ti.FindSym
+	call	nc,ti.DelVar
+	call	ti.AnsName			; write to ans
 	ld	bc,0
 	ld	hl,string_temp
 .namelen:
@@ -47,7 +47,7 @@ edit_basic_program:
 	sbc	hl,hl				; no length to add
 	jr	.noaddoffset
 .addoffset:
-	ld	(hl),tColon
+	ld	(hl),ti.tColon
 	inc	hl
 	push	hl
 	ld	hl,(error_offset)
@@ -73,92 +73,92 @@ edit_basic_program:
 	pop	bc
 	add	hl,bc
 	push	hl
-	call	_CreateStrng
+	call	ti.CreateStrng
 	pop	bc
 	inc	de
 	inc	de
 	ld	hl,string_temp
 	ldir					; copied name to ans
 	ld	hl,setting_editor_name
-	call	_Mov9ToOP1
+	call	ti.Mov9ToOP1
 	res	prgm_is_basic,(iy + prgm_flag)	; not a basic program
 	jp	execute_program.entry		; launch the editor
 
 .no_external_editor:
-	call	_PushOP1			; for restoring in hook
-	call	_ChkFindSym
-	call	_ChkInRam
+	call	ti.PushOP1			; for restoring in hook
+	call	ti.ChkFindSym
+	call	ti.ChkInRam
 	jr	z,.not_archived
 	ld	a,edit_archived
 	ld	(edit_status),a
-	call	_Arc_Unarc
+	call	ti.Arc_Unarc
 .not_archived:
 	ld	hl,hook_app_change
-	call	_SetAppChangeHook
+	call	ti.SetAppChangeHook
 	xor	a,a
-	ld	(menuCurrent),a
-	call	_CursorOff
-	call	_RunIndicOff
+	ld	(ti.menuCurrent),a
+	call	ti.CursorOff
+	call	ti.RunIndicOff
 	call	lcd_normal
 	ld	hl,string_temp			; contains OP1
 	push	hl
-	ld	de,progToEdit
-	call	_Mov9b
+	ld	de,ti.progToEdit
+	call	ti.Mov9b
 	pop	hl
 	dec	hl
-	ld	de,basic_prog
-	call	_Mov9b
-	ld	a,cxPrgmEdit
-	call	_NewContext
+	ld	de,ti.basic_prog
+	call	ti.Mov9b
+	ld	a,ti.cxPrgmEdit
+	call	ti.NewContext
 	xor	a,a
-	ld	(winTop),a
-	call	_ScrollUp
-	call	_Homeup
+	ld	(ti.winTop),a
+	call	ti.ScrollUp
+	call	ti.HomeUp
 	ld	a,':'
-	call	_PutC
+	call	ti.PutC
 	ld	a,(edit_mode)
 	or	a
 	jr	z,.goto_none
 
-	ld	hl,(editTop)
-	ld	de,(editCursor)
+	ld	hl,(ti.editTop)
+	ld	de,(ti.editCursor)
 	compare_hl_de
 	jr	nz,.goto_end
 
 	ld	bc,0
 error_offset := $-3
-	call	_ChkBCIs0
+	call	ti.ChkBCIs0
 	jr	z,.goto_end
-	ld	hl,(editTail)
+	ld	hl,(ti.editTail)
 	ldir
-	ld	(editTail),hl
-	ld	(editCursor),de
+	ld	(ti.editTail),hl
+	ld	(ti.editCursor),de
 	call	.goto_new_line
 .goto_end:
-	call	_DispEOW
+	call	ti.DispEOW
 	ld	hl,$100
-	ld.sis	(curRow and $ffff),hl
+	ld.sis	(ti.curRow and $ffff),hl
 	jr	.skip
 
 .goto_none:
-	call	_DispEOW
+	call	ti.DispEOW
 	ld	hl,$100
-	ld.sis	(curRow and $ffff),hl
-	call	_BufToTop
+	ld.sis	(ti.curRow and $ffff),hl
+	call	ti.BufToTop
 .skip:
 	xor	a,a
-	ld	(menuCurrent),a
+	ld	(ti.menuCurrent),a
 	set	7,(iy + $28)
-	jp	_Mon
+	jp	ti.Mon
 
 .goto_new_line:
-	ld	hl,(editCursor)
+	ld	hl,(ti.editCursor)
 	ld	a,(hl)
 	cp	a,$3f
 	jr	z,.goto_new_line_back
 .loop:
 	ld	a,(hl)
-	ld	de,(editTop)
+	ld	de,(ti.editTop)
 	or	a,a
 	sbc	hl,de
 	ret	z
@@ -166,22 +166,22 @@ error_offset := $-3
 	dec	hl
 	push	af
 	ld	a,(hl)
-	call	_IsA2ByteTok
+	call	ti.Isa2ByteTok
 	pop	de
 	jr	z,.goto_new_line_back
 	ld	a,d
 	cp	a,$3f
 	jr	z,.goto_new_line_next
 .goto_new_line_back:
-	call	_BufLeft
-	ld	hl,(editCursor)
+	call	ti.BufLeft
+	ld	hl,(ti.editCursor)
 	jr	.loop
 .goto_new_line_next:
-	jp	_BufRight
+	jp	ti.BufRight
 
 compute_error_offset:
-	ld	hl,(curPC)
-	ld	bc,(begPC)
+	ld	hl,(ti.curPC)
+	ld	bc,(ti.begPC)
 	or	a,a
 	sbc	hl,bc
 	ld	(error_offset),hl

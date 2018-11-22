@@ -41,22 +41,22 @@ execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal
-	call	_ClrParserHook
-	call	_ClrAppChangeHook
+	call	ti.ClrParserHook
+	call	ti.ClrAppChangeHook
 	call	util_setup_shortcuts
-	res	useTokensInString,(iy + clockFlags)
-	res	onInterrupt,(iy + onFlags)
-	set	graphDraw,(iy + graphFlags)
-	call	_ResetStacks
-	call	_ReloadAppEntryVecs
-	call	_AppSetup
-	set	appRunning,(iy+APIFlg)			; turn on apps
-	set	6,(iy+$28)
-	res	0,(iy+$2C)				; set some app flags
-	set	appAllowContext,(iy+APIFlg)		; turn on apps
+	res	ti.useTokensInString,(iy + ti.clockFlags)
+	res	ti.onInterrupt,(iy + ti.onFlags)
+	set	ti.graphDraw,(iy + ti.graphFlags)
+	call	ti.ResetStacks
+	call	ti.ReloadAppEntryVecs
+	call	ti.AppSetup
+	set	ti.appRunning,(iy + ti.APIFlg)		; turn on apps
+	set	6,(iy + $28)
+	res	0,(iy + $2C)				; set some app flags
+	set	ti.appAllowContext,(iy + ti.APIFlg)	; turn on apps
 	ld	hl,$d1787c				; copy to ram data location
 	ld	bc,$fff
-	call	_MemClear				; zero out the ram data section
+	call	ti.MemClear				; zero out the ram data section
 	ld	hl,(item_ptr)				; hl -> start of app
 	push	hl					; de -> start of code for app
 	ex	de,hl
@@ -97,34 +97,34 @@ execute_program:
 	call	util_backup_prgm_name
 .entry:							; entry point, OP1 = name
 	bit	setting_enable_shortcuts,(iy + settings_flag)
-	call	nz,_ClrGetKeyHook
+	call	nz,ti.ClrGetKeyHook
 	bit	prgm_is_basic,(iy + prgm_flag)
-	jr	nz,execute_basic_program		; execute basic program
+	jr	nz,execute_ti.basic_program		; execute basic program
 	call	util_move_prgm_to_usermem		; execute assembly program
 	call	util_install_error_handler
 execute_assembly_program:
 	ld	hl,return_asm
 	push	hl
-	call	_DisableAPD
-	set	appAutoScroll,(iy + appflags)		; allow scrolling
-	jp	userMem
+	call	ti.DisableAPD
+	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
+	jp	ti.userMem
 
-execute_basic_program:
+execute_ti.basic_program:
 	ld	hl,(prgm_data_ptr)
 	ld	a,(hl)
-	cp	a,tExtTok
+	cp	a,ti.tExtTok
 	jr	nz,.not_unsquished			; check if actually an unsquished assembly program
 	inc	hl
 	ld	a,(hl)
-	cp	a,tAsm84CePrgm
+	cp	a,ti.tAsm84CePrgm
 	jp	z,squish_program			; we've already installed an error handler
 .not_unsquished:
-	call	_ClrTxtShd
-	call	_HomeUp
-	call	_RunIndicOn
+	call	ti.ClrTxtShd
+	call	ti.HomeUp
+	call	ti.RunIndicOn
 	bit	setting_basic_indicator,(iy + settings_flag)
-	call	nz,_RunIndicOff
-	call	_DisableAPD
+	call	nz,ti.RunIndicOff
+	call	ti.DisableAPD
 	call	hook_home.save
 	call	hook_home.set
 	bit	prgm_archived,(iy + prgm_flag)
@@ -132,38 +132,38 @@ execute_basic_program:
 	call	util_delete_temp_program_get_name
 	ld	hl,(prgm_real_size)
 	push	hl
-	ld	a,tempProgObj
-	call	_CreateVar				; create a temp program so we can execute
+	ld	a,ti.TempProgObj
+	call	ti.CreateVar				; create a temp program so we can execute
 	inc	de
 	inc	de
 	pop	bc
-	call	_ChkBCIs0
+	call	ti.ChkBCIs0
 	jr	z,.in_rom				; there's nothing to copy
 	ld	hl,(prgm_data_ptr)
 	ldi
 	jp	po,.in_rom
 	ldir
 .in_rom:
-	call	_OP4ToOP1
+	call	ti.OP4ToOP1
 .in_ram:
-	ld	de,appErr1
+	ld	de,ti.appErr1
 	ld	hl,string_error_stop
 	ld	bc,string_error_stop.length
 	ldir
-	set	graphdraw,(iy + graphFlags)
+	set	ti.graphDraw,(iy + ti.graphFlags)
 	ld	hl,return_basic_error
-	call	_PushErrorHandler
-	res	apptextsave,(iy + appflags)		; text goes to textshadow
-	set	progExecuting,(iy + newdispf)
-	set	allowProgTokens,(iy + newDispF)
+	call	ti.PushErrorHandler
+	res	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
+	set	ti.progExecuting,(iy + ti.newDispF)
+	set	ti.allowProgTokens,(iy + ti.newDispF)
 	res	7,(iy + $45)
-	set	appAutoScroll,(iy + appflags)		; allow scrolling
-	set	cmdExec,(iy + cmdFlags) 		; set these flags to execute basic program
-	res	onInterrupt,(iy + onflags)
+	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
+	set	ti.cmdExec,(iy + ti.cmdFlags) 		; set these flags to execute basic program
+	res	ti.onInterrupt,(iy + ti.onFlags)
 	ld	hl,return_basic
 	push	hl
 	sub	a,a
-	ld	(kbdGetKy),a
-	call	_EnableAPD
+	ld	(ti.kbdGetKy),a
+	call	ti.EnableAPD
 	ei
-	jp	_ParseInp				; run program
+	jp	ti.ParseInp				; run program

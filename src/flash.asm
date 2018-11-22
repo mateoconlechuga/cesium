@@ -5,7 +5,7 @@ flash_code_copy:
 	flash_code.copy
 	ret
 
-relocate flash_code, mpLcdCrsrImage
+relocate flash_code, ti.mpLcdCrsrImage
 
 assume	adl = 0
 
@@ -51,15 +51,15 @@ flash_backup_ram:
 	ld	(hl),$5a			; write some magical bytes
 	ld	de,$3c0000			; write all of ram
 	ld	bc,$40000
-	call	_WriteFlash
+	call	ti.WriteFlash
 
 	flash_lock_m
 	ret
 
 flash_erase_sector:
-	ld	bc,$f8				; lol, what a security flaw
+	ld	bc,$f8				; lol, what a flaw
 	push	bc
-	jp	_EraseFlashSector
+	jp	ti.EraseFlashSector
 
 flash_clear_backup:
 	ld	de,$3c0000			; backup address
@@ -73,7 +73,7 @@ flash_clear_backup:
 	or	a,a
 	ret	z				; dont clear if done already
 	flash_unlock_m
-	call	_WriteFlashByte			; clear old backup
+	call	ti.WriteFlashByte		; clear old backup
 	flash_lock_m
 	ret
 

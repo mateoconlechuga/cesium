@@ -9,7 +9,7 @@ hook_parser:
 	ld	a,hook_token_stop	; check if stop token
 	cp	a,b
 	ld	a,$ab
-	jp	z,_JError
+	jp	z,ti.JError
 	xor	a,a
 	ret
 
@@ -17,25 +17,25 @@ hook_app_change:
 	db	$83
 	;ld	c,a			; huh
 	ld	a,b
-	cp	a,cxPrgmEdit		; only allow when editing
+	cp	a,ti.cxPrgmEdit		; only allow when editing
 	ld	b,a
 	ret	nz
 	ld	a,c
-	cp	a,kEnter		; wut ti, this is how you run a program?
+	cp	a,ti.kEnter		; wut ti, this is how you run a program?
 	jr	nz,.wut
 	push	hl
-	call	_PopOP1
+	call	ti.PopOP1
 	pop	hl
 	ret
 .wut:
-	call	_CursorOff
-	call	_CloseEditEqu
-	call	_PopOP1
-	call	_ChkFindSym
+	call	ti.CursorOff
+	call	ti.CloseEditEqu
+	call	ti.PopOP1
+	call	ti.ChkFindSym
 	jr	c,.dont_archive
 	ld	a,(edit_status)
 	or	a,a
-	call	nz,_Arc_Unarc
+	call	nz,ti.Arc_Unarc
 .dont_archive:
 	ld	a,return_prgm
 	ld	(return_info),a
@@ -55,24 +55,24 @@ hook_get_key:
 	pop	hl
 	jr	nz,.check_for_shortcut_key
 	pop	af
-	cp	a,sk2nd
+	cp	a,ti.sk2nd
 	ret	nz
-	ld	a,sk2nd - 1				; maybe some other day
+	ld	a,ti.sk2nd - 1				; maybe some other day
 	inc	a
 	ret
 .check_for_shortcut_key:
 	pop	af
-	cp	a,skStat
+	cp	a,ti.skStat
 	jp	z,hook_password
-	cp	a,skGraph
+	cp	a,ti.skGraph
 	jr	z,hook_show_labels
-	cp	a,skPrgm
+	cp	a,ti.skPrgm
 	jr	z,hook_execute_cesium
-	cp	a,sk8
+	cp	a,ti.sk8
 	jr	z,hook_backup_ram
-	cp	a,sk5
+	cp	a,ti.sk5
 	jr	z,hook_clear_backup
-	cp	a,sk2
+	cp	a,ti.sk2
 	jr	z,hook_restore_ram
 	ret
 
@@ -109,28 +109,28 @@ hook_get_key_none:
 	ret
 
 hook_backup_ram:
-	call	_os_ClearStatusBarLow
+	call	ti.os.ClearStatusBarLow
 	di
 	ld	de,$e71c
-	ld.sis	(drawFGColor and $ffff),de
-	ld.sis	de,(statusBarBGColor and $ffff)
-	ld.sis	(drawBGColor and $ffff),de
+	ld.sis	(ti.drawFGColor and $ffff),de
+	ld.sis	de,(ti.statusBarBGColor and $ffff)
+	ld.sis	(ti.drawBGColor and $ffff),de
 	ld	a,14
-	ld	(penRow),a
+	ld	(ti.penRow),a
 	ld	de,2
-	ld.sis	(penCol and $ffff), de
+	ld.sis	(ti.penCol and $ffff), de
 	ld	hl,string_ram_backup
-	call	_VPutS
+	call	ti.VPutS
 	call	flash_code_copy
 	call	flash_backup_ram
-	call	_DrawStatusBar
+	call	ti.DrawStatusBar
 	jr	hook_get_key_none
 
 hook_execute_cesium:
 	xor	a,a
-	ld	(menuCurrent),a
-	call	_CursorOff
-	call	_RunIndicOff
+	ld	(ti.menuCurrent),a
+	call	ti.CursorOff
+	call	ti.RunIndicOff
 	di
 	ld	hl,data_string_cesium_name	; execute app
 	ld	de,$d0082e			; honestly no idea what this address is...
@@ -140,18 +140,18 @@ hook_execute_cesium:
 	ldir
 	pop	bc
 	pop	hl
-	ld	de,progtoedit			; copy it here just to be safe
+	ld	de,ti.progToEdit		; copy it here just to be safe
 	ldir
-	ld	a,cxExtApps
-	jp	_NewContext
+	ld	a,ti.kExtApps
+	jp	ti.NewContext
 
 hook_password:
 	ld	hl,data_cesium_appvar
-	call	_Mov9ToOP1
-	call	_ChkFindSym
-	call	_ChkInRam
+	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
+	call	ti.ChkInRam
 	push	af
-	call	z,_Arc_Unarc			; archive it
+	call	z,ti.Arc_Unarc			; archive it
 	pop	af
 	jr	z,hook_password			; find the settings appvar
 	ex	de,hl
@@ -166,22 +166,22 @@ hook_password:
 	ld	bc,settings_size
 	ldir					; copy in the password
 .wrong:
-	call	_CursorOff
-	ld	a,cxCmd
-	call	_NewContext0
-	call	_CursorOff
-	call	_ClrSCrn
-	call	_HomeUp
+	call	ti.CursorOff
+	ld	a,ti.cxCmd
+	call	ti.NewContext0
+	call	ti.CursorOff
+	call	ti.ClrScrn
+	call	ti.HomeUp
 	ld	hl,data_string_password
-	call	_PutS
+	call	ti.PutS
 	di
-	call	_EnableAPD
+	call	ti.EnableAPD
 	ld	a,1
-	ld	hl,apdSubTimer
+	ld	hl,ti.apdSubTimer
 	ld	(hl),a
 	inc	hl
 	ld	(hl),a
-	set	apdRunning,(iy + apdFlags)
+	set	ti.apdRunning,(iy + ti.apdFlags)
 	ei
 	ld	hl,setting_password
 	ld	a,(hl)				; password length
@@ -198,17 +198,17 @@ hook_password:
 	inc	c
 .draw_character:
 	ld	a,'*'
-	call	_PutC
+	call	ti.PutC
 	djnz	.get_user_password
 	dec	c
 	inc	c
 	jr 	nz,.wrong
 .correct:
-	ld	a,kClear
-	jp	_SendKPress
+	ld	a,ti.kClear
+	jp	ti.SendKPress
 .get_key:
 	push	hl
-   	call	_GetCSC
+   	call	ti.GetCSC
 	pop	hl
 	or	a,a
 	jr	z,.get_key
@@ -218,33 +218,33 @@ hook_home:
 	db	$83
 	cp	a,3
 	ret	nz
-	bit	appInpPrmptDone,(iy + apiFlg2)
-	res	appInpPrmptDone,(iy + apiFlg2)
+	bit	appInpPrmptDone,(iy + ti.apiFlg2)
+	res	appInpPrmptDone,(iy + ti.apiFlg2)
 	ld	a,b
 	ld	b,0
 	jr	z,.restore_home_hooks
 .establish:
-	call	_ReloadAppEntryVecs
+	call	ti.ReloadAppEntryVecs
 	ld	hl,.vectors
-	call	_AppInit
+	call	ti.AppInit
 	or	a,1
-	ld	a,cxExtApps
-	ld	(cxCurApp),a
+	ld	a,ti.kExtApps
+	ld	(ti.cxCurApp),a
 	ret
 .set:
 	ld	hl,hook_home
-	call	_SetHomescreenHook
+	call	ti.SetHomescreenHook
 	jr	.establish
 .restore_home_hooks:
 	push	af
 	push	bc
-	call	_ClrHomescreenHook
+	call	ti.ClrHomescreenHook
 	res	appWantHome,(iy + sysHookFlg)
 	pop	bc
 	pop	af
-	cp	a,cxError
+	cp	a,ti.cxError
 	jp	z,return_basic
-	cp	a,cxPrgmInput
+	cp	a,ti.cxPrgmInput
 	jp	z,return_basic
 	ld	hl,backup_home_hook_location
 	ld	a,(hl)
@@ -252,7 +252,7 @@ hook_home:
 	ret	z
 	push	bc
 	ld	hl,(hl)
-	call	_SetHomescreenHook
+	call	ti.SetHomescreenHook
 	set	appWantHome,(iy + sysHookFlg)
 	pop	bc
 	ret
@@ -261,27 +261,27 @@ hook_home:
 	sbc	hl,hl
 	bit	appWantHome,(iy + sysHookFlg)
 	jr	z,.done
-	ld	hl,(homescreenHookPtr)
+	ld	hl,(ti.homescreenHookPtr)
 .done:
 	ld	(backup_home_hook_location),hl
 	ret
 
 .put_away:
-	xor    a,a
-	ld     (currLastEntry),a
-	bit    appInpPrmptInit,(iy + apiFlg2)
-	jr     nz,.skip
-	call	_ClrHomescreenHook
+	xor	a,a
+	ld	(ti.currLastEntry),a
+	bit	appInpPrmptInit,(iy + ti.apiFlg2)
+	jr	nz,.skip
+	call	ti.ClrHomescreenHook
 .skip:
-	call	_ReloadAppEntryVecs
-	call	_PutAway
+	call	ti.ReloadAppEntryVecs
+	call	ti.PutAway
 	ld	b,0
 	ret
 .vectors:
 	dl	$f8
-	dl	_SaveShadow
+	dl	ti.SaveShadow
 	dl	.put_away
-	dl	_RstrShadow
+	dl	ti.RStrShadow
 	dl	$f8
 	dl	$f8
 	db	0

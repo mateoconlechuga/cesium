@@ -3,19 +3,19 @@
 ;
 ; uses insertion sort to sort the vat alphabetically
 
-sort_first_item_found_ptr := mpLcdCrsrImage
-sort_end_of_part_ptr := mpLcdCrsrImage + 3
-sort_vat_entry_size := mpLcdCrsrImage + 6
-sort_vat_entry_new_loc := mpLcdCrsrImage + 9
-sort_vat_entry_temp_end := mpLcdCrsrImage + 12 + 15
+sort_first_item_found_ptr := ti.mpLcdCrsrImage
+sort_end_of_part_ptr := ti.mpLcdCrsrImage + 3
+sort_vat_entry_size := ti.mpLcdCrsrImage + 6
+sort_vat_entry_new_loc := ti.mpLcdCrsrImage + 9
+sort_vat_entry_temp_end := ti.mpLcdCrsrImage + 12 + 15
 
 sort_vat:
-	res	sort_first_item_found,(iy + asm_Flag1)
-	ld	hl,(progptr)
+	res	sort_first_item_found,(iy + ti.asm_Flag1)
+	ld	hl,(ti.progPtr)
 .sort_next:
 	call	.find_next_item
 	ret	nc
-	bit	sort_first_item_found,(iy + asm_Flag1)
+	bit	sort_first_item_found,(iy + ti.asm_Flag1)
 	jp	z,.first_found
 	push	hl
 	call	.skip_name
@@ -98,8 +98,8 @@ sort_vat:
 	jp	.sort_next
 
 .first_found:
-	set	sort_first_item_found,(iy + asm_Flag1)	; to make it only execute once
-	ld	(sort_first_item_found_ptr),hl
+	set	sort_first_item_found,(iy + ti.asm_Flag1)
+	ld	(sort_first_item_found_ptr),hl		; to make it only execute once
 	call	.skip_name
 	ld	(sort_end_of_part_ptr),hl
 	jp	.sort_next
@@ -186,7 +186,7 @@ sort_vat:
 
 .find_next_item:					; carry = found, nc = notfound
 	ex	de,hl
-	ld	hl,(ptemp)
+	ld	hl,(ti.pTemp)
 	or	a,a					; reset carry flag
 	sbc	hl,de
 	ret	z
@@ -212,5 +212,5 @@ sort_vat:
 	ret
 
 sort_types:
-	db	progObj, protProgObj, appVarObj		; types to sort
+	db	ti.ProgObj, ti.ProtProgObj, ti.AppVarObj	; types to sort
 .length := $-.

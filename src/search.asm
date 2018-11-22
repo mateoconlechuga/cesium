@@ -3,7 +3,7 @@
 ; a = alphabet name to find
 search_alpha_item:
 	ld	hl,lut_character_standard
-	call	_AddHLAndA			; find the offset
+	call	ti.AddHLAndA			; find the offset
 	ld	a,(hl)
 	or	a,a
 	ret	z
@@ -52,7 +52,7 @@ search_complete:
 	ret
 
 search_name:
-	call	_StrLength
+	call	ti.StrLength
 	ld	a,c
 	ld	(.length),a
 	push	hl

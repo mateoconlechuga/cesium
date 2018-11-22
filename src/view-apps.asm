@@ -8,7 +8,7 @@ view_apps:
 	ld	(current_app),a
 	ld	hl,item_location_base
 	ld	de,(scroll_amount)
-	call	_ChkDEIs0
+	call	ti.ChkDEIs0
 	ld	bc,(number_of_items)
 	jr	z,.loop
 .get_real_offset:
@@ -143,8 +143,8 @@ application_ptr := $-3
 	jr	.draw_size
 .draw_real_size:
 	push	hl
-	call	_NextFieldFromType		; move to start of signature
-	call	_NextFieldFromType		; move to end of signature
+	call	ti.NextFieldFromType		; move to start of signature
+	call	ti.NextFieldFromType		; move to end of signature
 	pop	de
 	or	a,a
 	sbc	hl,de
@@ -155,7 +155,7 @@ application_ptr := $-3
 	call	lcd_num_6
 	print	string_min_version, 199, 129
 	bit	item_is_directory,(iy + item_flag)
-	call	z,_os_GetAppVersionString
+	call	z,ti.os.GetAppVersionString
 	pop	de
 	compare_hl_zero
 	jr	nz,.custom_version
