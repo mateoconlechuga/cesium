@@ -243,9 +243,9 @@ hook_home:
 	pop	bc
 	pop	af
 	cp	a,ti.cxError
-	jp	z,return_basic
+	jr	z,.return_cesium_app
 	cp	a,ti.cxPrgmInput
-	jp	z,return_basic
+	jr	z,.return_cesium_app
 	ld	hl,backup_home_hook_location
 	ld	a,(hl)
 	or	a,a
@@ -256,6 +256,9 @@ hook_home:
 	set	appWantHome,(iy + sysHookFlg)
 	pop	bc
 	ret
+.return_cesium_app:
+	cesium_code.copy
+	jp	return_basic
 .save:
 	xor	a,a
 	sbc	hl,hl
