@@ -169,4 +169,4 @@ Source is available here: https://github.com/mateoconlechuga/cesium
 ### Bug Reports and Feature Requests
 Make a GitHub issue here: https://github.com/mateoconlechuga/cesium/issues
 
-If you encounter an unexpected behavior, please make an [issue on GitHub] (https://github.com/mateoconlechuga/cesium/issues/)and/or post a topic on TI community websites detailing exactly went wrong and when. (If there isn't a GitHub issue for a bug, it will likely be ignored) Thanks!
+If you encounter an unexpected behavior, please make an [issue on GitHub] (https://github.com/mateoconlechuga/cesium/issues/) and/or post a topic on TI community websites detailing exactly went wrong and when. (If there isn't a GitHub issue for a bug, it will likely be ignored) Thanks!
