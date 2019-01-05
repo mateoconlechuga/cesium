@@ -103,7 +103,7 @@ lib_msd_KeepAlive:
 	jp	$3c
 lib_msd_ReadSector:
 	jp	$3f
-msd_WriteSector:
+lib_msd_WriteSector:
 	jp	$42
 lib_msd_SetJmpBuf:
 	jp	$45

@@ -120,6 +120,10 @@ string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
 	db	'Press any key to exit.',0
+string_usb_not_detected_0:
+	db	'No USB Connection Detected.',0
+string_usb_not_detected_1:
+	db	'Please interest a flash drive.',0
 
 ; french configuration
 
