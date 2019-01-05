@@ -14,6 +14,8 @@ string_ice_source:
 	db	'ICE S',0
 string_directory:
 	db	'Dir',0
+string_usb:
+	db	'USB',0
 string_basic:
 	db	'Basic',0
 string_application:
@@ -101,7 +103,7 @@ string_setting_special_directories:
 string_setting_enable_shortcuts:
 	db	'Enable keypad shortcuts',0
 string_settings_usb_edit:
-	db	'Edit USB configuration settings',0
+	db	'Enable USB flash drive access',0
 string_settings_delete_confirm:
 	db	'Show item deletion confirmation prompt',0
 string_new_password:
@@ -180,7 +182,7 @@ string_setting_special_directories:
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
 string_settings_usb_edit:
-	db	'Luminosit',$82,' LCD (Touches <',0
+	db	'Enable USB flash drive access',0
 string_settings_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_new_password:

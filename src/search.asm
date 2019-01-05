@@ -9,6 +9,10 @@ search_alpha_item:
 	ret	z
 	ld	(.search_character),a
 	call	find_lists.reset_selection
+	bit	setting_special_directories,(iy + settings_flag)
+	call	nz,main_move_down
+	bit	setting_enable_usb,(iy + settings_flag)
+	call	nz,main_move_down
 	ld	hl,item_location_base
 	ld	bc,(number_of_items)		; loop through the prgms
 .find:
@@ -26,6 +30,13 @@ search_alpha_item:
 	jr	.compare
 .vat_list:
 	ld	de,(hl)				; pointer to program name size
+	ld	a,(de)
+	cp	a,15
+	push	hl
+	push	de
+	call	z,main_move_down
+	pop	de
+	pop	hl
 	dec	de
 	ld	a,(de)
 	cp	a,64

@@ -19,6 +19,8 @@ feature_item_rename:
 	ld	a,(prgm_type)
 	cp	a,file_dir
 	jp	z,main_loop
+	cp	a,file_usb_dir
+	jp	z,main_loop
 .setup_name:
 	call	.clear
 .cleared:

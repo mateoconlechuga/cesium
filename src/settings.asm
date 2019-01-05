@@ -336,12 +336,8 @@ setting_draw_options:
 	draw_highlightable_option 10, 168, 6
 	bit	setting_delete_confirm,(iy + settings_flag)
 	draw_highlightable_option 10, 188, 7
-	xor	a,a
-	draw_highlightable_option 10, 208, 8	; usb configuration is never set
-	ret
-
-setting_draw_usb_options:
-	call	gui_draw_cesium_info
+	bit	setting_enable_usb,(iy + settings_flag)
+	draw_highlightable_option 10, 208, 8
 	ret
 
 settings_appvar:

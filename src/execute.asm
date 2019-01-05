@@ -11,13 +11,13 @@ execute_item:
 	jr	z,execute_vat_check
 	cp	a,screen_appvars
 	jr	z,execute_vat_check
-	cp	a,screen_apps
-	jr	z,execute_app_check
-	;cp	a,screen_usb
-	;jr	z,execute_usb_check
-	jp	exit_full
+	;cp	a,screen_apps
+	;jr	z,execute_app_check
+	jr	execute_app_check			; optimize!
 
 execute_vat_check:
+	bit	prgm_is_usb_directory,(iy + prgm_flag)
+	jp	nz,usb_init
 	bit	setting_special_directories,(iy + settings_flag)
 	jp	z,execute_program
 	compare_hl_zero
