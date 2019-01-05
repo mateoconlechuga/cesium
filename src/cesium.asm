@@ -25,6 +25,7 @@ relocate cesium_code, cesium_execution_base
 	include 'search.asm'
 	include 'view-vat-items.asm'
 	include 'view-apps.asm'
+	include 'view-usb.asm'
 	include 'features.asm'
 	include 'settings.asm'
 	include 'password.asm'

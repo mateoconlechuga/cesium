@@ -47,7 +47,7 @@ string_quinary_color:
 string_senary_color:
 	db	'Background Color',0
 string_language:
-	db	'Language: ',0
+	db	'Type: ',0
 string_archived:
 	db	'Archived',0
 string_hidden:
@@ -108,6 +108,18 @@ string_settings_delete_confirm:
 	db	'Show item deletion confirmation prompt',0
 string_new_password:
 	db	'Input new password: ',0
+string_usb_info_0:
+	db	'Use any FAT32 USB flash drive',0
+string_usb_info_1:
+	db	'for external storage and transfer.',0
+string_usb_info_2:
+	db	'You will need to install LibLoad',0
+string_usb_info_3:
+	db	'and the FATDRVCE library from here:',0
+string_usb_info_4:
+	db	'http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Press any key to exit.',0
 
 ; french configuration
 

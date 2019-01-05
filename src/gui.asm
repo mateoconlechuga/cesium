@@ -13,8 +13,8 @@ gui_main:
 	jp	z,view_vat_items
 	cp	a,screen_apps
 	jp	z,view_apps
-	;cp	a,screen_usb
-	;jr	z,show_usb
+	cp	a,screen_usb
+	jp	z,view_usb
 	jp	exit_full
 
 gui_draw_core:
