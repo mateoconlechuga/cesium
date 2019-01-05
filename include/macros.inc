@@ -221,7 +221,7 @@ setting_delete_confirm := 6
 setting_enable_usb := 7
 
 settings_appvar_size := 30
-setting_config_default := (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_enable_usb)
+setting_config_default := (1 shl setting_list_count) or (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_enable_usb)
 
 ; sorting flags
 

@@ -3,10 +3,12 @@
 usb_init:
 	xor	a,a
 	ld	(current_selection),a
+	ld	(usb_path),a
 
 	call	gui_draw_core
 	call	libload_load
 	jq	nz,usb_not_available
+	ld	iy,ti.flags
 
 	ld	bc,usb_msdenv
 	push	bc
@@ -15,14 +17,14 @@ usb_init:
 	compare_hl_zero
 	jr	z,usb_no_error
 usb_xfer_error:						; if we are here, usb broke somehow
-	call	lib_msd_Deinit
+	ld	iy,ti.flags
 	jp	main_find
 usb_no_error:
 	ld	bc,usb_msdenv
 	push	bc
 	call	lib_msd_SetJmpBuf			; set the error handler callback
 	pop	bc
-	ld	bc,200					; 200 milliseconds for timeout
+	ld	bc,300					; 200 milliseconds for timeout
 	push	bc
 	call	lib_msd_Init
 	pop	bc
@@ -105,9 +107,10 @@ select_valid_partition:
 	jq	usb_not_available.wait
 
 .fat_init_completed:
+	call	usb_get_directory_listing		; start with root directory
 
-	call	gui_draw_core
-	call	lcd_blit
+	call	view_usb_directory
+
 	call	util_get_key				; now we can parse the files \o/
 
 	call	lib_fat_Deinit
@@ -115,6 +118,13 @@ select_valid_partition:
 	ld	iy,ti.flags
 	call	libload_unload
 	jp	main_find
+
+view_usb_directory:
+	call	gui_draw_core
+	ld	hl,(number_of_items)
+	call	gui_show_item_count.show
+	set_normal_text
+	jp	lcd_blit
 
 partition_move_up:
 	ld	hl,select_valid_partition
@@ -139,8 +149,27 @@ partition_move_down:
 	ld	(current_selection),a
 	ret
 
+usb_get_directory_listing:
+	ld	bc,0
+	push	bc
+	ld	b,$04					; allow for maximum of 1024 entries per directory
+	push	bc
+	ld	bc,usb_fat_entrys
+	push	bc
+	ld	bc,0
+	push	bc
+	call	lib_fat_DirList
+	ld	iy,ti.flags
+	ld	(number_of_items),hl			; number of items in directory
+	pop	bc
+	pop	bc
+	pop	bc
+	pop	bc
+	ret
+
 usb_exit_full:
 	call	lib_msd_Deinit
+	ld	iy,ti.flags
 	call	libload_unload
 	jp	exit_full
 
@@ -148,6 +177,7 @@ usb_settings_show:
 	xor	a,a
 	ld	(current_selection),a
 	call	lib_msd_Deinit
+	ld	iy,ti.flags
 	call	libload_unload
 	jp	settings_show
 
@@ -179,8 +209,14 @@ usb_sector:
 	rb	512
 
 usb_msdenv:
-	rb	12
+	rb	14
 
 usb_fat_partitions:
 	rb	80
+
+usb_fat_entrys:
+	rb	1024		; location for storing directory information
+
+usb_path:
+	rb	256
 
