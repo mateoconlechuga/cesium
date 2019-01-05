@@ -120,10 +120,18 @@ string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
 	db	'Press any key to exit.',0
-string_usb_not_detected_0:
+string_usb_not_detected:
 	db	'No USB Connection Detected.',0
-string_usb_not_detected_1:
-	db	'Please interest a flash drive.',0
+string_usb_no_partitions:
+	db	'No FAT32 partitions found.',0
+string_insert_fat32:
+	db	'Please insert a FAT32 formatted drive.',0
+string_partition:
+	db	'Partition ',0
+string_select_partition_0:
+	db	'This drive contains multiple partitions.',0
+string_select_partition_1:
+	db	'Choose one from the list above.',0
 
 ; french configuration
 

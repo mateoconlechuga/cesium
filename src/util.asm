@@ -152,7 +152,7 @@ util_get_key:
 	jr	util_get_key
 
 util_setup_apd:
-	ld	hl,$5ff
+	ld	hl,$bff
 	ld	(apd_timer),hl
 	ret
 

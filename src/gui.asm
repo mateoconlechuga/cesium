@@ -1,11 +1,7 @@
 gui_main:
 	call	lcd_init.setup
 	call	gui_draw_core
-	draw_rectangle_outline 193, 24, 316, 221
-	draw_rectangle_outline 237, 54, 274, 91
-	draw_horiz 199, 36, 112
-	set_normal_text
-	print	string_file_information, 199, 27
+	call	gui_information_box
 	ld	a,(current_screen)
 	cp	a,screen_programs
 	jp	z,view_vat_items
@@ -13,9 +9,15 @@ gui_main:
 	jp	z,view_vat_items
 	cp	a,screen_apps
 	jp	z,view_apps
-	cp	a,screen_usb
-	jp	z,view_usb
 	jp	exit_full
+
+gui_information_box:
+	draw_rectangle_outline 193, 24, 316, 221
+	draw_rectangle_outline 237, 54, 274, 91
+	draw_horiz 199, 36, 112
+	set_normal_text
+	print	string_file_information, 199, 27
+	ret
 
 gui_draw_core:
 	call	lcd_fill
@@ -287,9 +289,9 @@ gui_draw_item_options:
 	ret
 
 gui_show_item_count:
-	ld	hl,(number_of_items)
 	bit	setting_list_count,(iy + settings_flag)
 	ret	z
+	ld	hl,(number_of_items)
 	bit	setting_special_directories,(iy + settings_flag)
 	jr	z,.no_extra_directories
 	dec	hl
@@ -297,7 +299,12 @@ gui_show_item_count:
 	cp	a,screen_apps
 	jr	nz,.no_extra_directories
 	dec	hl
+	jr	.show
 .no_extra_directories:
+	bit	setting_enable_usb,(iy + settings_flag)
+	jr	z,.show
+	dec	hl
+.show:
 	push	hl
 	set_cursor 195, 7
 	set_inverted_text
