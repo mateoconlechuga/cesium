@@ -132,6 +132,10 @@ string_select_partition_0:
 	db	'This drive contains multiple partitions.',0
 string_select_partition_1:
 	db	'Choose one from the list above.',0
+string_fat_init_error_0:
+	db	'Error initializing FAT partition.',0
+string_fat_init_error_1:
+	db	'Error code: ',0
 
 ; french configuration
 

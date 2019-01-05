@@ -14,30 +14,30 @@ usb_init:
 	pop	bc
 	compare_hl_zero
 	jr	z,usb_no_error
-usb_xfer_error:				; if we are here, usb broke somehow
+usb_xfer_error:						; if we are here, usb broke somehow
 	call	lib_msd_Deinit
 	jp	main_find
 usb_no_error:
 	ld	bc,usb_msdenv
 	push	bc
-	call	lib_msd_SetJmpBuf	; set the error handler callback
+	call	lib_msd_SetJmpBuf			; set the error handler callback
 	pop	bc
-	ld	bc,200			; 200 milliseconds for timeout
+	ld	bc,200					; 200 milliseconds for timeout
 	push	bc
 	call	lib_msd_Init
 	pop	bc
 	or	a,a
-	jq	nz,usb_not_detected	; if failed to init, exit
+	jq	nz,usb_not_detected			; if failed to init, exit
 	ld	bc,usb_sector
 	push	bc
-	call	lib_fat_SetBuffer	; set the buffer used for reading sectors
+	call	lib_fat_SetBuffer			; set the buffer used for reading sectors
 	pop	bc
 	
 	ld	bc,8
 	push	bc
 	ld	bc,usb_fat_partitions
 	push	bc
-	call	lib_fat_Find		; get up to 8 available partitions on the device
+	call	lib_fat_Find				; get up to 8 available partitions on the device
 	ld	iy,ti.flags
 	pop	bc
 	pop	bc
@@ -46,9 +46,13 @@ usb_no_error:
 	ld	l,a
 	ld	(number_of_items),hl
 	or	a,a
-	jr	nz,select_valid_partitions
+	jr	z,.no_partitions_found
+	dec	a
+	jr	nz,select_valid_partition		; if there's only one partion, select it
+	jr	select_valid_partition.selected_partition
 
-	call	lib_msd_Deinit		; end usb handling
+.no_partitions_found:
+	call	lib_msd_Deinit				; end usb handling
 	ld	iy,ti.flags
 	call	usb_invalid_gui
 	print	string_usb_no_partitions, 10, 30
@@ -56,7 +60,7 @@ usb_no_error:
 	print	string_usb_info_5, 10, 90
 	jq	usb_not_available.wait
 
-select_valid_partitions:
+select_valid_partition:
 	call	view_usb_partitions
 .get_partition:
 	call	util_get_key
@@ -65,9 +69,9 @@ select_valid_partitions:
 	cp	a,ti.skMode
 	jp	z,usb_settings_show
 	cp	a,ti.skUp
-	jr	z,partition_move_up
+	jq	z,partition_move_up
 	cp	a,ti.skDown
-	jr	z,partition_move_down
+	jq	z,partition_move_down
 	cp	a,ti.sk2nd
 	jr	z,.selected_partition
 	cp	a,ti.skEnter
@@ -75,17 +79,45 @@ select_valid_partitions:
 	jr	.get_partition
 .selected_partition:
 	ld	a,(current_selection)
-	ld	(current_partition_selection),a
 .got_partition:
-	ld	a,(current_partition_selection)
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	push	hl
+	ld	bc,usb_fat_partitions
+	push	bc
+	call	lib_fat_Select				; select the desired partition
+	pop	bc
+	pop	bc
+	call	lib_fat_Init				; attempt to initialize the filesystem
+	or	a,a
+	jr	z,.fat_init_completed
 
+	push	af					; check for an error during initialization
+	call	usb_invalid_gui
+	print	string_fat_init_error_0, 10, 30
+	print	string_fat_init_error_1, 10, 50
+	pop	af
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	call	lcd_num_3
+	jq	usb_not_available.wait
+
+.fat_init_completed:
+
+	call	gui_draw_core
+	call	lcd_blit
+	call	util_get_key				; now we can parse the files \o/
+
+	call	lib_fat_Deinit
 	call	lib_msd_Deinit
 	ld	iy,ti.flags
 	call	libload_unload
 	jp	main_find
 
 partition_move_up:
-	ld	hl,select_valid_partitions
+	ld	hl,select_valid_partition
 	push	hl
 	ld	a,(current_selection)
 	or	a,a					; limit items per screen
@@ -95,7 +127,7 @@ partition_move_up:
 	ret
 
 partition_move_down:
-	ld	hl,select_valid_partitions
+	ld	hl,select_valid_partition
 	push	hl
 	ld	a,(number_of_items)
 	ld	b,a
@@ -128,7 +160,7 @@ usb_not_detected:
 	print	string_usb_not_detected, 10, 30
 	print	string_insert_fat32, 10, 50
 	print	string_usb_info_5, 10, 90
-	jr	usb_not_available.wait
+	jq	usb_not_available.wait
 
 usb_not_available:
 	call	usb_invalid_gui
