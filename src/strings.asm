@@ -100,8 +100,8 @@ string_setting_special_directories:
 	db	'Show special directories',0
 string_setting_enable_shortcuts:
 	db	'Enable keypad shortcuts',0
-string_settings_brightness:
-	db	'LCD brightness level (use <',0,'>)',0
+string_settings_usb_edit:
+	db	'Edit USB configuration settings',0
 string_settings_delete_confirm:
 	db	'Show item deletion confirmation prompt',0
 string_new_password:
@@ -179,8 +179,8 @@ string_setting_special_directories:
 	db	'Afficher les r',$82,'pertoires sp',$82,'ciaux',0
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
-string_settings_brightness:
-	db	'Luminosit',$82,' LCD (Touches <',0,'>)',0
+string_settings_usb_edit:
+	db	'Luminosit',$82,' LCD (Touches <',0
 string_settings_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_new_password:

@@ -33,6 +33,8 @@ relocate cesium_code, cesium_execution_base
 	include 'gui.asm'
 	include 'lcd.asm'
 	include 'util.asm'
+	include 'libload.asm'
+	include 'usb.asm'
 	include 'find.asm'
 	include 'sort.asm'
 	include 'luts.asm'

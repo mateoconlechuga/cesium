@@ -1,7 +1,4 @@
-; routines for working with a fat-formatted usb drive
-
-load_libload:
-
+; routines for accessing flash drive data on usb
 
 usb_detect:
 	ret

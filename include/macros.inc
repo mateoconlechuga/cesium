@@ -216,6 +216,7 @@ setting_ram_backup := 3
 setting_special_directories := 4
 setting_enable_shortcuts := 5
 setting_delete_confirm := 6
+setting_enable_usb := 7
 
 settings_appvar_size := 30
 setting_config_default := (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm)

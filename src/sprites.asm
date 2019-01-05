@@ -1,12 +1,31 @@
 ; sprites used throughout cesium
 
+sprite_usb:
+	db 16,16
+	db $ff,$ff,$ff,$ff,$ff,$29,$29,$29,$29,$29,$29,$29,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$29,$de,$de,$de,$de,$de,$29,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$29,$94,$d6,$b6,$d6,$94,$29,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$29,$d6,$b5,$b5,$b5,$b5,$29,$ff,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$29,$6b,$6b,$6b,$6b,$6b,$29,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$93,$6b,$94,$ff,$94,$6c,$93,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6c,$6b,$ff,$de,$ff,$6b,$6c,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6c,$6b,$4a,$ff,$4b,$6b,$6c,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6b,$6b,$6b,$ff,$6b,$ff,$6b,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6b,$fe,$6b,$fe,$94,$fe,$6b,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6b,$fe,$b4,$fe,$fe,$6b,$6b,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6b,$6b,$de,$de,$4a,$6b,$6b,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6b,$4a,$4a,$de,$4b,$4b,$6b,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$6b,$4a,$b5,$de,$b5,$4b,$6b,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$00,$4a,$4a,$6b,$de,$6b,$6b,$4a,$00,$ff,$ff,$ff
+	db $ff,$ff,$ff,$ff,$ff,$00,$00,$00,$00,$00,$00,$00,$ff,$ff,$ff,$ff
+
 sprite_directory:
 	db 16,16
 	db $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
 	db $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
-	db $ff,$ff,$8B,$83,$83,$83,$83,$83,$83,$83,$82,$82,$83,$8B,$ff,$ff
-	db $ff,$a3,$ab,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$a3,$8B,$ff
-	db $83,$ab,$cc,$a3,$a3,$a3,$a3,$a2,$a2,$82,$82,$82,$8B,$ab,$83,$8B
+	db $ff,$ff,$8b,$83,$83,$83,$83,$83,$83,$83,$82,$82,$83,$8b,$ff,$ff
+	db $ff,$a3,$ab,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$a3,$8b,$ff
+	db $83,$ab,$cc,$a3,$a3,$a3,$a3,$a2,$a2,$82,$82,$82,$8b,$ab,$83,$8b
 	db $83,$cd,$a3,$a2,$a2,$a2,$82,$82,$82,$82,$82,$82,$82,$83,$ac,$82
 	db $83,$ee,$f5,$ed,$ed,$ed,$ed,$ed,$ed,$ed,$ec,$ec,$ec,$ec,$ed,$82
 	db $83,$ed,$ed,$ed,$ec,$ec,$ec,$ec,$cc,$cc,$cc,$cb,$cb,$cb,$ec,$82
@@ -16,7 +35,7 @@ sprite_directory:
 	db $83,$ed,$ec,$cc,$cb,$cb,$cb,$cb,$cb,$c3,$c3,$c3,$c3,$c3,$cc,$82
 	db $82,$ed,$cc,$cb,$cb,$cb,$cb,$cb,$c3,$c3,$c3,$c3,$c3,$c2,$cc,$82
 	db $82,$cd,$ed,$ed,$ec,$ec,$ec,$cc,$cc,$cc,$cc,$cc,$cc,$cc,$cc,$82
-	db $8B,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$8a
+	db $8b,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$8a
 	db $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
 
 sprite_file_asm:
