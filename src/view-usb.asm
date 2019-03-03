@@ -19,7 +19,7 @@ view_usb_partitions:
 	res	drawing_selected,(iy + item_flag)
 	ld	e,0
 current_partition_selection := $ - 1
-	ld	a,(current_selection)
+	ld	a,(usb_selection)
 	cp	a,e
 	jr	nz,.not_selected
 	set	drawing_selected,(iy + item_flag)

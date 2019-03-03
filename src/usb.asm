@@ -2,7 +2,7 @@
 
 usb_init:
 	xor	a,a
-	ld	(current_selection),a
+	ld	(usb_selection),a
 	ld	(usb_path),a
 
 	call	gui_draw_core
@@ -23,16 +23,19 @@ usb_no_error:
 	ld	bc,usb_msdenv
 	push	bc
 	call	lib_msd_SetJmpBuf			; set the error handler callback
+	ld	iy,ti.flags
 	pop	bc
 	ld	bc,300					; 200 milliseconds for timeout
 	push	bc
 	call	lib_msd_Init
+	ld	iy,ti.flags
 	pop	bc
 	or	a,a
 	jq	nz,usb_not_detected			; if failed to init, exit
 	ld	bc,usb_sector
 	push	bc
 	call	lib_fat_SetBuffer			; set the buffer used for reading sectors
+	ld	iy,ti.flags
 	pop	bc
 	
 	ld	bc,8
@@ -80,7 +83,8 @@ select_valid_partition:
 	jr	z,.selected_partition
 	jr	.get_partition
 .selected_partition:
-	ld	a,(current_selection)
+	ld	a,0
+usb_selection := $ - 1
 .got_partition:
 	or	a,a
 	sbc	hl,hl
@@ -89,9 +93,11 @@ select_valid_partition:
 	ld	bc,usb_fat_partitions
 	push	bc
 	call	lib_fat_Select				; select the desired partition
+	ld	iy,ti.flags
 	pop	bc
 	pop	bc
 	call	lib_fat_Init				; attempt to initialize the filesystem
+	ld	iy,ti.flags
 	or	a,a
 	jr	z,.fat_init_completed
 
@@ -114,6 +120,7 @@ select_valid_partition:
 	call	util_get_key				; now we can parse the files \o/
 
 	call	lib_fat_Deinit
+	ld	iy,ti.flags
 	call	lib_msd_Deinit
 	ld	iy,ti.flags
 	call	libload_unload
@@ -129,11 +136,11 @@ view_usb_directory:
 partition_move_up:
 	ld	hl,select_valid_partition
 	push	hl
-	ld	a,(current_selection)
+	ld	a,(usb_selection)
 	or	a,a					; limit items per screen
 	ret	z
 	dec	a
-	ld	(current_selection),a
+	ld	(usb_selection),a
 	ret
 
 partition_move_down:
@@ -142,11 +149,11 @@ partition_move_down:
 	ld	a,(number_of_items)
 	ld	b,a
 	dec	b
-	ld	a,(current_selection)
+	ld	a,(usb_selection)
 	cp	a,b					; limit items per screen
 	ret	z
 	inc	a
-	ld	(current_selection),a
+	ld	(usb_selection),a
 	ret
 
 usb_get_directory_listing:
@@ -175,7 +182,7 @@ usb_exit_full:
 
 usb_settings_show:
 	xor	a,a
-	ld	(current_selection),a
+	ld	(usb_selection),a
 	call	lib_msd_Deinit
 	ld	iy,ti.flags
 	call	libload_unload
