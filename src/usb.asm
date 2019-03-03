@@ -37,7 +37,7 @@ usb_no_error:
 	call	lib_fat_SetBuffer			; set the buffer used for reading sectors
 	ld	iy,ti.flags
 	pop	bc
-	
+
 	ld	bc,8
 	push	bc
 	ld	bc,usb_fat_partitions
@@ -226,4 +226,3 @@ usb_fat_entrys:
 
 usb_path:
 	rb	256
-

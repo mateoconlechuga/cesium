@@ -142,13 +142,42 @@ util_get_battery:
 	ret
 
 util_get_key:
+	di
+	call	util_handle_apd
+	ld	iy,ti.flags
 	call	ti.DisableAPD			; disable to os apd and use our own
 	call	util_show_time
 	call	lcd_blit
-	call	ti.GetCSC
+	call	ti.KbdScan			; avoid using getcsc for usb
+	ld	a,(ti.kbdScanCode)
 	or	a,a
-	jr	nz,util_setup_apd
-	call	util_handle_apd
+	jr	z,.debounce
+	ld	b,0
+.last_key := $-1
+	cp	a,b
+	jr	z,.check_arrows			; if the keys match, check for arrows
+.scan_okay:
+	ld	(util_get_key.last_key),a
+	push	af
+	xor	a,a
+	ld	(ti.kbdScanCode),a
+	pop	af
+	jr	util_setup_apd
+.check_arrows:
+	cp	a,ti.skUp
+	jr	z,.scan_okay
+	cp	a,ti.skDown
+	jr	z,.scan_okay
+	cp	a,ti.skLeft
+	jr	z,.scan_okay
+	cp	a,ti.skRight
+	jr	z,.scan_okay
+	cp	a,ti.skDel
+	jr	z,.scan_okay
+	jr	util_get_key
+.debounce:
+	xor	a,a
+	ld	(util_get_key.last_key),a
 	jr	util_get_key
 
 util_setup_apd:
