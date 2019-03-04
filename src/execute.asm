@@ -11,9 +11,57 @@ execute_item:
 	jr	z,execute_vat_check
 	cp	a,screen_appvars
 	jr	z,execute_vat_check
+	cp	a,screen_usb
+	jr	z,execute_usb_check
 	;cp	a,screen_apps
 	;jr	z,execute_app_check
 	jr	execute_app_check			; optimize!
+
+execute_usb_check:
+	ld	hl,(item_ptr)
+	call	usb_check_directory
+	jr	z,.not_directory			; if not a directory, check extension
+	ld	a,(hl)
+	cp	a,'.'					; check if special directory
+	jr	nz,.not_special
+	inc	hl
+	ld	a,(hl)
+	or	a,a
+	jp	z,main_loop				; current directory skip
+	cp	a,'.'
+	jr	nz,.not_special
+	inc	hl
+	ld	a,(hl)
+	or	a,a
+	jr	nz,.not_special				; previous directory
+	call	usb_directory_previous
+	jr	.append_end
+.not_special:
+	ld	de,usb_fat_path				; append directory to path
+.append_loop:
+	ld	a,(de)
+	or	a,a
+	jr	z,.current_end
+	inc	de
+	jr	.append_loop
+.current_end:
+.append_dir_loop:
+	ld	a,(hl)
+	ld	(de),a
+	or	a,a
+	jr	z,.append_end
+	inc	de
+	inc	hl
+	jr	.append_dir_loop
+.append_end:
+	xor	a,a
+	sbc	hl,hl
+	ld	(current_selection),a
+	ld	(current_selection_absolute),hl
+	call	usb_get_directory_listing		; update the path
+	jp	main_start
+.not_directory:
+	jp	main_loop
 
 execute_vat_check:
 	bit	prgm_is_usb_directory,(iy + prgm_flag)

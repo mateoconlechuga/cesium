@@ -20,6 +20,8 @@ string_basic:
 	db	'Basic',0
 string_application:
 	db	'App',0
+string_ti:
+	db	'TI-OS',0
 string_appvar:
 	db	'Data',0
 string_mode_select:

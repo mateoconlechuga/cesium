@@ -2,8 +2,15 @@
 
 usb_init:
 	xor	a,a
+	sbc	hl,hl
 	ld	(usb_selection),a
-	ld	(usb_path),a
+	ld	(current_selection),a
+	ld	(current_selection_absolute),hl
+	ld	hl,usb_fat_path + 1
+	ld	(hl),a
+	dec	hl
+	ld	a,'/'
+	ld	(hl),a					; root path = "/"
 
 	call	gui_draw_core
 	call	libload_load
@@ -74,9 +81,9 @@ select_valid_partition:
 	cp	a,ti.skMode
 	jp	z,usb_settings_show
 	cp	a,ti.skUp
-	jq	z,partition_move_up
+	jq	z,usb_partition_move_up
 	cp	a,ti.skDown
-	jq	z,partition_move_down
+	jq	z,usb_partition_move_down
 	cp	a,ti.sk2nd
 	jr	z,.selected_partition
 	cp	a,ti.skEnter
@@ -113,12 +120,12 @@ usb_selection := $ - 1
 	jq	usb_not_available.wait
 
 .fat_init_completed:
+	ld	a,screen_usb
+	ld	(current_screen),a
 	call	usb_get_directory_listing		; start with root directory
+	jp	main_start
 
-	call	view_usb_directory
-
-	call	util_get_key				; now we can parse the files \o/
-
+usb_detach:						; detach the fat library hooks
 	call	lib_fat_Deinit
 	ld	iy,ti.flags
 	call	lib_msd_Deinit
@@ -126,14 +133,7 @@ usb_selection := $ - 1
 	call	libload_unload
 	jp	main_find
 
-view_usb_directory:
-	call	gui_draw_core
-	ld	hl,(number_of_items)
-	call	gui_show_item_count.show
-	set_normal_text
-	jp	lcd_blit
-
-partition_move_up:
+usb_partition_move_up:
 	ld	hl,select_valid_partition
 	push	hl
 	ld	a,(usb_selection)
@@ -143,7 +143,7 @@ partition_move_up:
 	ld	(usb_selection),a
 	ret
 
-partition_move_down:
+usb_partition_move_down:
 	ld	hl,select_valid_partition
 	push	hl
 	ld	a,(number_of_items)
@@ -161,9 +161,9 @@ usb_get_directory_listing:
 	push	bc
 	ld	b,$04					; allow for maximum of 1024 entries per directory
 	push	bc
-	ld	bc,usb_fat_entrys
+	ld	bc,item_location_base
 	push	bc
-	ld	bc,0
+	ld	bc,usb_fat_path				; path
 	push	bc
 	call	lib_fat_DirList
 	ld	iy,ti.flags
@@ -173,6 +173,10 @@ usb_get_directory_listing:
 	pop	bc
 	pop	bc
 	ret
+
+usb_show_path:
+	ld	hl,usb_fat_path
+	jp	gui_show_description
 
 usb_exit_full:
 	call	lib_msd_Deinit
@@ -212,6 +216,45 @@ usb_not_available:
 	call	util_get_key
 	jp	main_start
 
+usb_check_directory:
+	push	bc
+	push	hl
+	ld	bc,13
+	add	hl,bc
+	ld	a,(hl)
+	tst	a,16
+	pop	hl
+	pop	bc
+	ret
+
+; move to the previous directory in the path
+usb_directory_previous:
+	ld	hl,usb_fat_path
+.find_end:
+	ld	a,(hl)
+	or	a,a
+	jr	z,.find_prev
+	inc	hl
+	jr	.find_end
+.find_prev:
+	ld	a,(hl)
+	cp	a,'/'
+	jr	z,.found_prev
+	dec	hl
+	jr	.find_prev
+.found_prev:
+	xor	a,a
+	ld	(hl),a
+	ld	de,usb_fat_path
+	compare_hl_de
+	ret	nz
+	inc	hl
+	ld	(hl),a
+	dec	hl
+	ld	a,'/'
+	ld	(hl),a			; prevent root from being overwritten
+	ret
+
 usb_sector:
 	rb	512
 
@@ -221,8 +264,5 @@ usb_msdenv:
 usb_fat_partitions:
 	rb	80
 
-usb_fat_entrys:
-	rb	1024		; location for storing directory information
-
-usb_path:
-	rb	256
+usb_fat_path:
+	rb	312		; current path in fat filesystem

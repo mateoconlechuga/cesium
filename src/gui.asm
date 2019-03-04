@@ -9,6 +9,8 @@ gui_main:
 	jp	z,view_vat_items
 	cp	a,screen_apps
 	jp	z,view_apps
+	cp	a,screen_usb
+	jp	z,view_usb_directory
 	jp	exit_full
 
 gui_information_box:

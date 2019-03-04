@@ -13,7 +13,7 @@ main_start:
 main_loop:
 	call	util_get_key
 	cp	a,ti.skClear
-	jp	z,exit_full
+	jp	z,.check_exit
 	cp	a,ti.skMode
 	jp	z,settings_show
 	cp	a,ti.skUp
@@ -43,6 +43,11 @@ main_loop:
 	call	search_alpha_item
 	jp	z,main_loop
 	jp	main_start
+.check_exit:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jp	z,usb_detach
+	jp	exit_full
 
 main_move_up_return:
 	ld	hl,main_start
