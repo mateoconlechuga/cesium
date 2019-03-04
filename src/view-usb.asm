@@ -139,7 +139,9 @@ draw_usb_icon:
 	ld	hl,0
 usb_filename_ptr := $-3
 	call	usb_check_directory		; check directory bit
-	ld	hl,sprite_file_ti
+	call	usb_check_extensions
+	push	de
+	pop	hl
 	jr	z,.draw
 	set	item_is_directory,(iy + item_flag)
 	ld	hl,sprite_directory
@@ -169,16 +171,31 @@ usb_filename_ptr := $-3
 	call	gui_draw_static_options
 
 	print	string_language, 199, 107
-	ld	hl,string_ti
 	bit	item_is_directory,(iy + item_flag)
-	jr	z,.is_directory
 	ld	hl,string_directory
-.is_directory:
+	jr	nz,.show_language
+	call	usb_check_extensions
+.show_language:
 	call	lcd_string
 	print	string_size, 199, 162
 
-	ld	hl,6				; get size of file
+	call	usb_get_file_size		; get size of file
 	call	lcd_num_6
+
+	print string_attributes, 199, 173
+	set_cursor_x 262
+	inc	hl
+	call	lcd_string
+	print string_transfer, 199, 184
+	set_cursor_x 270
+	inc	hl
+	call	lcd_string
+
+	print string_hidden, 199, 118
+	print string_read_only, 199, 129
+	print string_system, 199, 140
+
+	call	gui_draw_usb_item_options
 
 	restore_cursor
 	ret

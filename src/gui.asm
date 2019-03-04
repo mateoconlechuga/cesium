@@ -290,6 +290,22 @@ gui_draw_item_options:
 	draw_option 300, 140, 308, 148
 	ret
 
+gui_draw_usb_item_options:
+	ld	hl,(item_ptr)
+	ld	bc,13
+	add	hl,bc
+	bit	1,(hl)
+	push	hl
+	draw_option 300, 118, 308, 126
+	pop	hl
+	bit	0,(hl)
+	push	hl
+	draw_option 300, 129, 308, 137
+	pop	hl
+	bit	2,(hl)
+	draw_option 300, 140, 308, 148
+	ret
+
 gui_show_item_count:
 	bit	setting_list_count,(iy + settings_flag)
 	ret	z
@@ -403,3 +419,15 @@ end if
 	call	lcd_blit
 	call	flash_code_copy
 	jp	flash_backup_ram
+
+gui_fat_transfer:
+	ld	a,(color_senary)
+	call	util_set_primary
+	draw_rectangle 89, 105, 256, 121
+	draw_rectangle_outline 88, 104, 257, 121
+	set_cursor 95, 109
+	call	util_restore_primary
+	set_normal_text
+	ld	hl,string_fat_transferring
+	call	lcd_string
+	jp	lcd_blit

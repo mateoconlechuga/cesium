@@ -22,6 +22,8 @@ string_application:
 	db	'App',0
 string_ti:
 	db	'TI-OS',0
+string_unknown:
+	db	'Unknown',0
 string_appvar:
 	db	'Data',0
 string_mode_select:
@@ -52,8 +54,12 @@ string_language:
 	db	'Type: ',0
 string_archived:
 	db	'Archived',0
+string_read_only:
+	db	'Read-Only',0
 string_hidden:
 	db	'Hidden',0
+string_system:
+	db	'System',0
 string_locked:
 	db	'Locked',0
 string_size:
@@ -78,6 +84,9 @@ string_attributes:
 string_rename:
 	db	'Rename',0
 	db	$7e,'GRAPH]',0
+string_transfer:
+	db	'Transfer',0
+	db	$7e,'PRGM]',0
 string_edit_prgm:
 	db	'Edit Prgm',0
 	db	$7e,'ZOOM]'
@@ -138,6 +147,8 @@ string_fat_init_error_0:
 	db	'Error initializing FAT partition.',0
 string_fat_init_error_1:
 	db	'Error code: ',0
+string_fat_transferring:
+	db	'Transferring...',0
 
 ; french configuration
 

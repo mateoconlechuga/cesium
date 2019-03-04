@@ -6,11 +6,7 @@ usb_init:
 	ld	(usb_selection),a
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
-	ld	hl,usb_fat_path + 1
-	ld	(hl),a
-	dec	hl
-	ld	a,'/'
-	ld	(hl),a					; root path = "/"
+	ld	(usb_fat_path),a			; root path = "/"
 
 	call	gui_draw_core
 	call	libload_load
@@ -156,10 +152,13 @@ usb_partition_move_down:
 	ld	(usb_selection),a
 	ret
 
+; organizes directories first then files
 usb_get_directory_listing:
-	ld	bc,0
+	ld	bc,0					; get directories first
 	push	bc
-	ld	b,$04					; allow for maximum of 1024 entries per directory
+	ld	b,2					; allow for maximum of 512 directories
+	push	bc
+	ld	bc,1					; FAT_DIR
 	push	bc
 	ld	bc,item_location_base
 	push	bc
@@ -168,6 +167,39 @@ usb_get_directory_listing:
 	call	lib_fat_DirList
 	ld	iy,ti.flags
 	ld	(number_of_items),hl			; number of items in directory
+	pop	bc
+	pop	bc
+	pop	bc
+	pop	bc
+	pop	bc
+	push	hl
+	pop	de
+	compare_hl_zero
+	jr	z,.no_directories
+	ld	hl,item_location_base
+	ld	bc,16
+.get_offset:						; move past directory entries
+	add	hl,bc					; sure, this could be better but I'm lazy
+	dec	de
+	ld	a,e
+	cp	a,d
+	jr	nz,.get_offset
+.no_directories:
+	ld	bc,0					; now get files in directory
+	push	bc
+	ld	b,3					; allow for maximum of 512 directories
+	push	bc
+	ld	b,0
+	push	bc
+	push	hl					; offset past directories
+	ld	bc,usb_fat_path				; path
+	push	bc
+	call	lib_fat_DirList
+	ld	iy,ti.flags
+	ld	bc,(number_of_items)
+	add	hl,bc
+	ld	(number_of_items),hl			; number of items in directory
+	pop	bc
 	pop	bc
 	pop	bc
 	pop	bc
@@ -191,6 +223,42 @@ usb_settings_show:
 	ld	iy,ti.flags
 	call	libload_unload
 	jp	settings_show
+
+; returns the corresponding string
+usb_check_extensions:
+	push	af
+	ld	de,sprite_file_unknown
+	ld	bc,string_unknown
+	ld	hl,(usb_filename_ptr)		; move to the extension
+.get_extension:
+	ld	a,(hl)
+	or	a,a
+	jr	z,.unknown
+	cp	a,'.'
+	jr	z,.found_extension
+	inc	hl
+	jr	.get_extension
+.found_extension:
+	inc	hl
+	ld	a,(hl)
+	cp	a,'8'
+	jr	nz,.unknown
+	inc	hl
+	ld	a,(hl)
+	cp	a,'x'
+	jr	z,.tios
+	cp	a,'X'
+	jr	z,.tios
+.unknown:
+	push	bc
+	pop	hl
+	pop	af
+	ret
+.tios:
+	ld	de,sprite_file_ti
+	ld	hl,string_ti
+	pop	af
+	ret
 
 usb_invalid_gui:
 	set_normal_text
@@ -227,6 +295,39 @@ usb_check_directory:
 	pop	bc
 	ret
 
+; unfortunately the file must be opened...
+usb_get_file_size:
+	ld	hl,(item_ptr)
+	call	usb_check_directory
+	jr	nz,.directory
+	call	usb_append_fat_path
+	ld	bc,1
+	push	bc
+	ld	bc,usb_fat_path
+	push	bc
+	call	lib_fat_Open
+	pop	bc
+	pop	bc				; just assume this succeeds
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	push	hl
+	push	hl
+	call	lib_fat_GetFileSize
+	pop	bc
+	pop	bc
+	push	hl
+	push	bc
+	call	lib_fat_Close
+	pop	bc
+	call	usb_directory_previous
+	pop	hl
+	ret
+.directory:
+	or	a,a
+	sbc	hl,hl
+	ret
+
 ; move to the previous directory in the path
 usb_directory_previous:
 	ld	hl,usb_fat_path
@@ -244,16 +345,45 @@ usb_directory_previous:
 	jr	.find_prev
 .found_prev:
 	xor	a,a
-	ld	(hl),a
-	ld	de,usb_fat_path
-	compare_hl_de
-	ret	nz
-	inc	hl
-	ld	(hl),a
-	dec	hl
-	ld	a,'/'
-	ld	(hl),a			; prevent root from being overwritten
+	ld	(hl),a				; prevent root from being overwritten
 	ret
+
+usb_append_fat_path:
+	ld	de,usb_fat_path			; append directory to path
+.append_loop:
+	ld	a,(de)
+	or	a,a
+	jr	z,.current_end
+	inc	de
+	jr	.append_loop
+.current_end:
+	ld	a,'/'
+	ld	(de),a
+	inc	de
+.append_dir_loop:
+	ld	a,(hl)
+	ld	(de),a
+	or	a,a
+	ret	z
+	inc	de
+	inc	hl
+	jr	.append_dir_loop
+
+usb_fat_transfer:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jp	nz,main_loop
+	call	gui_fat_transfer
+	ld	bc,150
+.delay:
+	push	bc
+	call	ti.Delay10ms
+	pop	bc
+	dec	bc
+	ld	a,c
+	or	a,b
+	jr	nz,.delay
+	jp	main_start
 
 usb_sector:
 	rb	512
@@ -265,4 +395,4 @@ usb_fat_partitions:
 	rb	80
 
 usb_fat_path:
-	rb	312		; current path in fat filesystem
+	rb	260		; current path in fat filesystem

@@ -314,6 +314,8 @@ feature_item_attributes:
 	ld	hl,.max_options
 	ld	(hl),2
 	ld	a,(current_screen)
+	cp	a,screen_usb
+	jr	z,.usb
 	cp	a,screen_apps
 	jp	z,main_loop
 	cp	a,screen_programs
@@ -359,6 +361,8 @@ feature_item_attributes:
 	cp	a,ti.skEnter
 	jr	nz,.loop
 	jp	.check_what_to_do
+.usb:
+	jp	main_start
 
 .move_option_down:
 	call	.clear_current_selection

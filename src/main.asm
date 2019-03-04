@@ -20,6 +20,8 @@ main_loop:
 	jp	z,main_move_up_return
 	cp	a,ti.skDown
 	jp	z,main_move_down_return
+	cp	a,ti.skPrgm
+	jp	z,usb_fat_transfer
 	cp	a,ti.sk2nd
 	jp	z,execute_item
 	cp	a,ti.skEnter

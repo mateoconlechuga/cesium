@@ -35,25 +35,10 @@ execute_usb_check:
 	or	a,a
 	jr	nz,.not_special				; previous directory
 	call	usb_directory_previous
-	jr	.append_end
+	jr	.special_directory
 .not_special:
-	ld	de,usb_fat_path				; append directory to path
-.append_loop:
-	ld	a,(de)
-	or	a,a
-	jr	z,.current_end
-	inc	de
-	jr	.append_loop
-.current_end:
-.append_dir_loop:
-	ld	a,(hl)
-	ld	(de),a
-	or	a,a
-	jr	z,.append_end
-	inc	de
-	inc	hl
-	jr	.append_dir_loop
-.append_end:
+	call	usb_append_fat_path			; append directory to path
+.special_directory:
 	xor	a,a
 	sbc	hl,hl
 	ld	(current_selection),a
@@ -61,6 +46,7 @@ execute_usb_check:
 	call	usb_get_directory_listing		; update the path
 	jp	main_start
 .not_directory:
+							; check if program and attempt to execute
 	jp	main_loop
 
 execute_vat_check:
