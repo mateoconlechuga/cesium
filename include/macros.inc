@@ -246,6 +246,8 @@ scroll_up_available := 2
 item_renaming := 3
 item_is_directory := 4
 item_set_editor := 5
+item_is_ti := 6
+item_is_prgm := 7
 
 prgm_flag := $30
 prgm_archived := 0

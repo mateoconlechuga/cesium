@@ -127,6 +127,19 @@ usb_detach:						; detach the fat library hooks
 	call	lib_msd_Deinit
 	ld	iy,ti.flags
 	call	libload_unload
+	ld	a,screen_programs
+	ld	(current_screen),a
+
+	ld	a,return_settings
+	ld	(return_info),a
+	or	a,a
+	sbc	hl,hl
+	ld	(scroll_amount),hl
+	ld	hl,1
+	ld	(current_selection_absolute),hl
+	ld	a,l
+	ld	(current_selection),a
+
 	jp	main_find
 
 usb_partition_move_up:
@@ -154,6 +167,11 @@ usb_partition_move_down:
 
 ; organizes directories first then files
 usb_get_directory_listing:
+	ld	a,(usb_fat_path)
+	or	a,a
+	jr	nz,.not_root				; if at root show exit directory
+
+.not_root:
 	ld	bc,0					; get directories first
 	push	bc
 	ld	b,2					; allow for maximum of 512 directories
@@ -227,6 +245,11 @@ usb_settings_show:
 ; returns the corresponding string
 usb_check_extensions:
 	push	af
+	bit	drawing_selected,(iy + item_flag)
+	jr	z,.not_current
+	res	item_is_ti,(iy + item_flag)
+	res	item_is_prgm,(iy + item_flag)
+.not_current:
 	ld	de,sprite_file_unknown
 	ld	bc,string_unknown
 	ld	hl,(usb_filename_ptr)		; move to the extension
@@ -255,8 +278,36 @@ usb_check_extensions:
 	pop	af
 	ret
 .tios:
+	bit	drawing_selected,(iy + item_flag)
+	jr	z,.not_current_ti
+	set	item_is_ti,(iy + item_flag)
+.not_current_ti:
+	inc	hl
+	ld	a,(hl)
+	cp	a,'P'
+	jr	z,.tiprgm
+	cp	a,'V'
+	jr	z,.tiappvar
+	cp	a,'p'
+	jr	z,.tiprgm
+	cp	a,'v'
+	jr	z,.tiappvar
 	ld	de,sprite_file_ti
 	ld	hl,string_ti
+	pop	af
+	ret
+.tiprgm:
+	bit	drawing_selected,(iy + item_flag)
+	jr	z,.not_current_prgm
+	set	item_is_prgm,(iy + item_flag)
+.not_current_prgm:
+	ld	de,sprite_file_ti
+	ld	hl,string_ti
+	pop	af
+	ret
+.tiappvar:
+	ld	de,sprite_file_appvar
+	ld	hl,string_appvar
 	pop	af
 	ret
 
@@ -306,6 +357,7 @@ usb_get_file_size:
 	ld	bc,usb_fat_path
 	push	bc
 	call	lib_fat_Open
+	ld	iy,ti.flags
 	pop	bc
 	pop	bc				; just assume this succeeds
 	or	a,a
@@ -314,11 +366,13 @@ usb_get_file_size:
 	push	hl
 	push	hl
 	call	lib_fat_GetFileSize
+	ld	iy,ti.flags
 	pop	bc
 	pop	bc
 	push	hl
 	push	bc
 	call	lib_fat_Close
+	ld	iy,ti.flags
 	pop	bc
 	call	usb_directory_previous
 	pop	hl
@@ -374,6 +428,82 @@ usb_fat_transfer:
 	cp	a,screen_usb
 	jp	nz,main_loop
 	call	gui_fat_transfer
+	bit	item_is_ti,(iy + item_flag)
+	jp	z,main_loop
+
+	ld	hl,(item_ptr)
+	call	usb_append_fat_path
+	ld	bc,1
+	push	bc
+	ld	bc,usb_fat_path			; open the file for reading
+	push	bc
+	call	lib_fat_Open
+	ld	iy,ti.flags
+	pop	bc
+	pop	bc
+	ld	(usb_fat_fd),a
+	call	usb_directory_previous
+
+	call	usb_read_sector			; read the first sector to get the size information
+
+	ld	hl,usb_sector + 70		; size of variable to create
+	ld	de,0
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	(usb_var_size),de
+	ld	hl,usb_sector + 59		; name / type of variable
+	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
+	call	nc,ti.DelVarArc
+	ld	hl,0
+usb_var_size := $-3
+	ld	a,(ti.OP1)
+	call	ti.CreateVar			; create the variable in ram
+	inc	de
+	inc	de
+
+	; now we need to do the fun part of copying the data into the variable
+	; the first and last sectors are annoying so be lazy
+	; de -> destination
+	; usb_var_size = size
+
+	ld	ix,73
+	ld	hl,usb_sector + 74
+.not_done:
+	inc	ix
+	ld	a,ixh
+	cp	a,2				; every 512 bytes read a sector
+	jr	nz,.no_read
+	push	de
+	call	usb_read_sector
+	pop	de
+	ld	ix,0
+	ld	hl,usb_sector
+.no_read:
+
+	ld	a,(hl)
+	ld	(de),a
+	inc	hl
+	inc	de
+
+	ld	bc,(usb_var_size)
+	dec	bc
+	ld	(usb_var_size),bc
+	ld	a,c
+	or	a,b
+	jr	nz,.not_done
+
+.close_file:
+	ld	a,(usb_fat_fd)
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	push	hl
+	call	lib_fat_Close
+	ld	iy,ti.flags
+	pop	hl
+
 	ld	bc,150
 .delay:
 	push	bc
@@ -384,6 +514,17 @@ usb_fat_transfer:
 	or	a,b
 	jr	nz,.delay
 	jp	main_start
+
+usb_read_sector:
+	or	a,a
+	sbc	hl,hl
+	ld	l,0
+usb_fat_fd := $-1
+	push	hl
+	call	lib_fat_ReadSector
+	ld	iy,ti.flags
+	pop	hl
+	ret
 
 usb_sector:
 	rb	512
