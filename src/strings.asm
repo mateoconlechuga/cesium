@@ -130,7 +130,7 @@ string_usb_info_3:
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
-	db	'Press any key to exit.',0
+	db	'Press enter to retry.',0
 string_usb_not_detected:
 	db	'No USB Connection Detected.',0
 string_usb_no_partitions:

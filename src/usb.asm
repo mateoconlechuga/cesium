@@ -9,9 +9,10 @@ usb_init:
 	ld	(usb_fat_path),a			; root path = "/"
 
 	call	gui_draw_core
-	call	libload_load
-	jq	nz,usb_not_available
 	ld	iy,ti.flags
+	call	libload_load
+	ld	iy,ti.flags
+	jq	nz,usb_not_available
 
 	ld	bc,usb_msdenv
 	push	bc
@@ -26,6 +27,9 @@ usb_no_error:
 	ld	bc,usb_msdenv
 	push	bc
 	call	lib_msd_SetJmpBuf			; set the error handler callback
+	ld	bc,3					; retry 3 times between loading
+.usb_detect:
+	push	bc
 	ld	iy,ti.flags
 	pop	bc
 	ld	bc,300					; 200 milliseconds for timeout
@@ -34,7 +38,15 @@ usb_no_error:
 	ld	iy,ti.flags
 	pop	bc
 	or	a,a
-	jq	nz,usb_not_detected			; if failed to init, exit
+	jr	z,.usb_detected
+	ld	a,10
+	call	ti.DelayTenTimesAms			; wait 100ms before retrying
+	pop	bc
+	dec	bc
+	jr	.usb_detect
+	jq	usb_not_detected			; if failed to init, retry a few times...
+.usb_detected:
+
 	ld	bc,usb_sector
 	push	bc
 	call	lib_fat_SetBuffer			; set the buffer used for reading sectors
@@ -127,9 +139,9 @@ usb_detach:						; detach the fat library hooks
 	call	lib_msd_Deinit
 	ld	iy,ti.flags
 	call	libload_unload
+.home:
 	ld	a,screen_programs
 	ld	(current_screen),a
-
 	ld	a,return_settings
 	ld	(return_info),a
 	or	a,a
@@ -139,7 +151,6 @@ usb_detach:						; detach the fat library hooks
 	ld	(current_selection_absolute),hl
 	ld	a,l
 	ld	(current_selection),a
-
 	jp	main_find
 
 usb_partition_move_up:
@@ -338,7 +349,11 @@ usb_not_available:
 .wait:
 	call	lcd_blit
 	call	util_get_key
-	jp	main_start
+	cp	a,ti.skEnter
+	jp	z,usb_init
+	cp	a,ti.sk2nd
+	jp	z,usb_init
+	jp	usb_detach.home
 
 usb_check_directory:
 	push	bc
@@ -437,29 +452,7 @@ usb_fat_transfer:
 
 	call	gui_fat_transfer
 
-	ld	hl,(item_ptr)
-	call	usb_append_fat_path
-	ld	bc,1
-	push	bc
-	ld	bc,usb_fat_path			; open the file for reading
-	push	bc
-	call	lib_fat_Open
-	ld	iy,ti.flags
-	pop	bc
-	pop	bc
-	ld	(usb_fat_fd),a
-	call	usb_directory_previous
-
-	call	usb_read_sector			; read the first sector to get the size information
-
-	ld	hl,usb_sector + 70		; size of variable to create
-	ld	de,0
-	ld	e,(hl)
-	inc	hl
-	ld	d,(hl)
-	ld	(usb_var_size),de
-	ld	hl,usb_sector + 59		; name / type of variable
-	call	ti.Mov9ToOP1
+	call	usb_open_tivar
 	call	ti.ChkFindSym
 	call	nc,ti.DelVarArc
 	ld	hl,0
@@ -510,6 +503,29 @@ usb_validate_tivar:
 	ld	a,(usb_sector)			; yeah that's good enough
 	cp	a,$2a
 	ret
+
+usb_open_tivar:
+	ld	hl,(item_ptr)
+	call	usb_append_fat_path
+	ld	bc,1
+	push	bc
+	ld	bc,usb_fat_path			; open the file for reading
+	push	bc
+	call	lib_fat_Open
+	ld	iy,ti.flags
+	pop	bc
+	pop	bc
+	ld	(usb_fat_fd),a
+	call	usb_directory_previous
+	call	usb_read_sector			; read the first sector to get the size information
+	ld	hl,usb_sector + 70		; size of variable to create
+	ld	de,0
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	(usb_var_size),de
+	ld	hl,usb_sector + 59		; name / type of variable
+	jp	ti.Mov9ToOP1
 
 ; de -> destination
 ; usb_var_size = size

@@ -46,7 +46,9 @@ execute_usb_check:
 	call	usb_get_directory_listing		; update the path
 	jp	main_start
 .not_directory:
-							; check if program and attempt to execute
+	bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
+	jp	z,main_loop
+	
 	jp	main_loop
 
 execute_vat_check:
