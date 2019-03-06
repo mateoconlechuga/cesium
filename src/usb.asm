@@ -458,53 +458,20 @@ usb_fat_transfer:
 	call	nc,ti.DelVarArc
 	ld	hl,0
 usb_var_size := $-3
+	push	hl
+	call	ti.EnoughMem
+	pop	hl
+	jp	c,main_start
+
 	ld	a,(ti.OP1)
 	call	ti.CreateVar			; create the variable in ram
-	inc	de
-	inc	de
 
 	; now we need to do the fun part of copying the data into the variable
 	; the first and last sectors are annoying so be lazy
-	; de -> destination
-	; usb_var_size = size
 
-	ld	ix,73
-	ld	hl,usb_sector + 74
-.not_done:
-	inc	ix
-	ld	a,ixh
-	cp	a,2				; every 512 bytes read a sector
-	jr	nz,.no_read
-	push	de
-	call	usb_read_sector
-	pop	de
-	ld	ix,0
-	ld	hl,usb_sector
-.no_read:
+	call	usb_copy_tivar
 
-	ld	a,(hl)
-	ld	(de),a
-	inc	hl
-	inc	de
-
-	ld	bc,(usb_var_size)
-	dec	bc
-	ld	(usb_var_size),bc
-	ld	a,c
-	or	a,b
-	jr	nz,.not_done
-
-.close_file:
-	ld	a,(usb_fat_fd)
-	or	a,a
-	sbc	hl,hl
-	ld	l,a
-	push	hl
-	call	lib_fat_Close
-	ld	iy,ti.flags
-	pop	hl
-
-	ld	bc,150
+	ld	bc,100
 .delay:
 	push	bc
 	call	ti.Delay10ms
@@ -526,6 +493,38 @@ usb_fat_fd := $-1
 	pop	hl
 	ret
 
+; de -> destination
+; usb_var_size = size
+; usb_fat_fd = file descriptor
+usb_copy_tivar:
+	ld	ix,71
+	ld	hl,usb_sector + 72
+	ld	bc,(usb_var_size)
+.not_done:
+	push	bc
+	inc	ix
+	ld	a,ixh
+	cp	a,2				; every 512 bytes read a sector
+	jr	nz,.no_read
+	push	de
+	call	usb_read_sector
+	pop	de
+	ld	ix,0
+	ld	hl,usb_sector
+.no_read:
+	pop	bc
+	ldi
+	jp	pe,.not_done
+
+.close_file:
+	ld	a,(usb_fat_fd)
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	push	hl
+	call	lib_fat_Close
+	ld	iy,ti.flags
+	pop	hl
 usb_sector:
 	rb	512
 
