@@ -27,7 +27,7 @@ usb_no_error:
 	ld	bc,usb_msdenv
 	push	bc
 	call	lib_msd_SetJmpBuf			; set the error handler callback
-	ld	bc,3					; retry 3 times between loading
+	ld	bc,5					; retry 3 times between loading
 .usb_detect:
 	push	bc
 	ld	iy,ti.flags
@@ -42,8 +42,7 @@ usb_no_error:
 	ld	a,10
 	call	ti.DelayTenTimesAms			; wait 100ms before retrying
 	pop	bc
-	dec	bc
-	jr	.usb_detect
+	djnz	.usb_detect
 	jq	usb_not_detected			; if failed to init, retry a few times...
 .usb_detected:
 
