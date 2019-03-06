@@ -86,6 +86,8 @@ view_usb_directory:
 	or	a,d
 	jr	nz,.get_real_offset
 .loop:
+	call	ti.ChkBCIs0
+	jp	z,main_loop
 	set_normal_text
 	xor	a,a
 	ld	(iy + temp_prgm_flag),a		; reset temp flags

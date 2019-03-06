@@ -193,8 +193,8 @@ usb_get_directory_listing:
 	push	hl
 	pop	de
 	compare_hl_zero
-	jr	z,.no_directories
 	ld	hl,item_location_base
+	jr	z,.no_directories
 	ld	bc,16
 .get_offset:						; move past directory entries
 	add	hl,bc					; sure, this could be better but I'm lazy
@@ -202,7 +202,12 @@ usb_get_directory_listing:
 	ld	a,e
 	cp	a,d
 	jr	nz,.get_offset
+	jr	.find_files
 .no_directories:
+	ld	a,(usb_fat_path)
+	or	a,a
+	jp	nz,usb_detach				; if there are no directories but our path isn't root, the filesystem must be broken
+.find_files:
 	ld	bc,0					; now get files in directory
 	push	bc
 	ld	b,3					; allow for maximum of 512 directories
@@ -427,9 +432,10 @@ usb_fat_transfer:
 	ld	a,(current_screen)
 	cp	a,screen_usb
 	jp	nz,main_loop
-	call	gui_fat_transfer
 	bit	item_is_ti,(iy + item_flag)
 	jp	z,main_loop
+
+	call	gui_fat_transfer
 
 	ld	hl,(item_ptr)
 	call	usb_append_fat_path
@@ -463,6 +469,9 @@ usb_var_size := $-3
 	pop	hl
 	jp	c,main_start
 
+	call	usb_validate_tivar
+	jp	nz,main_start
+
 	ld	a,(ti.OP1)
 	call	ti.CreateVar			; create the variable in ram
 
@@ -483,6 +492,7 @@ usb_var_size := $-3
 	jp	main_start
 
 usb_read_sector:
+	push	de
 	or	a,a
 	sbc	hl,hl
 	ld	l,0
@@ -491,11 +501,20 @@ usb_fat_fd := $-1
 	call	lib_fat_ReadSector
 	ld	iy,ti.flags
 	pop	hl
+	pop	de
+	ret
+
+; performs check on first sector of tivar to make sure
+; that is actually looks somewhat okay before transfer
+usb_validate_tivar:
+	ld	a,(usb_sector)			; yeah that's good enough
+	cp	a,$2a
 	ret
 
 ; de -> destination
 ; usb_var_size = size
 ; usb_fat_fd = file descriptor
+; must have read first sector of variable by this point
 usb_copy_tivar:
 	ld	ix,71
 	ld	hl,usb_sector + 72
@@ -506,9 +525,7 @@ usb_copy_tivar:
 	ld	a,ixh
 	cp	a,2				; every 512 bytes read a sector
 	jr	nz,.no_read
-	push	de
 	call	usb_read_sector
-	pop	de
 	ld	ix,0
 	ld	hl,usb_sector
 .no_read:
@@ -525,6 +542,8 @@ usb_copy_tivar:
 	call	lib_fat_Close
 	ld	iy,ti.flags
 	pop	hl
+	ret
+
 usb_sector:
 	rb	512
 
