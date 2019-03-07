@@ -132,12 +132,17 @@ usb_selection := $ - 1
 	call	usb_get_directory_listing		; start with root directory
 	jp	main_start
 
-usb_detach:						; detach the fat library hooks
+usb_detach_only:
 	call	lib_fat_Deinit
 	ld	iy,ti.flags
 	call	lib_msd_Deinit
 	ld	iy,ti.flags
 	call	libload_unload
+	ld	iy,ti.flags
+	ret
+
+usb_detach:						; detach the fat library hooks
+	call	usb_detach_only
 .home:
 	ld	a,screen_programs
 	ld	(current_screen),a
@@ -456,9 +461,7 @@ usb_fat_transfer:
 	call	nc,ti.DelVarArc
 	ld	hl,0
 usb_var_size := $-3
-	push	hl
-	call	ti.EnoughMem
-	pop	hl
+	call	util_check_free_ram
 	jp	c,main_start
 
 	call	usb_validate_tivar
@@ -466,21 +469,15 @@ usb_var_size := $-3
 
 	ld	a,(ti.OP1)
 	call	ti.CreateVar			; create the variable in ram
+	inc	de
+	inc	de
 
 	; now we need to do the fun part of copying the data into the variable
 	; the first and last sectors are annoying so be lazy
 
 	call	usb_copy_tivar
 
-	ld	bc,100
-.delay:
-	push	bc
-	call	ti.Delay10ms
-	pop	bc
-	dec	bc
-	ld	a,c
-	or	a,b
-	jr	nz,.delay
+	call	util_delay_one_second
 	jp	main_start
 
 usb_read_sector:
@@ -530,9 +527,14 @@ usb_open_tivar:
 ; usb_var_size = size
 ; usb_fat_fd = file descriptor
 ; must have read first sector of variable by this point
+usb_copy_tivar_to_ram:
+	ld	ix,76 - 1
+	ld	hl,usb_sector + 76
+	jr	usb_copy_tivar.entry
 usb_copy_tivar:
-	ld	ix,71
-	ld	hl,usb_sector + 72
+	ld	ix,74 - 1
+	ld	hl,usb_sector + 74
+.entry:
 	ld	bc,(usb_var_size)
 .not_done:
 	push	bc

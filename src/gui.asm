@@ -420,7 +420,16 @@ end if
 	call	flash_code_copy
 	jp	flash_backup_ram
 
+gui_ram_error:
+	ld	hl,string_ram_free
+	jr	gui_box_information
+
 gui_fat_transfer:
+	ld	hl,string_fat_transferring
+	;jr	gui_box_information
+
+gui_box_information:
+	push	hl
 	ld	a,(color_senary)
 	call	util_set_primary
 	draw_rectangle 89, 105, 256, 121
@@ -428,6 +437,6 @@ gui_fat_transfer:
 	set_cursor 95, 109
 	call	util_restore_primary
 	set_normal_text
-	ld	hl,string_fat_transferring
+	pop	hl
 	call	lcd_string
 	jp	lcd_blit

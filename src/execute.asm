@@ -46,9 +46,17 @@ execute_usb_check:
 	call	usb_get_directory_listing		; update the path
 	jp	main_start
 .not_directory:
-	bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
-	jp	z,main_loop
-	
+	;bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
+	;jp	z,main_loop
+
+	; here are the considerations when executing from usb:
+	; assembly programs can be copied directly as normal
+	; basic programs must be copied to a temporary program to be executed
+
+	;call	usb_open_tivar
+	;call	usb_validate_tivar
+	;jp	z,execute_usb_program
+
 	jp	main_loop
 
 execute_vat_check:
@@ -119,16 +127,56 @@ execute_app:
 	add	hl,de
 	jp	(hl)
 
+; so why doesn't this work? because:
+; 1) compressed programs
+; 2) programs that use themselves
+; 3) subprograms
+; 4) i'm lazy
+;execute_usb_program:
+	;ld	hl,(usb_var_size)
+	;call	util_check_free_ram
+	;jp	z,main_loop			; ensure enough ram
+	;call	execute_ram_backup
+	;call	lcd_normal
+	;bit	setting_enable_shortcuts,(iy + settings_flag)
+	;call	nz,ti.ClrGetKeyHook
+	;ld	hl,usb_sector + 74
+	;ld	a,(hl)
+	;cp	a,ti.tExtTok			; is it an assembly program
+	;jr	nz,.program_is_basic
+	;inc	hl
+	;ld	a,(hl)
+	;cp	a,ti.tAsm84CeCmp
+	;jr	nz,.program_is_basic		; is it a basic program
+.program_is_asm:
+	;call	util_install_error_handler
+	;ld	hl,ti.userMem
+	;ld	de,(ti.asm_prgm_size)
+	;add	hl,de
+	;ex	de,hl
+	;ld	hl,(usb_var_size)
+	;push	hl
+	;call	ti.InsertMem			; insert memory into usermem + (ti.asm_prgm_size)
+	;call	usb_copy_tivar_to_ram		; copy variable to ram
+	;call	usb_detach_only			; shift assembly program to ti.userMem, detach usb & libload
+	;pop	hl
+	;ld	(ti.asm_prgm_size),hl		; reload size of the program
+	;jr	execute_assembly_program
+.program_is_basic:
+	;jp	main_loop
+
+execute_ram_backup:
+	bit	cesium_execute_alt,(iy + cesium_flag)
+	ret	nz
+	bit	setting_ram_backup,(iy + settings_flag)
+	call	nz,gui_backup_ram_to_flash
+	ret
+
 execute_program:
 	ld	a,(current_screen)
 	cp	a,screen_appvars
 	jp	z,main_loop
-	bit	cesium_execute_alt,(iy + cesium_flag)
-	jr	nz,.skip_backup
-	bit	setting_ram_backup,(iy + settings_flag)
-	call	nz,gui_backup_ram_to_flash
-.skip_backup:
-	call	lcd_normal
+	call	execute_ram_backup
 	call	util_move_prgm_name_to_op1
 	call	util_backup_prgm_name
 .entry:							; entry point, OP1 = name
@@ -137,6 +185,8 @@ execute_program:
 	bit	prgm_is_basic,(iy + prgm_flag)
 	jr	nz,execute_ti.basic_program		; execute basic program
 	call	util_move_prgm_to_usermem		; execute assembly program
+	jp	nz,main_loop				; return on error
+	call	lcd_normal
 	call	util_install_error_handler
 execute_assembly_program:
 	ld	hl,return_asm

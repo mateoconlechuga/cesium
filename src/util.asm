@@ -14,6 +14,7 @@ util_move_prgm_to_usermem:
 	ld	a,$9				; 'add hl,bc'
 	ld	(.smc),a
 	call	ti.ChkFindSym
+	jr	c,.error_not_found			; hope this doesn't happen
 	call	ti.ChkInRam
 	ex	de,hl
 	jr	z,.in_ram
@@ -31,19 +32,25 @@ util_move_prgm_to_usermem:
 	push	hl
 	push	de
 	ex	de,hl
-	call	ti.ErrNotEnoughMem		; check and see if we have enough memory
+	call	util_check_free_ram		; check and see if we have enough memory
 	pop	hl
+	jr	c,.error_ram
 	ld	(ti.asm_prgm_size),hl		; store the size of the program
 	ld	de,ti.userMem
-	push	de
 	call	ti.InsertMem			; insert memory into usermem
-	pop	de
 	pop	hl				; hl -> start of program
 	ld	bc,(ti.asm_prgm_size)		; load size of current program
 .smc := $
 	add	hl,bc				; if not in ram smc it so it doesn't execute
 	ldir					; copy the program to userMem
+	xor	a,a
 	ret					; return
+.error_ram:
+	pop	hl				; pop start of program
+.error_not_found:
+	xor	a,a
+	inc	a
+	ret
 
 util_show_time:
 	bit	setting_clock,(iy + settings_flag)
@@ -58,6 +65,28 @@ util_show_time:
 	set_cursor clock_x, clock_y
 	call	util_string_inverted
 	restore_cursor
+	ret
+
+util_check_free_ram:
+	push	hl
+	ld	de,128
+	add	hl,de				; for safety
+	call	ti.EnoughMem
+	pop	hl
+	ret	nc
+	call	gui_ram_error
+	;jr	util_delay_one_second
+
+util_delay_one_second:
+	ld	bc,100
+.delay:
+	push	bc
+	call	ti.Delay10ms
+	pop	bc
+	dec	bc
+	ld	a,c
+	or	a,b
+	jr	nz,.delay
 	ret
 
 util_set_primary:

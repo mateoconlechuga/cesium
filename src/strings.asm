@@ -149,6 +149,8 @@ string_fat_init_error_1:
 	db	'Error code: ',0
 string_fat_transferring:
 	db	'Transferring...',0
+string_ram_error:
+	db	'Not enough free RAM',0
 
 ; french configuration
 
