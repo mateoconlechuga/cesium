@@ -80,6 +80,9 @@ settings_save:
 	jp	ti.Arc_Unarc
 
 settings_show:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jp	z,main_loop
 	xor	a,a
 	ld	(current_option_selection),a			; start on the first menu item
 	ld	(setting_brightness_get.counter),a
@@ -346,4 +349,3 @@ settings_appvar:
 settings_editor_default_prgm_name:
 	db	ti.ProtProgObj,"KEDIT",0
 .length :=$-settings_editor_default_prgm_name
-

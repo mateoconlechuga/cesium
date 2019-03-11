@@ -196,6 +196,7 @@ execute_assembly_program:
 	jp	ti.userMem
 
 execute_ti.basic_program:
+	call	lcd_normal
 	ld	hl,(prgm_data_ptr)
 	ld	a,(hl)
 	cp	a,ti.tExtTok
@@ -251,5 +252,7 @@ execute_ti.basic_program:
 	sub	a,a
 	ld	(ti.kbdGetKy),a
 	call	ti.EnableAPD
+	ld	hl,hook_parser
+	call	ti.SetParserHook
 	ei
 	jp	ti.ParseInp				; run program

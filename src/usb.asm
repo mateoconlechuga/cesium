@@ -27,24 +27,15 @@ usb_no_error:
 	ld	bc,usb_msdenv
 	push	bc
 	call	lib_msd_SetJmpBuf			; set the error handler callback
-	ld	bc,5					; retry 3 times between loading
-.usb_detect:
-	push	bc
 	ld	iy,ti.flags
 	pop	bc
-	ld	bc,300					; 200 milliseconds for timeout
+	ld	bc,100					; 500 milliseconds for timeout
 	push	bc
 	call	lib_msd_Init
 	ld	iy,ti.flags
 	pop	bc
 	or	a,a
-	jr	z,.usb_detected
-	ld	a,10
-	call	ti.DelayTenTimesAms			; wait 100ms before retrying
-	pop	bc
-	djnz	.usb_detect
-	jq	usb_not_detected			; if failed to init, retry a few times...
-.usb_detected:
+	jq	nz,usb_not_detected			; if failed to init, retry a few times...
 
 	ld	bc,usb_sector
 	push	bc
@@ -151,7 +142,10 @@ usb_detach:						; detach the fat library hooks
 	or	a,a
 	sbc	hl,hl
 	ld	(scroll_amount),hl
-	ld	hl,1
+	bit	setting_special_directories,(iy + settings_flag)
+	jr	z,.no_apps_dir
+	inc	hl
+.no_apps_dir:
 	ld	(current_selection_absolute),hl
 	ld	a,l
 	ld	(current_selection),a
@@ -244,6 +238,131 @@ usb_get_directory_listing:
 	pop	bc
 	ret
 
+usb_get_tiprgm_info:
+	ld	hl,(usb_filename_ptr)
+	call	usb_open_tivar.entry
+	call	usb_close_file
+
+	; attempt to read language from 8xp
+	; also read sprite if possible
+
+	ld	hl,usb_sector + 74
+	ld	a,(hl)
+	cp	a,ti.tExtTok			; is it an assembly program
+	jr	z,.check_if_is_asm
+.program_is_basic:
+	cp	a,byte_ice_source		; actually it is ice source
+	ld	a,file_ice_source
+	jr	z,.store_program_type
+	ld	a,file_basic
+	jr	.store_program_type
+.check_if_is_asm:
+	inc	hl
+	ld	a,(hl)
+	cp	a,ti.tAsm84CeCmp
+	jr	nz,.program_is_basic		; is it a basic program
+	inc	hl
+	ld	a,(hl)
+	cp	a,byte_ice
+	ld	a,file_ice
+	jr	z,.store_program_type		; is it an ice program
+	ld	a,(hl)
+	cp	a,byte_c
+	ld	a,file_c
+	jr	z,.store_program_type
+	ld	a,file_asm			; default to assembly program
+.store_program_type:
+	ld	hl,string_asm
+	ld	de,sprite_file_asm
+	cp	a,file_asm
+	jr	z,.file_uneditable
+	ld	hl,string_c
+	ld	de,sprite_file_c
+	cp	a,file_c
+	jr	z,.file_uneditable
+	ld	hl,string_ice
+	ld	de,sprite_file_ice
+	cp	a,file_ice
+	jr	z,.file_uneditable
+	ld	hl,string_ice_source
+	cp	a,file_ice_source
+	jp	z,.file_editable
+	ld	hl,string_basic
+	ld	de,sprite_file_basic
+
+.file_editable:
+	push	hl
+	push	de
+	ld	de,lut_basic_icon
+	ld	b,6
+	ld	hl,usb_sector + 74
+.verify_icon:
+	ld	a,(de)
+	cp	a,(hl)
+	inc	hl
+	inc	de
+	jr	nz,.no_custom_icon
+	djnz	.verify_icon
+	pop	de					; remove default icon
+	ld	de,sprite_temp
+	ld	a,16
+	ld	(de),a
+	inc	de
+	ld	(de),a
+	inc	de					; save the size of the sprite
+	ld	b,0
+.get_icon:						; okay, now loop 256 times to do the squish
+	ld	a,(hl)
+	sub	a,$30
+	cp	a,$11
+	jr	c,.no_overflow
+	sub	a,$07
+.no_overflow:						; rather than doing an actual routine, just do this
+	push	hl
+	ld	hl,lut_color_basic
+	call	ti.AddHLAndA
+	ld	a,(hl)
+	pop	hl
+	ld	(de),a
+	inc	de
+	inc	hl
+	djnz	.get_icon				; collect all the values
+	ld	hl,sprite_temp				; yay, a custom icon
+	push	hl
+.no_custom_icon:
+	pop	de
+	pop	hl
+	ret
+
+.file_uneditable:
+	push	hl
+	push	de
+	ld	hl,usb_sector + 76
+	ld	a,(hl)
+	cp	a,byte_jp
+	jr	z,.custom_icon
+	inc	hl
+	ld	a,(hl)
+	cp	a,byte_jp
+	jr	nz,.icon
+.custom_icon:
+	inc	hl
+	inc	hl
+	inc	hl
+	inc	hl					; hl -> icon indicator byte, hopefully
+	ld	a,(hl)
+	cp	a,byte_icon				; cesium indicator byte
+	jr	z,.valid_icon
+.icon:
+	pop	de					; de -> icon
+	pop	hl					; hl -> language string
+	ret
+.valid_icon:
+	pop	de					; pop the old icon
+	inc	hl
+	push	hl
+	jr	.icon
+
 usb_show_path:
 	ld	hl,usb_fat_path
 	jp	gui_show_description
@@ -321,8 +440,7 @@ usb_check_extensions:
 	jr	z,.not_current_prgm
 	set	item_is_prgm,(iy + item_flag)
 .not_current_prgm:
-	ld	de,sprite_file_ti
-	ld	hl,string_ti
+	call	usb_get_tiprgm_info
 	pop	af
 	ret
 .tiappvar:
@@ -457,8 +575,10 @@ usb_fat_transfer:
 	call	gui_fat_transfer
 
 	call	usb_open_tivar
+	call	ti.PushOP1
 	call	ti.ChkFindSym
 	call	nc,ti.DelVarArc
+	call	ti.PopOP1
 	ld	hl,0
 usb_var_size := $-3
 	call	util_check_free_ram
@@ -469,13 +589,20 @@ usb_var_size := $-3
 
 	ld	a,(ti.OP1)
 	call	ti.CreateVar			; create the variable in ram
-	inc	de
-	inc	de
 
 	; now we need to do the fun part of copying the data into the variable
 	; the first and last sectors are annoying so be lazy
 
+	ld	a,(usb_sector + 69)
+	cp	a,$80				; check if archived
+	push	af
 	call	usb_copy_tivar
+	call	ti.OP4ToOP1
+	pop	af
+	jr	nz,.notarchived
+	call	ti.ChkFindSym
+	call	ti.Arc_Unarc
+.notarchived:
 
 	call	util_delay_one_second
 	jp	main_start
@@ -502,6 +629,7 @@ usb_validate_tivar:
 
 usb_open_tivar:
 	ld	hl,(item_ptr)
+.entry:
 	call	usb_append_fat_path
 	ld	bc,1
 	push	bc
@@ -532,8 +660,8 @@ usb_copy_tivar_to_ram:
 	ld	hl,usb_sector + 76
 	jr	usb_copy_tivar.entry
 usb_copy_tivar:
-	ld	ix,74 - 1
-	ld	hl,usb_sector + 74
+	ld	ix,72 - 1
+	ld	hl,usb_sector + 72
 .entry:
 	ld	bc,(usb_var_size)
 .not_done:
@@ -550,7 +678,7 @@ usb_copy_tivar:
 	ldi
 	jp	pe,.not_done
 
-.close_file:
+usb_close_file:
 	ld	a,(usb_fat_fd)
 	or	a,a
 	sbc	hl,hl
@@ -560,6 +688,24 @@ usb_copy_tivar:
 	ld	iy,ti.flags
 	pop	hl
 	ret
+
+usb_delete_file:
+	ld	hl,(item_ptr)
+	call	usb_append_fat_path
+	ld	bc,usb_fat_path
+	push	bc
+	call	lib_fat_Delete
+	pop	bc
+	call	usb_directory_previous
+	call	usb_get_directory_listing
+	ld	hl,(current_selection_absolute)
+	ld	de,(number_of_items)
+	inc	hl
+	compare_hl_de
+	call	c,main_move_up
+	ld	a,return_settings
+	ld	(return_info),a
+	jp	main_start
 
 usb_sector:
 	rb	512

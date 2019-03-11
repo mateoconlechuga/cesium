@@ -14,6 +14,9 @@ feature_item_new:
 	res	item_renaming,(iy + item_flag)
 	jr	feature_item_rename.setup_name
 feature_item_rename:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jp	z,main_loop
 	res	item_set_editor,(iy + item_flag)
 	set	item_renaming,(iy + item_flag)
 	ld	a,(prgm_type)
@@ -257,6 +260,9 @@ current_input_mode := $-1
 	jp	main_start
 
 feature_item_edit:
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jp	nz,main_loop
 	call	feature_check_valid
 	bit	prgm_locked,(iy + prgm_flag)
 	jp	nz,main_loop
@@ -270,7 +276,9 @@ feature_item_edit:
 	jp	edit_basic_program
 
 feature_item_delete:
-	call	feature_check_valid
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	call	nz,feature_check_valid
 	bit	setting_delete_confirm,(iy + settings_flag)
 	jr	z,.delete
 	call	gui_clear_status_bar
@@ -288,6 +296,8 @@ feature_item_delete:
 	ld	a,(current_screen)
 	cp	a,screen_apps
 	jr	z,.delete_app
+	cp	a,screen_usb
+	jp	z,usb_delete_file
 .delete_program:
 	call	util_move_prgm_name_to_op1	; move the selected name to op1
 	call	ti.ChkFindSym
