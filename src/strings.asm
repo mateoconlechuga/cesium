@@ -225,49 +225,49 @@ string_setting_special_directories:
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
 string_settings_usb_edit:
-	db	'Enable USB flash drive access',0
+	db	'Activer le support de cl',$82,'s USB',0
 string_settings_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_new_password:
 	db	'Saisir le nouveau mot de passe : ',0
 string_read_only:
-	db	'Read-Only',0
+	db	'Lecture seule',0
 string_system:
-	db	'System',0
+	db	'Systeme',0
 string_transfer:
 	db	'Transfer',0
 	db	$7e,'PRGM]',0
 string_usb_info_0:
-	db	'Use any FAT32 USB flash drive',0
+	db	'Utilisez une cl',$82,' USB en FAT32',0
 string_usb_info_1:
-	db	'for external storage and transfer.',0
+	db	'pour du stockage externe et transferts.',0
 string_usb_info_2:
-	db	'You will need to install LibLoad',0
+	db	'Vous devrez installer LibLoad',0
 string_usb_info_3:
-	db	'and the FATDRVCE library from here:',0
+	db	'et la lib FATDRVCE depuis ici :',0
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
-	db	'Press enter to retry.',0
+	db	'Appuyez sur ',$7e,'entrer] pour retenter.',0
 string_usb_not_detected:
-	db	'No USB Connection Detected.',0
+	db	'Pas de connection USB d',$82,'tect',$82,'e.',0
 string_usb_no_partitions:
-	db	'No FAT32 partitions found.',0
+	db	'Pas de partition FAT32 trouv',$82,'e.',0
 string_insert_fat32:
-	db	'Please insert a FAT32 formatted drive.',0
+	db	'Veuillez brancher une cl',$82,' format',$82,'e en FAT32.',0
 string_partition:
 	db	'Partition ',0
 string_select_partition_0:
-	db	'This drive contains multiple partitions.',0
+	db	'Cette cl',$82,' contient plusieurs partitions.',0
 string_select_partition_1:
-	db	'Choose one from the list above.',0
+	db	'Choisissez-en une depuis la liste ci-dessus.',0
 string_fat_init_error_0:
-	db	'Error initializing FAT partition.',0
+	db	'Erreur d',$27,'init de la partition FAT.',0
 string_fat_init_error_1:
-	db	'Error code: ',0
+	db	'Code d'erreur : ',0
 string_fat_transferring:
-	db	'Transferring...',0
+	db	'Transfert en cours...',0
 string_ram_error:
-	db	'Not enough free RAM',0
+	db	'Pas assez de RAM libre',0
 
 end if
