@@ -29,7 +29,7 @@ usb_no_error:
 	call	lib_msd_SetJmpBuf			; set the error handler callback
 	ld	iy,ti.flags
 	pop	bc
-	ld	bc,100					; 500 milliseconds for timeout
+	ld	bc,5000					; 500 milliseconds for timeout
 	push	bc
 	call	lib_msd_Init
 	ld	iy,ti.flags
