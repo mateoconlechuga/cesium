@@ -695,17 +695,23 @@ usb_delete_file:
 	ld	bc,usb_fat_path
 	push	bc
 	call	lib_fat_Delete
+	ld	iy,ti.flags
 	pop	bc
 	call	usb_directory_previous
-	call	usb_get_directory_listing
 	ld	hl,(current_selection_absolute)
 	ld	de,(number_of_items)
 	inc	hl
 	compare_hl_de
+	jr	z,.move_up
 	call	c,main_move_up
+.return:
 	ld	a,return_settings
 	ld	(return_info),a
+	call	usb_get_directory_listing
 	jp	main_start
+.move_up:
+	call	main_move_up
+	jr	.return
 
 usb_sector:
 	rb	512
