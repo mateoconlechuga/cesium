@@ -230,5 +230,44 @@ string_settings_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_new_password:
 	db	'Saisir le nouveau mot de passe : ',0
+string_read_only:
+	db	'Read-Only',0
+string_system:
+	db	'System',0
+string_transfer:
+	db	'Transfer',0
+	db	$7e,'PRGM]',0
+string_usb_info_0:
+	db	'Use any FAT32 USB flash drive',0
+string_usb_info_1:
+	db	'for external storage and transfer.',0
+string_usb_info_2:
+	db	'You will need to install LibLoad',0
+string_usb_info_3:
+	db	'and the FATDRVCE library from here:',0
+string_usb_info_4:
+	db	'http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Press enter to retry.',0
+string_usb_not_detected:
+	db	'No USB Connection Detected.',0
+string_usb_no_partitions:
+	db	'No FAT32 partitions found.',0
+string_insert_fat32:
+	db	'Please insert a FAT32 formatted drive.',0
+string_partition:
+	db	'Partition ',0
+string_select_partition_0:
+	db	'This drive contains multiple partitions.',0
+string_select_partition_1:
+	db	'Choose one from the list above.',0
+string_fat_init_error_0:
+	db	'Error initializing FAT partition.',0
+string_fat_init_error_1:
+	db	'Error code: ',0
+string_fat_transferring:
+	db	'Transferring...',0
+string_ram_error:
+	db	'Not enough free RAM',0
 
 end if
