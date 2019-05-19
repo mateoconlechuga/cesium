@@ -246,7 +246,7 @@ hook_home:
 	ret
 .return_cesium_app:
 	cesium_code.copy
-	jp	return_basic
+	jp	return.user_exit
 .save:
 	xor	a,a
 	sbc	hl,hl

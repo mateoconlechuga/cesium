@@ -1,6 +1,8 @@
 ; routines for building lists of available programs and applications
 
 find_files:
+	call	ti.DeleteTempPrograms
+	call	ti.CleanAll
 	call	find_lists
 	ld	hl,(item_locations_ptr)
 	ld	de,item_location_base

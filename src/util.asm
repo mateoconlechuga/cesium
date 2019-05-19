@@ -252,10 +252,6 @@ util_setup_shortcuts:
 	call	nz,ti.SetGetCSCHook
 	ret
 
-util_install_error_handler:
-	ld	hl,return_asm_error
-	jp	ti.PushErrorHandler
-
 util_backup_prgm_name:
 	ld	hl,ti.OP1
 .entry:

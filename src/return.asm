@@ -99,7 +99,10 @@ return_asm_error:
 return_basic:
 return_asm:						; handler for assembly / basic return
 return:
+	ld	sp,(persistent_sp)
 	call	ti.PopErrorHandler
+.user_exit:
+	ld	sp,(persistent_sp_error)
 	ld	a,(return_info)
 	cp	a,return_edit
 	jr	z,.skip					; return properly from external editors
@@ -117,6 +120,7 @@ return:
 	res	ti.allowProgTokens,(iy + ti.newDispF)
 	res	ti.onInterrupt,(iy + ti.onFlags)
 	call	ti.ReloadAppEntryVecs
+	call	ti.ResetStacks
 	call	ti.DeleteTempPrograms
 	call	ti.CleanAll
 	di

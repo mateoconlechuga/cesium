@@ -60,6 +60,8 @@ execute_usb_check:
 	jp	main_loop
 
 execute_vat_check:
+	xor	a,a
+	ld	(return_info),a
 	bit	prgm_is_usb_directory,(iy + prgm_flag)
 	jp	nz,usb_init
 	bit	setting_special_directories,(iy + settings_flag)
@@ -187,7 +189,9 @@ execute_program:
 	call	util_move_prgm_to_usermem		; execute assembly program
 	jp	nz,main_loop				; return on error
 	call	lcd_normal
-	call	util_install_error_handler
+	ld	hl,return_asm_error
+	call	ti.PushErrorHandler
+	ld	(persistent_sp),sp
 execute_assembly_program:
 	ld	hl,return_asm
 	push	hl
@@ -240,7 +244,9 @@ execute_ti.basic_program:
 	ldir
 	set	ti.graphDraw,(iy + ti.graphFlags)
 	ld	hl,return_basic_error
+	ld	(persistent_sp_error),sp
 	call	ti.PushErrorHandler
+	ld	(persistent_sp),sp
 	res	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
 	set	ti.progExecuting,(iy + ti.newDispF)
 	res	7,(iy + $45)
