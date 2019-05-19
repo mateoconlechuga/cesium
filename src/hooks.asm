@@ -218,6 +218,8 @@ hook_home:
 	db	$83
 	cp	a,3
 	ret	nz
+	bit	ti.progExecuting,(iy + ti.newDispF)
+	ret	nz
 	bit	appInpPrmptDone,(iy + ti.apiFlg2)
 	res	appInpPrmptDone,(iy + ti.apiFlg2)
 	ld	a,b

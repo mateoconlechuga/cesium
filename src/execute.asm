@@ -242,7 +242,6 @@ execute_ti.basic_program:
 	call	ti.PushErrorHandler
 	res	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
 	set	ti.progExecuting,(iy + ti.newDispF)
-	set	ti.allowProgTokens,(iy + ti.newDispF)
 	res	7,(iy + $45)
 	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
 	set	ti.cmdExec,(iy + ti.cmdFlags) 		; set these flags to execute basic program
