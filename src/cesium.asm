@@ -4,8 +4,8 @@
 ; (c) 2015-2018 Matt "Mateoconlechuga" Waltz
 
 cesium_name := 'Cesium'
-cesium_version := '3.0.6'
-cesium_copyright := '(C)  2015-2018 Matt Waltz'
+cesium_version := '3.1.0'
+cesium_copyright := '(C)  2015-2019 Matt Waltz'
 
 include 'include/macros.inc'
 
