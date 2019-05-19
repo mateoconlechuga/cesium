@@ -299,23 +299,29 @@ find_check_apps:
 	pop	hl
 	ret
 
+; program metadata directories
 	db	"evirD hsalF BSU"
 find_usb_directory_name:
 	db	15
 .ptr:
 	dl	.ptr bswap 3
-	db	0,0,5
+	db	0,0,$ff
 
 	db	"SPPA"
 find_application_directory_name:
 	db	4
 .ptr:
 	dl	.ptr bswap 3
-	db	0,0,5
+	db	0,0,$ff
 find_program_directory_name:
 	db	0,0,0,"All Programs",0
 .ptr:
 	dl	.ptr bswap 3
-	db	0,0,5
+	db	0,0,4
+; application metadata directories
 find_appvars_directory_name:
 	db	0,0,0,"AppVars",0
+.ptr:
+	dl	.ptr bswap 3
+	db	0,0,4
+

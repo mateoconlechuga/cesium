@@ -23,6 +23,7 @@ settings_get_data:
 	ldir
 	ld	a,(setting_config)
 	ld	(iy + settings_flag),a
+	res	setting_enable_usb,(iy + settings_flag)
 	call	gui_fixup_sprites
 	jp	util_setup_shortcuts
 
