@@ -292,11 +292,7 @@ feature_item_delete:
 	cp	a,screen_usb
 	jp	z,usb_delete_file
 .delete_program:
-	ld	hl,(item_ptr)
-	ld	de,6
-	add	hl,de
-	ld	a,(hl)
-	inc	a
+	call	util_check_if_vat_page_directory
 	jp	z,main_start
 	call	.getinput
 	call	util_move_prgm_name_to_op1	; move the selected name to op1
@@ -304,11 +300,7 @@ feature_item_delete:
 	call	ti.DelVarArc
 	jr	.refresh
 .delete_app:
-	ld	hl,(item_ptr)
-	push	hl
-	ld	hl,(hl)
-	compare_hl_zero
-	pop	hl
+	call	util_check_if_app_page_directory
 	jp	z,main_start
 	call	.getinput
 	ld	hl,(item_ptr)

@@ -199,6 +199,20 @@ apd_timer := $-3
 	ret	nz
 	jp	exit_full
 
+util_check_if_app_page_directory:
+	ld	hl,(item_ptr)
+	ld	hl,(hl)
+	compare_hl_zero
+	ret
+
+util_check_if_vat_page_directory:
+	ld	hl,(item_ptr)
+	ld	de,6
+	add	hl,de
+	ld	a,(hl)
+	inc	a
+	ret
+
 util_to_one_hot:
 	ld	b,a
 	xor	a,a
