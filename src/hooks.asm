@@ -35,7 +35,7 @@ hook_app_change:
 	jr	c,.dont_archive
 	ld	a,(edit_status)
 	or	a,a
-	call	nz,ti.Arc_Unarc
+	call	nz,cesium.Arc_Unarc
 .dont_archive:
 	ld	a,return_prgm
 	ld	(return_info),a
@@ -151,7 +151,7 @@ hook_password:
 	call	ti.ChkFindSym
 	call	ti.ChkInRam
 	push	af
-	call	z,ti.Arc_Unarc			; archive it
+	call	z,cesium.Arc_Unarc		; archive it
 	pop	af
 	jr	z,hook_password			; find the settings appvar
 	ex	de,hl
@@ -222,19 +222,7 @@ hook_home:
 	res	appInpPrmptDone,(iy + ti.apiFlg2)
 	ld	a,b
 	ld	b,0
-	jr	z,.restore_home_hooks
-.establish:
-	call	ti.ReloadAppEntryVecs
-	ld	hl,.vectors
-	call	ti.AppInit
-	or	a,1
-	ld	a,ti.kExtApps
-	ld	(ti.cxCurApp),a
-	ret
-.set:
-	ld	hl,hook_home
-	call	ti.SetHomescreenHook
-	jr	.establish
+	ret	nz
 .restore_home_hooks:
 	push	af
 	push	bc

@@ -2,13 +2,55 @@ util_find_var:
 	call	ti.Mov9ToOP1
 	jp	ti.ChkFindSym
 
-util_delete_program_from_usermem:
+util_delete_prgm_from_usermem:
 	or	a,a
 	sbc	hl,hl
 	ld	de,(ti.asm_prgm_size)		; get program size
 	ld	(ti.asm_prgm_size),hl		; delete whatever was there
 	ld	hl,ti.userMem
 	jp	ti.DelMem
+
+util_move_prgm_to_usermem:
+	ld	a,$9				; 'add hl,bc'
+	ld	(.smc),a
+	call	ti.ChkFindSym
+	jr	c,.error_not_found			; hope this doesn't happen
+	call	ti.ChkInRam
+	ex	de,hl
+	jr	z,.in_ram
+	xor	a,a
+	ld	(.smc),a
+	ld	de,9
+	add	hl,de
+	ld	e,(hl)
+	add	hl,de
+	inc	hl
+.in_ram:					; hl -> size bytes
+	call	ti.LoadDEInd_s
+	inc	hl
+	inc	hl				; bypass tExtTok, tAsm84CECmp
+	push	hl
+	push	de
+	ex	de,hl
+	call	util_check_free_ram		; check and see if we have enough memory
+	pop	hl
+	jr	c,.error_ram
+	ld	(ti.asm_prgm_size),hl		; store the size of the program
+	ld	de,ti.userMem
+	call	ti.InsertMem			; insert memory into usermem
+	pop	hl				; hl -> start of program
+	ld	bc,(ti.asm_prgm_size)		; load size of current program
+.smc := $
+	add	hl,bc				; if not in ram smc it so it doesn't execute
+	ldir					; copy the program to userMem
+	xor	a,a
+	ret					; return
+.error_ram:
+	pop	hl				; pop start of program
+.error_not_found:
+	xor	a,a
+	inc	a
+	ret
 
 util_show_time:
 	bit	setting_clock,(iy + settings_flag)
@@ -23,6 +65,28 @@ util_show_time:
 	set_cursor clock_x, clock_y
 	call	util_string_inverted
 	restore_cursor
+	ret
+
+util_check_free_ram:
+	push	hl
+	ld	de,128
+	add	hl,de				; for safety
+	call	ti.EnoughMem
+	pop	hl
+	ret	nc
+	call	gui_ram_error
+	;jr	util_delay_one_second
+
+util_delay_one_second:
+	ld	bc,100
+.delay:
+	push	bc
+	call	ti.Delay10ms
+	pop	bc
+	dec	bc
+	ld	a,c
+	or	a,b
+	jr	nz,.delay
 	ret
 
 util_set_primary:
@@ -107,17 +171,46 @@ util_get_battery:
 	ret
 
 util_get_key:
+	di
+	call	util_handle_apd
+	ld	iy,ti.flags
 	call	ti.DisableAPD			; disable to os apd and use our own
 	call	util_show_time
 	call	lcd_blit
-	call	ti.GetCSC
+	call	ti.KbdScan			; avoid using getcsc for usb
+	ld	a,(ti.kbdScanCode)
 	or	a,a
-	jr	nz,util_setup_apd
-	call	util_handle_apd
+	jr	z,.debounce
+	ld	b,0
+.last_key := $-1
+	cp	a,b
+	jr	z,.check_arrows			; if the keys match, check for arrows
+.scan_okay:
+	ld	(util_get_key.last_key),a
+	push	af
+	xor	a,a
+	ld	(ti.kbdScanCode),a
+	pop	af
+	jr	util_setup_apd
+.check_arrows:
+	cp	a,ti.skUp
+	jr	z,.scan_okay
+	cp	a,ti.skDown
+	jr	z,.scan_okay
+	cp	a,ti.skLeft
+	jr	z,.scan_okay
+	cp	a,ti.skRight
+	jr	z,.scan_okay
+	cp	a,ti.skDel
+	jr	z,.scan_okay
+	jr	util_get_key
+.debounce:
+	xor	a,a
+	ld	(util_get_key.last_key),a
 	jr	util_get_key
 
 util_setup_apd:
-	ld	hl,$5ff
+	ld	hl,$bff
 	ld	(apd_timer),hl
 	ret
 
@@ -164,41 +257,6 @@ util_prgm_ptr_to_op1:
 	xor	a,a
 	ld	(de),a				; terminate the string
 	ret
-
-util_move_prgm_to_usermem:
-	ld	a,$9				; 'add hl,bc'
-	ld	(.smc),a
-	call	ti.ChkFindSym
-	call	ti.ChkInRam
-	ex	de,hl
-	jr	z,.in_ram
-	xor	a,a
-	ld	(.smc),a
-	ld	de,9
-	add	hl,de
-	ld	e,(hl)
-	add	hl,de
-	inc	hl
-.in_ram:					; hl -> size bytes
-	call	ti.LoadDEInd_s
-	inc	hl
-	inc	hl				; bypass tExtTok, tAsm84CECmp
-	push	hl
-	push	de
-	ex	de,hl
-	call	ti.ErrNotEnoughMem		; check and see if we have enough memory
-	pop	hl
-	ld	(ti.asm_prgm_size),hl		; store the size of the program
-	ld	de,ti.userMem
-	push	de
-	call	ti.InsertMem			; insert memory into usermem
-	pop	de
-	pop	hl				; hl -> start of program
-	ld	bc,(ti.asm_prgm_size)		; load size of current program
-.smc := $
-	add	hl,bc				; if not in ram smc it so it doesn't execute
-	ldir					; copy the program to userMem
-	ret					; return
 
 util_setup_shortcuts:
 	ld	hl,hook_get_key
@@ -260,17 +318,6 @@ util_temp_to_op1:
 	ld	hl,string_temp
 	ld	de,ti.OP1
 	jr	util_op1_to_temp.handle
-
-util_print_brightness:
-	push	hl
-	xor	a,a
-	sbc	hl,hl
-	ld	a,(ti.mpBlLevel)
-	ld	l,a
-	call	lcd_num_3
-	pop	hl
-	inc	hl
-	jp	lcd_string
 
 util_num_convert:
 	ld	de,string_other_temp

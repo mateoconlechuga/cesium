@@ -5,6 +5,7 @@ return_asm_error:
 	call	ti.boot.ClearVRAM
 	ld	a,$2d
 	ld	(ti.mpLcdCtrl),a
+	call	ti.CursorOff
 	call	ti.DrawStatusBar
 	call	ti.DispErrorScreen
 	ld	hl,1

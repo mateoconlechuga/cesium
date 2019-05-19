@@ -95,6 +95,7 @@ find_appvars:
 
 find_programs:
 	call	find_app_directory
+	call	find_usb_directory
 	ld	hl,(ti.progPtr)
 .loop:
 	ld	de,(ti.pTemp)			; check to see if at end of symbol table
@@ -212,6 +213,20 @@ find_app_directory:
 	ld	(item_locations_ptr),hl
 	ret
 
+find_usb_directory:
+	bit	setting_enable_usb,(iy + settings_flag)
+	ret	z
+	ld	hl,(item_locations_ptr)
+	ld	de,find_usb_directory_name
+	ld	(hl),de
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	(hl),byte_usb_dir
+	inc	hl
+	ld	(item_locations_ptr),hl
+	ret
+
 find_apps:
 	ld	hl,(item_locations_ptr)
 	ld	de,find_program_directory_name
@@ -283,6 +298,13 @@ find_check_apps:
 	set	cesium_is_nl_disabled,(iy + cesium_flag)
 	pop	hl
 	ret
+
+	db	"evirD hsalF BSU"
+find_usb_directory_name:
+	db	15
+.ptr:
+	dl	.ptr bswap 3
+	db	0,0,5
 
 	db	"SPPA"
 find_application_directory_name:

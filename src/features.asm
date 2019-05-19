@@ -14,10 +14,15 @@ feature_item_new:
 	res	item_renaming,(iy + item_flag)
 	jr	feature_item_rename.setup_name
 feature_item_rename:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jp	z,main_loop
 	res	item_set_editor,(iy + item_flag)
 	set	item_renaming,(iy + item_flag)
 	ld	a,(prgm_type)
 	cp	a,file_dir
+	jp	z,main_loop
+	cp	a,file_usb_dir
 	jp	z,main_loop
 .setup_name:
 	call	.clear
@@ -176,7 +181,7 @@ current_input_mode := $-1
 	jp	.goto_main
 .renaming:
 	call	util_move_prgm_name_to_op1	; move the current name to op1
-	ld	hl,ti.Arc_Unarc
+	ld	hl,cesium.Arc_Unarc
 	ld	(.jump_smc),hl
 	ld	de,ti.OP1
 	ld	a,(de)
@@ -206,7 +211,7 @@ current_input_mode := $-1
 	ld	hl,$f8				; _ret
 	ld	(.jump_smc),hl
 	call	ti.PushOP1
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 	call	ti.PopOP1
 	jr	.locate_program
 .in_archive:
@@ -236,7 +241,7 @@ current_input_mode := $-1
 	ldir
 .is_zero:
 	call	ti.PopOP1
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 .jump_smc := $-3
 	call	ti.PopOP1
 	call	ti.ChkFindSym
@@ -255,6 +260,9 @@ current_input_mode := $-1
 	jp	main_start
 
 feature_item_edit:
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jp	nz,main_loop
 	call	feature_check_valid
 	bit	prgm_locked,(iy + prgm_flag)
 	jp	nz,main_loop
@@ -268,7 +276,9 @@ feature_item_edit:
 	jp	edit_basic_program
 
 feature_item_delete:
-	call	feature_check_valid
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	call	nz,feature_check_valid
 	bit	setting_delete_confirm,(iy + settings_flag)
 	jr	z,.delete
 	call	gui_clear_status_bar
@@ -286,6 +296,8 @@ feature_item_delete:
 	ld	a,(current_screen)
 	cp	a,screen_apps
 	jr	z,.delete_app
+	cp	a,screen_usb
+	jp	z,usb_delete_file
 .delete_program:
 	call	util_move_prgm_name_to_op1	; move the selected name to op1
 	call	ti.ChkFindSym
@@ -312,6 +324,8 @@ feature_item_attributes:
 	ld	hl,.max_options
 	ld	(hl),2
 	ld	a,(current_screen)
+	cp	a,screen_usb
+	jr	z,.usb
 	cp	a,screen_apps
 	jp	z,main_loop
 	cp	a,screen_programs
@@ -357,6 +371,8 @@ feature_item_attributes:
 	cp	a,ti.skEnter
 	jr	nz,.loop
 	jp	.check_what_to_do
+.usb:
+	jp	main_start
 
 .move_option_down:
 	call	.clear_current_selection
@@ -466,11 +482,11 @@ feature_item_attributes:
 	jr	z,.unarchive
 .archive:
 	pop	af
-	call	z,ti.Arc_Unarc
+	call	z,cesium.Arc_Unarc
 	jr	.return
 .unarchive:
 	pop	af
-	call	nz,ti.Arc_Unarc
+	call	nz,cesium.Arc_Unarc
 .return:
 	jp	main_start
 
@@ -488,3 +504,6 @@ feature_check_valid:
 	ret	nz
 	pop	hl
 	jp	main_loop
+
+
+

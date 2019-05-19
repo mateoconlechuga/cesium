@@ -1,11 +1,7 @@
 gui_main:
 	call	lcd_init.setup
 	call	gui_draw_core
-	draw_rectangle_outline 193, 24, 316, 221
-	draw_rectangle_outline 237, 54, 274, 91
-	draw_horiz 199, 36, 112
-	set_normal_text
-	print	string_file_information, 199, 27
+	call	gui_information_box
 	ld	a,(current_screen)
 	cp	a,screen_programs
 	jp	z,view_vat_items
@@ -13,9 +9,17 @@ gui_main:
 	jp	z,view_vat_items
 	cp	a,screen_apps
 	jp	z,view_apps
-	;cp	a,screen_usb
-	;jr	z,show_usb
+	cp	a,screen_usb
+	jp	z,view_usb_directory
 	jp	exit_full
+
+gui_information_box:
+	draw_rectangle_outline 193, 24, 316, 221
+	draw_rectangle_outline 237, 54, 274, 91
+	draw_horiz 199, 36, 112
+	set_normal_text
+	print	string_file_information, 199, 27
+	ret
 
 gui_draw_core:
 	call	lcd_fill
@@ -286,10 +290,26 @@ gui_draw_item_options:
 	draw_option 300, 140, 308, 148
 	ret
 
+gui_draw_usb_item_options:
+	ld	hl,(item_ptr)
+	ld	bc,13
+	add	hl,bc
+	bit	1,(hl)
+	push	hl
+	draw_option 300, 118, 308, 126
+	pop	hl
+	bit	0,(hl)
+	push	hl
+	draw_option 300, 129, 308, 137
+	pop	hl
+	bit	2,(hl)
+	draw_option 300, 140, 308, 148
+	ret
+
 gui_show_item_count:
-	ld	hl,(number_of_items)
 	bit	setting_list_count,(iy + settings_flag)
 	ret	z
+	ld	hl,(number_of_items)
 	bit	setting_special_directories,(iy + settings_flag)
 	jr	z,.no_extra_directories
 	dec	hl
@@ -297,7 +317,12 @@ gui_show_item_count:
 	cp	a,screen_apps
 	jr	nz,.no_extra_directories
 	dec	hl
+	jr	.show
 .no_extra_directories:
+	bit	setting_enable_usb,(iy + settings_flag)
+	jr	z,.show
+	dec	hl
+.show:
 	push	hl
 	set_cursor 195, 7
 	set_inverted_text
@@ -394,3 +419,24 @@ end if
 	call	lcd_blit
 	call	flash_code_copy
 	jp	flash_backup_ram
+
+gui_ram_error:
+	ld	hl,string_ram_free
+	jr	gui_box_information
+
+gui_fat_transfer:
+	ld	hl,string_fat_transferring
+	;jr	gui_box_information
+
+gui_box_information:
+	push	hl
+	ld	a,(color_senary)
+	call	util_set_primary
+	draw_rectangle 89, 105, 256, 121
+	draw_rectangle_outline 88, 104, 257, 121
+	set_cursor 95, 109
+	call	util_restore_primary
+	set_normal_text
+	pop	hl
+	call	lcd_string
+	jp	lcd_blit

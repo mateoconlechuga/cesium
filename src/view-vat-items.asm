@@ -5,7 +5,8 @@ view_vat_items:
 	set_normal_text
 	compare_hl_zero
 	jr	nz,.can_view
-	bit	setting_special_directories,(iy + settings_flag)
+	ld	a,(iy + settings_flag)
+	and	a,(1 shl setting_special_directories) or (1 shl setting_enable_usb)
 	jr	nz,.can_view				; can't show anything
 	call	gui_draw_static_options
 	ld	hl,sprite_egg
@@ -164,6 +165,10 @@ color_save := $-1
 	ld	hl,sprite_directory
 	cp	a,file_dir
 	jp	z,file_directory
+	cp	a,file_usb_dir
+	ld	de,string_usb
+	ld	hl,sprite_usb
+	jp	z,file_usb_directory			; it's a directory right?
 	ld	de,string_appvar
 	ld	hl,sprite_file_appvar
 	cp	a,file_appvar
@@ -190,6 +195,8 @@ color_save := $-1
 	jr	z,file_editable
 	jp	exit_full		; abort
 
+file_usb_directory:
+	set	temp_prgm_is_usb_directory,(iy + temp_prgm_flag)
 file_directory:
 	push	hl
 	or	a,a

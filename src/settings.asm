@@ -6,7 +6,7 @@ settings_load:
 	jr	c,settings_create_default	; create it if it doesn't exist
 	call	ti.ChkInRam
 	push	af
-	call	z,ti.Arc_Unarc			; archive it
+	call	z,cesium.Arc_Unarc		; archive it
 	pop	af
 	jq	z,settings_load			; find it again
 settings_get_data:
@@ -65,7 +65,7 @@ settings_save:
 	call	util_find_var
 	call	ti.ChkInRam
 	push	af
-	call	nz,ti.Arc_Unarc
+	call	nz,cesium.Arc_Unarc
 	pop	af
 	jr	nz,settings_save
 	ld	a,(iy + settings_flag)
@@ -77,12 +77,15 @@ settings_save:
 	ldir
 	ld	hl,settings_appvar
 	call	util_find_var
-	jp	ti.Arc_Unarc
+	jp	cesium.Arc_Unarc
 
 settings_show:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jp	z,main_loop
 	xor	a,a
 	ld	(current_option_selection),a			; start on the first menu item
-	ld	(setting_brightness_check.counter),a
+	ld	(setting_brightness_get.counter),a
 .draw:
 	call	setting_draw_options
 
@@ -151,23 +154,24 @@ setting_up:
 	jr	.done
 
 setting_left:
-	call	setting_brightness_check
-	sub	a,b
-.done:
+	jr	setting_brightness_down
+
+setting_right:
+	;jr	setting_brightness_up
+
+setting_brightness_up:
+	call	setting_brightness_get
+	add	a,b
 	ld	(hl),a
 	ret
 
-setting_right:
-	call	setting_brightness_check
-	add	a,b
-	jr	setting_left.done
+setting_brightness_down:
+	call	setting_brightness_get
+	sub	a,b
+	ld	(hl),a
+	ret
 
-setting_brightness_check:
-	ld	c,a
-	ld	a,(ix)
-	cp	a,8
-	jr	nz,.fail
-	ld	a,c
+setting_brightness_get:
 	ld	b,0
 .prev_key := $-1
 	cp	a,b
@@ -189,9 +193,6 @@ setting_brightness_check:
 	ld	(.prev_key),a
 	ld	hl,ti.mpBlLevel
 	ld	a,(hl)
-	ret
-.fail:
-	pop	hl
 	ret
 
 setting_toggle:
@@ -311,37 +312,35 @@ setting_draw_options:
 	call	gui_draw_cesium_info
 
 	print	string_general_settings, 10, 30
-	print	string_setting_color, 25, 51
-	print	string_setting_indicator, 25, 71
-	print	string_setting_list_count, 25, 91
-	print	string_setting_clock, 25, 111
-	print	string_setting_ram_backup, 25, 131
-	print	string_setting_special_directories, 25, 151
-	print	string_setting_enable_shortcuts, 25, 171
-	print	string_settings_delete_confirm, 25, 191
-	print	string_settings_brightness, 25, 211
-	call	util_print_brightness
+	print	string_setting_color, 25, 49
+	print	string_setting_indicator, 25, 69
+	print	string_setting_list_count, 25, 89
+	print	string_setting_clock, 25, 109
+	print	string_setting_ram_backup, 25, 129
+	print	string_setting_special_directories, 25, 149
+	print	string_setting_enable_shortcuts, 25, 169
+	print	string_settings_delete_confirm, 25, 189
+	print	string_settings_usb_edit, 25, 209
 
 	xor	a,a
 	inc	a				; color is always set
-	draw_highlightable_option 10, 50, 0
+	draw_highlightable_option 10, 48, 0
 	bit	setting_basic_indicator,(iy + settings_flag)
-	draw_highlightable_option 10, 70, 1
+	draw_highlightable_option 10, 68, 1
 	bit	setting_list_count,(iy + settings_flag)
-	draw_highlightable_option 10, 90, 2
+	draw_highlightable_option 10, 88, 2
 	bit	setting_clock,(iy + settings_flag)
-	draw_highlightable_option 10, 110, 3
+	draw_highlightable_option 10, 108, 3
 	bit	setting_ram_backup,(iy + settings_flag)
-	draw_highlightable_option 10, 130, 4
+	draw_highlightable_option 10, 128, 4
 	bit	setting_special_directories,(iy + settings_flag)
-	draw_highlightable_option 10, 150, 5
+	draw_highlightable_option 10, 148, 5
 	bit	setting_enable_shortcuts,(iy + settings_flag)
-	draw_highlightable_option 10, 170, 6
+	draw_highlightable_option 10, 168, 6
 	bit	setting_delete_confirm,(iy + settings_flag)
-	draw_highlightable_option 10, 190, 7
-	xor	a,a
-	inc	a
-	draw_highlightable_option 10, 210, 8	; brightness is always set
+	draw_highlightable_option 10, 188, 7
+	bit	setting_enable_usb,(iy + settings_flag)
+	draw_highlightable_option 10, 208, 8
 	ret
 
 settings_appvar:
@@ -350,4 +349,3 @@ settings_appvar:
 settings_editor_default_prgm_name:
 	db	ti.ProtProgObj,"KEDIT",0
 .length :=$-settings_editor_default_prgm_name
-

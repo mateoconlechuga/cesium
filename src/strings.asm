@@ -14,10 +14,16 @@ string_ice_source:
 	db	'ICE S',0
 string_directory:
 	db	'Dir',0
+string_usb:
+	db	'USB',0
 string_basic:
 	db	'Basic',0
 string_application:
 	db	'App',0
+string_ti:
+	db	'TI-OS',0
+string_unknown:
+	db	'Unknown',0
 string_appvar:
 	db	'Data',0
 string_mode_select:
@@ -45,11 +51,15 @@ string_quinary_color:
 string_senary_color:
 	db	'Background Color',0
 string_language:
-	db	'Language: ',0
+	db	'Type: ',0
 string_archived:
 	db	'Archived',0
+string_read_only:
+	db	'Read-Only',0
 string_hidden:
 	db	'Hidden',0
+string_system:
+	db	'System',0
 string_locked:
 	db	'Locked',0
 string_size:
@@ -74,6 +84,9 @@ string_attributes:
 string_rename:
 	db	'Rename',0
 	db	$7e,'GRAPH]',0
+string_transfer:
+	db	'Transfer',0
+	db	$7e,'PRGM]',0
 string_edit_prgm:
 	db	'Edit Prgm',0
 	db	$7e,'ZOOM]'
@@ -100,12 +113,44 @@ string_setting_special_directories:
 	db	'Show special directories',0
 string_setting_enable_shortcuts:
 	db	'Enable keypad shortcuts',0
-string_settings_brightness:
-	db	'LCD brightness level (use <',0,'>)',0
+string_settings_usb_edit:
+	db	'Enable USB flash drive access',0
 string_settings_delete_confirm:
 	db	'Show item deletion confirmation prompt',0
 string_new_password:
 	db	'Input new password: ',0
+string_usb_info_0:
+	db	'Use any FAT32 USB flash drive',0
+string_usb_info_1:
+	db	'for external storage and transfer.',0
+string_usb_info_2:
+	db	'You will need to install LibLoad',0
+string_usb_info_3:
+	db	'and the FATDRVCE library from here:',0
+string_usb_info_4:
+	db	'http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Press enter to retry.',0
+string_usb_not_detected:
+	db	'No USB Connection Detected.',0
+string_usb_no_partitions:
+	db	'No FAT32 partitions found.',0
+string_insert_fat32:
+	db	'Please insert a FAT32 formatted drive.',0
+string_partition:
+	db	'Partition ',0
+string_select_partition_0:
+	db	'This drive contains multiple partitions.',0
+string_select_partition_1:
+	db	'Choose one from the list above.',0
+string_fat_init_error_0:
+	db	'Error initializing FAT partition.',0
+string_fat_init_error_1:
+	db	'Error code: ',0
+string_fat_transferring:
+	db	'Transferring...',0
+string_ram_error:
+	db	'Not enough free RAM',0
 
 ; french configuration
 
@@ -179,11 +224,50 @@ string_setting_special_directories:
 	db	'Afficher les r',$82,'pertoires sp',$82,'ciaux',0
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
-string_settings_brightness:
-	db	'Luminosit',$82,' LCD (Touches <',0,'>)',0
+string_settings_usb_edit:
+	db	'Activer le support de cl',$82,'s USB',0
 string_settings_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_new_password:
 	db	'Saisir le nouveau mot de passe : ',0
+string_read_only:
+	db	'Lecture seule',0
+string_system:
+	db	'Systeme',0
+string_transfer:
+	db	'Transfer',0
+	db	$7e,'PRGM]',0
+string_usb_info_0:
+	db	'Utilisez une cl',$82,' USB en FAT32',0
+string_usb_info_1:
+	db	'pour du stockage externe et transferts.',0
+string_usb_info_2:
+	db	'Vous devrez installer LibLoad',0
+string_usb_info_3:
+	db	'et la lib FATDRVCE depuis ici :',0
+string_usb_info_4:
+	db	'http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Appuyez sur ',$7e,'entrer] pour retenter.',0
+string_usb_not_detected:
+	db	'Pas de connection USB d',$82,'tect',$82,'e.',0
+string_usb_no_partitions:
+	db	'Pas de partition FAT32 trouv',$82,'e.',0
+string_insert_fat32:
+	db	'Veuillez brancher une cl',$82,' format',$82,'e en FAT32.',0
+string_partition:
+	db	'Partition ',0
+string_select_partition_0:
+	db	'Cette cl',$82,' contient plusieurs partitions.',0
+string_select_partition_1:
+	db	'Choisissez-en une depuis la liste ci-dessus.',0
+string_fat_init_error_0:
+	db	'Erreur d',$27,'init de la partition FAT.',0
+string_fat_init_error_1:
+	db	'Code d\'erreur : ',0
+string_fat_transferring:
+	db	'Transfert en cours...',0
+string_ram_error:
+	db	'Pas assez de RAM libre',0
 
 end if

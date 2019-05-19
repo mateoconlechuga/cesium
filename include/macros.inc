@@ -186,6 +186,7 @@ file_ice := 3
 file_ice_source := 4
 file_dir := 5
 file_appvar := 6
+file_usb_dir := 7
 
 byte_icon := $01
 byte_description := $02
@@ -194,6 +195,7 @@ byte_ice_source := $2c
 byte_ice := $7f
 byte_c := $00
 byte_dir := file_dir
+byte_usb_dir := file_usb_dir
 byte_edit_return := $aa
 
 item_location_base := ti.pixelShadow2
@@ -216,9 +218,10 @@ setting_ram_backup := 3
 setting_special_directories := 4
 setting_enable_shortcuts := 5
 setting_delete_confirm := 6
+setting_enable_usb := 7
 
 settings_appvar_size := 30
-setting_config_default := (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm)
+setting_config_default := (1 shl setting_list_count) or (1 shl setting_special_directories) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_enable_usb)
 
 ; sorting flags
 
@@ -243,18 +246,22 @@ scroll_up_available := 2
 item_renaming := 3
 item_is_directory := 4
 item_set_editor := 5
+item_is_ti := 6
+item_is_prgm := 7
 
 prgm_flag := $30
 prgm_archived := 0
 prgm_locked := 1
 prgm_hidden := 2
 prgm_is_basic := 3
+prgm_is_usb_directory := 4
 
 temp_prgm_flag := $31
 temp_prgm_archived := 0
 temp_prgm_locked := 1
 temp_prgm_hidden := 2
 temp_prgm_is_basic := 3
+temp_prgm_is_usb_directory := 4
 
 ; location of items
 
