@@ -91,7 +91,7 @@ edit_basic_program:
 	jr	z,.not_archived
 	ld	a,edit_archived
 	ld	(edit_status),a
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 .not_archived:
 	ld	hl,hook_app_change
 	call	ti.SetAppChangeHook

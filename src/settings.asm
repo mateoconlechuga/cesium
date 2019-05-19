@@ -6,7 +6,7 @@ settings_load:
 	jr	c,settings_create_default	; create it if it doesn't exist
 	call	ti.ChkInRam
 	push	af
-	call	z,ti.Arc_Unarc			; archive it
+	call	z,cesium.Arc_Unarc		; archive it
 	pop	af
 	jq	z,settings_load			; find it again
 settings_get_data:
@@ -65,7 +65,7 @@ settings_save:
 	call	util_find_var
 	call	ti.ChkInRam
 	push	af
-	call	nz,ti.Arc_Unarc
+	call	nz,cesium.Arc_Unarc
 	pop	af
 	jr	nz,settings_save
 	ld	a,(iy + settings_flag)
@@ -77,7 +77,7 @@ settings_save:
 	ldir
 	ld	hl,settings_appvar
 	call	util_find_var
-	jp	ti.Arc_Unarc
+	jp	cesium.Arc_Unarc
 
 settings_show:
 	ld	a,(current_screen)

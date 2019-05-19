@@ -35,7 +35,7 @@ hook_app_change:
 	jr	c,.dont_archive
 	ld	a,(edit_status)
 	or	a,a
-	call	nz,ti.Arc_Unarc
+	call	nz,cesium.Arc_Unarc
 .dont_archive:
 	ld	a,return_prgm
 	ld	(return_info),a
@@ -151,7 +151,7 @@ hook_password:
 	call	ti.ChkFindSym
 	call	ti.ChkInRam
 	push	af
-	call	z,ti.Arc_Unarc			; archive it
+	call	z,cesium.Arc_Unarc		; archive it
 	pop	af
 	jr	z,hook_password			; find the settings appvar
 	ex	de,hl

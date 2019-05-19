@@ -181,7 +181,7 @@ current_input_mode := $-1
 	jp	.goto_main
 .renaming:
 	call	util_move_prgm_name_to_op1	; move the current name to op1
-	ld	hl,ti.Arc_Unarc
+	ld	hl,cesium.Arc_Unarc
 	ld	(.jump_smc),hl
 	ld	de,ti.OP1
 	ld	a,(de)
@@ -211,7 +211,7 @@ current_input_mode := $-1
 	ld	hl,$f8				; _ret
 	ld	(.jump_smc),hl
 	call	ti.PushOP1
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 	call	ti.PopOP1
 	jr	.locate_program
 .in_archive:
@@ -241,7 +241,7 @@ current_input_mode := $-1
 	ldir
 .is_zero:
 	call	ti.PopOP1
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 .jump_smc := $-3
 	call	ti.PopOP1
 	call	ti.ChkFindSym
@@ -482,11 +482,11 @@ feature_item_attributes:
 	jr	z,.unarchive
 .archive:
 	pop	af
-	call	z,ti.Arc_Unarc
+	call	z,cesium.Arc_Unarc
 	jr	.return
 .unarchive:
 	pop	af
-	call	nz,ti.Arc_Unarc
+	call	nz,cesium.Arc_Unarc
 .return:
 	jp	main_start
 
@@ -504,3 +504,6 @@ feature_check_valid:
 	ret	nz
 	pop	hl
 	jp	main_loop
+
+
+

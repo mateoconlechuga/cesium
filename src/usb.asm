@@ -601,7 +601,7 @@ usb_var_size := $-3
 	pop	af
 	jr	nz,.notarchived
 	call	ti.ChkFindSym
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 .notarchived:
 
 	call	util_delay_one_second

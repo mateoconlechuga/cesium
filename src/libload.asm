@@ -23,7 +23,7 @@ libload_load:
 	djnz	.loop
 	jr	.try
 .inram:
-	call	ti.Arc_Unarc
+	call	cesium.Arc_Unarc
 .try:
 	ld	hl,libload_name
 	call	ti.Mov9ToOP1
