@@ -285,13 +285,6 @@ feature_item_delete:
 	set_inverted_text
 	print	string_delete_confirmation, 4, 228
 	set_normal_text
-.loop:
-	call	util_get_key
-	cp	a,ti.skZoom
-	jr	z,.delete
-	cp	a,ti.skGraph
-	jp	z,main_start
-	jr	.loop
 .delete:
 	ld	a,(current_screen)
 	cp	a,screen_apps
@@ -299,11 +292,25 @@ feature_item_delete:
 	cp	a,screen_usb
 	jp	z,usb_delete_file
 .delete_program:
+	ld	hl,(item_ptr)
+	ld	de,6
+	add	hl,de
+	ld	a,(hl)
+	inc	a
+	jp	z,main_start
+	call	.getinput
 	call	util_move_prgm_name_to_op1	; move the selected name to op1
 	call	ti.ChkFindSym
 	call	ti.DelVarArc
 	jr	.refresh
 .delete_app:
+	ld	hl,(item_ptr)
+	push	hl
+	ld	hl,(hl)
+	compare_hl_zero
+	pop	hl
+	jp	z,main_start
+	call	.getinput
 	ld	hl,(item_ptr)
 	ld	bc,0 - $100
 	add	hl,bc
@@ -318,6 +325,15 @@ feature_item_delete:
 	ld	a,return_settings
 	ld	(return_info),a
 	jp	main_find			; reload everything
+
+.getinput:
+	call	util_get_key
+	cp	a,ti.skZoom
+	ret	z
+	cp	a,ti.skGraph
+	jr	nz,.getinput
+	pop	hl
+	jp	main_start
 
 feature_item_attributes:
 	call	feature_check_valid
