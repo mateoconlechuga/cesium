@@ -213,7 +213,8 @@ execute_ti.basic_program:
 	call	nz,ti.RunIndicOff
 	call	ti.DisableAPD
 	call	hook_home.save
-	call	hook_home.set
+	ld	hl,hook_home
+	call	ti.SetHomescreenHook
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.in_ram
 	call	util_delete_temp_program_get_name
@@ -246,6 +247,9 @@ execute_ti.basic_program:
 	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
 	set	ti.cmdExec,(iy + ti.cmdFlags) 		; set these flags to execute basic program
 	res	ti.onInterrupt,(iy + ti.onFlags)
+	res	appInpPrmptDone,(iy + ti.apiFlg2)
+	ld	a,ti.kExtApps
+	ld	(ti.cxCurApp),a
 	ld	hl,return_basic
 	push	hl
 	sub	a,a

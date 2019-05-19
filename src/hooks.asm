@@ -218,25 +218,11 @@ hook_home:
 	db	$83
 	cp	a,3
 	ret	nz
-	bit	ti.progExecuting,(iy + ti.newDispF)
-	ret	nz
 	bit	appInpPrmptDone,(iy + ti.apiFlg2)
 	res	appInpPrmptDone,(iy + ti.apiFlg2)
 	ld	a,b
 	ld	b,0
-	jr	z,.restore_home_hooks
-.establish:
-	call	ti.ReloadAppEntryVecs
-	ld	hl,.vectors
-	call	ti.AppInit
-	or	a,1
-	ld	a,ti.kExtApps
-	ld	(ti.cxCurApp),a
-	ret
-.set:
-	ld	hl,hook_home
-	call	ti.SetHomescreenHook
-	jr	.establish
+	ret	nz
 .restore_home_hooks:
 	push	af
 	push	bc
