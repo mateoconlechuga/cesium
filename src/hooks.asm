@@ -8,7 +8,7 @@ hook_parser:
 .maybe_stop:
 	ld	a,hook_token_stop	; check if stop token
 	cp	a,b
-	ld	a,$ab
+	ld	a,ti.E_AppErr1
 	jp	z,ti.JError
 	xor	a,a
 	ret

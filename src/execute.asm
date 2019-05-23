@@ -239,10 +239,8 @@ execute_ti.basic_program:
 .in_rom:
 	call	ti.OP4ToOP1
 .in_ram:
-	ld	de,ti.appErr1
-	ld	hl,string_error_stop
-	ld	bc,string_error_stop.length
-	ldir
+	xor	a,a
+	ld	(ti.appErr1),a
 	set	ti.graphDraw,(iy + ti.graphFlags)
 	ld	hl,return_basic_error
 	ld	(persistent_sp_error),sp
