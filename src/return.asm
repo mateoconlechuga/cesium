@@ -1,6 +1,9 @@
 ; this program handles the return of execution, and any errors encountered
 
 return_basic_error:
+	ld	a,(ti.errNo)
+	cp	a,$ab
+	jp	z,return_basic				; if stop token, just ignore >.>
 return_asm_error:
 	call	ti.boot.ClearVRAM
 	ld	a,$2d

@@ -190,6 +190,7 @@ execute_program:
 	jp	nz,main_loop				; return on error
 	call	lcd_normal
 	ld	hl,return_asm_error
+	ld	(persistent_sp_error),sp
 	call	ti.PushErrorHandler
 	ld	(persistent_sp),sp
 execute_assembly_program:
