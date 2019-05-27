@@ -151,7 +151,7 @@ setting_up:
 	ld	(ix),a
 	ret
 .bottom:
-	ld	a,8
+	ld	a,7
 	jr	.done
 
 setting_left:
