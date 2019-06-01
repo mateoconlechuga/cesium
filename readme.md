@@ -38,7 +38,7 @@ Cesium provides a way to quickly jump to different programs in the program brows
 | <kbd>alpha</kbd>                  | Edit program options     |
 | <kbd>zoom</kbd>                   | Edit BASIC program       |
 | <kbd>y=</kbd>                     | Create new BASIC program |
-| <kbd>graph</kbd>                  | Rename program           |
+| <kbd>graph</kbd>                  | Rename program / appvar  |
 | <kbd>mode</kbd>                   | Enter settings menu      |
 | <kbd>up</kbd> / <kbd>down</kbd>   | Move places              |
 | <kbd>green letters</kbd>          | Alpha search for program |
@@ -100,7 +100,7 @@ Note: pressing <kbd>2nd</kbd> to back up RAM before running will only work if th
 * Archive programs.
 * Lock programs from editing.
 * Hide programs from normal <kbd>prgm</kbd> button (the TI-OS program menu).
-* Rename a program.
+* Rename a program / appvar.
 * Create a program.
 * Delete a program.
 * Edit a program directly.
