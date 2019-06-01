@@ -2,6 +2,7 @@
 
 ; safely unarchive a varible and restore screen mode
 ; in the case of a garbage collect
+; returns nz if okay, z if garbage collect
 ; derived from https://github.com/calc84maniac/tiboyce/blob/350e414dfc345d5e754eb87c1b87bc4e06131e71/tiboyce.asm#L468
 cesium.Arc_Unarc:
 	call	ti.ChkFindSym
@@ -23,16 +24,24 @@ cesium.Arc_Unarc:
 	call	ti.FindFreeArcSpot
 	jr	nz,.no_garbage_collect
 .garbage_collect:
+	xor	a,a
+	push	af
 	call	ti.boot.ClearVRAM
 	ld	a,$2d
 	ld	(ti.mpLcdCtrl),a
-	jp	ti.DrawStatusBar
+	call	ti.DrawStatusBar
+	jr	.archive_or_unarchive
 .no_garbage_collect:
+	xor	a,a
+	inc	a
+	push	af
+.archive_or_unarchive:
 	ld	hl,data_lcd_init
 	call	ti.PushErrorHandler
 	call	ti.Arc_Unarc
 	call	ti.PopErrorHandler
 data_lcd_init:
+	call	ti.boot.ClearVRAM
 	ld	a,ti.lcdBpp8
 	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ld	hl,ti.mpLcdPalette
@@ -53,6 +62,7 @@ data_lcd_init:
 	inc	hl
 	inc	b
 	jr	nz,.loop
+	pop	af
 	ret
 
 data_cesium_appvar:

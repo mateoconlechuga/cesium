@@ -491,7 +491,10 @@ feature_item_attributes:
 .archive:
 	pop	af
 	call	z,cesium.Arc_Unarc
-	jr	.return
+	jr	nz,.return
+	ld	a,return_settings
+	ld	(return_info),a
+	jp	main_find
 .unarchive:
 	pop	af
 	call	nz,cesium.Arc_Unarc
