@@ -15,8 +15,8 @@ feature_item_new:
 	jr	feature_item_rename.setup_name
 feature_item_rename:
 	ld	a,(current_screen)
-	cp	a,screen_usb
-	jp	z,main_loop
+	cp	a,screen_programs
+	jp	nz,main_loop
 	res	item_set_editor,(iy + item_flag)
 	set	item_renaming,(iy + item_flag)
 	ld	a,(prgm_type)
