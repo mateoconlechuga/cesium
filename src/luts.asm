@@ -10,7 +10,7 @@ lut_character_standard:
 	db	0,'WRMH',0,0   			; + - × ÷ ^ undefined
 	db	0,'Z'+ 1,'VQLG',0,0 		; (-) 3 6 9 ) TAN VARS undefined
 	db	0,'ZUPKFC',0   			; . 2 5 8 ( COS PRGM STAT
-	db	' YTOJEB',0,0			; 0 1 4 7 , SIN APPS XT?n undefined
+	db	' YTOJEBX',0			; 0 1 4 7 , SIN APPS XT?n undefined
 	db	'XSNIDA'			; STO LN LOG x2 x-1 MATH
 
 lut_character_numbers:
