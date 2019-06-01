@@ -15,18 +15,28 @@ hook_parser:
 
 hook_app_change:
 	db	$83
-	;ld	c,a			; huh
+	ld	c,a			; huh
 	ld	a,b
 	cp	a,ti.cxPrgmEdit		; only allow when editing
 	ld	b,a
 	ret	nz
 	ld	a,c
-	cp	a,ti.kEnter		; wut ti, this is how you run a program?
-	jr	nz,.wut
-	push	hl
-	call	ti.PopOP1
-	pop	hl
-	ret
+	cp	a,ti.cxMode
+	ret	z
+	cp	a,ti.cxFormat
+	ret	z
+	cp	a,ti.cxTableSet
+	ret	z
+	jr	.wut
+
+	;ld	a,c
+	;cp	a,ti.kEnter		; wut ti, this is how you run a program?
+	;jr	nz,.wut
+	;push	hl
+	;call	ti.PopOP1
+	;pop	hl
+	;ret
+
 .wut:
 	call	ti.CursorOff
 	call	ti.CloseEditEqu
