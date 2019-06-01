@@ -32,6 +32,8 @@ feature_item_rename:
 	cp	a,file_usb_dir
 	jp	z,main_loop
 .setup_name:
+	ld	a,NORMAL_CHARS
+	ld	(current_input_mode),a
 	call	.clear
 .cleared:
 	ld	a,(current_input_mode)
