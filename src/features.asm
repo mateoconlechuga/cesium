@@ -112,6 +112,7 @@ current_input_mode := $-1
 	jp	z,.cleared
 	ld	b,a
 	ld	hl,name_buffer + 1
+	ld	(name_buffer_ptr),hl
 .redraw:
 	push	bc
 	push	hl
