@@ -239,22 +239,27 @@ execute_ti.basic_program:
 .in_rom:
 	call	ti.OP4ToOP1
 .in_ram:
+	call	ti.ClrTxtShd
 	xor	a,a
+	ld	(ti.curRow),a
+	ld	(ti.curCol),a
 	ld	(ti.appErr1),a
 	set	ti.graphDraw,(iy + ti.graphFlags)
 	ld	hl,return_basic_error
 	ld	(persistent_sp_error),sp
 	call	ti.PushErrorHandler
 	ld	(persistent_sp),sp
-	res	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
+	set	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
 	set	ti.progExecuting,(iy + ti.newDispF)
 	res	7,(iy + $45)
 	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
 	set	ti.cmdExec,(iy + ti.cmdFlags) 		; set these flags to execute basic program
 	res	ti.onInterrupt,(iy + ti.onFlags)
 	res	appInpPrmptDone,(iy + ti.apiFlg2)
-	ld	a,ti.kExtApps
+	ld	a,ti.cxCmd
 	ld	(ti.cxCurApp),a
+	call	ti.SaveCmdShadow
+	call	ti.SaveShadow
 	ld	hl,return_basic
 	push	hl
 	sub	a,a
