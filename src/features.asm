@@ -1,5 +1,9 @@
 ; features offered by cesium
 
+NORMAL_CHARS    := 255
+NUMBER_CHARS    := 254
+LOWERCASE_CHARS := 253
+
 feater_setup_editor:
 	res	item_renaming,(iy + item_flag)
 	set	item_set_editor,(iy + item_flag)
@@ -16,7 +20,10 @@ feature_item_new:
 feature_item_rename:
 	ld	a,(current_screen)
 	cp	a,screen_programs
+	jr	z,.continue
+	cp	a,screen_appvars
 	jp	nz,main_loop
+.continue:
 	res	item_set_editor,(iy + item_flag)
 	set	item_renaming,(iy + item_flag)
 	ld	a,(prgm_type)
@@ -33,8 +40,10 @@ feature_item_rename:
 	ld	(lcd_x),hl
 	xor	a,a
 	ld	(cursor_position),a
-	dec	a
+	ld	a,NORMAL_CHARS
 	ld	(current_input_mode),a
+	ld	hl,lut_character_standard
+	ld	(.current_character_lut),hl
 name_buffer := ti.mpLcdCrsrImage + 1000
 	ld	hl,name_buffer + 1
 	ld	(name_buffer_ptr),hl
@@ -43,7 +52,7 @@ name_buffer := ti.mpLcdCrsrImage + 1000
 	cp	a,ti.skDel
 	jq	z,.backspace
 	cp	a,ti.skLeft
-	jr	z,.backspace
+	jq	z,.backspace
 	cp	a,ti.skAlpha
 	jp	z,.change_input_mode
 	cp	a,ti.skClear
@@ -69,12 +78,15 @@ name_buffer := ti.mpLcdCrsrImage + 1000
 cursor_position := $-1
 	cp	a,8
 	ret	z
-	push	de
-	ld	hl,(.current_character_lut)
-	ld	de,lut_character_numbers
-	compare_hl_de
-	pop	de
+	ld	a,(current_input_mode)
+	cp	a,NUMBER_CHARS
 	jr	nz,.got_name
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jr	nz,.got_name
+	ld	a,(current_input_mode)
+	cp	a,LOWERCASE_CHARS
+	ret	z
 	ld	a,(cursor_position)
 	or	a,a
 	ret	z
@@ -140,16 +152,27 @@ current_input_mode := $-1
 	ret
 
 .change_input_mode:
-	ld	hl,lut_character_standard
-	ld	e,255
 	ld	a,(current_input_mode)
-	cp	a,254
-	jr	z,.swap
-	dec	e
+	cp	a,NORMAL_CHARS
+	jr	z,.setnumbers
+	cp	a,NUMBER_CHARS
+	jr	z,.setlowercase
+.setnormal:
+	ld	a,NORMAL_CHARS
+	ld	hl,lut_character_standard
+	jr	.set_input_mode
+.setlowercase:
+	ld	a,(current_screen)
+	cp	a,screen_programs
+	jr	z,.setnormal
+	ld	a,LOWERCASE_CHARS
+	ld	hl,lut_character_lowercase
+	jr	.set_input_mode
+.setnumbers:
+	ld	a,NUMBER_CHARS
 	ld	hl,lut_character_numbers
-.swap:
+.set_input_mode:
 	ld	(.current_character_lut),hl
-	ld	a,e
 	ld	(current_input_mode),a
 	call	lcd_char
 	ld	hl,(lcd_x)

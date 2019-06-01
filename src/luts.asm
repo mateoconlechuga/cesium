@@ -7,17 +7,24 @@ lut_color_basic:
 	db	$ff,$18,$e0,$00,$f8,$24,$e3,$61,$09,$13,$e6,$ff,$b5,$6b,$6a,$4a
 
 lut_character_standard:
-	db	0,'WRMH',0,0   			; + - × ÷ ^ undefined
-	db	0,'Z'+ 1,'VQLG',0,0 		; (-) 3 6 9 ) TAN VARS undefined
+	db	0,'WRMH',0,0   			; + - × ÷ ^ undef
+	db	0,'Z'+ 1,'VQLG',0,0 		; (-) 3 6 9 ) TAN VARS undef
 	db	0,'ZUPKFC',0   			; . 2 5 8 ( COS PRGM STAT
-	db	' YTOJEBX',0			; 0 1 4 7 , SIN APPS XT?n undefined
+	db	' YTOJEBX',0			; 0 1 4 7 , SIN APPS XT?n undef
 	db	'XSNIDA'			; STO LN LOG x2 x-1 MATH
 
+lut_character_lowercase:
+	db	0,'wrmh',0,0   			; + - × ÷ ^ undef
+	db	0,'Z'+ 1,'vqlg',0,0 		; (-) 3 6 9 ) TAN VARS undef
+	db	0,'zupkfc',0   			; . 2 5 8 ( COS PRGM STAT
+	db	' ytojebX',0			; 0 1 4 7 , SIN APPS XT?n undef
+	db	'xsnida'			; STO LN LOG x2 x-1 MATH
+
 lut_character_numbers:
-	db	0,0,0,0,0,0,0   		; + - × ÷ ^ undefined
-	db	0,'369',0,0,0,0 		; (-) 3 6 9 ) TAN VARS undefined
+	db	0,0,0,0,0,0,0   		; + - × ÷ ^ undef
+	db	0,'369',0,0,0,0 		; (-) 3 6 9 ) TAN VARS undef
 	db	0,'258',0,0,0,0			; . 2 5 8 ( COS PRGM STAT
-	db	'0147',0,0,0,0,0		; 0 1 4 7 , SIN APPS XT?n undefined
+	db	'0147',0,0,0,0,0		; 0 1 4 7 , SIN APPS XT?n undef
 	db	0,0,0,0,0,0,0			; STO LN LOG x2 x-1 MATH
 
 lut_character_spacing:
@@ -284,6 +291,6 @@ lut_character_data:
 	db $00,$00,$00,$00,$18,$00,$00,$00	; .
 	db $0F,$0C,$0C,$0C,$EC,$6C,$3C,$1C	; .
 	db $78,$6C,$6C,$6C,$6C,$00,$00,$00	; .
-	db $7C,$0C,$7C,$60,$7C,$00,$00,$00	; .
-	db $FF,$E7,$D7,$F7,$F7,$F7,$C3,$FF	; (1)
-	db $FF,$E7,$DB,$DB,$C3,$DB,$DB,$FF	; (A)
+	db $ff,$ff,$e7,$fb,$e3,$db,$e3,$ff	; (a)
+	db $ff,$e7,$d7,$f7,$f7,$f7,$c3,$ff	; (1)
+	db $ff,$e7,$db,$db,$c3,$db,$db,$ff	; (A)

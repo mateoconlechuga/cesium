@@ -184,7 +184,7 @@ util_get_key:
 	ret
 
 util_setup_apd:
-	ld	hl,$bff
+	ld	hl,$b0ff
 	ld	(apd_timer),hl
 	ret
 
