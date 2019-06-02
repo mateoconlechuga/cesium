@@ -47,10 +47,13 @@ Cesium provides a way to quickly jump to different programs in the program brows
 Shortcuts are available from the TI-OS system anywhere. Simply hold the <kbd>on</kbd> key and press the corresponding button to trigger the action.
 Available actions:
 
-| Combination | Action                                                                     |
-|-------------|----------------------------------------------------------------------------|
-| <kbd>on</kbd> + <kbd>prgm</kbd> | Launch Cesium Application                              |
-| <kbd>on</kbd> + <kbd>stat</kbd> | Power down with password on wake (No Default Password) |
+| Combination | Action                                                                      |
+|-------------|-----------------------------------------------------------------------------|
+| <kbd>on</kbd> + <kbd>prgm</kbd>  | Launch Cesium Application                              |
+| <kbd>on</kbd> + <kbd>stat</kbd>  | Power down with password on wake (No Default Password) |
+| <kbd>on</kbd> + <kbd>graph</kbd> | Open label jumper in TI-Basic Editor                   |
+
+The label jumper is a handy feature for those editing Basic or ICE programs, and allows quick navigation to any label listed in the program.
 
 You can change the password from the settings menu (Accessed using <kbd>mode</kbd>), and pressing the <kbd>sto→</kbd> button. This will prompt for a new password which will be automatically saved. 
 *Note: There is no default password as before.*
