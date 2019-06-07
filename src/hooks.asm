@@ -393,11 +393,15 @@ hook_backup_ram:
 	jr	hook_get_key_none
 
 hook_execute_cesium:
+	call	ti.ReleaseBuffer
 	xor	a,a
 	ld	(ti.menuCurrent),a
 	call	ti.CursorOff
 	call	ti.RunIndicOff
 	di
+	res	2,(iy+$01)			; okay, I can get to Cesium now.... but the menu is all messed up!
+	ld	a,ti.kQuit
+	call	ti.NewContext0
 	ld	hl,data_string_cesium_name	; execute app
 	ld	de,$d0082e			; honestly no idea what this address is...
 	push	de
