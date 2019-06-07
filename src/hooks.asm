@@ -238,6 +238,9 @@ hook_show_labels:
 .loop:
 	call	ti.BufRight
 	jr	z,.getnumpages
+	ld	a,d
+	cp	a,ti.t2ByteTok
+	jr	z,.loop
 	ld	a,e
 	cp	a,ti.tLbl
 	jr	nz,.loop
@@ -260,6 +263,9 @@ hook_show_labels:
 	call	ti.BufRight
 	pop	bc
 	ret	z
+	ld	a,d
+	cp	a,ti.t2ByteTok
+	jr	z,.skiplabelsloop
 	ld	a,e
 	cp	a,ti.tLbl
 	jr	nz,.skiplabelsloop
@@ -283,6 +289,9 @@ hook_show_labels:
 	call	ti.BufRight
 	pop	hl
 	ret	z
+	ld	a,d
+	cp	a,ti.t2ByteTok
+	jr	z,.parse_labels
 	ld	a,e
 	cp	a,ti.tLbl
 	jr	nz,.parse_labels
