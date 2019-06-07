@@ -23,19 +23,19 @@ sprite_directory:
 	db 16,16
 	db $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
 	db $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
-	db $ff,$ff,$8b,$83,$83,$83,$83,$83,$83,$83,$82,$82,$83,$8b,$ff,$ff
-	db $ff,$a3,$ab,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$a3,$8b,$ff
-	db $83,$ab,$cc,$a3,$a3,$a3,$a3,$a2,$a2,$82,$82,$82,$8b,$ab,$83,$8b
-	db $83,$cd,$a3,$a2,$a2,$a2,$82,$82,$82,$82,$82,$82,$82,$83,$ac,$82
-	db $83,$ee,$f5,$ed,$ed,$ed,$ed,$ed,$ed,$ed,$ec,$ec,$ec,$ec,$ed,$82
-	db $83,$ed,$ed,$ed,$ec,$ec,$ec,$ec,$cc,$cc,$cc,$cb,$cb,$cb,$ec,$82
-	db $83,$ed,$ed,$ec,$ec,$ec,$ec,$cc,$cc,$cb,$cb,$cb,$cb,$cb,$ec,$82
-	db $83,$ed,$ec,$ec,$ec,$cc,$cc,$cc,$cb,$cb,$cb,$cb,$cb,$c3,$cc,$82
-	db $83,$ed,$ec,$cc,$cc,$cc,$cb,$cb,$cb,$cb,$cb,$c3,$c3,$c3,$cc,$82
-	db $83,$ed,$ec,$cc,$cb,$cb,$cb,$cb,$cb,$c3,$c3,$c3,$c3,$c3,$cc,$82
-	db $82,$ed,$cc,$cb,$cb,$cb,$cb,$cb,$c3,$c3,$c3,$c3,$c3,$c2,$cc,$82
-	db $82,$cd,$ed,$ed,$ec,$ec,$ec,$cc,$cc,$cc,$cc,$cc,$cc,$cc,$cc,$82
-	db $8b,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$82,$8a
+	db $ed,$c4,$c4,$c4,$c4,$cc,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
+	db $c4,$f7,$f7,$f7,$f7,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$cc,$ff,$ff
+	db $c4,$f7,$ed,$ed,$f6,$f7,$f7,$f7,$f7,$f7,$f7,$f7,$ff,$c4,$fe,$ff
+	db $c4,$f7,$ee,$ee,$ee,$ee,$ee,$ee,$ee,$ed,$ed,$ed,$f6,$c4,$d6,$ff
+	db $c4,$f7,$ee,$ee,$ee,$ee,$ee,$ee,$cc,$c4,$c4,$c4,$c4,$c4,$c4,$cc
+	db $c4,$f7,$ee,$ed,$ed,$ed,$ed,$cc,$ed,$f7,$f7,$f7,$f7,$f7,$f7,$c4
+	db $c4,$f6,$cc,$c4,$c4,$c4,$c4,$ed,$ee,$ee,$ee,$ee,$ee,$ee,$f6,$cc
+	db $c4,$ee,$cc,$f7,$f7,$f7,$f7,$ee,$ee,$ee,$ee,$ee,$ee,$f6,$ed,$d5
+	db $c4,$ed,$ed,$f7,$ee,$ee,$ee,$ee,$ee,$ee,$ee,$ee,$ee,$f6,$cc,$fe
+	db $cc,$cc,$ee,$f6,$ee,$ee,$ee,$ee,$ee,$ee,$ee,$ee,$f6,$ee,$cc,$ff
+	db $cc,$c4,$f7,$f6,$ef,$ef,$ef,$ef,$ef,$ef,$ef,$ef,$f7,$ed,$d5,$ff
+	db $cc,$cc,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$c4,$cc,$fe,$ff
+	db $d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$d6,$ff,$ff
 	db $ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff,$ff
 
 sprite_file_asm:
@@ -244,19 +244,19 @@ sprite_battery:
 sprite_directory_mask:
 	db $ff,$ff
 	db $ff,$ff
-	db $c0,$03
-	db $80,$01
+	db $03,$ff
+	db $00,$03
+	db $00,$01
+	db $00,$01
 	db $00,$00
 	db $00,$00
 	db $00,$00
 	db $00,$00
 	db $00,$00
-	db $00,$00
-	db $00,$00
-	db $00,$00
-	db $00,$00
-	db $00,$00
-	db $00,$00
+	db $00,$01
+	db $00,$01
+	db $00,$01
+	db $00,$03
 	db $ff,$ff
 
 sprite_file_mask:

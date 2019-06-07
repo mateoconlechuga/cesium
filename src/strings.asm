@@ -13,7 +13,7 @@ string_ice:
 string_ice_source:
 	db	'ICE S',0
 string_directory:
-	db	'Dir',0
+	db	'Folder',0
 string_usb:
 	db	'USB',0
 string_basic:
