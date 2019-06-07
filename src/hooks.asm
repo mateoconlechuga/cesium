@@ -409,7 +409,9 @@ hook_execute_cesium:
 	ld	de,ti.progToEdit		; copy it here just to be safe
 	ldir
 	ld	a,ti.kExtApps
-	jp	ti.NewContext
+	call	ti.NewContext0
+	ld	a,ti.kClear
+	jp	ti.JForceCmd
 
 hook_password:
 	ld	hl,data_cesium_appvar

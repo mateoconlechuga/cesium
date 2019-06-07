@@ -30,6 +30,10 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	call	ti.EnableAPD				; restore apd
 	im	1
 	ei
+	ld	a,ti.kQuit
+	call	ti.NewContext0
+	xor	a,a
+	ld	(ti.menuCurrent),a
 	ld	a,ti.kClear
 	jp	ti.JForceCmd				; exit the application for good
 end relocate
