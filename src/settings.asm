@@ -48,12 +48,7 @@ settings_create_default:
 	ld	de,setting_editor_name
 	ld	bc,settings_editor_default_prgm_name.length
 	ldir
-	ld	hl,settings_appvar_size + 2	; increment for safety
-	push	hl
-	call	ti.EnoughMem
-	pop	hl
-	jp	c,exit_full
-	call	ti.CreateAppVar
+	call	settings_appvar_create_if_not_exist.make
 	inc	de
 	inc	de
 	ld	hl,settings_data
@@ -61,14 +56,28 @@ settings_create_default:
 	ldir
 	jq	settings_load
 
+settings_appvar_create_if_not_exist:
+	ld	hl,settings_appvar
+	call	util_find_var			; lookup the settings appvar
+	ret	nc
+.make:
+	ld	hl,settings_appvar_size + 60	; increment for safety
+	push	hl
+	call	ti.EnoughMem
+	pop	hl
+	jp	c,exit_full
+	jp	ti.CreateAppVar
+
 settings_save:
+	call	settings_appvar_create_if_not_exist
+.save:
 	ld	hl,settings_appvar
 	call	util_find_var
 	call	ti.ChkInRam
 	push	af
 	call	nz,cesium.Arc_Unarc
 	pop	af
-	jr	nz,settings_save
+	jr	nz,.save
 	ld	a,(iy + settings_flag)
 	ld	(setting_config),a
 	inc	de
