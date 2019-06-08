@@ -309,7 +309,7 @@ find_usb_directory_name:
 	dl	.ptr bswap 3
 	db	0,0,$ff
 
-	db	"SPPA"
+	db	"sppA"
 find_application_directory_name:
 	db	4
 .ptr:
