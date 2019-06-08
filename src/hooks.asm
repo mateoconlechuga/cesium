@@ -399,7 +399,9 @@ hook_execute_cesium:
 	call	ti.CursorOff
 	call	ti.RunIndicOff
 	di
-	res	2,(iy+$01)			; okay, I can get to Cesium now.... but the menu is all messed up!
+	res	2,(iy+$01)			; reset the edit buffer (previously released)
+	ld	hl,$d02661			; I have absolutely no idea what this is
+	res	7,(hl)
 	ld	a,ti.kQuit
 	call	ti.NewContext0
 	ld	hl,data_string_cesium_name	; execute app
