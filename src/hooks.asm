@@ -201,6 +201,17 @@ hook_show_labels:
 	call	ti.PutMap
 	ld	a,1
 	ld	(ti.curCol),a
+.backup:
+	call	ti.BufLeft
+	jr	z,.done
+	ld	a,d
+	or	a,a
+	jr	nz,.backup
+	ld	a,e
+	cp	a,$3f
+	jr	nz,.backup
+	call	ti.BufRight
+.done:
 	call	ti.DispEOW
 	call	ti.CursorOn
 	call	ti.DrawStatusBar
