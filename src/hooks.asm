@@ -208,7 +208,7 @@ hook_show_labels:
 	or	a,a
 	jr	nz,.backup
 	ld	a,e
-	cp	a,$3f
+	cp	a,ti.tEnter
 	jr	nz,.backup
 	call	ti.BufRight
 .done:
@@ -301,8 +301,8 @@ hook_show_labels:
 	pop	hl
 	ret	z
 	ld	a,d
-	cp	a,ti.t2ByteTok
-	jr	z,.parse_labels
+	or	a,a
+	jr	nz,.parse_labels
 	ld	a,e
 	cp	a,ti.tLbl
 	jr	nz,.parse_labels
@@ -316,7 +316,13 @@ hook_show_labels:
 	jr	z,.added_label
 	cp	a,ti.tEnter
 	jr	z,.added_label
+	ld	a,d
+	or	a,a
+	jr	z,.single
 	ld	(hl),a
+	inc	hl
+.single:
+	ld	(hl),e
 	inc	hl
 	jr	.add_label
 .added_label:
@@ -330,14 +336,44 @@ hook_show_labels:
 	call	ti.PutC
 	ld	hl,label_name
 	push	hl
-	call	ti.PutS
+.displayline:
+	ld	a,(hl)
+	or	a,a
+	jr	z,.leftedge
+	inc	hl
+	call	ti.Isa2ByteTok
+	ld	d,0
+	jr	nz,.singlebyte
+.multibyte:
+	ld	d,a
+	ld	e,(hl)
+	inc	hl
+	jr	.getstring
+.singlebyte:
+	ld	e,a
+.getstring:
+	push	hl
+	call	ti.GetTokString
+	ld	b,(hl)
+	inc	hl
+.loopdisplay:
+	ld	a,(ti.curCol)
+	cp	a,$19
+	jr	z,.leftedge
+	ld	a,(hl)
+	inc	hl
+	call	ti.PutC
+	djnz	.loopdisplay
+	pop	hl
+	jr	.displayline
+.leftedge:
 	ld	a,(ti.curRow)
 	inc	a
 	ld	(ti.curRow),a
 	cp	a,10
 	pop	hl
 	ret	z
-	jr	.parse_labels
+	jp	.parse_labels
 
 .computepageoffsethl:
 	push	bc

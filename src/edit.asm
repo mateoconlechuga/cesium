@@ -154,7 +154,7 @@ error_offset := $-3
 .goto_new_line:
 	ld	hl,(ti.editCursor)
 	ld	a,(hl)
-	cp	a,$3f
+	cp	a,ti.tEnter
 	jr	z,.goto_new_line_back
 .loop:
 	ld	a,(hl)
@@ -170,7 +170,7 @@ error_offset := $-3
 	pop	de
 	jr	z,.goto_new_line_back
 	ld	a,d
-	cp	a,$3f
+	cp	a,ti.tEnter
 	jr	z,.goto_new_line_next
 .goto_new_line_back:
 	call	ti.BufLeft
