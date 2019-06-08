@@ -393,13 +393,14 @@ hook_backup_ram:
 	jr	hook_get_key_none
 
 hook_execute_cesium:
+	ld	iy,ti.flags
 	call	ti.ReleaseBuffer
 	xor	a,a
 	ld	(ti.menuCurrent),a
 	call	ti.CursorOff
 	call	ti.RunIndicOff
 	di
-	res	2,(iy+$01)			; reset the edit buffer (previously released)
+	res	2,(iy + 1)			; reset the edit buffer (previously released)
 	ld	hl,$d02661			; I have absolutely no idea what this is
 	res	7,(hl)
 	ld	a,ti.kQuit
