@@ -441,19 +441,20 @@ hook_backup_ram:
 
 hook_execute_cesium:
 	ld	iy,ti.flags
-	call	ti.ReleaseBuffer
-	xor	a,a
-	ld	(ti.menuCurrent),a
 	call	ti.CursorOff
 	call	ti.RunIndicOff
 	di
-	res	2,(iy + 1)			; reset the edit buffer (previously released)
-	ld	hl,$d02661			; I have absolutely no idea what this is
-	res	7,(hl)
+	call	ti.ClrGetKeyHook
+	ld	a,ti.kQuit			; force out of whatever we are in
+	call	ti.PullDownChk			; this is the only way to fix randInt(!
 	ld	a,ti.kQuit
 	call	ti.NewContext0
+	call	ti.CursorOff
+	call	ti.RunIndicOff
+	xor	a,a
+	ld	(ti.menuCurrent),a		; make sure we aren't on a menu
 	ld	hl,data_string_cesium_name	; execute app
-	ld	de,$d0082e			; honestly no idea what this address is...
+	ld	de,$d0082e			; I have absolutely no idea what this is
 	push	de
 	ld	bc,8
 	push	bc
