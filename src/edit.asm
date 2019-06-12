@@ -95,6 +95,7 @@ edit_basic_program:
 .not_archived:
 	ld	hl,hook_app_change
 	call	ti.SetAppChangeHook
+	call	util_setup_shortcuts
 	xor	a,a
 	ld	(ti.menuCurrent),a
 	call	ti.CursorOff
