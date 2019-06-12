@@ -445,10 +445,16 @@ hook_execute_cesium:
 	call	ti.RunIndicOff
 	di
 	call	ti.ClrGetKeyHook
-	ld	a,ti.kQuit			; force out of whatever we are in
-	call	ti.PullDownChk			; this is the only way to fix randInt(!
+	ld	a,(ti.menuCurrent)
+	cp	a,ti.kWindow
+	jr	nz,.notinwindow
+	ld	a,ti.kClear
+	call	ti.PullDownChk			; exit from alpha + function menus
+.notinwindow:
 	ld	a,ti.kQuit
-	call	ti.NewContext0
+	call	ti.PullDownChk			; exit from randInt( and related menus
+	ld	a,ti.kQuit
+	call	ti.NewContext0			; just attempt a cleanup now
 	call	ti.CursorOff
 	call	ti.RunIndicOff
 	xor	a,a

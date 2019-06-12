@@ -247,9 +247,9 @@ util_prgm_ptr_to_op1:
 	ret
 
 util_setup_shortcuts:
-	ld	hl,hook_get_key
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	ret	z
+	ld	hl,hook_get_key
 	jp	ti.SetGetCSCHook
 
 util_backup_prgm_name:
