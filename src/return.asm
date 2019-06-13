@@ -1,6 +1,8 @@
 ; this program handles the return of execution, and any errors encountered
 
 return_basic_error:
+	xor	a,a
+	ld	(ti.menuCurrent),a
 	ld	a,(ti.errNo)
 	cp	a,ti.E_AppErr1
 	jp	z,return_basic				; if stop token, just ignore >.>
