@@ -65,6 +65,7 @@ util_show_time:
 	set_cursor clock_x, clock_y
 	call	util_string_inverted
 	restore_cursor
+	res	ti.useTokensInString,(iy + ti.clockFlags)
 	ret
 
 util_check_free_ram:
