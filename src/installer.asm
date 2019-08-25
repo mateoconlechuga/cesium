@@ -24,6 +24,14 @@ installer_start:
 	installer_execute_cesium.run
 
 relocate installer_execute_cesium, ti.mpLcdCrsrImage
+	call	ti.ClrScrn
+	call	ti.HomeUp
+	ld	hl,str_cesium_installed
+	call	ti.PutS
+	call	ti.GetKey
+	call	ti.NewLine
+	call	ti.NewLine
+
 	ld	hl,str_delete_installer
 	call	ti.PutS
 	call	ti.NewLine
@@ -54,11 +62,6 @@ relocate installer_execute_cesium, ti.mpLcdCrsrImage
 	jp	c,ti.ErrMemory
 
 	call	ti.ClrScrn
-	call	ti.HomeUp
-	ld	hl,str_cesium_installed
-	call	ti.PutS
-	call	ti.GetKey
-	call	ti.ClrScrn
 	jp	ti.HomeUp
 
 str_delete_installer:
@@ -73,7 +76,7 @@ str_cesium_installed:
 if config_english
 	db 'Installed in ',$C1,'apps] menu.',0
 else
-	db 'Installé dans les apps.',0
+	db 'Install',$96,' dans les apps.',0
 end if;
 
 end relocate
