@@ -114,10 +114,7 @@ macro app_private
 		dec	hl
 		dec	hl
 		push	hl
-		ld	a,$d1
-		ld	mb,a
-		ld.sis	sp,$987e
-		call.is	.unlock and $ffff
+		call	.unlock
 		pop	hl
 		ld	de,(app.end)
 		or	a,a
@@ -161,34 +158,45 @@ macro app_private
 		inc	hl
 		jr	.relocate
 .endrelocate:
-		call.is	.lock and $ffff
-		ld	a,$d0
-		ld	mb,a
+		call	.lock
 		xor	a,a
 		ret
 
-		assume	adl = 0
-
 .unlock:
+		ld	bc,$24
 		ld	a,$8c
-		out0	($24),a
-		ld	c,4
-		in0	a,(6)
-		or	c
-		out0	(6),a
-		out0	($28),c
-		ret.l
+		call	.write
+		ld	bc,$06
+		call	.read
+		or	a,4
+		call	.write
+		ld	bc,$28
+		ld	a,$4
+		jq	.write
 .lock:
-		xor	a
-		out0	($28),a
-		in0	a,(6)
+		ld	bc,$28
+		xor	a,a
+		call	.write
+		ld	bc,$06
+		call	.read
 		res	2,a
-		out0	(6),a
+		call	.write
+		ld	bc,$24
 		ld	a,$88
-		out0	($24),a
-		ret.l
+		jq	.write
 
-		assume adl = 1
+.write:
+		ld	de,$C979ED
+		ld	hl,ti.heapBot - 3
+		ld	(hl),de
+		jp	(hl)
+
+.read:
+		ld	de,$C978ED
+		ld	hl,ti.heapBot - 3
+		ld	(hl),de
+		jp	(hl)
+
 .continue:
 	end macro
 

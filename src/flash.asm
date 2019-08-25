@@ -32,7 +32,7 @@ flash_unlock:
 	jp	write_port
 
 flash_lock:
-	ld	bc,$24
+	ld	bc,$28
 	xor	a,a
 	call	write_port
 	ld	bc,$06
