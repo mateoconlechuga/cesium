@@ -200,6 +200,13 @@ current_input_mode := $-1
 	jp	nc,.get_name			; check if name already exists
 	ld	hl,name_buffer
 	call	ti.Mov9ToOP1
+	ld	a,(ti.OP1 + 1)			; check if hidden name already exists
+	sub	a,64
+	ld	(ti.OP1 + 1),a
+	call	ti.ChkFindSym
+	jp	nc,.get_name			; check if name already exists
+	ld	hl,name_buffer
+	call	ti.Mov9ToOP1
 	ld	a,ti.ProgObj
 	or	a,a
 	sbc	hl,hl
@@ -209,22 +216,23 @@ current_input_mode := $-1
 	call	util_move_prgm_name_to_op1	; move the current name to op1
 	ld	hl,cesium.Arc_Unarc
 	ld	(.jump_smc),hl
-	ld	de,ti.OP1
-	ld	a,(de)
 	ld	hl,name_buffer
-	ld	(hl),a
-	inc	de
-	inc	hl
-	ld	a,(de)
-	cp	a,65
-	jr	nc,.not_hidden			; check if program is hidden
-	ld	a,(hl)
-	sub	a,64
-	ld	(hl),a
-.not_hidden:
+	ld	de,ti.OP1
+	ldi
 	call	ti.PushOP1
 	ld	hl,name_buffer
 	call	ti.Mov9ToOP1
+	call	ti.ChkFindSym
+	push	af
+	call	ti.PopOP1
+	pop	af
+	jp	nc,.get_name			; check if name already exists
+	call	ti.PushOP1
+	ld	hl,name_buffer
+	call	ti.Mov9ToOP1
+	ld	a,(ti.OP1 + 1)			; check if hidden name already exists
+	sub	a,64
+	ld	(ti.OP1 + 1),a
 	call	ti.ChkFindSym
 	push	af
 	call	ti.PopOP1
