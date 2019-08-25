@@ -24,6 +24,10 @@ return_asm_error:
 	ld	a,(hl)					; check if correct program
 	cp	a,ti.ProtProgObj
 	jp	z,.only_allow_quit
+	ld	b,a
+	ld	a,(ti.basic_prog)
+	cp	a,b
+	jp	nz,.only_allow_quit
 	xor	a,a
 	ld	(ti.curCol),a
 	ld	a,2
@@ -74,7 +78,7 @@ return_asm_error:
 	ld	(ti.fillRectColor),hl
 	inc	hl
 	ld	de,25
-	ld	bc,(40 shl 8) or 96
+	ld	bc,(55 shl 8) or 96
 	call	ti.FillRect
 	pop	hl
 	set	ti.textInverse,(iy + ti.textFlags)
