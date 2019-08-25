@@ -7,29 +7,41 @@ flash_code_copy:
 
 relocate flash_code, ti.mpLcdCrsrImage
 
-assume	adl = 0
+write_port:
+	ld	de,$C979ED
+	ld	hl,ti.heapBot - 3
+	ld	(hl),de
+	jp	(hl)
 
-; modifies - a,c
+read_port:
+	ld	de,$C978ED
+	ld	hl,ti.heapBot - 3
+	ld	(hl),de
+	jp	(hl)
 
 flash_unlock:
+	ld	bc,$24
 	ld	a,$8c
-	out0	($24),a
-	ld	c,4
-	in0	a,(6)
-	or	c
-	out0	(6),a
-	out0	($28),c
-	ret.l
+	call	write_port
+	ld	bc,$06
+	call	read_port
+	or	a,4
+	call	write_port
+	ld	bc,$28
+	ld	a,$4
+	jp	write_port
 
 flash_lock:
-	xor	a
-	out0	($28),a
-	in0	a,(6)
+	ld	bc,$24
+	xor	a,a
+	call	write_port
+	ld	bc,$06
+	call	read_port
 	res	2,a
-	out0	(6),a
+	call	write_port
+	ld	bc,$24
 	ld	a,$88
-	out0	($24),a
-	ret.l
+	jp	write_port
 
 assume	adl = 1
 

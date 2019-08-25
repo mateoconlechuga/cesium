@@ -159,18 +159,11 @@ macro draw_highlightable_option? Lx, Ty, index
 end macro
 
 macro flash_unlock_m
-	di
-	ld	a,$e3
-	ld	mb,a
-	ld.sis	sp,$0bfc
-	call.is	flash_unlock and $ffff
+	call	flash_unlock
 end macro
 
 macro flash_lock_m
-	di
-	call.is	flash_lock and $ffff
-	ld	a,$d0
-	ld	mb,a
+	call	flash_lock
 end macro
 
 ; general
