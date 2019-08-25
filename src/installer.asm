@@ -53,15 +53,13 @@ relocate installer_execute_cesium, ti.mpLcdCrsrImage
 	call	ti.EnoughMem
 	jp	c,ti.ErrMemory
 
-	ld	hl,str_cesium_name_installer
-	ld	de,ti.progToEdit
-	ld	bc,8
-	ldir
-	ld	a,ti.kExtApps
-	jp	ti.NewContext
-
-str_cesium_name_installer:
-	db	cesium_name,0
+	call	ti.ClrScrn
+	call	ti.HomeUp
+	ld	hl,str_cesium_installed
+	call	ti.PutS
+	call	ti.GetKey
+	call	ti.ClrScrn
+	jp	ti.HomeUp
 
 str_delete_installer:
 if config_english
@@ -71,6 +69,12 @@ else
 	db 'Suppr. l',$27,'installateur?', 0
 	db 'suppr - oui',0
 end if
+str_cesium_installed:
+if config_english
+	db 'Installed in ',$C1,'apps] menu.',0
+else
+	db 'Installé dans les apps.',0
+end if;
 
 end relocate
 
@@ -80,3 +84,4 @@ if config_english
 else
 	db 'Cesium d',$96,'j',$8f,' install',$96,',     veuillez supprimer.',0
 end if;
+
