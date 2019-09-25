@@ -216,8 +216,8 @@ current_input_mode := $-1
 	call	util_move_prgm_name_to_op1	; move the current name to op1
 	ld	hl,cesium.Arc_Unarc
 	ld	(.jump_smc),hl
-	ld	hl,name_buffer
-	ld	de,ti.OP1
+	ld	de,name_buffer
+	ld	hl,ti.OP1
 	ldi
 	call	ti.PushOP1
 	ld	hl,name_buffer
@@ -239,8 +239,10 @@ current_input_mode := $-1
 	pop	af
 	jp	nc,.get_name			; check if name already exists
 .locate_program:
+	call	ti.PushOP1
 	call	ti.ChkFindSym
 	call	ti.ChkInRam
+	call	ti.PopOP1
 	jr	nz,.in_archive
 	ld	hl,$f8				; _ret
 	ld	(.jump_smc),hl
