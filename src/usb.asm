@@ -1,12 +1,54 @@
 ; routines for accessing flash drive data on usb
 
+usb_device_ptr:
+	rl	0
+usb_device_valid:
+	rb	0
+msd_sector_buffer:
+	rb	512
+msd_struct:
+	rb	30
+fat_partitions:
+	rb	80
+fat_path:
+	rb	260		; current path in fat filesystem
+fat_sector:
+	rb	512
+
+usb_handle_event:
+	ld	iy,0
+	add	iy,sp
+	ld	a,(iy + 3)
+	cp	a,4
+	jq	nz,.notenabled
+	ld	hl,(iy + 6)
+	ld	(usb_device_ptr),hl
+	ld	a,$ff
+	ld	(usb_device_valid),a
+.notenabled:
+	cp	a,1
+	jq	z,.invalidate
+	cp	a,3
+	jq	z,.invalidate
+	ld	iy,ti.flags
+	ret
+.invalidate:
+	xor	a,a
+	ld	(usb_device_valid),a			; if a disconnect event, go home
+	ld	iy,ti.flags
+	ret
+
 usb_init:
 	xor	a,a
 	sbc	hl,hl
+	ld	(usb_device_valid),a
 	ld	(usb_selection),a
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
-	ld	(usb_fat_path),a			; root path = "/"
+	ld	hl,fat_path
+	ld	(hl),'/'			; root path = "/"
+	inc	hl
+	ld	(hl),a
 
 	call	gui_draw_core
 	ld	iy,ti.flags
@@ -14,61 +56,66 @@ usb_init:
 	ld	iy,ti.flags
 	jq	nz,usb_not_available
 
-	ld	bc,usb_msdenv
+	ld	bc,12
 	push	bc
-	call	ti._setjmp
-	pop	bc
-	compare_hl_zero
-	jr	z,usb_no_error
-usb_xfer_error:						; if we are here, usb broke somehow
-	ld	iy,ti.flags
-	jp	main_find
-usb_no_error:
-	ld	bc,usb_msdenv
+	ld	c,0
 	push	bc
-	call	lib_msd_SetJmpBuf			; set the error handler callback
+	ld	bc,usb_device_ptr
+	push	bc
+	ld	bc,usb_handle_event
+	push	bc
+	call	lib_usb_Init
 	ld	iy,ti.flags
-	pop	bc
-	ld	bc,5000					; 500 milliseconds for timeout
+	pop	bc,bc,bc,bc
+	ld	a,l
+	or	a,a
+	jq	nz,usb_not_available			; probably not the right thing to go to
+
+.notyetvalid:
+	call	lib_usb_WaitForInterrupt
+	ld	a,l
+	or	a,a
+	jq	nz,usb_detach				; if error, detach
+
+	ld	a,(usb_device_valid)
+	or	a,a
+	jq	z,.notyetvalid
+
+	ld	bc,msd_sector_buffer
+	push	bc
+	ld	bc,(usb_device_ptr)
+	push	bc
+	ld	bc,msd_struct
 	push	bc
 	call	lib_msd_Init
 	ld	iy,ti.flags
-	pop	bc
+	pop	bc,bc,bc
+	ld	a,l
 	or	a,a
-	jq	nz,usb_not_detected			; if failed to init, retry a few times...
+	jq	nz,usb_invaliddevice
 
-	ld	bc,usb_sector
+.initedmsd:
+	ld	bc,8			; gets up to 8 available partitions on the device
 	push	bc
-	call	lib_fat_SetBuffer			; set the buffer used for reading sectors
+	ld	bc,fat_partition_num
+	push	bc
+	ld	bc,fat_partitions
+	push	bc
+	ld	bc,msd_struct
+	push	bc
+	call	lib_fat_Find
 	ld	iy,ti.flags
-	pop	bc
-
-	ld	bc,8
-	push	bc
-	ld	bc,usb_fat_partitions
-	push	bc
-	call	lib_fat_Find				; get up to 8 available partitions on the device
-	ld	iy,ti.flags
-	pop	bc
-	pop	bc
+	pop	bc,bc,bc,bc
+	ld	a,0
+fat_partition_num := $-1
 	or	a,a
+	jq	z,usb_invaliddevice
 	sbc	hl,hl
 	ld	l,a
 	ld	(number_of_items),hl
-	or	a,a
-	jr	z,.no_partitions_found
 	dec	a
 	jr	nz,select_valid_partition		; if there's only one partion, select it
 	jr	select_valid_partition.selected_partition
-
-.no_partitions_found:
-	call	lib_msd_Deinit				; end usb handling
-	ld	iy,ti.flags
-	call	usb_invalid_gui
-	print	string_usb_no_partitions, 10, 30
-	print	string_insert_fat32, 10, 50
-	print	string_usb_info_5, 10, 90
-	jq	usb_not_available.wait
 
 select_valid_partition:
 	call	view_usb_partitions
@@ -94,16 +141,7 @@ usb_selection := $ - 1
 	or	a,a
 	sbc	hl,hl
 	ld	l,a
-	push	hl
-	ld	bc,usb_fat_partitions
-	push	bc
-	call	lib_fat_Select				; select the desired partition
-	ld	iy,ti.flags
-	pop	bc
-	pop	bc
-	call	lib_fat_Init				; attempt to initialize the filesystem
-	ld	iy,ti.flags
-	or	a,a
+
 	jr	z,.fat_init_completed
 
 	push	af					; check for an error during initialization
@@ -122,34 +160,6 @@ usb_selection := $ - 1
 	ld	(current_screen),a
 	call	usb_get_directory_listing		; start with root directory
 	jp	main_start
-
-usb_detach_only:
-	call	lib_fat_Deinit
-	ld	iy,ti.flags
-	call	lib_msd_Deinit
-	ld	iy,ti.flags
-	call	libload_unload
-	ld	iy,ti.flags
-	ret
-
-usb_detach:						; detach the fat library hooks
-	call	usb_detach_only
-.home:
-	ld	a,screen_programs
-	ld	(current_screen),a
-	ld	a,return_settings
-	ld	(return_info),a
-	or	a,a
-	sbc	hl,hl
-	ld	(scroll_amount),hl
-	bit	setting_special_directories,(iy + settings_flag)
-	jr	z,.no_apps_dir
-	inc	hl
-.no_apps_dir:
-	ld	(current_selection_absolute),hl
-	ld	a,l
-	ld	(current_selection),a
-	jp	main_find
 
 usb_partition_move_up:
 	ld	hl,select_valid_partition
@@ -176,66 +186,6 @@ usb_partition_move_down:
 
 ; organizes directories first then files
 usb_get_directory_listing:
-	ld	a,(usb_fat_path)
-	or	a,a
-	jr	nz,.not_root				; if at root show exit directory
-
-.not_root:
-	ld	bc,0					; get directories first
-	push	bc
-	ld	b,2					; allow for maximum of 512 directories
-	push	bc
-	ld	bc,1					; FAT_DIR
-	push	bc
-	ld	bc,item_location_base
-	push	bc
-	ld	bc,usb_fat_path				; path
-	push	bc
-	call	lib_fat_DirList
-	ld	iy,ti.flags
-	ld	(number_of_items),hl			; number of items in directory
-	pop	bc
-	pop	bc
-	pop	bc
-	pop	bc
-	pop	bc
-	push	hl
-	pop	de
-	compare_hl_zero
-	ld	hl,item_location_base
-	jr	z,.no_directories
-	ld	bc,16
-.get_offset:						; move past directory entries
-	add	hl,bc					; sure, this could be better but I'm lazy
-	dec	de
-	ld	a,e
-	cp	a,d
-	jr	nz,.get_offset
-	jr	.find_files
-.no_directories:
-	ld	a,(usb_fat_path)
-	or	a,a
-	jp	nz,usb_detach				; if there are no directories but our path isn't root, the filesystem must be broken
-.find_files:
-	ld	bc,0					; now get files in directory
-	push	bc
-	ld	b,3					; allow for maximum of 512 directories
-	push	bc
-	ld	b,0
-	push	bc
-	push	hl					; offset past directories
-	ld	bc,usb_fat_path				; path
-	push	bc
-	call	lib_fat_DirList
-	ld	iy,ti.flags
-	ld	bc,(number_of_items)
-	add	hl,bc
-	ld	(number_of_items),hl			; number of items in directory
-	pop	bc
-	pop	bc
-	pop	bc
-	pop	bc
-	pop	bc
 	ret
 
 usb_get_tiprgm_info:
@@ -246,7 +196,7 @@ usb_get_tiprgm_info:
 	; attempt to read language from 8xp
 	; also read sprite if possible
 
-	ld	hl,usb_sector + 74
+	ld	hl,fat_sector + 74
 	ld	a,(hl)
 	cp	a,ti.tExtTok			; is it an assembly program
 	jr	z,.check_if_is_asm
@@ -295,7 +245,7 @@ usb_get_tiprgm_info:
 	push	de
 	ld	de,lut_basic_icon
 	ld	b,6
-	ld	hl,usb_sector + 74
+	ld	hl,fat_sector + 74
 .verify_icon:
 	ld	a,(de)
 	cp	a,(hl)
@@ -337,7 +287,7 @@ usb_get_tiprgm_info:
 .file_uneditable:
 	push	hl
 	push	de
-	ld	hl,usb_sector + 76
+	ld	hl,fat_sector + 76
 	ld	a,(hl)
 	cp	a,byte_jp
 	jr	z,.custom_icon
@@ -364,11 +314,11 @@ usb_get_tiprgm_info:
 	jr	.icon
 
 usb_show_path:
-	ld	hl,usb_fat_path
+	ld	hl,fat_path
 	jp	gui_show_description
 
 usb_exit_full:
-	call	lib_msd_Deinit
+	call	lib_usb_Cleanup
 	ld	iy,ti.flags
 	call	libload_unload
 	jp	exit_full
@@ -376,7 +326,7 @@ usb_exit_full:
 usb_settings_show:
 	xor	a,a
 	ld	(usb_selection),a
-	call	lib_msd_Deinit
+	call	lib_usb_Cleanup
 	ld	iy,ti.flags
 	call	libload_unload
 	jp	settings_show
@@ -449,9 +399,40 @@ usb_check_extensions:
 	pop	af
 	ret
 
+usb_detach_only:
+	ret
+
+usb_detach:						; detach the fat library hooks
+	call	usb_detach_only
+.home:
+	ld	a,screen_programs
+	ld	(current_screen),a
+	ld	a,return_settings
+	ld	(return_info),a
+	or	a,a
+	sbc	hl,hl
+	ld	(scroll_amount),hl
+	bit	setting_special_directories,(iy + settings_flag)
+	jr	z,.no_apps_dir
+	inc	hl
+.no_apps_dir:
+	ld	(current_selection_absolute),hl
+	ld	a,l
+	ld	(current_selection),a
+	jp	main_find
+
 usb_invalid_gui:
 	set_normal_text
 	jp	libload_unload
+
+usb_invaliddevice:
+	call	lib_usb_Cleanup				; end usb handling
+	ld	iy,ti.flags
+	call	usb_invalid_gui
+	print	string_usb_no_partitions, 10, 30
+	print	string_insert_fat32, 10, 50
+	print	string_usb_info_5, 10, 90
+	jq	usb_not_available.wait
 
 usb_not_detected:
 	call	usb_invalid_gui
@@ -478,55 +459,26 @@ usb_not_available:
 	jp	usb_detach.home
 
 usb_check_directory:
-	push	bc
-	push	hl
-	ld	bc,13
-	add	hl,bc
-	ld	a,(hl)
+	ld	a,(iy + 13)
 	tst	a,16
-	pop	hl
-	pop	bc
 	ret
 
-; unfortunately the file must be opened...
+; get the size from the entry
 usb_get_file_size:
-	ld	hl,(item_ptr)
+	ld	iy,(item_ptr)
 	call	usb_check_directory
 	jr	nz,.directory
-	call	usb_append_fat_path
-	ld	bc,1
-	push	bc
-	ld	bc,usb_fat_path
-	push	bc
-	call	lib_fat_Open
-	ld	iy,ti.flags
-	pop	bc
-	pop	bc				; just assume this succeeds
-	or	a,a
-	sbc	hl,hl
-	ld	l,a
-	push	hl
-	push	hl
-	call	lib_fat_GetFileSize
-	ld	iy,ti.flags
-	pop	bc
-	pop	bc
-	push	hl
-	push	bc
-	call	lib_fat_Close
-	ld	iy,ti.flags
-	pop	bc
-	call	usb_directory_previous
-	pop	hl
+	ld	hl,(iy + 14)		; only gets the low bytes...
 	ret
 .directory:
+	ld	iy,ti.flags
 	or	a,a
 	sbc	hl,hl
 	ret
 
 ; move to the previous directory in the path
 usb_directory_previous:
-	ld	hl,usb_fat_path
+	ld	hl,fat_path
 .find_end:
 	ld	a,(hl)
 	or	a,a
@@ -545,7 +497,7 @@ usb_directory_previous:
 	ret
 
 usb_append_fat_path:
-	ld	de,usb_fat_path			; append directory to path
+	ld	de,fat_path			; append directory to path
 .append_loop:
 	ld	a,(de)
 	or	a,a
@@ -593,7 +545,7 @@ usb_var_size := $-3
 	; now we need to do the fun part of copying the data into the variable
 	; the first and last sectors are annoying so be lazy
 
-	ld	a,(usb_sector + 69)
+	ld	a,(fat_sector + 69)
 	cp	a,$80				; check if archived
 	push	af
 	call	usb_copy_tivar
@@ -623,7 +575,7 @@ usb_fat_fd := $-1
 ; performs check on first sector of tivar to make sure
 ; that is actually looks somewhat okay before transfer
 usb_validate_tivar:
-	ld	a,(usb_sector)			; yeah that's good enough
+	ld	a,(fat_sector)			; yeah that's good enough
 	cp	a,$2a
 	ret
 
@@ -633,7 +585,7 @@ usb_open_tivar:
 	call	usb_append_fat_path
 	ld	bc,1
 	push	bc
-	ld	bc,usb_fat_path			; open the file for reading
+	ld	bc,fat_path			; open the file for reading
 	push	bc
 	call	lib_fat_Open
 	ld	iy,ti.flags
@@ -642,13 +594,13 @@ usb_open_tivar:
 	ld	(usb_fat_fd),a
 	call	usb_directory_previous
 	call	usb_read_sector			; read the first sector to get the size information
-	ld	hl,usb_sector + 70		; size of variable to create
+	ld	hl,fat_sector + 70		; size of variable to create
 	ld	de,0
 	ld	e,(hl)
 	inc	hl
 	ld	d,(hl)
 	ld	(usb_var_size),de
-	ld	hl,usb_sector + 59		; name / type of variable
+	ld	hl,fat_sector + 59		; name / type of variable
 	jp	ti.Mov9ToOP1
 
 ; de -> destination
@@ -657,11 +609,11 @@ usb_open_tivar:
 ; must have read first sector of variable by this point
 usb_copy_tivar_to_ram:
 	ld	ix,76 - 1
-	ld	hl,usb_sector + 76
+	ld	hl,fat_sector + 76
 	jr	usb_copy_tivar.entry
 usb_copy_tivar:
 	ld	ix,72 - 1
-	ld	hl,usb_sector + 72
+	ld	hl,fat_sector + 72
 .entry:
 	ld	bc,(usb_var_size)
 .not_done:
@@ -672,7 +624,7 @@ usb_copy_tivar:
 	jr	nz,.no_read
 	call	usb_read_sector
 	ld	ix,0
-	ld	hl,usb_sector
+	ld	hl,fat_sector
 .no_read:
 	pop	bc
 	ldi
@@ -689,38 +641,3 @@ usb_close_file:
 	pop	hl
 	ret
 
-usb_delete_file:
-	ld	hl,(item_ptr)
-	call	usb_append_fat_path
-	ld	bc,usb_fat_path
-	push	bc
-	call	lib_fat_Delete
-	ld	iy,ti.flags
-	pop	bc
-	call	usb_directory_previous
-	ld	hl,(current_selection_absolute)
-	ld	de,(number_of_items)
-	inc	hl
-	compare_hl_de
-	jr	z,.move_up
-	call	c,main_move_up
-.return:
-	ld	a,return_settings
-	ld	(return_info),a
-	call	usb_get_directory_listing
-	jp	main_start
-.move_up:
-	call	main_move_up
-	jr	.return
-
-usb_sector:
-	rb	512
-
-usb_msdenv:
-	rb	14
-
-usb_fat_partitions:
-	rb	80
-
-usb_fat_path:
-	rb	260		; current path in fat filesystem

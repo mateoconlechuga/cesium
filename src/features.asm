@@ -325,8 +325,7 @@ feature_item_delete:
 	ld	a,(current_screen)
 	cp	a,screen_apps
 	jr	z,.delete_app
-	cp	a,screen_usb
-	jp	z,usb_delete_file
+	jq	main_find
 .delete_program:
 	call	util_check_if_vat_page_directory
 	jp	z,main_start

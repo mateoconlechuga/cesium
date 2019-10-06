@@ -1,4 +1,4 @@
-; routines for loading libload for using fat (and potentially other) libraries
+; routines for loading libload for using usbdrvce and fatdrvce libraries
 
 ; returns z if loaded, nz if not loaded
 libload_load:
@@ -53,62 +53,37 @@ libload_load:
 
 ; default libload library
 libload_libload:
-	db	$c0, "LibLoad", $00, $1F
+	db	$c0,"LibLoad",0,31
 
-; fat library functions
+; usbdrvce library functions
+libload_usbdrvce:
+	db	$c0,"USBDRVCE",0,0
+
+lib_usb_Init:
+	jp	0
+lib_usb_Cleanup:
+	jp	3
+lib_usb_WaitForInterrupt:
+	jp	12
+
+; fatdrvce library functions
 libload_fatdrvce:
-	db	$c0, "FATDRVCE", $00, $00
+	db	$c0,"FATDRVCE",0,0
 
-lib_fat_Init:
-	jp	$00
-lib_fat_Deinit:
-	jp	$03
-lib_fat_Find:
-	jp	$06
-lib_fat_Select:
-	jp	$09
-lib_fat_Open:
-	jp	$0c
-lib_fat_Close:
-	jp	$0f
-lib_fat_GetFileSize:
-	jp	$12
-lib_fat_SetFileSize:
-	jp	$15
-lib_fat_ReadSector:
-	jp	$18
-lib_fat_WriteSector:
-	jp	$1b
-lib_fat_Tell:
-	jp	$1e
-lib_fat_SetBuffer:
-	jp	$21
-lib_fat_Delete:
-	jp	$24
-lib_fat_Create:
-	jp	$27
-lib_fat_GetAttrib:
-	jp	$2a
-lib_fat_SetAttrib:
-	jp	$2d
-lib_fat_DirList:
-	jp	$30
 lib_msd_Init:
-	jp	$33
-lib_msd_Find:
-	jp	$36
-lib_msd_Select:
-	jp	$39
-lib_msd_KeepAlive:
-	jp	$3c
-lib_msd_ReadSector:
-	jp	$3f
-lib_msd_WriteSector:
-	jp	$42
-lib_msd_SetJmpBuf:
-	jp	$45
-lib_msd_Deinit:
-	jp	$48
+	jp	0
+lib_fat_Find:
+	jp	15
+lib_fat_Init:
+	jp	18
+lib_fat_DirList:
+	jp	24
+lib_fat_Open:
+	jp	30
+lib_fat_Close:
+	jp	33
+lib_fat_ReadSector:
+	jp	54
 
 	xor	a,a		; return z (loaded)
 	pop	hl		; pop error return
@@ -121,3 +96,4 @@ libload_unload:
 libload_name:
 	db	ti.AppVarObj, "LibLoad", 0
 .len := $ - .
+
