@@ -1,4 +1,5 @@
 ; common routines for working with things involving settings
+SETTINGS_MAX_ITEMS := 8
 
 settings_load:
 	ld	hl,settings_appvar
@@ -23,7 +24,6 @@ settings_get_data:
 	ldir
 	ld	a,(setting_config)
 	ld	(iy + settings_flag),a
-	res	setting_enable_usb,(iy + settings_flag)
 	call	gui_fixup_sprites
 	jp	util_setup_shortcuts
 
@@ -141,7 +141,7 @@ settings_return:
 
 setting_down:
 	ld	a,(ix)
-	cp	a,7
+	cp	a,SETTINGS_MAX_ITEMS
 	jr	z,.top
 	inc	a
 .done:
@@ -160,7 +160,7 @@ setting_up:
 	ld	(ix),a
 	ret
 .bottom:
-	ld	a,7
+	ld	a,SETTINGS_MAX_ITEMS
 	jr	.done
 
 setting_left:
@@ -300,7 +300,7 @@ color_table_active := $-1
 	ld	(color_table_active),a
 	call	ti.AddHLAndA
 	ld	(color_ptr),hl
-	;jq	setting_color_get_xy
+	jq	setting_color_get_xy
 
 setting_color_get_xy:
 	ld	hl,(color_ptr)
@@ -330,7 +330,7 @@ setting_draw_options:
 	print	string_setting_special_directories, 25, 149
 	print	string_setting_enable_shortcuts, 25, 169
 	print	string_settings_delete_confirm, 25, 189
-	;print	string_settings_usb_edit, 25, 209
+	print	string_settings_usb_edit, 25, 209
 
 	xor	a,a
 	inc	a				; color is always set
@@ -349,8 +349,8 @@ setting_draw_options:
 	draw_highlightable_option 10, 168, 6
 	bit	setting_delete_confirm,(iy + settings_flag)
 	draw_highlightable_option 10, 188, 7
-	;bit	setting_enable_usb,(iy + settings_flag)
-	;draw_highlightable_option 10, 208, 8
+	bit	setting_enable_usb,(iy + settings_flag)
+	draw_highlightable_option 10, 208, 8
 	ret
 
 settings_appvar:

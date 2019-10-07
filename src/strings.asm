@@ -124,7 +124,7 @@ string_usb_info_1:
 string_usb_info_2:
 	db	'You will need to install LibLoad',0
 string_usb_info_3:
-	db	'and the FATDRVCE/USBDRVCE library from here:',0
+	db	'and the FATDRVCE/USBDRVCE library from:',0
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:

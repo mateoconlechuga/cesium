@@ -341,9 +341,12 @@ tmp_y := $-1
 	pop	hl
 	call	lcd_string				; hl -> language string
 
+	bit	temp_prgm_is_usb_directory,(iy + temp_prgm_flag)
+	jq	nz,.nosize
 	print string_size, 199, 151
 	ld	hl,(prgm_size)
 	call	lcd_num_5
+.nosize:
 
 	print string_attributes, 199, 173
 	set_cursor_x 262

@@ -3,25 +3,19 @@
 ; returns z if loaded, nz if not loaded
 libload_load:
 	call	libload_unload
-	ld	de,lib_fat_Init + 1	; initialize default jump locations
-	or	a,a
-	sbc	hl,hl
-	ex	de,hl
+	ld	de,lib_usb_Init		; initialize default usbdrvce jump locations
+	ld	hl,lib_usbdrvce
+	ld	bc,lib_usbdrvce.size
+	ldir
+	ld	de,lib_msd_Init		; initialize default fatdrvce jump locations
+	ld	hl,lib_fatdrvce
+	ld	bc,lib_fatdrvce.size
+	ldir
 	ld	a,$c0
 	ld	(libload_libload),a
+	ld	(libload_usbdrvce),a
 	ld	(libload_fatdrvce),a	; reset loaded libraries that libload destroyed
-	ld	b,25			; number of routines in library
-.loop:
-	ld	(hl),de
-	inc	hl
-	inc	hl
-	inc	hl
-	inc	hl
-	inc	de
-	inc	de
-	inc	de
-	djnz	.loop
-	jr	.try
+	jq	.try
 .inram:
 	call	cesium.Arc_Unarc
 .try:
@@ -85,9 +79,26 @@ lib_fat_Close:
 lib_fat_ReadSector:
 	jp	54
 
+
 	xor	a,a		; return z (loaded)
 	pop	hl		; pop error return
 	ret
+
+lib_usbdrvce:
+	jp	0
+	jp	3
+	jp	12
+.size := $-lib_usbdrvce
+
+lib_fatdrvce:
+	jp	0
+	jp	15
+	jp	18
+	jp	24
+	jp	30
+	jp	33
+	jp	54
+.size := $-lib_fatdrvce
 
 ; remove loaded libraries from usermem
 libload_unload:
