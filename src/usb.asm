@@ -30,10 +30,13 @@ usb_handle_event:
 	jq	z,.invalidate
 	cp	a,3
 	jq	z,.invalidate
+	xor	a,a
+	sbc	hl,hl
 	ld	iy,ti.flags
 	ret
 .invalidate:
 	xor	a,a
+	sbc	hl,hl
 	ld	(usb_device_valid),a			; if a disconnect event, go home
 	ld	iy,ti.flags
 	ret
