@@ -1,13 +1,15 @@
 ; routines for accessing flash drive data on usb
 
 usb_device_ptr:
-	rl	0
+	dl	0
 usb_device_valid:
-	rb	0
+	db	0
 msd_sector_buffer:
 	rb	512
 msd_struct:
 	rb	30
+fat_struct:
+	rb	80
 fat_partitions:
 	rb	80
 fat_path:
@@ -59,11 +61,10 @@ usb_init:
 	ld	iy,ti.flags
 	jq	nz,usb_not_available
 
-	ld	bc,12
+	ld	bc,4
 	push	bc
 	ld	c,0
 	push	bc
-	ld	bc,usb_device_ptr
 	push	bc
 	ld	bc,usb_handle_event
 	push	bc
@@ -138,13 +139,20 @@ select_valid_partition:
 	jr	z,.selected_partition
 	jr	.get_partition
 .selected_partition:
-	ld	a,0
-usb_selection := $ - 1
-.got_partition:
-	or	a,a
+	xor	a,a
 	sbc	hl,hl
-	ld	l,a
-
+	ld	l,0
+usb_selection := $ - 1
+	ld	h,7					; partition structure is 7 bytes
+	mlt	hl
+	ld	bc,fat_partitions
+	add	hl,bc
+	push	hl
+	ld	bc,fat_struct
+	push	bc
+	call	lib_fat_Init
+	pop	bc,bc
+	compare_hl_zero
 	jr	z,.fat_init_completed
 
 	push	af					; check for an error during initialization
@@ -189,132 +197,58 @@ usb_partition_move_down:
 
 ; organizes directories first then files
 usb_get_directory_listing:
+	xor	a,a
+	sbc	hl,hl
+        ld      (number_of_items),hl
+
+	ld	a,(fat_path + 1)
+	or	a,a
+	jr	nz,.notroot				; if at root show exit directory
+
+.notroot:
+	ld	bc,0					; don't skip any
+	push	bc
+	ld	b,2					; allow for maximum of 512 directories
+	push	bc
+	ld	bc,item_location_base			; place to store
+	push	bc
+	ld	bc,1					; get directories first
+	push	bc
+	ld	bc,fat_path				; path
+	push	bc
+	ld	bc,fat_struct				; global fat state
+	push	bc
+	call	lib_fat_DirList
+	ld	iy,ti.flags
+	pop	bc,bc,bc,bc,bc,bc
+	ld	(number_of_items),hl
+	ld	bc,18					; each entry is 18 bytes
+	call	ti._imulu
+	ld	de,item_location_base
+	add	hl,de
+.find_files:
+	ld	bc,0					; don't skip any
+	push	bc
+	ld	b,3					; allow for maximum of 768 files
+	push	bc
+	push	hl
+	ld	c,0					; get files
+	push	bc
+	ld	bc,fat_path				; path
+	push	bc
+	ld	bc,fat_struct				; global fat state
+	push	bc
+	call	lib_fat_DirList
+	ld	iy,ti.flags
+	pop	bc,bc,bc,bc,bc,bc
+	inc	hl
+	compare_hl_zero
+	jq	z,usb_detach				; if some error occured, give up
+	dec	hl
+	ld	bc,(number_of_items)
+	add	hl,bc
+	ld	(number_of_items),hl			; number of items in directory
 	ret
-
-usb_get_tiprgm_info:
-	ld	hl,(usb_filename_ptr)
-	call	usb_open_tivar.entry
-	call	usb_close_file
-
-	; attempt to read language from 8xp
-	; also read sprite if possible
-
-	ld	hl,fat_sector + 74
-	ld	a,(hl)
-	cp	a,ti.tExtTok			; is it an assembly program
-	jr	z,.check_if_is_asm
-.program_is_basic:
-	cp	a,byte_ice_source		; actually it is ice source
-	ld	a,file_ice_source
-	jr	z,.store_program_type
-	ld	a,file_basic
-	jr	.store_program_type
-.check_if_is_asm:
-	inc	hl
-	ld	a,(hl)
-	cp	a,ti.tAsm84CeCmp
-	jr	nz,.program_is_basic		; is it a basic program
-	inc	hl
-	ld	a,(hl)
-	cp	a,byte_ice
-	ld	a,file_ice
-	jr	z,.store_program_type		; is it an ice program
-	ld	a,(hl)
-	cp	a,byte_c
-	ld	a,file_c
-	jr	z,.store_program_type
-	ld	a,file_asm			; default to assembly program
-.store_program_type:
-	ld	hl,string_asm
-	ld	de,sprite_file_asm
-	cp	a,file_asm
-	jr	z,.file_uneditable
-	ld	hl,string_c
-	ld	de,sprite_file_c
-	cp	a,file_c
-	jr	z,.file_uneditable
-	ld	hl,string_ice
-	ld	de,sprite_file_ice
-	cp	a,file_ice
-	jr	z,.file_uneditable
-	ld	hl,string_ice_source
-	cp	a,file_ice_source
-	jp	z,.file_editable
-	ld	hl,string_basic
-	ld	de,sprite_file_basic
-
-.file_editable:
-	push	hl
-	push	de
-	ld	de,lut_basic_icon
-	ld	b,6
-	ld	hl,fat_sector + 74
-.verify_icon:
-	ld	a,(de)
-	cp	a,(hl)
-	inc	hl
-	inc	de
-	jr	nz,.no_custom_icon
-	djnz	.verify_icon
-	pop	de					; remove default icon
-	ld	de,sprite_temp
-	ld	a,16
-	ld	(de),a
-	inc	de
-	ld	(de),a
-	inc	de					; save the size of the sprite
-	ld	b,0
-.get_icon:						; okay, now loop 256 times to do the squish
-	ld	a,(hl)
-	sub	a,$30
-	cp	a,$11
-	jr	c,.no_overflow
-	sub	a,$07
-.no_overflow:						; rather than doing an actual routine, just do this
-	push	hl
-	ld	hl,lut_color_basic
-	call	ti.AddHLAndA
-	ld	a,(hl)
-	pop	hl
-	ld	(de),a
-	inc	de
-	inc	hl
-	djnz	.get_icon				; collect all the values
-	ld	hl,sprite_temp				; yay, a custom icon
-	push	hl
-.no_custom_icon:
-	pop	de
-	pop	hl
-	ret
-
-.file_uneditable:
-	push	hl
-	push	de
-	ld	hl,fat_sector + 76
-	ld	a,(hl)
-	cp	a,byte_jp
-	jr	z,.custom_icon
-	inc	hl
-	ld	a,(hl)
-	cp	a,byte_jp
-	jr	nz,.icon
-.custom_icon:
-	inc	hl
-	inc	hl
-	inc	hl
-	inc	hl					; hl -> icon indicator byte, hopefully
-	ld	a,(hl)
-	cp	a,byte_icon				; cesium indicator byte
-	jr	z,.valid_icon
-.icon:
-	pop	de					; de -> icon
-	pop	hl					; hl -> language string
-	ret
-.valid_icon:
-	pop	de					; pop the old icon
-	inc	hl
-	push	hl
-	jr	.icon
 
 usb_show_path:
 	ld	hl,fat_path
@@ -393,7 +327,8 @@ usb_check_extensions:
 	jr	z,.not_current_prgm
 	set	item_is_prgm,(iy + item_flag)
 .not_current_prgm:
-	call	usb_get_tiprgm_info
+        ld	de,sprite_file_ti
+	ld	hl,string_ti
 	pop	af
 	ret
 .tiappvar:
@@ -462,25 +397,23 @@ usb_not_available:
 	jp	usb_detach.home
 
 usb_check_directory:
-	ld	a,(iy + 13)
-	tst	a,16
+	push	bc,hl
+	ld	bc,13
+	add	hl,bc
+	bit	4,(hl)
+	pop	hl,bc
 	ret
 
 ; get the size from the entry
 usb_get_file_size:
 	ld	iy,(item_ptr)
-	call	usb_check_directory
-	jr	nz,.directory
 	ld	hl,(iy + 14)		; only gets the low bytes...
-	ret
-.directory:
 	ld	iy,ti.flags
-	or	a,a
-	sbc	hl,hl
 	ret
 
 ; move to the previous directory in the path
 usb_directory_previous:
+	ld	b,'/'
 	ld	hl,fat_path
 .find_end:
 	ld	a,(hl)
@@ -490,17 +423,27 @@ usb_directory_previous:
 	jr	.find_end
 .find_prev:
 	ld	a,(hl)
-	cp	a,'/'
+	cp	a,b
 	jr	z,.found_prev
 	dec	hl
 	jr	.find_prev
 .found_prev:
 	xor	a,a
-	ld	(hl),a				; prevent root from being overwritten
+	ld	(hl),a
+	ld	hl,fat_path
+	ld	a,(hl)
+	cp	a,b
+	ret	z
+	ld	(hl),b
+	inc	hl
+	ld	(hl),0
 	ret
 
 usb_append_fat_path:
-	ld	de,fat_path			; append directory to path
+	ld	de,fat_path
+	ld	a,(fat_path + 1)
+	or	a,a
+	jr	z,.current_end			; append directory to path
 .append_loop:
 	ld	a,(de)
 	or	a,a
@@ -643,4 +586,3 @@ usb_close_file:
 	ld	iy,ti.flags
 	pop	hl
 	ret
-

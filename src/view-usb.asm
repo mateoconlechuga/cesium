@@ -77,9 +77,9 @@ view_usb_directory:
 	jr	z,.loop
 .get_real_offset:
 	push	bc
-	ld	bc,16
+	ld	bc,18
 	add	hl,bc
-	pop	bc				; each entry is 16 bytes
+	pop	bc				; each entry is 18 bytes
 	dec	de
 	dec	bc
 	ld	a,e
@@ -128,7 +128,7 @@ current_usb_file := $-1
 	call	draw_usb_icon
 
 	pop	hl
-	ld	bc,16
+	ld	bc,18				; each entry is 18 bytes
 	add	hl,bc
 	pop	bc
 	dec	bc
