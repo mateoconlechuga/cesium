@@ -77,11 +77,18 @@ usb_init:
 	or	a,a
 	jq	nz,usb_not_available			; probably not the right thing to go to
 
+	call	usb_wait_gui
+	call	util_setup_apd
+
 .notyetvalid:
 	call	lib_usb_WaitForInterrupt
 	ld	a,l
 	or	a,a
 	jq	nz,usb_detach				; if error, detach
+
+	call	util_get_key_nonblocking
+	cp	a,ti.skClear
+	jq	z,usb_detach
 
 	ld	a,(usb_device_valid)
 	or	a,a
@@ -128,7 +135,7 @@ select_valid_partition:
 .get_partition:
 	call	util_get_key
 	cp	a,ti.skClear
-	jp	z,usb_exit_full
+	jp	z,usb_detach
 	cp	a,ti.skMode
 	jp	z,usb_settings_show
 	cp	a,ti.skUp
@@ -158,7 +165,7 @@ usb_selection := $ - 1
 	jr	z,.fat_init_completed
 
 	push	af					; check for an error during initialization
-	call	usb_invalid_gui
+	set_normal_text
 	print	string_fat_init_error_0, 10, 30
 	print	string_fat_init_error_1, 10, 50
 	pop	af
@@ -255,12 +262,6 @@ usb_get_directory_listing:
 usb_show_path:
 	ld	hl,fat_path
 	jp	gui_show_description
-
-usb_exit_full:
-	call	lib_usb_Cleanup
-	ld	iy,ti.flags
-	call	libload_unload
-	jp	exit_full
 
 usb_settings_show:
 	xor	a,a
@@ -365,28 +366,26 @@ usb_detach:						; detach the fat library hooks
 	ld	(current_selection),a
 	jp	main_find
 
-usb_invalid_gui:
+usb_wait_gui:
 	set_normal_text
-	jp	libload_unload
+	print	string_usb_waiting, 10, 30
+	print	string_insert_fat32, 10, 50
+	print	string_usb_info_6, 10, 90
+	ret
 
 usb_invaliddevice:
-	call	lib_usb_Cleanup				; end usb handling
-	ld	iy,ti.flags
-	call	usb_invalid_gui
+	call	gui_draw_core
+	call	usb_detach_only
+	set_normal_text
 	print	string_usb_no_partitions, 10, 30
 	print	string_insert_fat32, 10, 50
 	print	string_usb_info_5, 10, 90
 	jq	usb_not_available.wait
 
-usb_not_detected:
-	call	usb_invalid_gui
-	print	string_usb_not_detected, 10, 30
-	print	string_insert_fat32, 10, 50
-	print	string_usb_info_5, 10, 90
-	jq	usb_not_available.wait
-
 usb_not_available:
-	call	usb_invalid_gui
+	call	gui_draw_core
+	call	usb_detach_only
+	set_normal_text
 	print	string_usb_info_0, 10, 30
 	print	string_usb_info_1, 10, 50
 	print	string_usb_info_2, 10, 70
@@ -613,3 +612,23 @@ fat_file_close:
 	pop	bc
 	ret
 
+fat_file_delete:
+	ld	hl,(item_ptr)
+	call	usb_append_fat_path
+	ld	bc,fat_path
+	push	bc
+	ld	bc,fat_struct
+	push	bc
+	call	lib_fat_Delete
+	ld	iy,ti.flags
+	pop	bc,bc
+	call	usb_directory_previous
+	ld	hl,(current_selection_absolute)
+	ld	de,(number_of_items)
+	inc	hl
+	compare_hl_de
+	call	nc,main_move_up
+	ld	a,return_settings
+	ld	(return_info),a
+	call	usb_get_directory_listing
+	jq	main_start

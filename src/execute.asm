@@ -8,26 +8,26 @@ execute_item:
 	ld	hl,(current_selection_absolute)
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jr	z,execute_vat_check
+	jq	z,execute_vat_check
 	cp	a,screen_appvars
-	jr	z,execute_vat_check
+	jq	z,execute_vat_check
 	cp	a,screen_usb
-	jr	z,execute_usb_check
+	jq	z,execute_usb_check
 	;cp	a,screen_apps
-	;jr	z,execute_app_check
-	jr	execute_app_check			; optimize!
+	;jq	z,execute_app_check
+	jq	execute_app_check
 
 execute_usb_check:
 	ld	hl,(item_ptr)
 	call	usb_check_directory
-	jr	z,.not_directory			; if not a directory, check extension
+	jq	z,.not_directory			; if not a directory, check extension
 	ld	a,(hl)
 	cp	a,'.'					; check if special directory
 	jr	nz,.not_special
 	inc	hl
 	ld	a,(hl)
 	or	a,a
-	jp	z,main_loop				; current directory skip
+	jq	z,main_loop				; current directory skip
 	cp	a,'.'
 	jr	nz,.not_special
 	inc	hl
@@ -44,10 +44,10 @@ execute_usb_check:
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
 	call	usb_get_directory_listing		; update the path
-	jp	main_start
+	jq	main_start
 .not_directory:
 	;bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
-	;jp	z,main_loop
+	;jq	z,main_loop
 
 	; here are the considerations when executing from usb:
 	; assembly programs can be copied directly as normal
@@ -55,22 +55,22 @@ execute_usb_check:
 
 	;call	usb_open_tivar
 	;call	usb_validate_tivar
-	;jp	z,execute_usb_program
+	;jq	z,execute_usb_program
 
-	jp	main_loop
+	jq	main_loop
 
 execute_vat_check:
 	xor	a,a
 	ld	(return_info),a
 	bit	prgm_is_usb_directory,(iy + prgm_flag)
-	jp	nz,usb_init
+	jq	nz,usb_init
 	bit	setting_special_directories,(iy + settings_flag)
-	jp	z,execute_program
+	jq	z,execute_program
 	compare_hl_zero
-	jp	nz,execute_program			; check if on directory
+	jq	nz,execute_program			; check if on directory
 	ld	a,screen_apps
 	ld	(current_screen),a
-	jp	main_find
+	jq	main_find
 execute_app_check:
 	ld	a,screen_programs
 	compare_hl_zero
@@ -81,7 +81,7 @@ execute_app_check:
 	jr	nz,execute_app
 .new:
 	ld	(current_screen),a
-	jp	main_find				; abort!
+	jq	main_find				; abort!
 
 execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
@@ -137,7 +137,7 @@ execute_app:
 ;execute_usb_program:
 	;ld	hl,(usb_var_size)
 	;call	util_check_free_ram
-	;jp	z,main_loop			; ensure enough ram
+	;jq	z,main_loop			; ensure enough ram
 	;call	execute_ram_backup
 	;call	lcd_normal
 	;bit	setting_enable_shortcuts,(iy + settings_flag)
@@ -165,7 +165,7 @@ execute_app:
 	;ld	(ti.asm_prgm_size),hl		; reload size of the program
 	;jr	execute_assembly_program
 .program_is_basic:
-	;jp	main_loop
+	;jq	main_loop
 
 execute_ram_backup:
 	bit	cesium_execute_alt,(iy + cesium_flag)
@@ -177,7 +177,7 @@ execute_ram_backup:
 execute_program:
 	ld	a,(current_screen)
 	cp	a,screen_appvars
-	jp	z,main_loop
+	jq	z,main_loop
 	call	execute_ram_backup
 	call	util_move_prgm_name_to_op1
 	call	util_backup_prgm_name
@@ -187,7 +187,7 @@ execute_program:
 	bit	prgm_is_basic,(iy + prgm_flag)
 	jr	nz,execute_ti.basic_program		; execute basic program
 	call	util_move_prgm_to_usermem		; execute assembly program
-	jp	nz,main_loop				; return on error
+	jq	nz,main_loop				; return on error
 	call	lcd_normal
 	ld	hl,return_asm_error
 	ld	(persistent_sp_error),sp
@@ -198,7 +198,7 @@ execute_assembly_program:
 	push	hl
 	call	ti.DisableAPD
 	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
-	jp	ti.userMem
+	jq	ti.userMem
 
 execute_ti.basic_program:
 	call	lcd_normal
@@ -209,7 +209,7 @@ execute_ti.basic_program:
 	inc	hl
 	ld	a,(hl)
 	cp	a,ti.tAsm84CePrgm
-	jp	z,squish_program			; we've already installed an error handler
+	jq	z,squish_program			; we've already installed an error handler
 .not_unsquished:
 	call	ti.ClrTxtShd
 	call	ti.HomeUp
@@ -234,7 +234,7 @@ execute_ti.basic_program:
 	jr	z,.in_rom				; there's nothing to copy
 	ld	hl,(prgm_data_ptr)
 	ldi
-	jp	po,.in_rom
+	jq	po,.in_rom
 	ldir
 .in_rom:
 	call	ti.OP4ToOP1
@@ -268,4 +268,4 @@ execute_ti.basic_program:
 	ld	hl,hook_parser
 	call	ti.SetParserHook
 	ei
-	jp	ti.ParseInp				; run program
+	jq	ti.ParseInp				; run program

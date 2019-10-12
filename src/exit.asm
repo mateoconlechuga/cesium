@@ -1,6 +1,11 @@
 ; application exit handling routines
 
 exit_full:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jq	nz,.notusb
+	call	usb_detach_only
+.notusb:
 	call	flash_code_copy
 	exit_cleanup.run
 

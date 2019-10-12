@@ -128,11 +128,13 @@ string_usb_info_3:
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
-	db	'Press enter to retry.',0
-string_usb_not_detected:
-	db	'No USB Connection Detected.',0
+	db	'Press ',$7e,'enter] to retry.',0
+string_usb_info_6:
+	db	'Press ',$7e,'clear] to cancel.',0
+string_usb_waiting:
+	db	'Waiting for USB to be connected...',0
 string_usb_no_partitions:
-	db	'No FAT32 partitions found.',0
+	db	'No FAT32 partitions found!',0
 string_insert_fat32:
 	db	'Please insert a FAT32 formatted drive.',0
 string_partition:

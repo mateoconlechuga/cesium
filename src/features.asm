@@ -314,13 +314,17 @@ feature_item_edit:
 feature_item_delete:
 	ld	a,(current_screen)
 	cp	a,screen_usb
-	call	nz,feature_check_valid
+	jq	nz,.notfatfile
+	bit	setting_delete_confirm,(iy + settings_flag)
+	jq	z,fat_file_delete
+	call	.showconfirm
+	call	.getinput
+	jq	fat_file_delete
+.notfatfile:
+	call	feature_check_valid
 	bit	setting_delete_confirm,(iy + settings_flag)
 	jr	z,.delete
-	call	gui_clear_status_bar
-	set_inverted_text
-	print	string_delete_confirmation, 4, 228
-	set_normal_text
+	call	.showconfirm
 .delete:
 	ld	a,(current_screen)
 	cp	a,screen_apps
@@ -352,6 +356,12 @@ feature_item_delete:
 	ld	(return_info),a
 	jp	main_find			; reload everything
 
+.showconfirm:
+	call	gui_clear_status_bar
+	set_inverted_text
+	print	string_delete_confirmation, 4, 228
+	set_normal_text
+	ret
 .getinput:
 	call	util_get_key
 	cp	a,ti.skZoom
@@ -549,6 +559,3 @@ feature_check_valid:
 	ret	nz
 	pop	hl
 	jp	main_loop
-
-
-

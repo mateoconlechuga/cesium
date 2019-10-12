@@ -184,6 +184,15 @@ util_get_key:
 	jr	z,.run
 	ret
 
+util_get_key_nonblocking:
+	di
+	call	util_handle_apd
+	ld	iy,ti.flags
+	call	ti.DisableAPD			; disable os apd and use our own
+	call	util_show_time
+	call	lcd_blit
+	jq	ti.GetCSC			; avoid using getcsc for usb
+
 util_setup_apd:
 	ld	hl,$b0ff
 	ld	(apd_timer),hl

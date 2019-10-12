@@ -78,7 +78,10 @@ lib_fat_Close:
 	jp	33
 lib_fat_ReadSector:
 	jp	54
-
+lib_fat_WriteSector:
+	jp	57
+lib_fat_Delete:
+	jp	63
 
 	xor	a,a		; return z (loaded)
 	pop	hl		; pop error return
@@ -98,6 +101,8 @@ lib_fatdrvce:
 	jp	30
 	jp	33
 	jp	54
+	jp	57
+	jp	63
 .size := $-lib_fatdrvce
 
 ; remove loaded libraries from usermem
@@ -107,4 +112,3 @@ libload_unload:
 libload_name:
 	db	ti.AppVarObj, "LibLoad", 0
 .len := $ - .
-
