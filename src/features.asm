@@ -242,7 +242,9 @@ current_input_mode := $-1
 	call	ti.PushOP1
 	call	ti.ChkFindSym
 	call	ti.ChkInRam
+	push	af,hl,de
 	call	ti.PopOP1
+	pop	de,hl,af
 	jr	nz,.in_archive
 	ld	hl,$f8				; _ret
 	ld	(.jump_smc),hl
