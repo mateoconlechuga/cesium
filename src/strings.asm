@@ -130,7 +130,7 @@ string_usb_info_4:
 string_usb_info_5:
 	db	'Press ',$7e,'enter] to retry.',0
 string_usb_info_6:
-	db	'Press ',$7e,'clear] to cancel.',0
+	db	'Press ',$7e,'suppr] to cancel.',0
 string_usb_waiting:
 	db	'Waiting for USB to be connected...',0
 string_usb_no_partitions:
@@ -249,8 +249,10 @@ string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
 	db	'Appuyez sur ',$7e,'entrer] pour retenter.',0
-string_usb_not_detected:
-	db	'Pas de connection USB d',$82,'tect',$82,'e.',0
+string_usb_info_6:
+	db	'Appuyez sur ',$7e,'entrer] pour annuler.',0
+string_usb_waiting:
+	db	'En attente de connexion USB ...',0
 string_usb_no_partitions:
 	db	'Pas de partition FAT32 trouv',$82,'e.',0
 string_insert_fat32:
