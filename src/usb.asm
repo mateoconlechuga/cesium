@@ -340,6 +340,10 @@ usb_check_extensions:
 	ret
 
 usb_detach_only:
+	call	lib_usb_Cleanup
+	ld	iy,ti.flags
+	call	libload_unload
+	ld	iy,ti.flags
 	ret
 
 usb_detach:						; detach the fat library hooks
