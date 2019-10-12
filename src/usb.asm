@@ -178,7 +178,7 @@ usb_selection := $ - 1
 .fat_init_completed:
 	ld	a,screen_usb
 	ld	(current_screen),a
-	call	usb_get_directory_listing		; start with root directory
+	call	fat_get_directory_listing		; start with root directory
 	jp	main_start
 
 usb_partition_move_up:
@@ -205,7 +205,7 @@ usb_partition_move_down:
 	ret
 
 ; organizes directories first then files
-usb_get_directory_listing:
+fat_get_directory_listing:
 	xor	a,a
 	sbc	hl,hl
         ld      (number_of_items),hl
@@ -230,6 +230,10 @@ usb_get_directory_listing:
 	call	lib_fat_DirList
 	ld	iy,ti.flags
 	pop	bc,bc,bc,bc,bc,bc
+	inc	hl
+	compare_hl_zero
+	dec	hl
+	jq	z,.error
 	ld	(number_of_items),hl
 	ld	bc,18					; each entry is 18 bytes
 	call	ti._imulu
@@ -252,11 +256,16 @@ usb_get_directory_listing:
 	pop	bc,bc,bc,bc,bc,bc
 	inc	hl
 	compare_hl_zero
-	jq	z,usb_detach				; if some error occured, give up
 	dec	hl
+	jq	z,.error
 	ld	bc,(number_of_items)
 	add	hl,bc
 	ld	(number_of_items),hl			; number of items in directory
+	ret
+.error:
+	xor	a,a
+	sbc	hl,hl
+	ld	(number_of_items),hl			; just do this...
 	ret
 
 usb_show_path:
@@ -630,5 +639,5 @@ fat_file_delete:
 	call	nc,main_move_up
 	ld	a,return_settings
 	ld	(return_info),a
-	call	usb_get_directory_listing
+	call	fat_get_directory_listing
 	jq	main_start

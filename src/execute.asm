@@ -43,7 +43,7 @@ execute_usb_check:
 	sbc	hl,hl
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
-	call	usb_get_directory_listing		; update the path
+	call	fat_get_directory_listing		; update the path
 	jq	main_start
 .not_directory:
 	;bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
