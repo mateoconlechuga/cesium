@@ -12,6 +12,8 @@ fat_struct:
 	rb	80
 fat_partitions:
 	rb	80
+fat_file:
+	dl	0
 fat_path:
 	rb	260		; current path in fat filesystem
 fat_sector:
@@ -463,22 +465,24 @@ usb_append_fat_path:
 	inc	hl
 	jr	.append_dir_loop
 
-usb_fat_transfer:
+fat_file_transfer_from_device:
 	ld	a,(current_screen)
 	cp	a,screen_usb
-	jp	nz,main_loop
+	jq	nz,main_loop
 	bit	item_is_ti,(iy + item_flag)
-	jp	z,main_loop
+	jq	z,main_loop
 
 	call	gui_fat_transfer
 
 	call	usb_open_tivar
+	jq	nz,main_loop
+
 	call	ti.PushOP1
 	call	ti.ChkFindSym
 	call	nc,ti.DelVarArc
 	call	ti.PopOP1
 	ld	hl,0
-usb_var_size := $-3
+fat_file_size := $-3
 	call	util_check_free_ram
 	jp	c,main_start
 
@@ -505,19 +509,6 @@ usb_var_size := $-3
 	call	util_delay_one_second
 	jp	main_start
 
-usb_read_sector:
-	push	de
-	or	a,a
-	sbc	hl,hl
-	ld	l,0
-usb_fat_fd := $-1
-	push	hl
-	call	lib_fat_ReadSector
-	ld	iy,ti.flags
-	pop	hl
-	pop	de
-	ret
-
 ; performs check on first sector of tivar to make sure
 ; that is actually looks somewhat okay before transfer
 usb_validate_tivar:
@@ -533,25 +524,49 @@ usb_open_tivar:
 	push	bc
 	ld	bc,fat_path			; open the file for reading
 	push	bc
+	ld	bc,fat_struct
+	push	bc
 	call	lib_fat_Open
 	ld	iy,ti.flags
-	pop	bc
-	pop	bc
-	ld	(usb_fat_fd),a
+	pop	bc,bc,bc
+	ld	(fat_file),hl
+	compare_hl_zero
+	jq	z,.error
 	call	usb_directory_previous
-	call	usb_read_sector			; read the first sector to get the size information
+	call	fat_file_read_sector		; read the first sector to get the size information
+	jq	nz,.error
 	ld	hl,fat_sector + 70		; size of variable to create
 	ld	de,0
 	ld	e,(hl)
 	inc	hl
 	ld	d,(hl)
-	ld	(usb_var_size),de
+	ld	(fat_file_size),de
 	ld	hl,fat_sector + 59		; name / type of variable
-	jp	ti.Mov9ToOP1
+	call	ti.Mov9ToOP1
+	xor	a,a
+	ret
+.error:
+	xor	a,a
+	inc	a
+	ret
+
+fat_file_read_sector:
+	push	de
+	ld	bc,fat_sector
+	push	bc
+	ld	bc,(fat_file)
+	push	bc
+	call	lib_fat_ReadSector
+	ld	iy,ti.flags
+	pop	bc,bc
+	pop	de
+	ld	a,l
+	or	a,a
+	ret
 
 ; de -> destination
-; usb_var_size = size
-; usb_fat_fd = file descriptor
+; fat_file_size = size
+; fat_file = file descriptor
 ; must have read first sector of variable by this point
 usb_copy_tivar_to_ram:
 	ld	ix,76 - 1
@@ -561,28 +576,36 @@ usb_copy_tivar:
 	ld	ix,72 - 1
 	ld	hl,fat_sector + 72
 .entry:
-	ld	bc,(usb_var_size)
+	ld	bc,(fat_file_size)
 .not_done:
 	push	bc
 	inc	ix
 	ld	a,ixh
 	cp	a,2				; every 512 bytes read a sector
 	jr	nz,.no_read
-	call	usb_read_sector
+	call	fat_file_read_sector
+	jq	nz,.error
 	ld	ix,0
 	ld	hl,fat_sector
 .no_read:
 	pop	bc
 	ldi
-	jp	pe,.not_done
+	jq	pe,.not_done
+	jq	fat_file_close
+.error:
+	call	ti.PushOP1
+	call	ti.OP4ToOP1
+	call	ti.ChkFindSym
+	call	nc,ti.DelVarArc
+	call	ti.PopOP1
+	call	ti.OP1ToOP4
+	ret
 
-usb_close_file:
-	ld	a,(usb_fat_fd)
-	or	a,a
-	sbc	hl,hl
-	ld	l,a
-	push	hl
+fat_file_close:
+	ld	bc,(fat_file)
+	push	bc
 	call	lib_fat_Close
 	ld	iy,ti.flags
-	pop	hl
+	pop	bc
 	ret
+
