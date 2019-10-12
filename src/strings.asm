@@ -27,7 +27,7 @@ string_unknown:
 string_appvar:
 	db	'Data',0
 string_mode_select:
-	db	'   < ',$7e,'MODE] >',0
+	db	'   < ',$7f,'MODE] >',0
 string_min_os_version:
 	db	'5.0.0.0.0',0
 .length := $-.
@@ -72,29 +72,29 @@ string_file_information:
 	db	'File Information',0
 string_settings:
 	db	'Settings',0
-	db	$7e,'MODE]',0
+	db	$7f,'MODE]',0
 string_delete:
 	db	'Delete',0
-	db	$7e,'DEL]',0
+	db	$7f,'DEL]',0
 string_attributes:
 	db	'Attrib',0
-	db	$7e,'ALPHA]',0
+	db	$7f,'ALPHA]',0
 string_rename:
 	db	'Rename',0
-	db	$7e,'GRAPH]',0
+	db	$7f,'GRAPH]',0
 string_transfer:
 	db	'Transfer',0
-	db	$7e,'PRGM]',0
+	db	$7f,'PRGM]',0
 string_edit_prgm:
 	db	'Edit Prgm',0
-	db	$7e,'ZOOM]'
+	db	$7f,'ZOOM]'
 string_new_prgm:
 	db	'New Prgm',0
-	db	$7e,'Y=]'
+	db	$7f,'Y=]'
 string_editor_name:
 	db	'Prgm Editor',0
 string_delete_confirmation:
-	db	'Delete?: ',$7e,'ZOOM]-Yes  ',$7e,'GRAPH]-No',0
+	db	'Delete?: ',$7f,'ZOOM]-Yes  ',$7f,'GRAPH]-No',0
 string_general_settings:
 	db	'General Settings',0
 string_setting_color:
@@ -128,9 +128,9 @@ string_usb_info_3:
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
-	db	'Press ',$7e,'enter] to retry.',0
+	db	'Press ',$7f,'enter] to retry.',0
 string_usb_info_6:
-	db	'Press ',$7e,'clear] to cancel.',0
+	db	'Press ',$7f,'clear] to cancel.',0
 string_usb_waiting:
 	db	'Waiting for USB to be connected...',0
 string_usb_no_partitions:
@@ -188,26 +188,26 @@ string_file_information:
 	db	'    Infos fichier',0
 string_settings:
 	db	'Options',0
-	db	$7e,'MODE]',0
+	db	$7f,'MODE]',0
 string_delete:
 	db	'Effacer',0
-	db	$7e,'SUPPR]',0
+	db	$7f,'SUPPR]',0
 string_attributes:
 	db	'Attrib',0
-	db	$7e,'ALPHA]',0
+	db	$7f,'ALPHA]',0
 string_rename:
 	db	'Nom',0
-	db	$7e,'GRAPH]',0
+	db	$7f,'GRAPH]',0
 string_edit_prgm:
 	db	'Modifier',0
-	db	$7e,'ZOOM]'
+	db	$7f,'ZOOM]'
 string_new_prgm:
 	db	'Nouveau',0
-	db	$7e,'Y=]',0
+	db	$7f,'Y=]',0
 string_editor_name:
 	db	'Editeur de prgm',0
 string_delete_confirmation:
-	db	'Supprimer ? ',$7e,'ZOOM]-Oui ',$7e,'GRAPH]-Non',0
+	db	'Supprimer ? ',$7f,'ZOOM]-Oui ',$7f,'GRAPH]-Non',0
 string_general_settings:
 	db	'Options g',$82,'n',$82,'rales',0
 string_setting_color:
@@ -236,7 +236,7 @@ string_system:
 	db	'Systeme',0
 string_transfer:
 	db	'Transfer',0
-	db	$7e,'PRGM]',0
+	db	$7f,'PRGM]',0
 string_usb_info_0:
 	db	'Utilisez une cl',$82,' USB en FAT32',0
 string_usb_info_1:
@@ -248,9 +248,9 @@ string_usb_info_3:
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
-	db	'Appuyez sur ',$7e,'entrer] pour retenter.',0
+	db	'Appuyez sur ',$7f,'entrer] pour retenter.',0
 string_usb_info_6:
-	db	'Appuyez sur ',$7e,'annul] pour annuler.',0
+	db	'Appuyez sur ',$7f,'annul] pour annuler.',0
 string_usb_waiting:
 	db	'En attente de connexion USB ...',0
 string_usb_no_partitions:

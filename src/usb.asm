@@ -208,7 +208,8 @@ usb_partition_move_down:
 fat_get_directory_listing:
 	xor	a,a
 	sbc	hl,hl
-        ld      (number_of_items),hl
+	ld	(scroll_amount),hl
+	ld      (number_of_items),hl
 
 	ld	a,(fat_path + 1)
 	or	a,a
@@ -641,3 +642,21 @@ fat_file_delete:
 	ld	(return_info),a
 	call	fat_get_directory_listing
 	jq	main_start
+
+fat_previous_directory:
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	jq	nz,main_loop
+	ld	a,(fat_path + 1)
+	or	a,a
+	jq	nz,.notroot
+	jq	usb_detach
+.notroot:
+	call	usb_directory_previous
+	xor	a,a
+	sbc	hl,hl
+	ld	(current_selection),a
+	ld	(current_selection_absolute),hl
+	call	fat_get_directory_listing		; update the path
+	jq	main_start
+
