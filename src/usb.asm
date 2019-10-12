@@ -420,10 +420,12 @@ usb_check_directory:
 	ret
 
 ; get the size from the entry
-usb_get_file_size:
+fat_file_get_size:
+	push	iy
 	ld	iy,(item_ptr)
-	ld	hl,(iy + 14)		; only gets the low bytes...
-	ld	iy,ti.flags
+	ld	hl,(iy + 14 + 0)
+	ld	a,(iy + 14 + 3)
+	pop	iy
 	ret
 
 ; move to the previous directory in the path

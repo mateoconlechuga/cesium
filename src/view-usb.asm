@@ -179,10 +179,10 @@ usb_filename_ptr := $-3
 	call	usb_check_extensions
 .show_language:
 	call	lcd_string
-	print	string_size, 199, 162
+	print	string_size, 199, 151
 
-	call	usb_get_file_size		; get size of file
-	call	lcd_num_6
+	call	fat_file_get_size
+	call	lcd_num_6		; only displays lower 24 bits...
 
 	print string_attributes, 199, 173
 	set_cursor_x 262
@@ -195,7 +195,6 @@ usb_filename_ptr := $-3
 
 	print string_hidden, 199, 118
 	print string_read_only, 199, 129
-	print string_system, 199, 140
 
 	call	gui_draw_usb_item_options
 

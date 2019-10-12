@@ -291,19 +291,13 @@ gui_draw_item_options:
 	ret
 
 gui_draw_usb_item_options:
-	ld	hl,(item_ptr)
-	ld	bc,13
-	add	hl,bc
-	bit	1,(hl)
-	push	hl
+	push	iy
+	ld	iy,(item_ptr)
+	bit	1,(iy + 13)
 	draw_option 300, 118, 308, 126
-	pop	hl
-	bit	0,(hl)
-	push	hl
+	bit	0,(iy + 13)
 	draw_option 300, 129, 308, 137
-	pop	hl
-	bit	2,(hl)
-	draw_option 300, 140, 308, 148
+	pop	iy
 	ret
 
 gui_show_item_count:
