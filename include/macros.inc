@@ -255,6 +255,7 @@ temp_prgm_locked := 1
 temp_prgm_hidden := 2
 temp_prgm_is_basic := 3
 temp_prgm_is_usb_directory := 4
+temp_prgm_is_directory := 5
 
 ; location of items
 

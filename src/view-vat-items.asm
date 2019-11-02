@@ -198,6 +198,7 @@ color_save := $-1
 file_usb_directory:
 	set	temp_prgm_is_usb_directory,(iy + temp_prgm_flag)
 file_directory:
+	set	temp_prgm_is_directory,(iy + temp_prgm_flag)
 	push	hl
 	or	a,a
 	sbc	hl,hl
@@ -341,9 +342,9 @@ tmp_y := $-1
 	pop	hl
 	call	lcd_string				; hl -> language string
 
-	bit	temp_prgm_is_usb_directory,(iy + temp_prgm_flag)
+	bit	temp_prgm_is_directory,(iy + temp_prgm_flag)
 	jq	nz,.nosize
-	print string_size, 199, 151
+	print string_size, 199, 156
 	ld	hl,(prgm_size)
 	call	lcd_num_5
 .nosize:

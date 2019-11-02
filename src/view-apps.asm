@@ -131,16 +131,14 @@ application_ptr := $-3
 	ld	hl,string_directory
 .is_directory:
 	call	lcd_string
-	print	string_size, 199, 162
 	ld	hl,(item_ptr)
 	ld	bc,0 - $100
 	add	hl,bc
 	push	hl
 	bit	item_is_directory,(iy + item_flag)
-	jr	z,.draw_real_size
-	or	a,a
-	sbc	hl,hl
-	jr	.draw_size
+	jq	z,.draw_real_size
+	pop	de
+	jq	.isdir
 .draw_real_size:
 	push	hl
 	call	ti.NextFieldFromType		; move to start of signature
@@ -152,16 +150,20 @@ application_ptr := $-3
 	inc	hl
 	inc	hl				; bypass app size bytes
 .draw_size:
+	push	hl
+	print	string_size, 199, 162
+	pop	hl
 	call	lcd_num_6
 	print	string_min_version, 199, 129
 	bit	item_is_directory,(iy + item_flag)
 	call	z,ti.os.GetAppVersionString
 	pop	de
 	compare_hl_zero
-	jr	nz,.custom_version
+	jq	nz,.custom_version
 	ld	hl,string_min_os_version
 .custom_version:
 	set_cursor 199, 140
 	call	lcd_string
+.isdir:
 	restore_cursor
 	ret
