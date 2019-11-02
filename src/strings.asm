@@ -98,7 +98,7 @@ string_delete_confirmation:
 string_general_settings:
 	db	'General Settings',0
 string_setting_color:
-	db	'Cesium Color',0
+	db	'Cesium Colors',0
 string_setting_indicator:
 	db	'Disable busy indicator in programs',0
 string_setting_list_count:

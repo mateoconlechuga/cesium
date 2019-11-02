@@ -258,6 +258,8 @@ file_editable:
 	push	bc
 	push	de
 	push	hl
+	ld	a,(color_senary)
+	ld	(lut_color_basic),a
 	ld	hl,(temp_prgm_data_ptr)
 	ld	de,lut_basic_icon
 	ld	b,6
