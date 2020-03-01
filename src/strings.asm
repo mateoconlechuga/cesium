@@ -266,7 +266,7 @@ string_select_partition_1:
 string_fat_init_error_0:
 	db	'Erreur d',$27,'init de la partition FAT.',0
 string_fat_init_error_1:
-	db	'Code d\'erreur : ',0
+	db	'Code d''erreur : ',0
 string_fat_transferring:
 	db	'Transfert en cours...',0
 string_ram_error:
