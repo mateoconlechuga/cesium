@@ -11,9 +11,17 @@ installer_start:
 
 	app_create				; create the application
 
+	or	a,a
 	jr	z,.app_created
+	dec	a
+	jq	z,.exists
+	call	ti.PopOP1
+	ld	hl,str_invalid_os_error
+	jq	.show_error_str
+.exists:
 	call	ti.PopOP1
 	ld	hl,str_cesium_exists_error
+.show_error_str:
 	call	ti.PutS				; put error string if cesium exists
 	call	ti.GetKey
 .clear_screen:
@@ -86,5 +94,13 @@ if config_english
 	db 'Cesium already installed, Please delete first.',0
 else
 	db 'Cesium d',$96,'j',$8f,' install',$96,',     veuillez supprimer.',0
+end if;
+
+
+str_invalid_os_error:
+if config_english
+	db  'Cannot install on this OS',0
+else
+	db  'Mauvaise version d''OS',0
 end if;
 

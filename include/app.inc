@@ -67,7 +67,7 @@ macro app_private
 		dl 0				; 027h
  		; start of application relocation table
 		app.table_offset := $% - app.start_offset
-		dl app.relocation_table
+		db app.relocation_table
 
 		app.code_offset := $% - app.start_offset
 		app.code := $% - app.header_start
@@ -97,11 +97,41 @@ macro app_private
 		call	.create_code
 		jp	.continue
 .create_code:
+		call    $21ED4
+		push	hl
+		pop	ix
+		ld	hl,(ix + 6)
+		ld	a,l
+		cp	a,5
+		jq	nz,.invalidos
+		ld	a,h
+		cp	a,5
+		jq	c,.nooscheck
+		ld	de,$010505
+		or	a,a
+		sbc	hl,de
+		add	hl,de
+		jq	z,.os551
+		ld	de,$020505
+		or	a,a
+		sbc	hl,de
+		add	hl,de
+		jq	z,.os552
+		ld	de,$000605
+		or	a,a
+		sbc	hl,de
+		add	hl,de
+		jq	nz,.invalidos
+.os560:
+.os552:
+.os551:
+		jq	.invalidos
+.nooscheck:
 		ld	hl,app.exe
 		push	hl
 		call	$21100
 		pop	bc
-		ret	nz
+		jq	nz,.alreadyexists
 		ld	hl,$3b0000		; applications start here
 .find:
 		push	hl
@@ -161,6 +191,12 @@ macro app_private
 		call	.lock
 		xor	a,a
 		ret
+.alreadyexists:
+		ld	a,1
+		ret
+.invalidos:
+		ld	a,2
+		ret
 
 .unlock:
 		ld	bc,$24
@@ -186,12 +222,18 @@ macro app_private
 		jq	.write
 
 .write:
+		jp	.woslow
+.wfunc := $-3
+.woslow:
 		ld	de,$C979ED
 		ld	hl,ti.heapBot - 3
 		ld	(hl),de
 		jp	(hl)
 
 .read:
+		jp	.roslow
+.rfunc := $-3
+.roslow:
 		ld	de,$C978ED
 		ld	hl,ti.heapBot - 3
 		ld	(hl),de
