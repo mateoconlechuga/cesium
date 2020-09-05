@@ -91,7 +91,7 @@ lcd_sprite:
 	sbc	hl,hl
 	ld	l,b
 	add	hl,hl
-	ld	de,vRamBuffer
+	ld	de,(lcd_buffer)
 	add	hl,de
 	ld	b,ti.lcdWidth / 2
 	mlt	bc
@@ -138,7 +138,7 @@ lcd_sprite_2x:
 	ld	h,ti.lcdWidth / 2
 	mlt	hl
 	add	hl,hl
-	ld	de,vRamBuffer
+	ld	de,(lcd_buffer)
 	add	hl,de
 	push	hl
 	sbc	hl,hl
@@ -197,7 +197,7 @@ lcd_rectangle:
 	add	hl,de
 	ex	de,hl
 .computed:
-	ld	ix,vRamBuffer			; de -> place to begin drawing
+	ld	ix,(lcd_buffer)			; de -> place to begin drawing
 	ld	(.width),bc
 .loop:
 	add	ix,de
@@ -263,7 +263,7 @@ lcd_compute:
 	mlt	de
 	add	hl,de
 	add	hl,de
-	ld	de,vRamBuffer
+	ld	de,(lcd_buffer)
 	add	hl,de
 	ret
 
@@ -298,7 +298,7 @@ lcd_y := $-1
 	ld	h,ti.lcdWidth / 2
 	mlt	hl
 	add	hl,hl
-	ld	de,vRamBuffer
+	ld	de,(lcd_buffer)
 	add	hl,de
 	add	hl,bc				; add x value
 	push	hl
@@ -378,3 +378,7 @@ lcd_num:
 	pop	af
 	call	ti.AddHLAndA
 	jp	lcd_string
+
+lcd_buffer:
+	dl	vRamBuffer
+

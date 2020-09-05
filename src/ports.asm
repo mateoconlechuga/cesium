@@ -48,6 +48,11 @@ port_setup:
 	sbc	hl,de
 	add	hl,de
 	jq	z,.os552
+	ld	de,$050505
+	or	a,a
+	sbc	hl,de
+	add	hl,de
+	jq	z,.os555
 	ld	de,$000605
 	or	a,a
 	sbc	hl,de
@@ -56,6 +61,10 @@ port_setup:
 .os560:
 	ld	hl,port_os560.unlock
 	ld	de,port_os560.lock
+	jq	.computeos
+.os555:
+	ld	hl,port_os555.unlock
+	ld	de,port_os555.lock
 	jq	.computeos
 .os552:
 	ld	hl,port_os552.unlock
@@ -146,6 +155,13 @@ port_os560:
 	ld	a,$d1
 	out0	($22),a
 	ret
+
+port_os555:
+.unlock:
+	ld	ix,$b96df
+	jq	port_os560.unlock0
+.lock:
+	jq	port_os560.lock0
 
 port_os552:
 .unlock:

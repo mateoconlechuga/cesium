@@ -447,13 +447,48 @@ end if
 	call	lcd_blit
 	jp	flash_backup_ram
 
+gui_show_cannot_hide:
+	ld	hl,ti.vRam
+	ld	(lcd_buffer),hl
+	ld	a,(color_senary)
+	call	util_set_primary
+if config_english
+	draw_rectangle 38, 105, 285, 121
+	draw_rectangle_outline 37, 104, 286, 121
+	set_cursor 44, 109
+else
+	draw_rectangle 6, 105, 310, 121
+	draw_rectangle_outline 5, 104, 311, 121
+	set_cursor 12, 109
+end if
+	call	util_restore_primary
+	set_normal_text
+	ld	hl,str_cannot_hide
+	call	lcd_string
+	di
+.debounce:
+	call	ti.GetCSC			; avoid using getcsc for usb
+	or	a,a
+	jr	nz,.debounce
+.getkey:
+	call	util_handle_apd
+	ld	iy,ti.flags
+	call	ti.DisableAPD			; disable os apd and use our own
+	call	util_show_time
+	call	ti.GetCSC			; avoid using getcsc for usb
+	or	a,a
+	jr	z,.getkey
+	ld	hl,vRamBuffer
+	ld	(lcd_buffer),hl
+	ret
+
 gui_ram_error:
 	ld	hl,string_ram_free
 	jr	gui_box_information
 
 gui_fat_transfer:
 	ld	hl,string_fat_transferring
-	;jr	gui_box_information
+	jq	gui_box_information
 
 gui_box_information:
 	push	hl

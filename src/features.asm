@@ -416,14 +416,13 @@ feature_item_attributes:
 .programs:
 	ld	a,(iy + prgm_flag)
 	ld	(iy + temp_prgm_flag),a
-	ld	a,$c9
 	ld	hl,.check_hide_smc
-	ld	(hl),a
 	xor	a,a
+	ld	(hl),a
 	ld	(current_option_selection),a
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	nz,.show_edit
-	ld	(hl),a
+	ld	(hl),$c9
 .show_edit:
 	ld	a,(color_tertiary)
 	ld	(lcd_text_bg),a			; highlight the currently selected item
@@ -499,6 +498,12 @@ feature_item_attributes:
 .draw:
 	jp	lcd_string
 
+.check_hide_toggle:
+	ret
+.check_hide_smc := $ - 1
+	pop	de
+	jq	gui_show_cannot_hide
+
 .check_what_to_do:
 	ld	hl,.show_edit
 	push	hl
@@ -506,11 +511,7 @@ feature_item_attributes:
 	dec	a
 	jr	z,.check_lock
 	dec	a
-	jr	z,.check_hide
-	jr	.toggle_option
-.check_hide:
-	ret
-.check_hide_smc := $ - 1
+	call	z,.check_hide_toggle
 	jr	.toggle_option
 .check_lock:
 	ld	a,(prgm_type)

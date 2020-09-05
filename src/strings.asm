@@ -176,7 +176,9 @@ string_fat_transferring:
 string_ram_error:
 	db	'Not enough free RAM',0
 str_invalid_os:
-	db  'Cannot use this OS',0
+	db	'Cannot use this OS',0
+str_cannot_hide:
+	db	'Cannot (un)hide archived programs',0
 
 end if
 
@@ -298,6 +300,8 @@ string_fat_transferring:
 string_ram_error:
 	db	'Pas assez de RAM libre',0
 str_invalid_os:
-	db  'Mauvaise version d''OS',0
+	db	'Mauvaise version d''OS',0
+str_cannot_hide:
+	db	'Impossible de cacher un programme archiv',$82,0
 
 end if
