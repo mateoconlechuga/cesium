@@ -163,7 +163,7 @@ Build Cesium using the following `make` commands, depending on what language you
     make french
 
 ### Credits
-(C) 2015 - 2019 Matt "MateoConLechuga" Waltz
+(C) 2015 - 2020 Matt "MateoConLechuga" Waltz
 Licensed under BSD 3 Clause.
 
 ### Source
