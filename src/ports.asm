@@ -115,7 +115,7 @@ port_ospre55:
 port_os560:
 .helper:
 	push	hl
-	ld	hl,$d0259a
+	ld	hl,$d09466
 	push	hl
 	push	de
 	xor	a,a
@@ -165,6 +165,7 @@ port_unlock:
 	push	de,bc,hl
 	call	0
 .code := $-3
+.pop:
 	pop	hl,bc,de
 	ret
 
@@ -172,7 +173,6 @@ port_lock:
 	push	de,bc,hl
 	call	0
 .code := $-3
-	pop	hl,bc,de
-	ret
+	jr	port_unlock.pop
 
 

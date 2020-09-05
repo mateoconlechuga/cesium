@@ -119,10 +119,6 @@ macro app_private
 		app.exports equ function
 	end macro
 
-	macro app_ld_hl_offset
-		ld	hl,app.prgm_start
-	end macro
-
 	macro app_create?
 		di
 		ld	hl,app.exe

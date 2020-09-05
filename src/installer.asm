@@ -81,22 +81,9 @@ relocate installer_execute_cesium, ti.mpLcdCrsrImage
 
 	call	ti.ChkFindSym			; delete the installer if needed
 	call	ti.DelVarArc
-	call	ti.ClrScrn
-	call	ti.HomeUp
-
 .no_delete:
-	ld	de,(ti.asm_prgm_size)		; load this program size
-	ld	hl,ti.userMem
-	call	ti.DelMem
-	or	a,a
-	sbc	hl,hl
-	ld	(ti.asm_prgm_size),hl
-	inc	h
-	call	ti.EnoughMem
-	jp	c,ti.ErrMemory
-
 	call	ti.ClrScrn
-	jp	ti.HomeUp
+	jq	ti.HomeUp
 
 end relocate
 
