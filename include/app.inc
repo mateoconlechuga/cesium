@@ -1,4 +1,30 @@
-; ----------------------
+; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+; 
+; 1. Redistributions of source code must retain the above copyright notice,
+;    this list of conditions and the following disclaimer.
+; 
+; 2. Redistributions in binary form must reproduce the above copyright notice,
+;    this list of conditions and the following disclaimer in the documentation
+;    and/or other materials provided with the distribution.
+; 
+; 3. Neither the name of the copyright holder nor the names of its contributors
+;    may be used to endorse or promote products derived from this software
+;    without specific prior written permission.
+; 
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+; POSSIBILITY OF SUCH DAMAGE.
 
 macro app_private
 	local app
@@ -71,6 +97,7 @@ macro app_private
 
 		app.code_offset := $% - app.start_offset
 		app.code := $% - app.header_start
+		app.prgm_start := $
 		org app.base
 	end macro
 
@@ -92,59 +119,28 @@ macro app_private
 		app.exports equ function
 	end macro
 
+	macro app_ld_hl_offset
+		ld	hl,app.prgm_start
+	end macro
+
 	macro app_create?
 		di
-		call	.create_code
-		jp	.continue
-.create_code:
-		call    $21ED4
-		push	hl
-		pop	ix
-		ld	hl,(ix + 6)
-		ld	a,l
-		cp	a,5
-		jq	nz,.invalidos
-		ld	a,h
-		cp	a,5
-		jq	c,.nooscheck
-		ld	de,$010505
-		or	a,a
-		sbc	hl,de
-		add	hl,de
-		jq	z,.os551
-		ld	de,$020505
-		or	a,a
-		sbc	hl,de
-		add	hl,de
-		jq	z,.os552
-		ld	de,$000605
-		or	a,a
-		sbc	hl,de
-		add	hl,de
-		jq	nz,.invalidos
-.os560:
-.os552:
-.os551:
-		jq	.invalidos
-.nooscheck:
 		ld	hl,app.exe
 		push	hl
 		call	$21100
 		pop	bc
-		jq	nz,.alreadyexists
+		jq	nz,.continue
 		ld	hl,$3b0000		; applications start here
 .find:
 		push	hl
 		call	$22044			; locates start of next application header
 		pop	de
 		jr	nz,.find
-.found:
 		ex	de,hl
 		dec	hl
 		dec	hl
 		dec	hl
 		push	hl
-		call	.unlock
 		pop	hl
 		ld	de,(app.end)
 		or	a,a
@@ -153,7 +149,9 @@ macro app_private
 		push	de
 		ld	hl,app.start
 		ld	bc,app.size+3
-		call	$02e0			; write app to flash memory
+		call	installer.port_unlock
+		call	$02e0
+		call	installer.port_lock
 		pop	hl
 		push	hl
 		ld	de,app.code_offset
@@ -180,7 +178,9 @@ macro app_private
 		ld	($d0062f),hl
 		ld	hl,$d0062f
 		ld	bc,3
+		call	installer.port_unlock
 		call	$02e0
+		call	installer.port_lock
 		pop	de
 		pop	hl
 		inc	hl
@@ -188,58 +188,9 @@ macro app_private
 		inc	hl
 		jr	.relocate
 .endrelocate:
-		call	.lock
 		xor	a,a
-		ret
-.alreadyexists:
-		ld	a,1
-		ret
-.invalidos:
-		ld	a,2
-		ret
-
-.unlock:
-		ld	bc,$24
-		ld	a,$8c
-		call	.write
-		ld	bc,$06
-		call	.read
-		or	a,4
-		call	.write
-		ld	bc,$28
-		ld	a,$4
-		jq	.write
-.lock:
-		ld	bc,$28
-		xor	a,a
-		call	.write
-		ld	bc,$06
-		call	.read
-		res	2,a
-		call	.write
-		ld	bc,$24
-		ld	a,$88
-		jq	.write
-
-.write:
-		jp	.woslow
-.wfunc := $-3
-.woslow:
-		ld	de,$C979ED
-		ld	hl,ti.heapBot - 3
-		ld	(hl),de
-		jp	(hl)
-
-.read:
-		jp	.roslow
-.rfunc := $-3
-.roslow:
-		ld	de,$C978ED
-		ld	hl,ti.heapBot - 3
-		ld	(hl),de
-		jp	(hl)
-
 .continue:
+
 	end macro
 
 	macro @ez80.word @value*

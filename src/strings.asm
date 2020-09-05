@@ -1,4 +1,30 @@
-; commonly used strings
+; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+; 
+; 1. Redistributions of source code must retain the above copyright notice,
+;    this list of conditions and the following disclaimer.
+; 
+; 2. Redistributions in binary form must reproduce the above copyright notice,
+;    this list of conditions and the following disclaimer in the documentation
+;    and/or other materials provided with the distribution.
+; 
+; 3. Neither the name of the copyright holder nor the names of its contributors
+;    may be used to endorse or promote products derived from this software
+;    without specific prior written permission.
+; 
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+; POSSIBILITY OF SUCH DAMAGE.
 
 string_cesium:
 	db	cesium_name,0
@@ -31,8 +57,6 @@ string_mode_select:
 string_min_os_version:
 	db	'5.0.0.0.0',0
 .length := $-.
-
-; english configuration
 
 if config_english
 
@@ -151,10 +175,12 @@ string_fat_transferring:
 	db	'Transferring...',0
 string_ram_error:
 	db	'Not enough free RAM',0
+str_invalid_os:
+	db  'Cannot use this OS',0
 
-; french configuration
+end if
 
-else
+if config_french
 
 string_primary_color:
 	db	'Couleur primaire',0
@@ -271,5 +297,7 @@ string_fat_transferring:
 	db	'Transfert en cours...',0
 string_ram_error:
 	db	'Pas assez de RAM libre',0
+str_invalid_os:
+	db  'Mauvaise version d''OS',0
 
 end if

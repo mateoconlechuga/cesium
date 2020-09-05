@@ -1,3 +1,31 @@
+; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+; 
+; 1. Redistributions of source code must retain the above copyright notice,
+;    this list of conditions and the following disclaimer.
+; 
+; 2. Redistributions in binary form must reproduce the above copyright notice,
+;    this list of conditions and the following disclaimer in the documentation
+;    and/or other materials provided with the distribution.
+; 
+; 3. Neither the name of the copyright holder nor the names of its contributors
+;    may be used to endorse or promote products derived from this software
+;    without specific prior written permission.
+; 
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+; POSSIBILITY OF SUCH DAMAGE.
+
 hook_token_stop := $d9 - $ce
 hook_parser:
 	db	$83			; hook signifier
@@ -15,7 +43,7 @@ hook_parser:
 
 hook_app_change:
 	db	$83
-	ld	c,a			; huh
+	ld	c,a
 	ld	a,b
 	cp	a,ti.cxPrgmEdit		; only allow when editing
 	ld	b,a
@@ -401,9 +429,17 @@ relocate hook_strings, ti.plotSScreen
 	db	">",0
 end relocate
 
+hook_flash_code_copy:
+	hooks_ports.copy
+	call	hooks.port_setup
+	or	a,a
+	ret	z
+	pop	hl
+	jq	hook_get_key_none
+
 hook_clear_backup:
-	call	flash_code_copy
-	call	flash_clear_backup
+	call	hook_flash_code_copy
+	call	hooks.flash_clear_backup
 	jr	hook_get_key_none
 
 hook_restore_ram:
@@ -434,8 +470,8 @@ hook_backup_ram:
 	call	ti.os.ClearStatusBarLow
 	ld	hl,string_ram_backup
 	call	helper_vputs_toolbar
-	call	flash_code_copy
-	call	flash_backup_ram
+	call	hook_flash_code_copy
+	call	hooks.flash_backup_ram
 	call	ti.DrawStatusBar
 	jr	hook_get_key_none
 
@@ -638,4 +674,13 @@ helper_num_convert:
 	ld	(de),a
 	inc	de
 	ret
+
+relocate hooks_ports, cesium_execution_base
+define hooks
+namespace hooks
+	include 'ports.asm'
+	include 'flash.asm'
+end namespace
+end relocate
+
 

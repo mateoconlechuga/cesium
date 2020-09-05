@@ -1,53 +1,33 @@
-; the os can't do 16 bit relocations... which means we need to copy flash code to ram before running :/
-; call this before calling any flash_* functions as necessary
-
-flash_code_copy:
-	flash_code.copy
-	ret
-
-relocate flash_code, ti.mpLcdCrsrImage
-
-write_port:
-	ld	de,$C979ED
-	ld	hl,ti.heapBot - 3
-	ld	(hl),de
-	jp	(hl)
-
-read_port:
-	ld	de,$C978ED
-	ld	hl,ti.heapBot - 3
-	ld	(hl),de
-	jp	(hl)
-
-flash_unlock:
-	ld	bc,$24
-	ld	a,$8c
-	call	write_port
-	ld	bc,$06
-	call	read_port
-	or	a,4
-	call	write_port
-	ld	bc,$28
-	ld	a,$4
-	jp	write_port
-
-flash_lock:
-	ld	bc,$28
-	xor	a,a
-	call	write_port
-	ld	bc,$06
-	call	read_port
-	res	2,a
-	call	write_port
-	ld	bc,$24
-	ld	a,$88
-	jp	write_port
-
-assume	adl = 1
+; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
+; 
+; Redistribution and use in source and binary forms, with or without
+; modification, are permitted provided that the following conditions are met:
+; 
+; 1. Redistributions of source code must retain the above copyright notice,
+;    this list of conditions and the following disclaimer.
+; 
+; 2. Redistributions in binary form must reproduce the above copyright notice,
+;    this list of conditions and the following disclaimer in the documentation
+;    and/or other materials provided with the distribution.
+; 
+; 3. Neither the name of the copyright holder nor the names of its contributors
+;    may be used to endorse or promote products derived from this software
+;    without specific prior written permission.
+; 
+; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+; POSSIBILITY OF SUCH DAMAGE.
 
 flash_backup_ram:
-	flash_unlock_m
-
+	call	port_unlock
 	ld	a,$3f
 	call	flash_erase_sector		; clean out the flash sectors
 	ld	a,$3e
@@ -56,7 +36,6 @@ flash_backup_ram:
 	call	flash_erase_sector
 	ld	a,$3c
 	call	flash_erase_sector
-
 	ld	hl,$d00001
 	ld	(hl),$a5
 	dec	hl
@@ -64,12 +43,10 @@ flash_backup_ram:
 	ld	de,$3c0000			; write all of ram
 	ld	bc,$40000
 	call	ti.WriteFlash
-
-	flash_lock_m
-	ret
+	jp	port_lock
 
 flash_erase_sector:
-	ld	bc,$f8				; lol, what a flaw
+	ld	bc,$f8
 	push	bc
 	jp	ti.EraseFlashSector
 
@@ -84,16 +61,18 @@ flash_clear_backup:
 	ld	a,(de)
 	or	a,a
 	ret	z				; dont clear if done already
-	flash_unlock_m
+	call	port_unlock
 	call	ti.WriteFlashByte		; clear old backup
-	flash_lock_m
-	ret
+	jp	port_lock
 
-string_ram_backup:
 if config_english
+string_ram_backup:
 	db	'Backing up...',0
-else
+end if
+
+if config_french
+string_ram_backup:
 	db	'Sauvegarde en cours...',0
 end if
 
-end relocate
+
