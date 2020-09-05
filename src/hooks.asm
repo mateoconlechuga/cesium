@@ -49,35 +49,31 @@ hook_app_change:
 	ld	b,a
 	ret	nz
 	ld	a,c
+	or	a,a
+	jq	z,.close_editor
 	cp	a,ti.cxMode
 	ret	z
 	cp	a,ti.cxFormat
 	ret	z
 	cp	a,ti.cxTableSet
 	ret	z
-	jr	.wut
-
-	;ld	a,c
-	;cp	a,ti.kEnter		; wut ti, this is how you run a program?
-	;jr	nz,.wut
-	;push	hl
-	;call	ti.PopOP1
-	;pop	hl
-	;ret
-
-.wut:
+	call	.close_editor
+	ld	a,return_prgm
+	ld	(return_info),a
+	jp	cesium_start
+.close_editor:
+	push	af, bc, hl
 	call	ti.CursorOff
 	call	ti.CloseEditEqu
 	call	ti.PopOP1
 	call	ti.ChkFindSym
-	jr	c,.dont_archive
+	jr	c,.noarc
 	ld	a,(edit_status)
 	or	a,a
 	call	nz,cesium.Arc_Unarc
-.dont_archive:
-	ld	a,return_prgm
-	ld	(return_info),a
-	jp	cesium_start
+.noarc:
+	pop	hl, bc, af
+	ret
 
 hook_get_key:
 	db	$83
