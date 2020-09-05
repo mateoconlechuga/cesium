@@ -110,10 +110,10 @@ hook_get_key:
 	jq	z,hook_restore_ram
 	ret
 
-label_number     := ti.cursorImage + 3
+label_number := ti.cursorImage + 3
 label_number_of_pages := label_number + 3
 label_page := label_number_of_pages + 3
-label_name       := label_page + 3
+label_name := label_page + 3
 
 hook_show_labels:
 	di
@@ -127,22 +127,20 @@ hook_show_labels:
 
 	or	a,a
 	sbc	hl,hl
-	ld	(label_number),hl
 	ld	(label_page),hl
+	inc	l
+	inc	l
+	ld	(label_number),hl
 	call	ti.ClrTxtShd
 	call	ti.BufToTop
 
 	call	.countlabels
 
 	ld	bc,0
-	ld	hl,(label_number)
-	add	hl,de
-	or	a,a
-	sbc	hl,de
-	jq	z,.movetolabel
-
 .getlabelloop:
 	call 	ti.ClrScrn
+	call	ti.BufToTop
+
 	call	.drawlabels
 
 	ld	hl,(label_page)
@@ -158,42 +156,42 @@ hook_show_labels:
 	call	ti.DisableAPD
 	call	ti.GetCSC
 	or	a,a
-	jr	z,.getkey
+	jq	z,.getkey
 	ld	bc,1
 	cp	a,ti.sk0
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk1
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk2
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk3
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk4
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk5
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk6
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk7
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk8
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	inc	c
 	cp	a,ti.sk9
-	jr	z,.movetolabel
+	jq	z,.movetolabel
 	cp	a,ti.skLeft
 	jq	z,.prevpage
 	cp	a,ti.skRight
-	jr	z,.nextpage
-	jr	.getkey
+	jq	z,.nextpage
+	jq	.getkey
 
 .movetolabel:
 	ld	a,(ti.curRow)
@@ -201,6 +199,24 @@ hook_show_labels:
 	jr	z,.okay
 	jr	c,.getkey
 .okay:
+	ld	hl,(label_page)
+        add	hl,de
+	or	a,a
+	sbc	hl,de
+	jr	nz,.normallabel
+	ld	a,c
+	dec	c
+	dec	c
+	dec	a
+	jq	nz,.nottop
+	call	ti.BufToTop
+	jq	.gotoeditor
+.nottop:
+	dec	a
+	jq	nz,.normallabel
+	call	ti.BufToBtm
+	jq	.gotoeditor
+.normallabel:
 	call	.computepageoffsethl
 	add	hl,bc
 	push	hl
@@ -208,6 +224,7 @@ hook_show_labels:
 	pop	bc
 	call	.skiplabels
 	call	ti.BufLeft
+.gotoeditor:
 	call 	ti.ClrScrn
 	xor	a,a
 	ld	(ti.curCol),a
@@ -312,10 +329,28 @@ hook_show_labels:
 	ret
 
 .drawlabels:
+	xor	a,a
+	ld	(ti.curCol),a
+	ld	(ti.curRow),a
+	ld	hl,(label_page)
+        add	hl,de
+	or	a,a
+	sbc	hl,de
+	jr	nz,.normalpage
+	ld	hl,.top_label
+	call	ti.PutS
+	xor	a,a
+	ld	(ti.curCol),a
+	inc	a
+	ld	(ti.curRow),a
+	ld	hl,.bottom_label
+	call	ti.PutS
 	call	ti.BufToTop
 	xor	a,a
-	ld	(ti.curRow),a
 	ld	(ti.curCol),a
+	ld	a,2
+	ld	(ti.curRow),a
+.normalpage:
 	call	.computepageoffset
 	call	.skiplabels
 	ld	hl,label_name
@@ -396,8 +431,8 @@ hook_show_labels:
 	ld	(ti.curRow),a
 	cp	a,10
 	pop	hl
-	ret	z
-	jp	.parse_labels
+	jq	nz,.parse_labels
+	ret
 
 .computepageoffsethl:
 	push	bc
@@ -406,8 +441,16 @@ hook_show_labels:
 	ret
 .computepageoffset:
 	ld	hl,(label_page)
+	add	hl,de
+	or	a,a
+	sbc	hl,de
+	push	hl
+	pop	bc
+	ret	z
 	ld	bc,10
 	call	ti._imulu
+	dec	hl
+	dec	hl
 	push	hl
 	pop	bc
 	ret
@@ -423,6 +466,10 @@ relocate hook_strings, ti.plotSScreen
 .total_page_string:
 	db	"000"
 	db	">",0
+.top_label:
+	db	"0:PRGM TOP",0
+.bottom_label:
+	db	"1:PRGM BOTTOM",0
 end relocate
 
 hook_flash_code_copy:
