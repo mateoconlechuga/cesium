@@ -418,13 +418,15 @@ hook_show_labels:
 .loopdisplay:
 	ld	a,(ti.curCol)
 	cp	a,$19
-	jr	z,.leftedge
+	jr	z,.leftedgepop
 	ld	a,(hl)
 	inc	hl
 	call	ti.PutC
 	djnz	.loopdisplay
 	pop	hl
 	jr	.displayline
+.leftedgepop:
+	pop	hl
 .leftedge:
 	ld	a,(ti.curRow)
 	inc	a
