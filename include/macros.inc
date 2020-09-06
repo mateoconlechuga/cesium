@@ -28,9 +28,8 @@
 
 include 'fasmg-ez80/ez80.inc'
 include 'fasmg-ez80/tiformat.inc'
-format ti executable 'CESIUM'
+format ti archived executable protected program 'CESIUM'
 include 'app.inc'
-;include 'fasmg-ez80/symbol_table.inc' ; used for debugging
 include 'ti84pceg.inc'
 
 macro relocate? name, address*

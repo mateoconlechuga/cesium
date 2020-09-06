@@ -114,7 +114,6 @@ execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal
-	call	ti.ClrParserHook
 	call	ti.ClrAppChangeHook
 	call	util_setup_shortcuts
 	res	ti.useTokensInString,(iy + ti.clockFlags)
@@ -287,12 +286,12 @@ execute_ti.basic_program:
 	ld	(ti.cxCurApp),a
 	call	ti.SaveCmdShadow
 	call	ti.SaveShadow
+	xor	a,a
+	ld	(ti.kbdGetKy),a
+	call	hook_chain_parser
+	call	ti.EnableAPD
 	ld	hl,return_basic
 	push	hl
-	sub	a,a
-	ld	(ti.kbdGetKy),a
-	call	ti.EnableAPD
-	ld	hl,hook_parser
-	call	ti.SetParserHook
 	ei
 	jq	ti.ParseInp				; run program
+

@@ -29,17 +29,27 @@
 hook_token_stop := $d9 - $ce
 hook_parser:
 	db	$83			; hook signifier
+	push	af
 	cp	a,2
-	jr	z,.maybe_stop
+	jq	z,.maybe_stop
+.chain:
+	ld	a,(ti.appErr2)
+	cp	a,$7f
+	jq	nz,.no_chain
+	pop	af
+	jp	ti.appErr2 + 1
+.no_chain:
+	pop	af
 	xor	a,a
 	ret
 .maybe_stop:
 	ld	a,hook_token_stop	; check if stop token
 	cp	a,b
+	jq	nz,.chain
+.stop:
+	pop	af
 	ld	a,ti.E_AppErr1
-	jp	z,ti.JError
-	xor	a,a
-	ret
+	jq	ti.JError
 
 hook_app_change:
 	db	$83
@@ -686,6 +696,74 @@ hook_home:
 	dl	$f8
 	dl	$f8
 	db	0
+
+hook_chain_parser:
+	xor	a,a
+	ld	(ti.appErr2),a
+	bit	ti.parserHookActive,(iy + ti.hookflags4)
+	jq	z,.no_chain
+	ld	hl,(ti.parserHookPtr)
+	ld	de,hook_parser
+	or	a,a
+	sbc	hl,de
+	add	hl,de
+	jq	z,.check_if_bad_exit
+.chain_hooks:
+	ld	a,(hl)
+	cp	a,$83
+	jq	nz,.no_chain
+	ld	a,$7F
+	ex	de,hl
+	inc	de
+	ld	hl,ti.appErr2
+	ld	(hl),$7f
+	inc	hl
+	ld	(hl),$c3
+	inc	hl
+	ld	(hl),de
+	jq	.no_chain
+.check_if_bad_exit:
+	ld	hl,ti.appErr2
+	ld	a,(hl)
+	cp	a,$7f
+	jq	nz,.no_chain
+	inc	hl
+	ld	a,(hl)
+	cp	a,$c3
+	jq	nz,.no_chain				; still has old hook!
+	inc	hl
+	ld	hl,(hl)
+	dec	hl
+	jq	.chain_hooks
+.no_chain:
+	ld	hl,hook_parser
+	jq	ti.SetParserHook
+
+hook_restore_parser:
+	bit	ti.parserHookActive,(iy + ti.hookflags4)
+	jq	z,.clear_parser
+	ld	hl,(ti.parserHookPtr)
+	ld	de,hook_parser
+	or	a,a
+	sbc	hl,de
+	add	hl,de
+	ret	nz
+	ld	hl,ti.appErr2
+	ld	a,(hl)
+	cp	a,$7f
+	jq	nz,.clear_parser
+	inc	hl
+	ld	a,(hl)
+	cp	a,$c3
+	jq	nz,.clear_parser
+	inc	hl
+	ld	hl,(hl)
+	dec	hl
+	xor	a,a
+	ld	(ti.appErr2),a
+	jq	ti.SetParserHook
+.clear_parser:
+	jq	ti.ClrParserHook
 
 helper_vputs_toolbar:
 	di

@@ -161,6 +161,7 @@ return:
 	call	ti.DeleteTempPrograms
 	call	ti.CleanAll
 	di
+	call	hook_restore_parser
 	ld	de,(ti.asm_prgm_size)
 	or	a,a
 	sbc	hl,hl
