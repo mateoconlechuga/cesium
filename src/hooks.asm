@@ -37,7 +37,8 @@ hook_parser:
 	cp	a,$7f
 	jq	nz,.no_chain
 	pop	af
-	jp	ti.appErr2 + 1
+	ld	ix,(ti.appErr2 + 1)
+	jp	(ix)
 .no_chain:
 	pop	af
 	xor	a,a
@@ -712,13 +713,10 @@ hook_chain_parser:
 	ld	a,(hl)
 	cp	a,$83
 	jq	nz,.no_chain
-	ld	a,$7F
 	ex	de,hl
 	inc	de
 	ld	hl,ti.appErr2
 	ld	(hl),$7f
-	inc	hl
-	ld	(hl),$c3
 	inc	hl
 	ld	(hl),de
 	jq	.no_chain
@@ -727,10 +725,6 @@ hook_chain_parser:
 	ld	a,(hl)
 	cp	a,$7f
 	jq	nz,.no_chain
-	inc	hl
-	ld	a,(hl)
-	cp	a,$c3
-	jq	nz,.no_chain				; still has old hook!
 	inc	hl
 	ld	hl,(hl)
 	dec	hl
@@ -751,10 +745,6 @@ hook_restore_parser:
 	ld	hl,ti.appErr2
 	ld	a,(hl)
 	cp	a,$7f
-	jq	nz,.clear_parser
-	inc	hl
-	ld	a,(hl)
-	cp	a,$c3
 	jq	nz,.clear_parser
 	inc	hl
 	ld	hl,(hl)
