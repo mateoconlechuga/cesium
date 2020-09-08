@@ -30,7 +30,7 @@ macro app_private
 	local app
 	element app.base
 
-	min_version := '5.0.0.0.0'
+	min_version := '5.0.0.0000'
 
 	postpone
 		virtual
