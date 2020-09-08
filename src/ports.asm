@@ -26,66 +26,64 @@
 ; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ; POSSIBILITY OF SUCH DAMAGE.
 
+os_num = 0
+
+macro ports? v, lock, unlock
+	match major.mid.minor.build, v
+    		db major, mid, minor
+		dl build
+	end match
+	dl	lock
+	dl	unlock
+	os_num = os_num + 1
+end macro
+
+os_table:
+	ports	5.6.0.0020, port_os560.lock, port_os560.unlock
+	ports	5.5.5.0011, port_os560.lock, port_os555.unlock
+	ports	5.5.2.0044, port_os560.lock, port_os552.unlock
+	ports	5.5.1.0038, port_os560.lock, port_os551.unlock
+
 port_setup:
 	di
 	call    $21ED4
 	push	hl
 	pop	ix
-	ld	hl,(ix + 6)
-	ld	a,l
+	lea	de,ix + 6
+	ld	a,(de)
 	cp	a,5
 	jq	nz,.invalid_os
-	ld	a,h
+	inc	de
+	ld	a,(de)
 	cp	a,5
 	jq	c,.ospre55
-	ld	de,$010505
-	or	a,a
-	sbc	hl,de
-	add	hl,de
-	jq	z,.os551
-	ld	de,$020505
-	or	a,a
-	sbc	hl,de
-	add	hl,de
-	jq	z,.os552
-	ld	de,$050505
-	or	a,a
-	sbc	hl,de
-	add	hl,de
-	jq	z,.os555
-	ld	de,$000605
-	or	a,a
-	sbc	hl,de
-	add	hl,de
-	jq	nz,.invalid_os
-.os560:
-	ld	hl,port_os560.unlock
-	ld	de,port_os560.lock
-	jq	.computeos
-.os555:
-	ld	hl,port_os555.unlock
-	ld	de,port_os555.lock
-	jq	.computeos
-.os552:
-	ld	hl,port_os552.unlock
-	ld	de,port_os552.lock
-	jq	.computeos
-.os551:
-	ld	hl,port_os551.unlock
-	ld	de,port_os551.lock
-	jq	.computeos
-.ospre55:
-	ld	hl,port_ospre55.unlock
-	ld	de,port_ospre55.lock
-	jq	.computeos
-.computeos:
+	dec	de
+	ld	b,os_num
+	ld	ix,os_table
+.find:
+	lea	hl,ix
+	push	de,bc
+	ld	b,6
+	call	ti.StrCmpre
+	pop	bc,de
+	jq	z,.found
+	lea	ix,ix + 12
+	djnz	.find
+.invalid_os:
+	inc	a
+	ret
+.found:
+	ld	de,(ix + 6)
+	ld	hl,(ix + 9)
+.store_smc:
 	ld	(port_unlock.code),hl
 	ld	(port_lock.code),de
 	xor	a,a
 	ret
-.invalid_os:
-	ld	a,1
-	ret
+.ospre55:
+	ld	hl,port_ospre55.unlock
+	ld	de,port_ospre55.lock
+	jq	.store_smc
 
 port_ospre55:
 .unlock:
@@ -121,19 +119,32 @@ port_ospre55:
 	ld	(hl),de
 	jp	(hl)
 
+port_os555:
+.unlock:
+	ld	ix,$b96df
+	jq	port_os560.unlock0
+
+port_os552:
+.unlock:
+	ld	ix,$bd573
+	jq	port_os560.unlock0
+
+port_os551:
+.unlock:
+	ld	ix,$bd55f
+	jq	port_os560.unlock0
+
 port_os560:
-.helper:
-	push	hl
-	ld	hl,$d09466
-	push	hl
-	push	de
-	xor	a,a
-	jp	(ix)
 .unlock:
 	ld	ix,$b99bb
 .unlock0:
 	ld	hl,.unlockhelper
-	jq	.helper
+	push	hl
+	ld	hl,$d09466
+	push	hl
+	push	de
+	ld	a,(hl)
+	jp	(ix)
 .unlockhelper:
 	ld	a,$8c
 	out0	($24),a
@@ -144,7 +155,6 @@ port_os560:
 	out0	($28),a
 	ret
 .lock:
-.lock0:
 	xor	a,a
 	out0	($28),a
 	in0	a,($06)
@@ -155,27 +165,6 @@ port_os560:
 	ld	a,$d1
 	out0	($22),a
 	ret
-
-port_os555:
-.unlock:
-	ld	ix,$b96df
-	jq	port_os560.unlock0
-.lock:
-	jq	port_os560.lock0
-
-port_os552:
-.unlock:
-	ld	ix,$bd573
-	jq	port_os560.unlock0
-.lock:
-	jq	port_os560.lock0
-
-port_os551:
-.unlock:
-	ld	ix,$bd55f
-	jq	port_os560.unlock0
-.lock:
-	jq	port_os560.lock0
 
 port_unlock:
 	push	de,bc,hl
@@ -189,6 +178,6 @@ port_lock:
 	push	de,bc,hl
 	call	0
 .code := $-3
-	jr	port_unlock.pop
+	jq	port_unlock.pop
 
 
