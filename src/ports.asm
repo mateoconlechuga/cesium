@@ -143,7 +143,7 @@ port_os560:
 	ld	hl,$d09466
 	push	hl
 	push	de
-	ld	a,(hl)
+	xor	a,a
 	jp	(ix)
 .unlockhelper:
 	ld	a,$8c
