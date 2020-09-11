@@ -32,6 +32,8 @@ FLAGS_ENGLISH := -i 'config_english := 1' -i 'config_french := 0'
 FLAGS_FRENCH := -i 'config_english := 0' -i 'config_french := 1'
 BIN_ENGLISH := cesium.8xp
 BIN_FRENCH := cesium_french.8xp
+RELEASE_DIR := cesium
+RELEASE_ZIP := cesium.zip
 
 all: english french
 
@@ -41,8 +43,25 @@ english:
 french:
 	fasmg $(FLAGS_FRENCH) $(SRC) $(BIN_FRENCH)
 
-clean:
-	rm -f $(BIN_ENGLISH) $(BIN_FRENCH)
+compress: english french
+	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_ENGLISH) --output $(BIN_ENGLISH).zx7b.8xp
+	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_FRENCH) --output $(BIN_FRENCH).zx7b.8xp
 
-.PHONY: all english french clean
+release: all
+	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_ENGLISH) --output $(BIN_ENGLISH).zx7b.8xp
+	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_FRENCH) --output $(BIN_FRENCH).zx7b.8xp
+	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(RELEASE_ZIP)
+	rm -rf  $(RELEASE_DIR)
+	mkdir -p  $(RELEASE_DIR)
+	mv $(BIN_ENGLISH).zx7b.8xp $(RELEASE_DIR)/$(BIN_ENGLISH)
+	mv $(BIN_FRENCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_FRENCH)
+	cp readme.md $(RELEASE_DIR)/readme.md
+	zip -9r $(RELEASE_ZIP) $(RELEASE_DIR)
+
+clean:
+	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(RELEASE_ZIP)
+	rm -rf  $(RELEASE_DIR)
+
+.PHONY: all english french clean release
+
 
