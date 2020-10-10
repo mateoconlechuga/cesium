@@ -122,6 +122,14 @@ macro draw_rectangle_outline? Lx, Ty, Rx, By
 	call	lcd_rectangle_outline.computed
 end macro
 
+macro draw_rectangle_outline_color? Lx, Ty, Rx, By
+	ld	bc,Rx - Lx + 1
+	ld	d,By - Ty + 1
+	ld	e,Ty
+	ld	hl,Lx
+	call	lcd_rectangle_outline.color
+end macro
+
 macro draw_rectangle_color? Lx, Ty, Rx, By
 	call	util_set_primary
 	draw_rectangle Lx, Ty, Rx, By
@@ -229,17 +237,18 @@ password_max_length := 10
 settings_flag := $22
 setting_basic_indicator := 0
 setting_clock := 1
-setting_ram_backup := 2
-setting_hide_hidden := 3
-setting_enable_shortcuts := 4
-setting_delete_confirm := 5
+setting_show_battery := 2
+setting_ram_backup := 3
+setting_hide_hidden := 4
+setting_enable_shortcuts := 5
+setting_delete_confirm := 6
 
 settings_adv_flag := $21
 setting_special_directories := 0
 setting_list_count := 1
 setting_enable_usb := 2
 
-settings_default := (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_basic_indicator)
+settings_default := (1 shl setting_show_battery) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_basic_indicator)
 settings_adv_default := (1 shl setting_enable_usb) or (1 shl setting_special_directories)
 
 ; sorting flags
@@ -283,8 +292,10 @@ temp_prgm_is_usb_directory := 4
 
 ; location of items
 
-clock_x := 255
+clock_x := 230
 clock_y := 7
+item_count_x := 160
+item_count_y := 7
 
 ; return flags
 

@@ -129,6 +129,8 @@ string_setting_indicator:
 	db	'Disable busy indicator in programs',0
 string_setting_clock:
 	db	'Display clock time',0
+string_setting_show_battery:
+	db	'Display battery status',0
 string_setting_show_hidden:
 	db	'Hide hidden programs',0
 string_setting_ram_backup:

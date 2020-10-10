@@ -224,6 +224,7 @@ lcd_rectangle:
 lcd_rectangle_outline:
 .computed:
 	ld	a,(color_secondary)		; always use secondary color
+.color:
 	push	bc
 	push	hl
 	push	de

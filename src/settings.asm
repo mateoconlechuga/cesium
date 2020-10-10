@@ -28,7 +28,7 @@
 
 ; common routines for working with things involving settings
 
-SETTINGS_ITEMS_PAGE_1 := 8
+SETTINGS_ITEMS_PAGE_1 := 9
 SETTINGS_ITEMS_PAGE_2 := 5
 
 settings_load:
@@ -466,26 +466,29 @@ setting_draw_options:
 	print	string_setting_color, 25, 49
 	print	string_setting_indicator, 25, 69
 	print	string_setting_clock, 25, 89
-	print	string_setting_ram_backup, 25, 109
-	print	string_setting_show_hidden, 25, 129
-	print	string_setting_enable_shortcuts, 25, 149
-	print	string_setting_delete_confirm, 25, 169
-	print	string_setting_screen_brightness, 25, 189
+	print	string_setting_show_battery, 25, 109
+	print	string_setting_ram_backup, 25, 129
+	print	string_setting_show_hidden, 25, 149
+	print	string_setting_enable_shortcuts, 25, 169
+	print	string_setting_delete_confirm, 25, 189
+	print	string_setting_screen_brightness, 25, 209
 
 	draw_highlighted_option 10, 48, 0
 	bit	setting_basic_indicator,(iy + settings_flag)
 	draw_highlightable_option 10, 68, 1
 	bit	setting_clock,(iy + settings_flag)
 	draw_highlightable_option 10, 88, 2
-	bit	setting_ram_backup,(iy + settings_flag)
+	bit	setting_show_battery,(iy + settings_flag)
 	draw_highlightable_option 10, 108, 3
-	bit	setting_hide_hidden,(iy + settings_flag)
+	bit	setting_ram_backup,(iy + settings_flag)
 	draw_highlightable_option 10, 128, 4
-	bit	setting_enable_shortcuts,(iy + settings_flag)
+	bit	setting_hide_hidden,(iy + settings_flag)
 	draw_highlightable_option 10, 148, 5
-	bit	setting_delete_confirm,(iy + settings_flag)
+	bit	setting_enable_shortcuts,(iy + settings_flag)
 	draw_highlightable_option 10, 168, 6
-	draw_highlighted_option 10, 188, 7
+	bit	setting_delete_confirm,(iy + settings_flag)
+	draw_highlightable_option 10, 188, 7
+	draw_highlighted_option 10, 208, 8
 	ret
 
 settings_appvar:
