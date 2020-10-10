@@ -130,7 +130,7 @@ string_setting_indicator:
 string_setting_clock:
 	db	'Display clock time',0
 string_setting_show_hidden:
-	db	'Show hidden programs',0
+	db	'Hide hidden programs',0
 string_setting_ram_backup:
 	db	'Backup RAM before executing programs',0
 string_setting_enable_shortcuts:

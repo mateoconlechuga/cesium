@@ -198,7 +198,8 @@ find_programs:
 	jr	z,.not_valid
 	cp	a,27				; hidden?
 	jr	nc,.not_hidden
-	add	a,64				; i honestly have no idea why this has to be here, but it does
+	bit	setting_hide_hidden,(iy + settings_flag)
+	jq	nz,.not_valid
 .not_hidden:
 	inc	hl
 	ex	de,hl
@@ -208,8 +209,8 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	inc	hl
 	inc	hl
 	inc	hl
-.file_type := $+1
 	ld	(hl),0
+.file_type := $-1
 	inc	hl				; 4 bytes per entry - pointer to name + type of program
 	ld	(item_locations_ptr),hl
 	ex	de,hl
@@ -226,6 +227,7 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 .skip_name:
 	ld	e,(hl)				; put name length in e to skip
 	inc	e				; add 1 to go to [t] of next entry
+	or	a,a
 	sbc	hl,de
 	jp	.loop
 
