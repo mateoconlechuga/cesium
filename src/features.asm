@@ -32,17 +32,12 @@ NORMAL_CHARS    := 255
 NUMBER_CHARS    := 254
 LOWERCASE_CHARS := 253
 
-feater_setup_editor:
-	res	item_renaming,(iy + item_flag)
-	set	item_set_editor,(iy + item_flag)
-	jr	feature_item_rename.setup_name
 feature_item_new:
 	ld	a,(current_screen)
 	cp	a,screen_programs
 	jp	nz,main_loop
 	bit	cesium_is_nl_disabled,(iy + cesium_flag)
 	jp	nz,main_loop
-	res	item_set_editor,(iy + item_flag)
 	res	item_renaming,(iy + item_flag)
 	jr	feature_item_rename.setup_name
 feature_item_rename:
@@ -52,7 +47,6 @@ feature_item_rename:
 	cp	a,screen_appvars
 	jp	nz,main_loop
 .continue:
-	res	item_set_editor,(iy + item_flag)
 	set	item_renaming,(iy + item_flag)
 	ld	a,(prgm_type)
 	cp	a,file_dir
@@ -169,11 +163,8 @@ current_input_mode := $-1
 .clear:
 	ld	a,(color_senary)
 	draw_rectangle_color 199, 173, 313, 215
-	ld	hl,string_editor_name
-	bit	item_set_editor,(iy + item_flag)
-	jr	nz,.rename
-	bit	item_renaming,(iy + item_flag)
 	ld	hl,string_rename
+	bit	item_renaming,(iy + item_flag)
 	jr	nz,.rename
 	ld	hl,string_new_prgm
 .rename:
@@ -219,8 +210,6 @@ current_input_mode := $-1
 	ld	(hl),0
 	bit	item_renaming,(iy + item_flag)
 	jr	nz,.renaming
-	bit	item_set_editor,(iy + item_flag)
-	jq	nz,.setting_editor_name
 	ld	hl,name_buffer
 	ld	(hl),ti.ProgObj			; already in op1
 	call	ti.Mov9ToOP1
@@ -352,25 +341,26 @@ feature_item_delete:
 	jq	fat_file_delete
 .notfatfile:
 	call	feature_check_valid
-	bit	setting_delete_confirm,(iy + settings_flag)
-	jr	z,.delete
-	call	.showconfirm
-.delete:
 	ld	a,(current_screen)
 	cp	a,screen_apps
 	jr	z,.delete_app
 .delete_program:
 	call	util_check_if_vat_page_directory
 	jp	z,main_start
-	call	.getinput
+	bit	setting_delete_confirm,(iy + settings_flag)
+	call	nz,.showconfirm
+	bit	setting_delete_confirm,(iy + settings_flag)
+	call	nz,.getinput
 	call	util_move_prgm_name_to_op1	; move the selected name to op1
-	call	ti.ChkFindSym
-	call	ti.DelVarArc
+	call	util_delete_var.op1
 	jr	.refresh
 .delete_app:
 	call	util_check_if_app_page_directory
 	jp	z,main_start
-	call	.getinput
+	bit	setting_delete_confirm,(iy + settings_flag)
+	call	nz,.showconfirm
+	bit	setting_delete_confirm,(iy + settings_flag)
+	call	nz,.getinput
 	ld	hl,(item_ptr)
 	ld	bc,0 - $100
 	add	hl,bc
@@ -577,7 +567,7 @@ feature_item_attributes:
 	jp	main_start
 
 feature_check_valid:
-	bit	setting_special_directories,(iy + settings_flag)
+	bit	setting_special_directories,(iy + settings_adv_flag)
 	jr	z,.empty_check
 	ld	hl,(current_selection_absolute)
 	compare_hl_zero

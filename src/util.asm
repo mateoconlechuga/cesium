@@ -300,12 +300,12 @@ util_set_more_items_flag:
 	set	scroll_down_available,(iy + item_flag)
 	ret
 
-util_delete_temp_program_get_name:
-	ld	hl,util_temp_program_object
+util_delete_var:
 	call	ti.Mov9ToOP1
+.op1:
 	call	ti.PushOP1
 	call	ti.ChkFindSym
-	call	nc,ti.DelVarArc			; delete the temp prgm if it exists
+	call	nc,ti.DelVarArc
 	jp	ti.PopOP1
 
 util_get_archived_name:

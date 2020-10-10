@@ -33,7 +33,7 @@ view_vat_items:
 	set_normal_text
 	compare_hl_zero
 	jr	nz,.can_view
-	ld	a,(iy + settings_flag)
+	ld	a,(iy + settings_adv_flag)
 	and	a,(1 shl setting_special_directories) or (1 shl setting_enable_usb)
 	jr	nz,.can_view				; can't show anything
 	call	gui_draw_static_options

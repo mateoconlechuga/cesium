@@ -53,7 +53,7 @@ string_unknown:
 string_appvar:
 	db	'Data',0
 string_mode_select:
-	db	'   < ',$7e,'MODE] >',0
+	db	': Press ',$7e,'MODE] to set',0
 string_min_os_version:
 	db	'5.0.0.0.0',0
 .length := $-.
@@ -119,26 +119,36 @@ string_editor_name:
 	db	'Prgm Editor',0
 string_delete_confirmation:
 	db	'Delete?: ',$7e,'ZOOM]-Yes  ',$7e,'GRAPH]-No',0
-string_general_settings:
-	db	'General Settings',0
+string_setting_page1:
+	db	'Press <> arrow keys to switch pages  ',$7e,'1 of 2]',0
+string_setting_page2:
+	db	'Press <> arrow keys to switch pages  ',$7e,'2 of 2]',0
 string_setting_color:
-	db	'Cesium Color',0
+	db	'Change Cesium Colors',0
 string_setting_indicator:
 	db	'Disable busy indicator in programs',0
-string_setting_list_count:
-	db	'Show directory item count',0
 string_setting_clock:
-	db	'Display clock',0
+	db	'Display clock time',0
+string_setting_show_hidden:
+	db	'Show hidden programs',0
 string_setting_ram_backup:
 	db	'Backup RAM before executing programs',0
+string_setting_enable_shortcuts:
+	db	'Enable ',$7e,'ON] key shortcuts',0
+string_setting_delete_confirm:
+	db	'Show confirm deletion prompt',0
+string_setting_screen_brightness:
+	db	'Change screen brightness',0
 string_setting_special_directories:
 	db	'Show special directories',0
-string_setting_enable_shortcuts:
-	db	'Enable keypad shortcuts',0
-string_settings_usb_edit:
+string_setting_list_count:
+	db	'Show item listing count',0
+string_setting_poweron_password:
+	db	'Change poweron password',0
+string_setting_editor_prgm:
+	db	'Change editor program',0
+string_setting_usb_enable:
 	db	'Enable USB flash drive access',0
-string_settings_delete_confirm:
-	db	'Show item deletion confirmation prompt',0
 string_new_password:
 	db	'Input new password: ',0
 string_usb_info_0:

@@ -76,8 +76,6 @@ main_loop:
 	jp	z,feature_item_edit
 	cp	a,ti.skDel
 	jp	z,feature_item_delete
-	cp	a,ti.skTrace
-	jp	z,feater_setup_editor
 	sub	a,ti.skAdd
 	jp	c,main_loop
 	cp	a,ti.skMath - ti.skAdd + 1

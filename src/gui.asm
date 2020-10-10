@@ -335,10 +335,10 @@ gui_draw_usb_item_options:
 	ret
 
 gui_show_item_count:
-	bit	setting_list_count,(iy + settings_flag)
+	bit	setting_list_count,(iy + settings_adv_flag)
 	ret	z
 	ld	hl,(number_of_items)
-	bit	setting_special_directories,(iy + settings_flag)
+	bit	setting_special_directories,(iy + settings_adv_flag)
 	jr	z,.no_extra_directories
 	dec	hl
 	ld	a,(current_screen)
@@ -347,7 +347,7 @@ gui_show_item_count:
 	dec	hl
 	jr	.show
 .no_extra_directories:
-	bit	setting_enable_usb,(iy + settings_flag)
+	bit	setting_enable_usb,(iy + settings_adv_flag)
 	jr	z,.show
 	dec	hl
 .show:

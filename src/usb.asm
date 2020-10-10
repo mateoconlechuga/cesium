@@ -394,7 +394,7 @@ usb_detach:						; detach the fat library hooks
 	or	a,a
 	sbc	hl,hl
 	ld	(scroll_amount),hl
-	bit	setting_special_directories,(iy + settings_flag)
+	bit	setting_special_directories,(iy + settings_adv_flag)
 	jr	z,.no_apps_dir
 	inc	hl
 .no_apps_dir:

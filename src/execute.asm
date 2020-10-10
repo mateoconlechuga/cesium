@@ -91,7 +91,7 @@ execute_vat_check:
 	ld	(return_info),a
 	bit	prgm_is_usb_directory,(iy + prgm_flag)
 	jq	nz,usb_init
-	bit	setting_special_directories,(iy + settings_flag)
+	bit	setting_special_directories,(iy + settings_adv_flag)
 	jq	z,execute_program
 	compare_hl_zero
 	jq	nz,execute_program			; check if on directory
@@ -163,19 +163,19 @@ execute_app:
 ;execute_usb_program:
 	;ld	hl,(usb_var_size)
 	;call	util_check_free_ram
-	;jq	z,main_loop			; ensure enough ram
+	;jq	z,main_loop				; ensure enough ram
 	;call	execute_ram_backup
 	;call	lcd_normal
 	;bit	setting_enable_shortcuts,(iy + settings_flag)
 	;call	nz,ti.ClrGetKeyHook
 	;ld	hl,usb_sector + 74
 	;ld	a,(hl)
-	;cp	a,ti.tExtTok			; is it an assembly program
+	;cp	a,ti.tExtTok				; is it an assembly program
 	;jr	nz,.program_is_basic
 	;inc	hl
 	;ld	a,(hl)
 	;cp	a,ti.tAsm84CeCmp
-	;jr	nz,.program_is_basic		; is it a basic program
+	;jr	nz,.program_is_basic			; is it a basic program
 .program_is_asm:
 	;call	util_install_error_handler
 	;ld	hl,ti.userMem
@@ -184,11 +184,11 @@ execute_app:
 	;ex	de,hl
 	;ld	hl,(usb_var_size)
 	;push	hl
-	;call	ti.InsertMem			; insert memory into usermem + (ti.asm_prgm_size)
-	;call	usb_copy_tivar_to_ram		; copy variable to ram
-	;call	usb_detach_only			; shift assembly program to ti.userMem, detach usb & libload
+	;call	ti.InsertMem				; insert memory into usermem + (ti.asm_prgm_size)
+	;call	usb_copy_tivar_to_ram			; copy variable to ram
+	;call	usb_detach_only				; shift assembly program to ti.userMem, detach usb & libload
 	;pop	hl
-	;ld	(ti.asm_prgm_size),hl		; reload size of the program
+	;ld	(ti.asm_prgm_size),hl			; reload size of the program
 	;jr	execute_assembly_program
 .program_is_basic:
 	;jq	main_loop
@@ -248,7 +248,8 @@ execute_ti.basic_program:
 	call	ti.SetHomescreenHook
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.in_ram
-	call	util_delete_temp_program_get_name
+	ld	hl,util_temp_program_object
+	call	util_delete_var
 	ld	hl,(prgm_real_size)
 	push	hl
 	ld	a,ti.TempProgObj

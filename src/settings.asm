@@ -28,7 +28,8 @@
 
 ; common routines for working with things involving settings
 
-SETTINGS_MAX_ITEMS := 7
+SETTINGS_ITEMS_PAGE_1 := 8
+SETTINGS_ITEMS_PAGE_2 := 5
 
 settings_load:
 	ld	hl,settings_appvar
@@ -46,13 +47,22 @@ settings_get_data:
 	ld	e,(hl)
 	add	hl,de
 	inc	hl
+	push	hl
+	call	ti.LoadDEInd_s			; make sure the size matches
+	ld	hl,settings_size
+	compare_hl_de
+	pop	hl
+	jr	nz,settings_create_default
 	inc	hl
 	inc	hl
 	ld	de,settings_data
 	ld	bc,settings_size
 	ldir
+	ld	iy,ti.flags
 	ld	a,(setting_config)
 	ld	(iy + settings_flag),a
+	ld	a,(setting_adv_config)
+	ld	(iy + settings_adv_flag),a
 	call	gui_fixup_sprites
 	jp	util_setup_shortcuts
 
@@ -70,9 +80,11 @@ settings_create_default:
 	inc	hl
 	ld	(hl),color_senary_default
 	ld	hl,setting_config
-	ld	(hl),setting_config_default
+	ld	(hl),settings_default
+	ld	hl,setting_adv_config
+	ld	(hl),settings_adv_default
 	ld	hl,setting_password
-	ld	(hl),0				; zero length
+	ld	(hl),0
 	ld	hl,settings_editor_default_prgm_name
 	ld	de,setting_editor_name
 	ld	bc,settings_editor_default_prgm_name.length
@@ -89,31 +101,65 @@ settings_appvar_create_if_not_exist:
 	ld	hl,settings_appvar
 	call	util_find_var			; lookup the settings appvar
 	ret	nc
+	jq	.nodelete
 .make:
-	ld	hl,settings_appvar_size + 60	; increment for safety
-	push	hl
+	ld	hl,settings_appvar
+	call	util_delete_var			; delete if exists
+.nodelete:
+	ld	hl,settings_size + 128		; increment for safety
 	call	ti.EnoughMem
-	pop	hl
-	jp	c,exit_full
+	ld	hl,settings_size
+	jq	c,exit_full
 	jp	ti.CreateAppVar
 
 settings_save:
 	call	settings_appvar_create_if_not_exist
-.save:
+	ld	a,(iy + settings_flag)
+	ld	(setting_config),a
+	ld	a,(iy + settings_adv_flag)
+	and	a,(1 shl setting_special_directories) or \
+                  (1 shl setting_enable_usb) or \
+                  (1 shl setting_list_count)
+	ld	(setting_adv_config),a
+	ld	hl,settings_appvar
+	call	util_find_var
+	call	ti.ChkInRam
+	ex	de,hl
+	jq	z,.inram
+	ld	de,9
+	add	hl,de
+	ld	e,(hl)
+	add	hl,de
+	inc	hl
+.inram:
+	inc	hl
+	inc	hl				; compare to prev settings
+	ld	de,settings_data
+	ld	b,settings_size
+.check:
+	ld	a,(de)
+	cp	a,(hl)
+	jr	nz,.needs_save
+	inc	hl
+	inc	de
+	djnz	.check
+	call	ti.ChkInRam
+	jq	z,.needs_archive
+	ret					; no save needed
+.needs_save:
 	ld	hl,settings_appvar
 	call	util_find_var
 	call	ti.ChkInRam
 	push	af
 	call	nz,cesium.Arc_Unarc
 	pop	af
-	jr	nz,.save
-	ld	a,(iy + settings_flag)
-	ld	(setting_config),a
+	jq	nz,.needs_save			; unarchive to save
 	inc	de
 	inc	de
 	ld	hl,settings_data
 	ld	bc,settings_size
 	ldir
+.needs_archive:
 	ld	hl,settings_appvar
 	call	util_find_var
 	jp	cesium.Arc_Unarc
@@ -133,80 +179,107 @@ settings_get:
 	ld	hl,settings_show.draw
 	push	hl
 	ld	ix,current_option_selection
-	cp	a,ti.skStore
-	jp	z,password_modify
 	cp	a,ti.skLeft
-	jp	z,setting_left
+	jq	z,setting_left
 	cp	a,ti.skRight
-	jp	z,setting_right
+	jq	z,setting_right
 	cp	a,ti.skDown
-	jp	z,setting_down
+	jq	z,setting_down
 	cp	a,ti.skUp
-	jp	z,setting_up
+	jq	z,setting_up
 	cp	a,ti.sk2nd
-	jp	z,setting_toggle
+	jq	z,setting_toggle
 	cp	a,ti.skEnter
-	jp	z,setting_toggle
+	jq	z,setting_toggle
 	pop	hl
 	cp	a,ti.skDel
 	jr	z,setting_set_and_save
-	cp	a,ti.skClear
+	cp	a,ti.skMode
 	jr	z,setting_set_and_save
-	jr	settings_get
+	cp	a,ti.skClear
+	jq	z,setting_set_and_save
+	jq	settings_get
 setting_set_and_save:
 	call	settings_save			; check if on disabled apps screen
 	ld	a,(current_screen)
 	cp	a,screen_apps
-	jr	z,settings_return
-	bit	setting_special_directories,(iy + settings_flag)
-	jr	nz,settings_return
+	jq	z,settings_return
+	bit	setting_special_directories,(iy + settings_adv_flag)
+	jq	nz,settings_return
 	call	find_lists.reset_selection
 	ld	a,screen_programs
 	ld	(current_screen),a
 settings_return:
 	ld	a,return_settings
 	ld	(return_info),a
-	jp	main_settings
+	jq	main_settings
 
 setting_down:
+	ld	a,(settings_page)
+	or	a,a
 	ld	a,(ix)
-	cp	a,SETTINGS_MAX_ITEMS
-	jr	z,.top
+	jq	z,.page1
+.page2:
+	cp	a,SETTINGS_ITEMS_PAGE_2 - 1
+	jq	z,.top
+	jr	.inc
+.page1:
+	cp	a,SETTINGS_ITEMS_PAGE_1 - 1
+	jq	z,.top
+.inc:
 	inc	a
 .done:
 	ld	(ix),a
 	ret
 .top:
 	xor	a,a
-	jr	.done
+	jq	.done
 
 setting_up:
 	ld	a,(ix)
 	or	a,a
 	jr	z,.bottom
 	dec	a
-.done:
-	ld	(ix),a
-	ret
+	jq	setting_down.done
 .bottom:
-	ld	a,SETTINGS_MAX_ITEMS
-	jr	.done
+	ld	a,(settings_page)
+	or	a,a
+	jq	z,.page1
+	ld	a,SETTINGS_ITEMS_PAGE_2 - 1
+	jq	setting_down.done
+.page1:
+	ld	a,SETTINGS_ITEMS_PAGE_1 - 1
+	jq	setting_down.done
 
 setting_left:
-	jr	setting_brightness_down
-
-setting_right:
-	;jr	setting_brightness_up
-
-setting_brightness_up:
-	call	setting_brightness_get
-	add	a,b
-	ld	(hl),a
-	ret
+	ld	a,(ix)
+	cp	a,7
+	jq	z,setting_brightness_down
+	jq	settings_switch_page
 
 setting_brightness_down:
 	call	setting_brightness_get
 	sub	a,b
+	ld	(hl),a
+	ret
+
+setting_right:
+	ld	a,(ix)
+	cp	a,7
+	jq	z,setting_brightness_up
+	jq	settings_switch_page
+
+settings_switch_page:
+	ld	a,(settings_page)
+	xor	a,1
+	ld	(settings_page),a
+	xor	a,a
+	ld	(current_option_selection),a
+	ret
+
+setting_brightness_up:
+	call	setting_brightness_get
+	add	a,b
 	ld	(hl),a
 	ret
 
@@ -235,9 +308,24 @@ setting_brightness_get:
 	ret
 
 setting_toggle:
+	ld	a,(settings_page)
+	or	a,a
+	jq	z,.page1
+.page2:
+	ld	a,(ix)
+	cp	a,3
+	ret	z
+	cp	a,4
+	jq	z,password_modify
+	inc	a
+	call	util_to_one_hot
+	xor	a,(iy + settings_adv_flag)
+	ld	(iy + settings_adv_flag),a
+	ret
+.page1:
 	ld	a,(ix)
 	or	a,a
-	jr	z,setting_change_colors	; convert the option to one-hot
+	jq	z,setting_change_colors
 	call	util_to_one_hot
 	xor	a,(iy + settings_flag)
 	ld	(iy + settings_flag),a
@@ -349,41 +437,62 @@ setting_color_index_to_xy:
 
 setting_draw_options:
 	call	gui_draw_cesium_info
+	ld	a,(settings_page)
+	or	a,a
+	jq	z,.page1
 
-	print	string_general_settings, 10, 30
+.page2:
+	print	string_setting_page2, 10, 30
+
+	print	string_setting_special_directories, 25, 49
+	print	string_setting_list_count, 25, 69
+	print	string_setting_usb_enable, 25, 89
+	print	string_setting_editor_prgm, 25, 109
+	print	string_setting_poweron_password, 25, 129
+
+	bit	setting_special_directories,(iy + settings_adv_flag)
+	draw_highlightable_option 10, 48, 0
+	bit	setting_list_count,(iy + settings_adv_flag)
+	draw_highlightable_option 10, 68, 1
+	bit	setting_enable_usb,(iy + settings_adv_flag)
+	draw_highlightable_option 10, 88, 2
+	draw_highlighted_option 10, 108, 3
+	draw_highlighted_option 10, 128, 4
+	ret
+
+.page1:
+	print	string_setting_page1, 10, 30
+
 	print	string_setting_color, 25, 49
 	print	string_setting_indicator, 25, 69
-	print	string_setting_list_count, 25, 89
-	print	string_setting_clock, 25, 109
-	print	string_setting_ram_backup, 25, 129
-	print	string_setting_special_directories, 25, 149
-	print	string_setting_enable_shortcuts, 25, 169
-	print	string_settings_delete_confirm, 25, 189
-	;print	string_settings_usb_edit, 25, 209
+	print	string_setting_clock, 25, 89
+	print	string_setting_ram_backup, 25, 109
+	print	string_setting_show_hidden, 25, 129
+	print	string_setting_enable_shortcuts, 25, 149
+	print	string_setting_delete_confirm, 25, 169
+	print	string_setting_screen_brightness, 25, 189
 
-	xor	a,a
-	inc	a				; color is always set
-	draw_highlightable_option 10, 48, 0
+	draw_highlighted_option 10, 48, 0
 	bit	setting_basic_indicator,(iy + settings_flag)
 	draw_highlightable_option 10, 68, 1
-	bit	setting_list_count,(iy + settings_flag)
-	draw_highlightable_option 10, 88, 2
 	bit	setting_clock,(iy + settings_flag)
-	draw_highlightable_option 10, 108, 3
+	draw_highlightable_option 10, 88, 2
 	bit	setting_ram_backup,(iy + settings_flag)
+	draw_highlightable_option 10, 108, 3
+	bit	setting_hide_hidden,(iy + settings_flag)
 	draw_highlightable_option 10, 128, 4
-	bit	setting_special_directories,(iy + settings_flag)
-	draw_highlightable_option 10, 148, 5
 	bit	setting_enable_shortcuts,(iy + settings_flag)
-	draw_highlightable_option 10, 168, 6
+	draw_highlightable_option 10, 148, 5
 	bit	setting_delete_confirm,(iy + settings_flag)
-	draw_highlightable_option 10, 188, 7
-	;bit	setting_enable_usb,(iy + settings_flag)
-	;draw_highlightable_option 10, 208, 8
+	draw_highlightable_option 10, 168, 6
+	draw_highlighted_option 10, 188, 7
 	ret
 
 settings_appvar:
 	db	ti.AppVarObj, cesium_name, 0
+
+settings_page:
+	db	0
 
 settings_editor_default_prgm_name:
 	db	ti.ProtProgObj,"KEDIT",0

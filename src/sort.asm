@@ -38,11 +38,20 @@ sort_vat_entry_new_loc := ti.mpLcdCrsrImage + 9
 sort_vat_entry_temp_end := ti.mpLcdCrsrImage + 12 + 15
 
 sort_vat:
+	ld	iy,ti.flags
+	ld	a,(iy + sort_flag)
+	ld	(.flag_backup),a
 	res	sort_first_item_found,(iy + ti.asm_Flag1)
 	ld	hl,(ti.progPtr)
 .sort_next:
 	call	.find_next_item
+	jr	c,.found_item
 	ret	nc
+	ld	a,0
+.flag_backup := $-1
+	ld	(iy + sort_flag),a
+	ret
+.found_item:
 	bit	sort_first_item_found,(iy + ti.asm_Flag1)
 	jp	z,.first_found
 	push	hl

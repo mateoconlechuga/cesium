@@ -138,7 +138,7 @@ find_programs:
 	and	a,$1f				; bitmask off bits 7-5 to get type only.
 	cp	a,ti.ProgObj			; check if program
 	jr	z,.normal_program
-	cp	a,ti.ProtProgObj			; check if protected progrm
+	cp	a,ti.ProtProgObj		; check if protected progrm
 	jp	nz,.skip_program
 .normal_program:				; at this point, hl -> [t], so we'll move back six bytes to [nl]
 	dec	hl
@@ -230,7 +230,7 @@ item_locations_ptr := $-3			; this is the location to store the pointers to vat 
 	jp	.loop
 
 find_app_directory:
-	bit	setting_special_directories,(iy + settings_flag)
+	bit	setting_special_directories,(iy + settings_adv_flag)
 	ret	z
 	ld	hl,(item_locations_ptr)
 	ld	de,find_application_directory_name
@@ -244,7 +244,7 @@ find_app_directory:
 	ret
 
 find_usb_directory:
-	bit	setting_enable_usb,(iy + settings_flag)
+	bit	setting_enable_usb,(iy + settings_adv_flag)
 	ret	z
 	ld	hl,(item_locations_ptr)
 	ld	de,find_usb_directory_name
@@ -296,7 +296,7 @@ find_apps:
 	ld	(item_locations_ptr),hl
 	jr	.loop
 
-find_data_ptr:				; gets a pointer to the data of an archived program
+find_data_ptr:					; gets a pointer to the data
 	cp	a,$d0
 	ex 	de,hl
 	ret	nc
@@ -322,7 +322,7 @@ find_check_apps:
 	ld	a,(hl)
 	tst	a,4
 	jr	nz,.skip
-	res	setting_special_directories,(iy + settings_flag)
+	res	setting_special_directories,(iy + settings_adv_flag)
 	ret
 .skip:
 	set	cesium_is_nl_disabled,(iy + cesium_flag)

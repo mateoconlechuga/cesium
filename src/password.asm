@@ -30,8 +30,8 @@ password_modify:
 	call	gui_draw_cesium_info
 
 	print	string_new_password, 10, 30
-	ld	bc,$600
 	ld	hl,setting_password + 1
+	ld	b,6
 .loop:
 	push	hl
 	push	bc
