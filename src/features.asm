@@ -48,11 +48,7 @@ feature_item_rename:
 	jp	nz,main_loop
 .continue:
 	set	item_renaming,(iy + item_flag)
-	ld	a,(prgm_type)
-	cp	a,file_dir
-	jp	z,main_loop
-	cp	a,file_usb_dir
-	jp	z,main_loop
+	call	feature_check_valid
 .setup_name:
 	ld	a,NORMAL_CHARS
 	ld	(current_input_mode),a
@@ -567,16 +563,12 @@ feature_item_attributes:
 	jp	main_start
 
 feature_check_valid:
-	bit	setting_special_directories,(iy + settings_adv_flag)
-	jr	z,.empty_check
-	ld	hl,(current_selection_absolute)
-	compare_hl_zero
-	ret	nz
+	ld	a,(prgm_type)
+	cp	a,file_dir
+	jq	z,.invalid
+	cp	a,file_usb_dir
+	jq	z,.invalid
+	ret
+.invalid:
 	pop	hl
-	jp	main_loop			; don't allow deletion of directories
-.empty_check:
-	ld	hl,(number_of_items)
-	compare_hl_zero
-	ret	nz
-	pop	hl
-	jp	main_loop
+	jq	main_loop
