@@ -56,16 +56,9 @@ gui_draw_core:
 	draw_rectangle_outline 1, 22, 318, 223
 	set_inverted_text
 	print string_cesium, 15, 7
-	draw_sprite sprite_battery, 3, 7
 	ld	a,0
 battery_status := $-1
-	sub	a,5
-	cpl
-	or	a,a
-	ret	z
-	ld	bc,4
-	ld	de,(ti.lcdWidth * 8) + 7
-	jp	lcd_rectangle.computed
+	ret
 
 gui_draw_cesium_info:
 	call	gui_draw_core
@@ -362,6 +355,9 @@ gui_fixup_sprites:
 	ld	a,(color_senary)
 	ld	hl,sprite_directory_mask
 	ld	de,sprite_directory + 2
+	call	.fix
+	ld	hl,sprite_usb_mask
+	ld	de,sprite_usb + 2
 	call	.fix
 	ld	hl,sprite_file_mask
 	ld	de,sprite_file_ice + 2

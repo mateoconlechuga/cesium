@@ -236,6 +236,7 @@ sprite_egg:
 	db $ff,$ff,$ff,$b5,$6a,$6a,$6a,$6a,$6a,$6a,$6b,$8b,$b5,$ff,$ff,$ff
 	db $ff,$ff,$ff,$ff,$b5,$6b,$6a,$6a,$6a,$6b,$8b,$b5,$ff,$ff,$ff,$ff
 	db $ff,$ff,$ff,$ff,$ff,$de,$b4,$8c,$8c,$b5,$de,$ff,$ff,$ff,$ff,$ff
+
 sprite_locked:
 	db 6,8
 	db $ff,$4b,$4b,$4b,$4b,$ff
@@ -258,16 +259,23 @@ sprite_archived:
 	db $4b,$e4,$e4,$4b,$e4,$4b
 	db $4b,$4b,$4b,$4b,$4b,$4b
 
-sprite_battery:
-	db 6,8
-	db $00,$00,$00,$00,$00,$00
-	db $00,$25,$25,$25,$25,$00
-	db $00,$25,$25,$25,$25,$00
-	db $00,$25,$25,$25,$25,$00
-	db $00,$25,$25,$25,$25,$00
-	db $00,$25,$25,$25,$25,$00
-	db $00,$25,$25,$25,$25,$00
-	db $00,$00,$00,$00,$00,$00
+sprite_usb_mask:
+	db $f8,$0f
+	db $f8,$0f
+	db $f8,$0f
+	db $f8,$0f
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f0,$07
+	db $f8,$0f
 
 sprite_directory_mask:
 	db $ff,$ff
