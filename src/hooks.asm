@@ -119,6 +119,17 @@ hook_get_key:
 	jq	z,hook_clear_backup
 	cp	a,ti.sk2
 	jq	z,hook_restore_ram
+	cp	a,ti.skStore
+	jq	z,hook_invert_colors
+	ret
+
+hook_invert_colors:
+	ld	hl,$F80818
+	ld	(hl),h
+	ld	(hl),$44
+	ld	(hl),$21
+	ld	l,h
+	ld	(hl),$01
 	ret
 
 label_number := ti.cursorImage + 3
