@@ -89,7 +89,7 @@ usb_init:
 	ld	iy,ti.flags
 	call	libload_load
 	ld	iy,ti.flags
-	jq	nz,usb_not_available
+	jq	nz,usb_not_available.libload
 
 	ld	bc,4
 	push	bc
@@ -420,8 +420,9 @@ usb_invaliddevice:
 	jq	usb_not_available.wait
 
 usb_not_available:
-	call	gui_draw_core
 	call	usb_detach_only
+.libload:
+	call	gui_draw_core
 	set_normal_text
 	print	string_usb_info_0, 10, 30
 	print	string_usb_info_1, 10, 50

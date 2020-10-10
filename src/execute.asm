@@ -40,9 +40,8 @@ execute_item:
 	jq	z,execute_vat_check
 	cp	a,screen_usb
 	jq	z,execute_usb_check
-	;cp	a,screen_apps
-	;jq	z,execute_app_check
-	jq	execute_app_check
+	cp	a,screen_apps
+	jq	z,execute_app_check
 
 execute_usb_check:
 	ld	hl,(item_ptr)

@@ -31,9 +31,12 @@ util_find_var:
 	jp	ti.ChkFindSym
 
 util_delete_prgm_from_usermem:
+	ld	hl,(ti.asm_prgm_size)		; get program size
+	compare_hl_zero
+	ret	z
+	ex	de,hl
 	or	a,a
 	sbc	hl,hl
-	ld	de,(ti.asm_prgm_size)		; get program size
 	ld	(ti.asm_prgm_size),hl		; delete whatever was there
 	ld	hl,ti.userMem
 	jp	ti.DelMem
@@ -42,7 +45,7 @@ util_move_prgm_to_usermem:
 	ld	a,$9				; 'add hl,bc'
 	ld	(.smc),a
 	call	ti.ChkFindSym
-	jr	c,.error_not_found			; hope this doesn't happen
+	jr	c,.error_not_found		; hope this doesn't happen
 	call	ti.ChkInRam
 	ex	de,hl
 	jr	z,.in_ram
@@ -375,4 +378,4 @@ util_num_convert:
 	ret
 
 util_temp_program_object:
-	db	ti.TempProgObj, 'ZAGTQZTB', 0
+	db	ti.TempProgObj, 'MATEOTMP', 0

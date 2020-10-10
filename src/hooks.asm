@@ -124,12 +124,16 @@ hook_get_key:
 	ret
 
 hook_invert_colors:
+	push	hl
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
 	ld	(hl),$21
 	ld	l,h
 	ld	(hl),$01
+	pop	hl
+	xor	a,a
+	inc	a
 	ret
 
 label_number := ti.cursorImage + 3

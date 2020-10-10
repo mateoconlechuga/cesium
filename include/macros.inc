@@ -240,7 +240,7 @@ setting_list_count := 1
 setting_enable_usb := 2
 
 settings_default := (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_basic_indicator)
-settings_adv_default := (1 shl setting_enable_usb) or (1 shl setting_special_directories) or (1 shl setting_list_count)
+settings_adv_default := (1 shl setting_enable_usb) or (1 shl setting_special_directories)
 
 ; sorting flags
 
