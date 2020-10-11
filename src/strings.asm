@@ -154,7 +154,7 @@ string_setting_usb_enable:
 string_new_password:
 	db	'Set poweron password: ',0
 string_prgm_editor_name:
-	db	'Name of prgm editor: ',0
+	db	'Program editor name: ',0
 string_usb_info_0:
 	db	'Use any FAT32 USB flash drive',0
 string_usb_info_1:
