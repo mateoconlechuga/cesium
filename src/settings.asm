@@ -314,9 +314,9 @@ setting_toggle:
 .page2:
 	ld	a,(ix)
 	cp	a,3
-	ret	z
+	jq	z,settings_set_prgm_editor
 	cp	a,4
-	jq	z,password_modify
+	jq	z,settings_set_poweron_password
 	inc	a
 	call	util_to_one_hot
 	xor	a,(iy + settings_adv_flag)
@@ -490,6 +490,53 @@ setting_draw_options:
 	draw_highlightable_option 10, 188, 7
 	draw_highlighted_option 10, 208, 8
 	ret
+
+settings_set_prgm_editor:
+	pop	hl				; not returning to loop
+	call	gui_draw_cesium_info
+	print	string_prgm_editor_name, 10, 30
+	ld	hl,setting_editor_name + 1
+	call	util_get_var_name_input.prgm
+	jq	settings_show.draw
+
+settings_set_poweron_password:
+	call	gui_draw_cesium_info
+
+	print	string_new_password, 10, 30
+	ld	hl,setting_password + 1
+	ld	b,6
+.loop:
+	push	hl
+	push	bc
+	call	lcd_blit
+.get_key:
+	call	ti.GetCSC
+	or	a,a
+	jr	z,.get_key
+	cp	a,ti.sk2nd
+	jr	z,.done_fill
+	cp	a,ti.skEnter
+	jr	z,.done_fill
+	push	af
+	ld	a,'*'
+	call	lcd_char
+	pop	af
+	pop	bc
+	pop	hl
+	ld	(hl),a
+	inc	hl
+	djnz	.loop
+.done:
+	ld	de,setting_password + 1
+	or	a,a
+	sbc	hl,de
+	ld	a,l
+	ld	(setting_password),a
+	ret
+.done_fill:
+	pop	bc
+	pop	hl
+	jr	.done
 
 settings_appvar:
 	db	ti.AppVarObj, cesium_name, 0

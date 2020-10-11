@@ -205,6 +205,7 @@ lcd_rectangle:
 	ld	bc,0
 .width := $-3
 	ld	hl,color_primary		; always just fill with the primary color
+.color_ptr := $-3
 	ldi					; check if we only need to draw 1 pixel
 	jp	po,.skip
 	scf

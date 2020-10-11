@@ -377,5 +377,160 @@ util_num_convert:
 	inc	de
 	ret
 
+util_get_var_name_input:
+.prgm:
+	ld	a,0
+	jq	.start
+.appvar:
+	ld	a,1
+.start:
+	ld	(.mode),a
+	ld	(.buffer_ptr),hl
+	ld	hl,(lcd_x)
+	ld	(.starting_x),hl
+	ld	hl,lut_character_standard
+	ld	(.current_character_lut),hl
+	ld	a,NORMAL_CHARS
+	ld	(.current_input_mode),a
+	jq	.redraw
+.get_name:
+	call	util_get_key
+	cp	a,ti.skDel
+	jq	z,.backspace
+	cp	a,ti.skLeft
+	jq	z,.backspace
+	cp	a,ti.skAlpha
+	jq	z,.change_input_mode
+	cp	a,ti.skClear
+	ret	z
+	cp	a,ti.skMode
+	ret	z
+	cp	a,ti.sk2nd
+	jq	z,.confirm
+	cp	a,ti.skEnter
+	jq	z,.confirm
+	sub	a,ti.skAdd
+	jq	c,.get_name
+	cp	a,ti.skMath - ti.skAdd + 1
+	jq	nc,.get_name
+	ld	hl,lut_character_standard
+.current_character_lut := $-3
+	call	ti.AddHLAndA			; find the offset
+	ld	a,0
+.cursor_position := $-1
+	cp	a,8				; maximum name length
+	jq	z,.get_name
+	ld	a,(hl)
+	or	a,a
+	jq	z,.get_name
+	ld	e,a
+	ld	a,(.current_input_mode)
+	cp	a,NUMBER_CHARS			; don't allow number on first
+	jr	nz,.okay
+	ld	a,(.mode)
+	or	a,a
+	jr	nz,.okay
+	ld	a,(.cursor_position)
+	or	a,a
+	jq	z,.get_name
+.okay:
+	call	.get_offset
+	inc	a
+	ld	(.cursor_position),a
+	ld	a,e
+	ld	(hl),a
+	call	lcd_char
+.draw_mode:
+	ld	a,255
+.current_input_mode := $-1
+	call	lcd_char
+.backup:
+	ld	hl,(lcd_x)
+	ld	de,-9
+	add	hl,de
+	ld	(lcd_x),hl
+	jq	.get_name
+.backspace:
+	call	.get_offset
+	or	a,a
+	jq	z,.get_name
+	dec	a
+	ld	(.cursor_position),a
+	dec	hl
+	ld	(hl),0
+.redraw:
+	ld	de,0
+.starting_x := $-3
+	ld	(lcd_x),de
+	ld	hl,(lcd_y)
+	ld	h,160
+	mlt	hl
+	add	hl,hl
+	add	hl,de
+	ex	de,hl
+	ld	bc,86
+	ld	a,8
+	ld	hl,color_senary
+	ld	(lcd_rectangle.color_ptr),hl
+	call	lcd_rectangle.computed
+	ld	hl,color_primary
+	ld	(lcd_rectangle.color_ptr),hl
+	ld	hl,(.buffer_ptr)
+	xor	a,a
+	ld	(.cursor_position),a
+.redraw_loop:
+	ld	a,(hl)
+	or	a,a
+	jq	z,.draw_mode
+	push	bc
+	push	hl
+	call	lcd_char
+	ld	hl,.cursor_position
+	inc	(hl)
+	pop	hl
+	pop	bc
+	inc	hl
+	jq	.redraw_loop
+.change_input_mode:
+	ld	a,(.current_input_mode)
+	cp	a,NORMAL_CHARS
+	jr	z,.setnumbers
+	cp	a,NUMBER_CHARS
+	jr	z,.setlowercase
+.setnormal:
+	ld	a,NORMAL_CHARS
+	ld	hl,lut_character_standard
+	jr	.set_input_mode
+.setlowercase:
+	ld	a,0
+.mode := $-1
+	or	a,a
+	jr	z,.setnormal
+	ld	a,LOWERCASE_CHARS
+	ld	hl,lut_character_lowercase
+	jr	.set_input_mode
+.setnumbers:
+	ld	a,NUMBER_CHARS
+	ld	hl,lut_character_numbers
+.set_input_mode:
+	ld	(.current_character_lut),hl
+	ld	(.current_input_mode),a
+	call	lcd_char
+	jq	.backup
+.confirm:
+	ld	a,(.cursor_position)
+	or	a,a
+	jq	z,.get_name
+	call	.get_offset
+	xor	a,a
+	ld	(hl),a
+	inc	a
+	ret
+.get_offset:
+	ld	a,(.cursor_position)
+	ld	hl,0
+.buffer_ptr := $-3
+	jp	ti.AddHLAndA
+
 util_temp_program_object:
 	db	ti.TempProgObj, 'MATEOTMP', 0

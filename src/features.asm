@@ -32,131 +32,43 @@ NORMAL_CHARS    := 255
 NUMBER_CHARS    := 254
 LOWERCASE_CHARS := 253
 
+name_buffer := ti.mpLcdCrsrImage + 1000
+
 feature_item_new:
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jp	nz,main_loop
+	jq	nz,main_loop
 	bit	cesium_is_nl_disabled,(iy + cesium_flag)
 	jp	nz,main_loop
 	res	item_renaming,(iy + item_flag)
-	jr	feature_item_rename.setup_name
+	res	item_is_hidden,(iy + item_flag)
+	xor	a,a
+	ld	(name_buffer + 1),a		; no name set yet
+	jq	feature_item_rename.get_input
 feature_item_rename:
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jr	z,.continue
+	jq	z,.continue
 	cp	a,screen_appvars
-	jp	nz,main_loop
+	jq	nz,main_loop
 .continue:
-	set	item_renaming,(iy + item_flag)
 	call	feature_check_valid
-.setup_name:
-	ld	a,NORMAL_CHARS
-	ld	(current_input_mode),a
-	call	.clear
-.cleared:
-	ld	a,(current_input_mode)
-	call	lcd_char
-	ld	hl,199
-	ld	(lcd_x),hl
-	xor	a,a
-	ld	(cursor_position),a
-	ld	a,NORMAL_CHARS
-	ld	(current_input_mode),a
-	ld	hl,lut_character_standard
-	ld	(.current_character_lut),hl
-name_buffer := ti.mpLcdCrsrImage + 1000
+	call	util_move_prgm_name_to_op1
+	ld	hl,ti.OP1
+	ld	de,name_buffer
+	ld	bc,9
+	ldir
+	res	item_is_hidden,(iy + item_flag)
 	ld	hl,name_buffer + 1
-	ld	(name_buffer_ptr),hl
-.get_name:
-	call	util_get_key
-	cp	a,ti.skDel
-	jq	z,.backspace
-	cp	a,ti.skLeft
-	jq	z,.backspace
-	cp	a,ti.skAlpha
-	jp	z,.change_input_mode
-	cp	a,ti.skClear
-	jp	z,main_start
-	cp	a,ti.sk2nd
-	jp	z,.confirm
-	cp	a,ti.skEnter
-	jp	z,.confirm
-	sub	a,ti.skAdd
-	jp	c,.get_name
-	cp	a,ti.skMath - ti.skAdd + 1
-	jp	nc,.get_name
-	ld	hl,.get_name
-	push	hl
-	ld	hl,lut_character_standard
-.current_character_lut := $-3
-	call	ti.AddHLAndA			; find the offset
 	ld	a,(hl)
-	or	a,a
-	ret	z
-	ld	e,a
-	ld	a,0
-cursor_position := $-1
-	cp	a,8
-	ret	z
-	ld	a,(current_input_mode)
-	cp	a,NUMBER_CHARS
-	jr	nz,.got_name
-	ld	a,(current_screen)
-	cp	a,screen_programs
-	jr	nz,.got_name
-	ld	a,(current_input_mode)
-	cp	a,LOWERCASE_CHARS
-	ret	z
-	ld	a,(cursor_position)
-	or	a,a
-	ret	z
-.got_name:
-	ld	a,e
-.insert_char:
-	ld	hl,0
-name_buffer_ptr := $-3
+	cp	a,64
+	jr	nc,.not_hidden
+	set	item_is_hidden,(iy + item_flag)
+	add	a,64
 	ld	(hl),a
-	call	lcd_char
-	ld	hl,cursor_position
-	inc	(hl)
-	ld	a,255
-current_input_mode := $-1
-	call	lcd_char
-	ld	hl,(lcd_x)
-	ld	de,-9
-	add	hl,de
-	ld	(lcd_x),hl
-	ld	hl,(name_buffer_ptr)
-	inc	hl
-	ld	(name_buffer_ptr),hl
-	ret
-.backspace:
-	ld	hl,cursor_position
-	ld	a,(hl)
-	ld	(hl),0
-	or	a,a
-	jp	z,.get_name
-	push	af
-	call	.clear
-	pop	af
-	dec	a
-	or	a,a
-	jp	z,.cleared
-	ld	b,a
-	ld	hl,name_buffer + 1
-	ld	(name_buffer_ptr),hl
-.redraw:
-	push	bc
-	push	hl
-	ld	a,(hl)
-	call	.insert_char
-	pop	hl
-	pop	bc
-	inc	hl
-	djnz	.redraw
-	jp	.get_name
-
-.clear:
+.not_hidden:
+	set	item_renaming,(iy + item_flag)
+.get_input:
 	ld	a,(color_senary)
 	draw_rectangle_color 199, 173, 313, 215
 	ld	hl,string_rename
@@ -166,66 +78,44 @@ current_input_mode := $-1
 .rename:
 	print_xy 199, 173
 	set_cursor 199, 195
-	ret
-
-.change_input_mode:
-	ld	a,(current_input_mode)
-	cp	a,NORMAL_CHARS
-	jr	z,.setnumbers
-	cp	a,NUMBER_CHARS
-	jr	z,.setlowercase
-.setnormal:
-	ld	a,NORMAL_CHARS
-	ld	hl,lut_character_standard
-	jr	.set_input_mode
-.setlowercase:
+	ld	hl,name_buffer + 1
 	ld	a,(current_screen)
 	cp	a,screen_programs
-	jr	z,.setnormal
-	ld	a,LOWERCASE_CHARS
-	ld	hl,lut_character_lowercase
-	jr	.set_input_mode
-.setnumbers:
-	ld	a,NUMBER_CHARS
-	ld	hl,lut_character_numbers
-.set_input_mode:
-	ld	(.current_character_lut),hl
-	ld	(current_input_mode),a
-	call	lcd_char
-	ld	hl,(lcd_x)
-	ld	de,-9
-	add	hl,de
-	ld	(lcd_x),hl
-	jp	.get_name
-
+	jq	nz,.appvar
+	call	util_get_var_name_input.prgm
+	jq	.confirm
+.appvar:
+	call	util_get_var_name_input.appvar
 .confirm:
-	ld	a,(cursor_position)
-	or	a,a
-	jp	z,.get_name
-	ld	hl,(name_buffer_ptr)
-	ld	(hl),0
+	jq	z,.goto_main			; canceled input
 	bit	item_renaming,(iy + item_flag)
-	jr	nz,.renaming
+	jq	nz,.renaming
 	ld	hl,name_buffer
 	ld	(hl),ti.ProgObj			; already in op1
 	call	ti.Mov9ToOP1
 	call	ti.ChkFindSym
-	jp	nc,.get_name			; check if name already exists
+	jq	nc,.get_input			; check if var exists
 	ld	hl,name_buffer
 	call	ti.Mov9ToOP1
-	ld	a,(ti.OP1 + 1)			; check if hidden name already exists
+	ld	a,(ti.OP1 + 1)
 	sub	a,64
 	ld	(ti.OP1 + 1),a
 	call	ti.ChkFindSym
-	jp	nc,.get_name			; check if name already exists
+	jq	nc,.get_input			; check if hidden var exists
 	ld	hl,name_buffer
 	call	ti.Mov9ToOP1
 	ld	a,ti.ProgObj
 	or	a,a
 	sbc	hl,hl
 	call	ti.CreateVar
-	jp	.goto_main
+	jq	.goto_main
 .renaming:
+	bit	item_is_hidden,(iy + item_flag)
+	jr	z,.dont_hide
+	ld	a,(name_buffer + 1)
+	sub	a,64
+	ld	(name_buffer + 1),a
+.dont_hide:
 	call	util_move_prgm_name_to_op1	; move the current name to op1
 	ld	hl,cesium.Arc_Unarc
 	ld	(.jump_smc),hl
@@ -239,18 +129,13 @@ current_input_mode := $-1
 	push	af
 	call	ti.PopOP1
 	pop	af
-	jp	nc,.get_name			; check if name already exists
-	call	ti.PushOP1
-	ld	hl,name_buffer
-	call	ti.Mov9ToOP1
-	ld	a,(ti.OP1 + 1)			; check if hidden name already exists
-	sub	a,64
-	ld	(ti.OP1 + 1),a
-	call	ti.ChkFindSym
-	push	af
-	call	ti.PopOP1
-	pop	af
-	jp	nc,.get_name			; check if name already exists
+	jq	c,.locate_program		; check if var exists
+	bit	item_is_hidden,(iy + item_flag)
+	jq	z,.get_input
+	ld	a,(name_buffer + 1)
+	add	a,64
+	ld	(name_buffer + 1),a
+	jq	.get_input
 .locate_program:
 	call	ti.PushOP1
 	call	ti.ChkFindSym

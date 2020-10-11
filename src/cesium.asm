@@ -51,7 +51,6 @@ relocate cesium_code, cesium_execution_base
 	include 'view-usb.asm'
 	include 'features.asm'
 	include 'settings.asm'
-	include 'password.asm'
 	include 'execute.asm'
 	include 'squish.asm'
 	include 'gui.asm'
