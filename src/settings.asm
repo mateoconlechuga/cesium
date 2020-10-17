@@ -545,5 +545,5 @@ settings_page:
 	db	0
 
 settings_editor_default_prgm_name:
-	db	ti.ProtProgObj,"KEDIT",0
+	db	ti.ProtProgObj,"KRYPTIDE",0
 .length :=$-settings_editor_default_prgm_name
