@@ -222,7 +222,44 @@ util_get_key_nonblocking:
 	call	ti.DisableAPD			; disable os apd and use our own
 	call	util_show_time
 	call	lcd_blit
-	jq	ti.GetCSC			; avoid using getcsc for usb
+	jq	util_get_key_not_csc
+;	jq	ti.GetCSC			; avoid using getcsc for usb
+;then don't use getcsc for crying out loud!
+
+util_get_key_not_csc: ; returns same as GetCSC. :P
+	ld	hl,$f50200		; DI_Mode = $f5xx00
+	ld	(hl),h
+	xor	a,a
+.loop:
+	cp	a,(hl)
+	jr	nz,.loop
+	ld	l,$12 ;hl = $f50212
+	ld	b,7
+	ld	c,49
+.scanloop:
+	ld	a,(hl)
+	or	a,a
+	jr	nz,.keyispressed
+	inc	hl
+	inc	hl
+	ld	a,c
+	sub	a,8
+	ld	c,a
+	djnz	.scanloop
+	xor	a,a
+	ret
+.keyispressed:
+	ld	b,8
+.keybitloop:
+	rrca
+	jr	c,.this
+	inc	c
+	djnz	.keybitloop
+.this:
+	ld	a,c
+	ret
+
+
 
 util_setup_apd:
 	ld	hl,$b0ff
