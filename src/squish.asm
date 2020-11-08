@@ -29,7 +29,6 @@
 squish_program:
 	ld	hl,return_asm_error
 	call	ti.PushErrorHandler
-	ld	(persistent_sp),sp
 	call	util_move_prgm_name_to_op1
 	ld	de,ti.basic_prog
 	ld	hl,ti.OP1

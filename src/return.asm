@@ -33,7 +33,7 @@ return_basic_error:
 	ld	(ti.menuCurrent),a
 	ld	a,(ti.errNo)
 	cp	a,ti.E_AppErr1
-	jp	z,return_basic				; if stop token, just ignore >.>
+	jq	z,return.user_exit	; if stop token, just ignore >.>
 return_asm_error:
 	call	ti.boot.ClearVRAM
 	ld	a,$2d
@@ -49,13 +49,13 @@ return_asm_error:
 	res	ti.textInverse,(iy + ti.textFlags)
 	call	ti.PutS
 	ld	hl,backup_prgm_name
-	ld	a,(hl)					; check if correct program
+	ld	a,(hl)			; check if correct program
 	cp	a,ti.ProtProgObj
-	jp	z,.only_allow_quit
+	jq	z,.only_allow_quit
 	ld	b,a
 	ld	a,(ti.basic_prog)
 	cp	a,b
-	jp	nz,.only_allow_quit
+	jq	nz,.only_allow_quit
 	xor	a,a
 	ld	(ti.curCol),a
 	ld	a,2
@@ -73,7 +73,7 @@ return_asm_error:
 	cp	a,ti.sk2
 	jr	z,.goto
 	cp	a,ti.sk1
-	jp	z,return.quit
+	jq	z,return.quit
 	cp	a,ti.skEnter
 	jr	z,.get_option
 	jr	.input
@@ -134,40 +134,33 @@ return_asm_error:
 	jr	z,return.quit
 	jr	.only_allow_quit
 return_basic:
-return_asm:						; handler for assembly / basic return
+return_asm:				; handler for assembly / basic return
 return:
-	ld	sp,(persistent_sp)
 	call	ti.PopErrorHandler
 .user_exit:
-	ld	sp,(persistent_sp_error)
 	ld	a,(return_info)
 	cp	a,return_edit
-	jr	z,.skip					; return properly from external editors
+	jr	z,.skip			; return properly from external editors
 .quit:
 .error:
-	ld	a,return_prgm				; error handler for returning programs
+	ld	a,return_prgm		; error handler for returning programs
 .skip:
 	ld	(return_info),a
-	call	ti.RunIndicOff				; in case the launched program re-enabled it
-	di						; in case the launched program enabled interrupts...
-	call	ti.ClrAppChangeHook			; clear me!
 	res	ti.progExecuting,(iy + ti.newDispF)
 	res	ti.cmdExec,(iy + ti.cmdFlags)
 	res	ti.textInverse,(iy + ti.textFlags)
 	res	ti.allowProgTokens,(iy + ti.newDispF)
 	res	ti.onInterrupt,(iy + ti.onFlags)
-	call	ti.ReloadAppEntryVecs
-	call	ti.ResetStacks
-	call	ti.DeleteTempPrograms
-	call	ti.CleanAll
+	call	ti.RunIndicOff
 	di
+	call	ti.ClrAppChangeHook
 	call	hook_restore_parser
 	ld	de,(ti.asm_prgm_size)
 	or	a,a
 	sbc	hl,hl
 	ld	(ti.asm_prgm_size),hl
 	ld	hl,ti.userMem
-	call	ti.DelMem				; delete user program
+	call	ti.DelMem		; delete user program
 
 	call	ti.ClrHomescreenHook
 	res	appWantHome,(iy + sysHookFlg)
@@ -182,7 +175,23 @@ return:
 .debounce:
 	call	ti.GetCSC
 	or	a,a
-	jr	nz,.debounce				; debounce keys
+	jr	nz,.debounce		; debounce keys
 	xor	a,a
-	ld	(ti.kbdGetKy),a				; flush keys
-	jp	cesium_start
+	ld	(ti.kbdGetKy),a		; flush keys
+
+	ld	hl,app_name
+	call	ti.Mov9ToOP1
+	call	ti.FindApp
+	ld	a,ti.kClear
+	jp	c,ti.JForceCmd		; attempt to clear the screen
+
+	ld	hl,app_name
+	ld	de,ti.progToEdit
+	ld	bc,9
+	ldir
+	ld	a,ti.kExtApps
+	jp	ti.NewContext
+
+app_name:
+	db	cesium_name,0,0,0,0,0,0,0,0
+

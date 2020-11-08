@@ -209,24 +209,29 @@ execute_program:
 .entry:							; entry point, OP1 = name
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	call	nz,ti.ClrGetKeyHook
+	call	lcd_normal
+	xor	a,a
+	ld	(ti.OP1),a
+	ld	(ti.OP1 + 1),a
+	ld	a,ti.kQuit
+	call	ti.NewContext0
+	xor	a,a
+	ld	(ti.kbdGetKy),a
+	call	util_move_prgm_name_to_op1
 	bit	prgm_is_basic,(iy + prgm_flag)
 	jr	nz,execute_ti.basic_program		; execute basic program
 	call	util_move_prgm_to_usermem		; execute assembly program
 	jq	nz,main_loop				; return on error
-	call	lcd_normal
 	ld	hl,return_asm_error
-	ld	(persistent_sp_error),sp
 	call	ti.PushErrorHandler
-	ld	(persistent_sp),sp
 execute_assembly_program:
 	ld	hl,return_asm
 	push	hl
 	call	ti.DisableAPD
-	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
+	set	ti.appAutoScroll,(iy + ti.appFlags)
 	jq	ti.userMem
 
 execute_ti.basic_program:
-	call	lcd_normal
 	ld	hl,(prgm_data_ptr)
 	ld	a,(hl)
 	cp	a,ti.tExtTok
@@ -236,8 +241,6 @@ execute_ti.basic_program:
 	cp	a,ti.tAsm84CePrgm
 	jq	z,squish_program			; we've already installed an error handler
 .not_unsquished:
-	call	ti.ClrTxtShd
-	call	ti.HomeUp
 	call	ti.RunIndicOn
 	bit	setting_basic_indicator,(iy + settings_flag)
 	call	nz,ti.RunIndicOff
@@ -265,33 +268,22 @@ execute_ti.basic_program:
 .in_rom:
 	call	ti.OP4ToOP1
 .in_ram:
-	call	ti.ClrTxtShd
 	xor	a,a
-	ld	(ti.curRow),a
-	ld	(ti.curCol),a
 	ld	(ti.appErr1),a
 	set	ti.graphDraw,(iy + ti.graphFlags)
-	ld	hl,return_basic_error
-	ld	(persistent_sp_error),sp
-	call	ti.PushErrorHandler
-	ld	(persistent_sp),sp
 	set	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
 	set	ti.progExecuting,(iy + ti.newDispF)
-	res	7,(iy + $45)
 	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
 	set	ti.cmdExec,(iy + ti.cmdFlags) 		; set these flags to execute basic program
 	res	ti.onInterrupt,(iy + ti.onFlags)
 	res	appInpPrmptDone,(iy + ti.apiFlg2)
-	ld	a,ti.cxCmd
-	ld	(ti.cxCurApp),a
-	call	ti.SaveCmdShadow
-	call	ti.SaveShadow
-	xor	a,a
-	ld	(ti.kbdGetKy),a
+	res	7,(iy + $45)
 	call	hook_chain_parser
-	call	ti.EnableAPD
+	ld	hl,return_basic_error
+	call	ti.PushErrorHandler
 	ld	hl,return_basic
 	push	hl
+	call	ti.EnableAPD
 	ei
 	jq	ti.ParseInp				; run program
 
