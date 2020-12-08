@@ -278,13 +278,19 @@ feature_item_attributes:
 	ld	(hl),2
 	ld	a,(current_screen)
 	cp	a,screen_usb
-	jr	z,.usb
+	jq	z,.usb
 	cp	a,screen_apps
 	jp	z,main_loop
 	cp	a,screen_programs
-	jr	z,.programs
+	jq	z,.programs
 	ld	(hl),0
+	jq	.appvars
 .programs:
+	call	util_move_prgm_name_to_op1
+	ld	a,(ti.OP1 + 1)
+	cp	a,ti.tTheta + 1
+	jq	nc,main_loop
+.appvars:
 	ld	a,(iy + prgm_flag)
 	ld	(iy + temp_prgm_flag),a
 	ld	hl,.check_hide_smc
