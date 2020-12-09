@@ -42,8 +42,7 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	call	lcd_normal
 	call	hook_restore_parser
 	call	ti.ClrAppChangeHook
-    call	ti.ClrHomescreenHook
-	;call	util_setup_shortcuts
+	call	util_setup_shortcuts
 	call	ti.ClrScrn
 	call	ti.HomeUp
 	res	ti.useTokensInString,(iy + ti.clockFlags)
