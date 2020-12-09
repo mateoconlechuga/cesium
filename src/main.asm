@@ -147,8 +147,8 @@ main_init:
 	ret	nz
 	ld	hl,ti.basic_prog
 	ld	a,(hl)					; check if correct program
-	cp	a,ti.ProtProgObj
-	ret	z
+	cp	a,ti.ProgObj
+	ret	nz
 	pop	bc					; pop return location
 	inc	hl
 	call	util_get_archived_name

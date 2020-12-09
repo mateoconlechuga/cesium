@@ -650,69 +650,6 @@ hook_password:
 	jr	z,.get_key
 	ret
 
-hook_home:
-	db	$83
-	cp	a,3
-	ret	nz
-	bit	appInpPrmptDone,(iy + ti.apiFlg2)
-	res	appInpPrmptDone,(iy + ti.apiFlg2)
-	ld	a,b
-	ld	b,0
-	ret	nz
-.restore_home_hooks:
-	push	af
-	push	bc
-	call	ti.ClrHomescreenHook
-	res	appWantHome,(iy + sysHookFlg)
-	pop	bc
-	pop	af
-	cp	a,ti.cxError
-	jr	z,.return_cesium_app
-	cp	a,ti.cxPrgmInput
-	jr	z,.return_cesium_app
-	ld	hl,backup_home_hook_location
-	ld	a,(hl)
-	or	a,a
-	ret	z
-	push	bc
-	ld	hl,(hl)
-	call	ti.SetHomescreenHook
-	set	appWantHome,(iy + sysHookFlg)
-	pop	bc
-	ret
-.return_cesium_app:
-	cesium_code.copy
-	jp	return.user_exit
-.save:
-	xor	a,a
-	sbc	hl,hl
-	bit	appWantHome,(iy + sysHookFlg)
-	jr	z,.done
-	ld	hl,(ti.homescreenHookPtr)
-.done:
-	ld	(backup_home_hook_location),hl
-	ret
-
-.put_away:
-	xor	a,a
-	ld	(ti.currLastEntry),a
-	bit	appInpPrmptInit,(iy + ti.apiFlg2)
-	jr	nz,.skip
-	call	ti.ClrHomescreenHook
-.skip:
-	call	ti.ReloadAppEntryVecs
-	call	ti.PutAway
-	ld	b,0
-	ret
-.vectors:
-	dl	$f8
-	dl	ti.SaveShadow
-	dl	.put_away
-	dl	ti.RStrShadow
-	dl	$f8
-	dl	$f8
-	db	0
-
 hook_chain_parser:
 	xor	a,a
 	ld	(ti.appErr2),a

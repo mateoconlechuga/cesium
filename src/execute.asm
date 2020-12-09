@@ -154,44 +154,6 @@ execute_app:
 	add	hl,de
 	jp	(hl)
 
-; so why doesn't this work? because:
-; 1) compressed programs
-; 2) programs that use themselves
-; 3) subprograms
-; 4) i'm lazy
-;execute_usb_program:
-	;ld	hl,(usb_var_size)
-	;call	util_check_free_ram
-	;jq	z,main_loop				; ensure enough ram
-	;call	execute_ram_backup
-	;call	lcd_normal
-	;bit	setting_enable_shortcuts,(iy + settings_flag)
-	;call	nz,ti.ClrGetKeyHook
-	;ld	hl,usb_sector + 74
-	;ld	a,(hl)
-	;cp	a,ti.tExtTok				; is it an assembly program
-	;jr	nz,.program_is_basic
-	;inc	hl
-	;ld	a,(hl)
-	;cp	a,ti.tAsm84CeCmp
-	;jr	nz,.program_is_basic			; is it a basic program
-.program_is_asm:
-	;call	util_install_error_handler
-	;ld	hl,ti.userMem
-	;ld	de,(ti.asm_prgm_size)
-	;add	hl,de
-	;ex	de,hl
-	;ld	hl,(usb_var_size)
-	;push	hl
-	;call	ti.InsertMem				; insert memory into usermem + (ti.asm_prgm_size)
-	;call	usb_copy_tivar_to_ram			; copy variable to ram
-	;call	usb_detach_only				; shift assembly program to ti.userMem, detach usb & libload
-	;pop	hl
-	;ld	(ti.asm_prgm_size),hl			; reload size of the program
-	;jr	execute_assembly_program
-.program_is_basic:
-	;jq	main_loop
-
 execute_ram_backup:
 	bit	cesium_execute_alt,(iy + cesium_flag)
 	ret	nz
@@ -209,45 +171,129 @@ execute_program:
 .entry:							; entry point, OP1 = name
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	call	nz,ti.ClrGetKeyHook
-	call	lcd_normal
-	xor	a,a
-	ld	(ti.OP1),a
-	ld	(ti.OP1 + 1),a
-	ld	a,ti.kQuit
-	call	ti.NewContext0
-	xor	a,a
-	ld	(ti.kbdGetKy),a
 	call	util_move_prgm_name_to_op1
 	bit	prgm_is_basic,(iy + prgm_flag)
 	jr	nz,execute_ti.basic_program		; execute basic program
+	jq	execute_ti.asm_program
+
+execute_ti.asm_program:
 	call	util_move_prgm_to_usermem		; execute assembly program
 	jq	nz,main_loop				; return on error
-	ld	hl,return_asm_error
-	call	ti.PushErrorHandler
-execute_assembly_program:
-	ld	hl,return_asm
-	push	hl
+execute_ti.asm_program_loaded:
 	call	ti.DisableAPD
 	set	ti.appAutoScroll,(iy + ti.appFlags)
+	call	execute_setup_vectors
+	ld	hl,execute_return
+	push	hl
 	jq	ti.userMem
 
 execute_ti.basic_program:
 	ld	hl,(prgm_data_ptr)
 	ld	a,(hl)
 	cp	a,ti.tExtTok
-	jr	nz,.not_unsquished			; check if actually an unsquished assembly program
+	jq	nz,.no_squish				; check if actually an unsquished assembly program
 	inc	hl
 	ld	a,(hl)
 	cp	a,ti.tAsm84CePrgm
-	jq	z,squish_program			; we've already installed an error handler
-.not_unsquished:
+	jq	nz,.no_squish
+.squish:
+	call	util_move_prgm_name_to_op1
+	ld	de,ti.basic_prog
+	ld	hl,ti.OP1
+	call	ti.Mov9b
+	ld	hl,ti.OP1
+	ld	de,backup_prgm_name
+	call	ti.Mov9b
+	ld	bc,(prgm_real_size)
+	dec	bc
+	dec	bc
+	push	bc
+	bit	0,c
+	jp	nz,ti.ErrSyntax
+	srl	b
+	rr	c
+	push	bc
+	push	bc
+	pop	hl
+	call	util_check_free_ram
+	pop	hl
+	pop	bc
+	jq	c,main_start
+	push	bc
+	ld	de,ti.userMem
+	ld	(ti.asm_prgm_size),hl
+	call	ti.InsertMem
+	ld	hl,(prgm_data_ptr)
+	ld	a,(prgm_data_ptr + 2)
+	cp	a,$d0
+	jr	c,.not_in_ram
+	call	util_move_prgm_name_to_op1
+	call	ti.ChkFindSym
+	ex	de,hl
+	inc	hl
+	inc	hl
+.not_in_ram:
+	inc	hl
+	inc	hl
+	ld	(ti.begPC),hl
+	ld	(ti.curPC),hl
+	ld	de,ti.userMem
+	pop	bc
+.squish_me:
+	ld	a,b
+	or	a,c
+	jp	z,execute_ti.asm_program_loaded
+	push	hl
+	ld	hl,(ti.curPC)
+	inc	hl
+	ld	(ti.curPC),hl
+	pop	hl
+	dec	bc
+	ld	a,(hl)
+	inc	hl
+	cp	a,$3f
+	jr	z,.squish_me
+	push	de
+	call	.squishy_check_byte
+	ld	d,a
+	ld	a,(hl)
+	inc	hl
+	call	.squishy_check_byte
+	ld	e,a
+	call	.squishy_convert_byte
+	pop	de
+	ld	(de),a
+	inc	de
+	dec	bc
+	jr	.squish_me
+.squishy_convert_byte:
+	push	bc
+	push	hl
+	ld	a,d
+	call	ti.ShlACC
+	add	a,e
+	pop	hl
+	pop	bc
+	ret
+.squishy_check_byte:
+	cp	a,$30
+	jp	c,ti.ErrSyntax
+	cp	a,$3A
+	jr	nc,.skip
+	sub	a,$30
+	ret
+.skip:
+	cp	a,$41
+	jp	c,ti.ErrSyntax
+	cp	a,$47
+	jp	nc,ti.ErrSyntax
+	sub	a,$37
+	ret
+.no_squish:
 	call	ti.RunIndicOn
 	bit	setting_basic_indicator,(iy + settings_flag)
 	call	nz,ti.RunIndicOff
 	call	ti.DisableAPD
-	call	hook_home.save
-	ld	hl,hook_home
-	call	ti.SetHomescreenHook
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.in_ram
 	ld	hl,util_temp_program_object
@@ -268,22 +314,219 @@ execute_ti.basic_program:
 .in_rom:
 	call	ti.OP4ToOP1
 .in_ram:
-	xor	a,a
-	ld	(ti.appErr1),a
-	set	ti.graphDraw,(iy + ti.graphFlags)
-	set	ti.appTextSave,(iy + ti.appFlags)	; text goes to textshadow
 	set	ti.progExecuting,(iy + ti.newDispF)
-	set	ti.appAutoScroll,(iy + ti.appFlags)	; allow scrolling
-	set	ti.cmdExec,(iy + ti.cmdFlags) 		; set these flags to execute basic program
-	res	ti.onInterrupt,(iy + ti.onFlags)
-	res	appInpPrmptDone,(iy + ti.apiFlg2)
-	res	7,(iy + $45)
-	call	hook_chain_parser
-	ld	hl,return_basic_error
-	call	ti.PushErrorHandler
-	ld	hl,return_basic
-	push	hl
+	set	ti.cmdExec,(iy + ti.cmdFlags)
+	set	ti.allowProgTokens,(iy + ti.newDispF)
+	call	execute_setup_vectors
 	call	ti.EnableAPD
 	ei
-	jq	ti.ParseInp				; run program
+	ld	hl,execute_return
+	push	hl
+	jp	ti.ParseInp
+
+execute_return:
+	call	ti.PopErrorHandler
+	xor	a,a
+execute_error:
+	push	af
+	res	ti.progExecuting,(iy + ti.newDispF)
+	res	ti.cmdExec,(iy + ti.cmdFlags)
+	res	ti.allowProgTokens,(iy + ti.newDispF)
+	res	ti.textInverse,(iy + ti.textFlags)
+	res	ti.onInterrupt,(iy + ti.onFlags)
+	call	ti.ReloadAppEntryVecs
+	pop	bc
+	ld	a,(return_info)
+	cp	a,return_edit				; return from editor
+	jr	z,execute_quit
+	ld	a,b
+	or	a,a
+	ld	a,return_prgm
+	jr	z,execute_quit
+	call	execute_show_error_screen
+execute_quit:
+	ld	(return_info),a
+	call	ti.ReloadAppEntryVecs
+	call	ti.ClrHomescreenHook
+	call	ti.ClrAppChangeHook
+	call	ti.ForceFullScreen
+	call	hook_restore_parser
+	ld	de,(ti.asm_prgm_size)
+	or	a,a
+	sbc	hl,hl
+	ld	(ti.asm_prgm_size),hl
+	ld	hl,ti.userMem
+	call	ti.DelMem			; delete user program
+	res	appWantHome,(iy + sysHookFlg)
+.debounce:
+	call	ti.GetCSC
+	or	a,a
+	jr	nz,.debounce			; debounce keys
+	xor	a,a
+	ld	(ti.kbdGetKy),a			; flush keys
+	jp	cesium_start
+
+execute_hook:
+	add	a,e
+	cp	a,3
+	ret	nz
+	bit	appInpPrmptDone,(iy + ti.apiFlg2)
+	res	appInpPrmptDone,(iy + ti.apiFlg2)
+	ld	a,return_prgm
+	jr	z,execute_quit
+	call	ti.ReloadAppEntryVecs
+	ld	hl,execute_vectors
+	call	ti.AppInit
+	or	a,1
+	ld	a,$58
+	ld	(ti.cxCurApp),a
+	ret
+
+execute_setup_vectors:
+	call	lcd_normal
+	xor	a,a
+	ld	(ti.appErr1),a
+	ld	hl,execute_hook
+	call	ti.SetHomescreenHook
+	ld	hl,execute_vectors
+	call	ti.AppInit
+	call	ti.ForceFullScreen
+	call	ti.ClrScrn
+	call	ti.HomeUp
+	ld	hl,execute_error
+	jp	ti.PushErrorHandler
+
+execute_vectors:
+	dl	.ret
+	dl	ti.SaveShadow
+	dl	.putway
+	dl	.restore
+	dl	.ret
+	dl	.ret
+.restore:
+	call	ti.HomeUp
+	call	ti.ClrScrn
+	jp	ti.RStrShadow
+.ret:
+	ret
+.putway:
+	xor	a,a
+	ld	(ti.currLastEntry),a
+	bit	appInpPrmptInit,(iy + ti.apiFlg2)
+	jr	nz,.aipi
+	call	ti.ClrHomescreenHook
+	call	ti.ForceFullScreen
+.aipi:
+	call	ti.ReloadAppEntryVecs
+	call	ti.PutAway
+	ld	b,0
+	ret
+
+execute_show_error_screen:
+	xor	a,a
+	ld	(ti.menuCurrent),a
+	ld	a,(ti.errNo)
+	cp	a,ti.E_AppErr1
+	ret	z			; if stop token, ignore
+	call	ti.boot.ClearVRAM
+	ld	a,$2d
+	ld	(ti.mpLcdCtrl),a
+	call	ti.CursorOff
+	call	ti.DrawStatusBar
+	call	ti.DispErrorScreen
+	ld	hl,1
+	ld	(ti.curRow),hl
+	ld	hl,data_string_quit1
+	set	ti.textInverse,(iy + ti.textFlags)
+	call	ti.PutS
+	res	ti.textInverse,(iy + ti.textFlags)
+	call	ti.PutS
+	ld	hl,backup_prgm_name
+	ld	a,(hl)			; check if correct program
+	cp	a,ti.ProtProgObj
+	jq	z,.only_allow_quit
+	ld	b,a
+	ld	a,(ti.basic_prog)
+	cp	a,b
+	jq	nz,.only_allow_quit
+	xor	a,a
+	ld	(ti.curCol),a
+	ld	a,2
+	ld	(ti.curRow),a
+	ld	hl,data_string_quit2
+	call	ti.PutS
+	call	ti.PutS
+	call	ti.GetCSC
+.input:
+	call	ti.GetCSC
+	cp	a,ti.skUp
+	jr	z,.highlight_1
+	cp	a,ti.skDown
+	jr	z,.highlight_2
+	cp	a,ti.sk2
+	jr	z,.goto
+	cp	a,ti.sk1
+	jq	z,.quit
+	cp	a,ti.skEnter
+	jr	z,.get_option
+	jr	.input
+.highlight_1:
+	ld	hl,1
+	ld	de,2
+	ld	a,'1'
+	ld	b,'2'
+	jr	.highlight
+.highlight_2:
+	ld	hl,2
+	ld	de,1
+	ld	a,'2'
+	ld	b,'1'
+.highlight:
+	push	bc
+	push	de
+	ld.sis	(ti.curRow and $ffff),hl
+	ld	hl,ti.OP6
+	ld	(hl),a
+	inc	hl
+	ld	(hl),':'
+	inc	hl
+	ld	(hl),0
+	dec	hl
+	dec	hl
+	push	hl
+	scf
+	sbc	hl,hl
+	ld	(ti.fillRectColor),hl
+	inc	hl
+	ld	de,25
+	ld	bc,(55 shl 8) or 96
+	call	ti.FillRect
+	pop	hl
+	set	ti.textInverse,(iy + ti.textFlags)
+	call	ti.PutS
+	res	ti.textInverse,(iy + ti.textFlags)
+	pop	de
+	pop	bc
+	ld.sis	(ti.curRow and $ffff),de
+	ld	hl,ti.OP6
+	ld	(hl),b
+	call	ti.PutS
+	jr	.input
+.get_option:
+	ld	a,(ti.curRow)
+	dec	a
+	jr	nz,.quit
+.goto:
+	ld	a,return_goto
+	ret
+.only_allow_quit:
+	call	ti.GetCSC
+	cp	a,ti.sk1
+	jr	z,.quit
+	cp	a,ti.skEnter
+	jr	z,.quit
+	jr	.only_allow_quit
+.quit:
+	ld	a,return_prgm
+	ret
 

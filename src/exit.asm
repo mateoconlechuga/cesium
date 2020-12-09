@@ -42,7 +42,8 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	call	lcd_normal
 	call	hook_restore_parser
 	call	ti.ClrAppChangeHook
-	call	util_setup_shortcuts
+    call	ti.ClrHomescreenHook
+	;call	util_setup_shortcuts
 	call	ti.ClrScrn
 	call	ti.HomeUp
 	res	ti.useTokensInString,(iy + ti.clockFlags)
@@ -62,8 +63,6 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	call	ti.EnableAPD				; restore apd
 	im	1
 	ei
-	ld	a,ti.kQuit
-	call	ti.NewContext0
 	xor	a,a
 	ld	(ti.menuCurrent),a
 	ld	a,ti.kClear

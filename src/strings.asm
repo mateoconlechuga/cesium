@@ -250,14 +250,34 @@ string_editor_name:
 	db	'Editeur de prgm',0
 string_delete_confirmation:
 	db	'Supprimer ? ',$7e,'ZOOM]-Oui ',$7e,'GRAPH]-Non',0
-string_general_settings:
-	db	'Options g',$82,'n',$82,'rales',0
 string_setting_color:
 	db	'Couleur de Cesium',0
 string_setting_indicator:
 	db	'Cacher l',$27,'indicateur de calcul en BASIC',0
 string_setting_list_count:
 	db	'Afficher le nombre de programmes',0
+string_setting_page1:
+	db	'Press <> arrow keys to switch pages  ',$7e,'1 of 2]',0
+string_setting_page2:
+	db	'Press <> arrow keys to switch pages  ',$7e,'2 of 2]',0
+string_setting_screen_brightness:
+	db	'Change screen brightness',0
+string_setting_show_battery:
+	db	'Display battery status',0
+string_setting_show_hidden:
+	db	'Hide hidden programs',0
+string_setting_poweron_password:
+	db	'Change poweron password',0
+string_setting_editor_prgm:
+	db	'Change program editor',0
+string_new_password:
+	db	'Set poweron password: ',0
+string_prgm_editor_name:
+	db	'Program editor name: ',0
+string_setting_delete_confirm:
+	db	'Afficher l',$27,'invite de suppression',0
+string_setting_usb_enable:
+	db	'Activer le support de cl',$82,'s USB',0
 string_setting_clock:
 	db	'Afficher l',$27,'horloge',0
 string_setting_ram_backup:
@@ -266,12 +286,6 @@ string_setting_special_directories:
 	db	'Afficher les r',$82,'pertoires sp',$82,'ciaux',0
 string_setting_enable_shortcuts:
 	db	'Activer les raccourcis clavier',0
-string_settings_usb_edit:
-	db	'Activer le support de cl',$82,'s USB',0
-string_settings_delete_confirm:
-	db	'Afficher l',$27,'invite de suppression',0
-string_new_password:
-	db	'Saisir le nouveau mot de passe : ',0
 string_read_only:
 	db	'Lecture seule',0
 string_system:

@@ -51,8 +51,6 @@ relocate cesium_code, cesium_execution_base
 	include 'view-usb.asm'
 	include 'features.asm'
 	include 'settings.asm'
-	include 'execute.asm'
-	include 'squish.asm'
 	include 'gui.asm'
 	include 'lcd.asm'
 	include 'util.asm'
@@ -68,8 +66,8 @@ end relocate
 
 
 ; we want to keep these things in flash
+include 'execute.asm'
 include 'flash.asm'
-include 'return.asm'
 include 'hooks.asm'
 include 'data.asm'
 

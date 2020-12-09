@@ -515,15 +515,20 @@ end if
 	ret
 
 gui_ram_error:
+	call    gui_box_information
 	ld	hl,string_ram_free
-	jr	gui_box_information
+	call	lcd_string
+	call	ti.MemChk
+	call	lcd_num_6
+	jq	lcd_blit
 
 gui_fat_transfer:
+	call    gui_box_information
 	ld	hl,string_fat_transferring
-	jq	gui_box_information
+	call	lcd_string
+	jq	lcd_blit
 
 gui_box_information:
-	push	hl
 	ld	a,(color_senary)
 	call	util_set_primary
 	draw_rectangle 89, 105, 256, 121
@@ -531,6 +536,4 @@ gui_box_information:
 	set_cursor 95, 109
 	call	util_restore_primary
 	set_normal_text
-	pop	hl
-	call	lcd_string
-	jp	lcd_blit
+	ret

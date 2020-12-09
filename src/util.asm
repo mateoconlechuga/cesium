@@ -107,7 +107,9 @@ util_check_free_ram:
 	pop	hl
 	ret	nc
 	call	gui_ram_error
-	;jr	util_delay_one_second
+	call    util_delay_one_second
+	scf
+	ret
 
 util_delay_one_second:
 	ld	bc,100
