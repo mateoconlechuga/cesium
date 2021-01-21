@@ -468,6 +468,6 @@ string_ram_error:
 str_invalid_os:
 	db	'Dit OS is niet bruikbaar',0
 str_cannot_hide:
-	db	'Kan geen gearchiveerd programma verbergen',0
+	db	'Kan geen programma in archief verbergen',0
 
 end if
