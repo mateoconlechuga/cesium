@@ -143,8 +143,10 @@ gui_draw_static_options:
 	print	string_delete, 199, 195
 if config_english
 	ld	de,278
-else
+else if config_french
 	ld	de,262
+else
+	ld	de,278
 end if
 	ld	(lcd_x),de
 	inc	hl
