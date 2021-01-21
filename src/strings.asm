@@ -333,3 +333,141 @@ str_cannot_hide:
 	db	'Impossible de cacher un programme archiv',$82,0
 
 end if
+
+if config_dutch
+
+string_primary_color:
+	db	'Primaire kleur',0
+string_secondary_color:
+	db	'Secundaire kleur',0
+string_tertiary_color:
+	db	'Markeer kleur',0
+string_quaternary_color:
+	db	'Inversie kleur',0
+string_quinary_color:
+	db	'verborgen kleur',0
+string_senary_color:
+	db	'Achtergrond kleur',0
+string_language:
+	db	'Soort: ',0
+string_archived:
+	db	'Gearchiveerd',0
+string_read_only:
+	db	'Alleen-Lezen',0
+string_hidden:
+	db	'Verborgen',0
+string_system:
+	db	'Systeem',0
+string_locked:
+	db	'Beschermd',0
+string_size:
+	db	'Grootte: ',0
+string_min_version:
+	db	'Minimum Versie:',0
+string_ram_free:
+	db	'RAM vrij: ',0
+string_rom_free:
+	db	'ROM vrij: ',0
+string_file_information:
+	db	'Bestand info',0
+string_settings:
+	db	'Opties ',0
+	db	$7e,'MODE]',0
+string_delete:
+	db	'Delete ',0 ;'Verwijder' gives problems with displaying. it displays the [del] half trough the word.
+	db	$7e,'DEL]',0
+string_attributes:
+	db	'Attrib',0
+	db	$7e,'ALPHA]',0
+string_rename:
+	db	'Hernoem',0
+	db	$7e,'GRAPH]',0
+string_transfer:
+	db	'Transfer',0
+	db	$7e,'PRGM]',0
+string_edit_prgm:
+	db	'Bewerk',0
+	db	$7e,'ZOOM]'
+string_new_prgm:
+	db	'Nieuw Prgm',0
+	db	$7e,'Y=]'
+string_editor_name:
+	db	'Prgm Bewerker',0
+string_delete_confirmation:
+	db	'Verwijderen?: ',$7e,'ZOOM]-Ja  ',$7e,'GRAPH]-Nee',0
+string_setting_page1:
+	db	'Toets <> pijltjes om pagina te wisselen  ',$7e,'1/2]',0
+string_setting_page2:
+	db	'Toets <> pijltjes om pagina te wisselen  ',$7e,'2/2]',0
+string_setting_color:
+	db	'Verander Cesium Kleuren',0
+string_setting_indicator:
+	db	'Schakel busy indicator uit in programmas',0
+string_setting_clock:
+	db	'Laat de tijd zien',0
+string_setting_show_battery:
+	db	'Laat de batterij status zien',0
+string_setting_show_hidden:
+	db	'Verberg verborgen programmas',0
+string_setting_ram_backup:
+	db	'Maak RAM backup voor uitvoer programma',0
+string_setting_enable_shortcuts:
+	db	'Schakel ',$7e,'ON] toets shortcuts in',0
+string_setting_delete_confirm:
+	db	'Laat verwijder bevestiging zien',0
+string_setting_screen_brightness:
+	db	'Verander de scherm helderheid',0
+string_setting_special_directories:
+	db	'Laat speciale mappen zien',0
+string_setting_list_count:
+	db	'Laat programma aantal zien',0
+string_setting_poweron_password:
+	db	'Verander wachtwoord',0
+string_setting_editor_prgm:
+	db	'Verander programma bewerker',0
+string_setting_usb_enable:
+	db	'Schakel USB flash drive toegang in',0
+string_new_password:
+	db	'Stel wachtwoord in: ',0
+string_prgm_editor_name:
+	db	'Naam programma bewerker: ',0
+string_usb_info_0:
+	db	'Gebruik een FAT32 USB flash drive',0
+string_usb_info_1:
+	db	'voor externe opslag en overzetten van bestanden.',0
+string_usb_info_2:
+	db	'U moet LibLoad installeren',0
+string_usb_info_3:
+	db	'en de FATDRVCE/USBDRVCE bibliotheek via:',0
+string_usb_info_4:
+	db	'http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Toets ',$7e,'enter] om opnieuw te proberen.',0
+string_usb_info_6:
+	db	'Toets ',$7e,'clear] om terug te gaan.',0
+string_usb_waiting:
+	db	'Wachten tot USB wordt verbonden...',0
+string_usb_no_partitions:
+	db	'Geen FAT32 partities gevonden!',0
+string_insert_fat32:
+	db	'Gebruik een FAT32 geformatteerde opslag.',0
+string_partition:
+	db	'Partitie ',0
+string_select_partition_0:
+	db	'Deze opslag bevat meerdere partities.',0
+string_select_partition_1:
+	db	'Kies een van de lijst hierboven.',0
+string_fat_init_error_0:
+	db	'Fout bij initialiseren van FAT partitie.',0
+string_fat_init_error_1:
+	db	'Fout code: ',0
+string_fat_transferring:
+	db	'Over zetten...',0
+string_ram_error:
+	db	'Niet genoeg RAM beschikbaar',0
+str_invalid_os:
+	db	'Dit OS is niet bruikbaar',0
+str_cannot_hide:
+	db	'Kan geen gearchiveerd programma verbergen',0
+
+end if
