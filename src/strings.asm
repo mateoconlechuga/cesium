@@ -374,7 +374,7 @@ string_settings:
 	db	'Opties ',0
 	db	$7e,'MODE]',0
 string_delete:
-	db	'Delete ',0 ;'Verwijder' gives problems with displaying. it displays the [del] half trough the word.
+	db	'Verwijder ',0
 	db	$7e,'DEL]',0
 string_attributes:
 	db	'Attrib',0
@@ -432,13 +432,13 @@ string_new_password:
 string_prgm_editor_name:
 	db	'Naam programma bewerker: ',0
 string_usb_info_0:
-	db	'Gebruik een FAT32 USB flash drive',0
+	db	'Gebruik een FAT32 USB flash drive voor:',0
 string_usb_info_1:
-	db	'voor externe opslag en overzetten van bestanden.',0
+	db	'-externe opslag.',0
 string_usb_info_2:
-	db	'U moet LibLoad installeren',0
+	db	'U moet de volgende bibliotheken installeren:',0
 string_usb_info_3:
-	db	'en de FATDRVCE/USBDRVCE bibliotheek via:',0
+	db	'-LibLoad, FATDRVCE/USBDRVCE',0
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:
