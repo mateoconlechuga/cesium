@@ -101,8 +101,10 @@ data_string_cesium_name:
 data_string_password:
 if config_english
 	db	'Password:',0
-else
+else if config_french
 	db	'Mot de passe:',0
+else
+    db  'Wachtwoord:',0
 end if
 
 data_string_quit1:
