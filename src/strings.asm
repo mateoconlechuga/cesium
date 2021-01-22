@@ -345,11 +345,11 @@ string_primary_color:
 string_secondary_color:
 	db	'Secundaire kleur',0
 string_tertiary_color:
-	db	'Markeer kleur',0
+	db	'Selector kleur',0
 string_quaternary_color:
 	db	'Inversie kleur',0
 string_quinary_color:
-	db	'verborgen kleur',0
+	db	'verborgen-programma kleur',0
 string_senary_color:
 	db	'Achtergrond kleur',0
 string_language:
