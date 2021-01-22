@@ -115,9 +115,9 @@ if config_dutch
 str_invalid_os_install:
 	db	'Geen ondersteunde OS versie',0
 str_cesium_installed:
-	db	'Geinstalleerd bij ',$C1,'apps].',0
+	db	'Ge',$A1,'nstalleerd bij ',$C1,'apps].',0
 str_cesium_exists_error:
-	db	'Cesium is al geinstalleerd verwijder de oude versie!',0
+	db	'Cesium is al ge',$A1,'nstalleerd verwijder de oude versie!',0
 str_delete_installer:
 	db	'Installer verwijderen?',0
 	db	'del - ja',0
