@@ -52,14 +52,14 @@ string_unknown:
 	db	'Unknown',0
 string_appvar:
 	db	'Data',0
-string_mode_select:
-	db	': Press ',$7e,'MODE] to set',0
 string_min_os_version:
 	db	'5.0.0.0.0',0
 .length := $-.
 
 if config_english
 
+string_mode_select:
+	db	': Press ',$7e,'MODE] to set',0
 string_primary_color:
 	db	'Primary Color',0
 string_secondary_color:
@@ -198,6 +198,8 @@ end if
 
 if config_french
 
+string_mode_select:
+	db	': Press ',$7e,'MODE] to set',0
 string_primary_color:
 	db	'Couleur primaire',0
 string_secondary_color:
@@ -336,6 +338,8 @@ end if
 
 if config_dutch
 
+string_mode_select:
+	db	': ',$7e,'MODE] - volgende',0
 string_primary_color:
 	db	'Primaire kleur',0
 string_secondary_color:
@@ -349,7 +353,7 @@ string_quinary_color:
 string_senary_color:
 	db	'Achtergrond kleur',0
 string_language:
-	db	'Soort: ',0
+	db	'Type: ',0
 string_archived:
 	db	'Gearchiveerd',0
 string_read_only:
@@ -400,43 +404,43 @@ string_setting_page1:
 string_setting_page2:
 	db	'Toets <> pijltjes om pagina te wisselen  ',$7e,'2/2]',0
 string_setting_color:
-	db	'Verander Cesium Kleuren',0
+	db	'Wijzig Cesium Kleuren',0
 string_setting_indicator:
-	db	'Schakel busy indicator uit in programmas',0
+	db	'Schakel busy indicator uit in programma',$27,'s',0
 string_setting_clock:
-	db	'Laat de tijd zien',0
+	db	'Toon tijd',0
 string_setting_show_battery:
-	db	'Laat de batterij status zien',0
+	db	'Toon batterijstatus',0
 string_setting_show_hidden:
-	db	'Verberg verborgen programmas',0
+	db	'Verberg verborgen programma',$27,'s',0
 string_setting_ram_backup:
-	db	'Maak RAM backup voor uitvoer programma',0
+	db	'Back-up RAM voor uitvoeren programma',$27,'s',0
 string_setting_enable_shortcuts:
-	db	'Schakel ',$7e,'ON] toets shortcuts in',0
+	db	'Schakel ',$7e,'ON]-toets shortcuts in',0
 string_setting_delete_confirm:
-	db	'Laat verwijder bevestiging zien',0
+	db	'Toon verwijder bevestigingen',0
 string_setting_screen_brightness:
-	db	'Verander de scherm helderheid',0
+	db	'Wijzig schermhelderheid',0
 string_setting_special_directories:
-	db	'Laat speciale mappen zien',0
+	db	'Toon speciale mappen',0
 string_setting_list_count:
-	db	'Laat programma aantal zien',0
+	db	'Toon aantal programma',$27,'s',0
 string_setting_poweron_password:
-	db	'Verander wachtwoord',0
+	db	'Wijzig wachtwoord',0
 string_setting_editor_prgm:
-	db	'Verander programma bewerker',0
+	db	'Wijzig editor',0
 string_setting_usb_enable:
-	db	'Schakel USB flash drive toegang in',0
+	db	'Schakel USB-toegang in',0
 string_new_password:
 	db	'Stel wachtwoord in: ',0
 string_prgm_editor_name:
-	db	'Naam programma bewerker: ',0
+	db	'Naam editor: ',0
 string_usb_info_0:
-	db	'Gebruik een FAT32 USB flash drive voor:',0
+	db	'Gebruik een FAT32 USB-stick voor:',0
 string_usb_info_1:
 	db	'-externe opslag.',0
 string_usb_info_2:
-	db	'U moet de volgende bibliotheken installeren:',0
+	db	'Installeer de volgende bibliotheken:',0
 string_usb_info_3:
 	db	'-LibLoad, FATDRVCE/USBDRVCE',0
 string_usb_info_4:
@@ -456,7 +460,7 @@ string_partition:
 string_select_partition_0:
 	db	'Deze opslag bevat meerdere partities.',0
 string_select_partition_1:
-	db	'Kies een van de lijst hierboven.',0
+	db	'Kies een van bovenstaande partities.',0
 string_fat_init_error_0:
 	db	'Fout bij initialiseren van FAT partitie.',0
 string_fat_init_error_1:
