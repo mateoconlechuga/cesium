@@ -111,6 +111,18 @@ str_delete_installer:
 	db 'suppr - oui',0
 end if
 
+if config_dutch
+str_invalid_os_install:
+	db	'Geen ondersteunde OS versie',0
+str_cesium_installed:
+	db	'Ge',$A1,'nstalleerd bij ',$C1,'apps].',0
+str_cesium_exists_error:
+	db	'Cesium is al ge',$A1,'nstalleerd verwijder de oude versie!',0
+str_delete_installer:
+	db	'Installer verwijderen?',0
+	db	'del - ja',0
+end if
+
 relocate installer_ports, cesium_execution_base
 define installer
 namespace installer

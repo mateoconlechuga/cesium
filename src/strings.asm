@@ -52,14 +52,14 @@ string_unknown:
 	db	'Unknown',0
 string_appvar:
 	db	'Data',0
-string_mode_select:
-	db	': Press ',$7e,'MODE] to set',0
 string_min_os_version:
 	db	'5.0.0.0.0',0
 .length := $-.
 
 if config_english
 
+string_mode_select:
+	db	': Press ',$7e,'MODE] to set',0
 string_primary_color:
 	db	'Primary Color',0
 string_secondary_color:
@@ -198,6 +198,8 @@ end if
 
 if config_french
 
+string_mode_select:
+	db	': Press ',$7e,'MODE] to set',0
 string_primary_color:
 	db	'Couleur primaire',0
 string_secondary_color:
@@ -331,5 +333,145 @@ str_invalid_os:
 	db	'Mauvaise version d''OS',0
 str_cannot_hide:
 	db	'Impossible de cacher un programme archiv',$82,0
+
+end if
+
+if config_dutch
+
+string_mode_select:
+	db	': ',$7e,'MODE] - volgende',0
+string_primary_color:
+	db	'Primaire kleur',0
+string_secondary_color:
+	db	'Secundaire kleur',0
+string_tertiary_color:
+	db	'Selector kleur',0
+string_quaternary_color:
+	db	'Inversie kleur',0
+string_quinary_color:
+	db	'verborgen-programma kleur',0
+string_senary_color:
+	db	'Achtergrond kleur',0
+string_language:
+	db	'Type: ',0
+string_archived:
+	db	'Gearchiveerd',0
+string_read_only:
+	db	'Alleen-Lezen',0
+string_hidden:
+	db	'Verborgen',0
+string_system:
+	db	'Systeem',0
+string_locked:
+	db	'Beschermd',0
+string_size:
+	db	'Grootte: ',0
+string_min_version:
+	db	'Minimum Versie:',0
+string_ram_free:
+	db	'RAM vrij: ',0
+string_rom_free:
+	db	'ROM vrij: ',0
+string_file_information:
+	db	'Bestand info',0
+string_settings:
+	db	'Opties ',0
+	db	$7e,'MODE]',0
+string_delete:
+	db	'Verwijder ',0
+	db	$7e,'DEL]',0
+string_attributes:
+	db	'Attrib',0
+	db	$7e,'ALPHA]',0
+string_rename:
+	db	'Hernoem',0
+	db	$7e,'GRAPH]',0
+string_transfer:
+	db	'Transfer',0
+	db	$7e,'PRGM]',0
+string_edit_prgm:
+	db	'Bewerk',0
+	db	$7e,'ZOOM]'
+string_new_prgm:
+	db	'Nieuw Prgm',0
+	db	$7e,'Y=]'
+string_editor_name:
+	db	'Prgm Bewerker',0
+string_delete_confirmation:
+	db	'Verwijderen?: ',$7e,'ZOOM]-Ja  ',$7e,'GRAPH]-Nee',0
+string_setting_page1:
+	db	'Toets <> pijltjes om pagina te wisselen  ',$7e,'1/2]',0
+string_setting_page2:
+	db	'Toets <> pijltjes om pagina te wisselen  ',$7e,'2/2]',0
+string_setting_color:
+	db	'Wijzig Cesium Kleuren',0
+string_setting_indicator:
+	db	'Schakel busy indicator uit in programma',$27,'s',0
+string_setting_clock:
+	db	'Toon tijd',0
+string_setting_show_battery:
+	db	'Toon batterijstatus',0
+string_setting_show_hidden:
+	db	'Verberg verborgen programma',$27,'s',0
+string_setting_ram_backup:
+	db	'Back-up RAM voor uitvoeren programma',$27,'s',0
+string_setting_enable_shortcuts:
+	db	'Schakel ',$7e,'ON]-toets shortcuts in',0
+string_setting_delete_confirm:
+	db	'Toon verwijder bevestigingen',0
+string_setting_screen_brightness:
+	db	'Wijzig schermhelderheid',0
+string_setting_special_directories:
+	db	'Toon speciale mappen',0
+string_setting_list_count:
+	db	'Toon aantal programma',$27,'s',0
+string_setting_poweron_password:
+	db	'Wijzig wachtwoord',0
+string_setting_editor_prgm:
+	db	'Wijzig editor',0
+string_setting_usb_enable:
+	db	'Schakel USB-toegang in',0
+string_new_password:
+	db	'Stel wachtwoord in: ',0
+string_prgm_editor_name:
+	db	'Naam editor: ',0
+string_usb_info_0:
+	db	'Gebruik een FAT32 USB-stick voor:',0
+string_usb_info_1:
+	db	'-externe opslag.',0
+string_usb_info_2:
+	db	'Installeer de volgende bibliotheken:',0
+string_usb_info_3:
+	db	'-LibLoad, FATDRVCE/USBDRVCE',0
+string_usb_info_4:
+	db	'http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Toets ',$7e,'enter] om opnieuw te proberen.',0
+string_usb_info_6:
+	db	'Toets ',$7e,'clear] om terug te gaan.',0
+string_usb_waiting:
+	db	'Wachten tot USB wordt verbonden...',0
+string_usb_no_partitions:
+	db	'Geen FAT32 partities gevonden!',0
+string_insert_fat32:
+	db	'Gebruik een FAT32 geformatteerde opslag.',0
+string_partition:
+	db	'Partitie ',0
+string_select_partition_0:
+	db	'Deze opslag bevat meerdere partities.',0
+string_select_partition_1:
+	db	'Kies een van bovenstaande partities.',0
+string_fat_init_error_0:
+	db	'Fout bij initialiseren van FAT partitie.',0
+string_fat_init_error_1:
+	db	'Fout code: ',0
+string_fat_transferring:
+	db	'Over zetten...',0
+string_ram_error:
+	db	'Niet genoeg RAM beschikbaar',0
+str_invalid_os:
+	db	'Dit OS is niet bruikbaar',0
+str_cannot_hide:
+	db	'Kan geen programma in archief verbergen',0
 
 end if

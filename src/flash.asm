@@ -75,4 +75,9 @@ string_ram_backup:
 	db	'Sauvegarde en cours...',0
 end if
 
+if config_dutch
+string_ram_backup:
+	db	'Backup wordt gemaakt...',0
+end if
+
 

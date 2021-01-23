@@ -28,14 +28,16 @@
 
 SRC := src/cesium.asm
 
-FLAGS_ENGLISH := -i 'config_english := 1' -i 'config_french := 0'
-FLAGS_FRENCH := -i 'config_english := 0' -i 'config_french := 1'
+FLAGS_ENGLISH := -i 'config_english := 1' -i 'config_french := 0' -i 'config_dutch := 0'
+FLAGS_FRENCH := -i 'config_english := 0' -i 'config_french := 1' -i 'config_dutch := 0'
+FLAGS_DUTCH := -i 'config_english := 0' -i 'config_french := 0' -i 'config_dutch := 1'
 BIN_ENGLISH := cesium.8xp
 BIN_FRENCH := cesium_french.8xp
+BIN_DUTCH := cesium_dutch.8xp
 RELEASE_DIR := cesium
 RELEASE_ZIP := cesium.zip
 
-all: english french
+all: english french dutch
 
 english:
 	fasmg $(FLAGS_ENGLISH) $(SRC) $(BIN_ENGLISH)
@@ -43,25 +45,31 @@ english:
 french:
 	fasmg $(FLAGS_FRENCH) $(SRC) $(BIN_FRENCH)
 
-compress: english french
+dutch:
+	fasmg $(FLAGS_DUTCH) $(SRC) $(BIN_DUTCH)
+
+compress: english french dutch
 	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_ENGLISH) --output $(BIN_ENGLISH).zx7b.8xp
 	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_FRENCH) --output $(BIN_FRENCH).zx7b.8xp
+	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_DUTCH) --output $(BIN_DUTCH).zx7b.8xp
 
 release: all
 	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_ENGLISH) --output $(BIN_ENGLISH).zx7b.8xp
 	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_FRENCH) --output $(BIN_FRENCH).zx7b.8xp
-	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(RELEASE_ZIP)
+	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_DUTCH) --output $(BIN_DUTCH).zx7b.8xp
+	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(RELEASE_ZIP)
 	rm -rf  $(RELEASE_DIR)
 	mkdir -p  $(RELEASE_DIR)
 	mv $(BIN_ENGLISH).zx7b.8xp $(RELEASE_DIR)/$(BIN_ENGLISH)
 	mv $(BIN_FRENCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_FRENCH)
+	mv $(BIN_DUTCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_DUTCH)
 	cp readme.md $(RELEASE_DIR)/readme.md
 	zip -9r $(RELEASE_ZIP) $(RELEASE_DIR)
 
 clean:
-	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(RELEASE_ZIP)
+	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(RELEASE_ZIP)
 	rm -rf  $(RELEASE_DIR)
 
-.PHONY: all english french clean release
+.PHONY: all english french dutch clean release
 
 

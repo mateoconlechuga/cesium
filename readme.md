@@ -75,6 +75,8 @@ If you would like to add support for another language, feel free to make a PR.
 
 **French**: Created by Adrien "Adriweb" Bertrand
 
+**Dutch**: Created by Privacy_Dragon
+
 ### Credits
 
 © 2015 - 2020 Matt "MateoConLechuga" Waltz
