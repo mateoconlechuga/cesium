@@ -1,19 +1,19 @@
 ; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
-; 
+;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions are met:
-; 
+;
 ; 1. Redistributions of source code must retain the above copyright notice,
 ;    this list of conditions and the following disclaimer.
-; 
+;
 ; 2. Redistributions in binary form must reproduce the above copyright notice,
 ;    this list of conditions and the following disclaimer in the documentation
 ;    and/or other materials provided with the distribution.
-; 
+;
 ; 3. Neither the name of the copyright holder nor the names of its contributors
 ;    may be used to endorse or promote products derived from this software
 ;    without specific prior written permission.
-; 
+;
 ; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -39,6 +39,7 @@ macro ports? v, lock, unlock
 end macro
 
 os_table:
+	ports	5.6.1.0012, port_os560.lock, port_os561.unlock
 	ports	5.6.0.0020, port_os560.lock, port_os560.unlock
 	ports	5.5.5.0011, port_os560.lock, port_os555.unlock
 	ports	5.5.2.0044, port_os560.lock, port_os552.unlock
@@ -134,6 +135,24 @@ port_os551:
 	ld	ix,$bd55f
 	jq	port_os560.unlock0
 
+port_os561:
+.unlock:
+	ld	ix,$4a5ac
+	ld	hl,port_os560.unlockhelper
+	push	hl
+	push	hl
+	ld	de,ti.flags
+	push	de
+	ld	bc,$22
+	ld	a,(ix)
+	cp	a,$ed
+	jr	z,.84
+.83:
+	ld	ixl,$8f
+.84:
+	xor	a,a
+	jp	(ix)
+
 port_os560:
 .unlock:
 	ld	ix,$b99bb
@@ -179,5 +198,3 @@ port_lock:
 	call	0
 .code := $-3
 	jq	port_unlock.pop
-
-
