@@ -1,19 +1,19 @@
-; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
-; 
+; Copyright 2015-2021 Matt "MateoConLechuga" Waltz
+;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions are met:
-; 
+;
 ; 1. Redistributions of source code must retain the above copyright notice,
 ;    this list of conditions and the following disclaimer.
-; 
+;
 ; 2. Redistributions in binary form must reproduce the above copyright notice,
 ;    this list of conditions and the following disclaimer in the documentation
 ;    and/or other materials provided with the distribution.
-; 
+;
 ; 3. Neither the name of the copyright holder nor the names of its contributors
 ;    may be used to endorse or promote products derived from this software
 ;    without specific prior written permission.
-; 
+;
 ; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,11 +31,11 @@
 ; returns z if loaded, nz if not loaded
 libload_load:
 	call	libload_unload
-	ld	de,lib_usb_Init		; initialize default usbdrvce jump locations
+	ld	de,lib_usbdrvce_tbl	; initialize default usbdrvce jump locations
 	ld	hl,lib_usbdrvce
 	ld	bc,lib_usbdrvce.size
 	ldir
-	ld	de,lib_msd_Init		; initialize default fatdrvce jump locations
+	ld	de,lib_fatdrvce_tbl	; initialize default fatdrvce jump locations
 	ld	hl,lib_fatdrvce
 	ld	bc,lib_fatdrvce.size
 	ldir
@@ -56,7 +56,7 @@ libload_load:
 	ld	hl,9 + 3 + libload_name.len
 	add	hl,de			; start of loader (required to be in hl)
 	ld	a,(hl)
-	cp	a,$1F			; ensure a valid libload version
+	cp	a,$1f			; ensure a valid libload version
 	jr	c,.notfound
 	dec	hl			; move to start of libload
 	dec	hl
@@ -81,57 +81,73 @@ libload_libload:
 libload_usbdrvce:
 	db	$c0,"USBDRVCE",0,0
 
+lib_usbdrvce_tbl:
 lib_usb_Init:
 	jp	0
 lib_usb_Cleanup:
 	jp	3
 lib_usb_WaitForInterrupt:
-	jp	12
+	jp	15
 
 ; fatdrvce library functions
 libload_fatdrvce:
 	db	$c0,"FATDRVCE",0,0
 
-lib_msd_Init:
+lib_fatdrvce_tbl:
+lib_msd_Open:
 	jp	0
-lib_fat_Find:
-	jp	15
-lib_fat_Init:
+lib_msd_Close:
+	jp	3
+lib_fat_FindPartitions:
 	jp	18
-lib_fat_DirList:
+lib_fat_OpenPartition:
+	jp	21
+fat_ClosePartition:
 	jp	24
+lib_fat_DirList:
+	jp	27
 lib_fat_Open:
-	jp	30
-lib_fat_Close:
 	jp	33
-lib_fat_ReadSector:
-	jp	54
-lib_fat_WriteSector:
+lib_fat_Close:
+	jp	36
+lib_fat_GetAttrib:
+	jp	48
+lib_fat_ReadSectors:
 	jp	57
-lib_fat_Delete:
+lib_fat_WriteSectors:
+	jp	60
+lib_fat_Create:
 	jp	63
+lib_fat_Delete:
+	jp	66
 
 	xor	a,a		; return z (loaded)
 	pop	hl		; pop error return
 	ret
 
+; should match entry points for above jump table
 lib_usbdrvce:
 	jp	0
 	jp	3
-	jp	12
-.size := $-lib_usbdrvce
+	jp	15
+.size := $ - lib_usbdrvce
 
+; should match entry points for above jump table
 lib_fatdrvce:
 	jp	0
-	jp	15
+	jp	3
 	jp	18
+	jp	21
 	jp	24
-	jp	30
+	jp	27
 	jp	33
-	jp	54
+	jp	36
+	jp	48
 	jp	57
+	jp	60
 	jp	63
-.size := $-lib_fatdrvce
+	jp	66
+.size := $ - lib_fatdrvce
 
 ; remove loaded libraries from usermem
 libload_unload:

@@ -1,19 +1,19 @@
-; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
-; 
+; Copyright 2015-2021 Matt "MateoConLechuga" Waltz
+;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions are met:
-; 
+;
 ; 1. Redistributions of source code must retain the above copyright notice,
 ;    this list of conditions and the following disclaimer.
-; 
+;
 ; 2. Redistributions in binary form must reproduce the above copyright notice,
 ;    this list of conditions and the following disclaimer in the documentation
 ;    and/or other materials provided with the distribution.
-; 
+;
 ; 3. Neither the name of the copyright holder nor the names of its contributors
 ;    may be used to endorse or promote products derived from this software
 ;    without specific prior written permission.
-; 
+;
 ; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,8 +27,8 @@
 ; POSSIBILITY OF SUCH DAMAGE.
 
 cesium_name := 'Cesium'
-cesium_version := '3.3.1'
-cesium_copyright := '(C)  2015-2020 Matt Waltz'
+cesium_version := '3.3.2'
+cesium_copyright := '(C)  2015-2021 Matt Waltz'
 
 include 'include/macros.inc'
 
@@ -39,6 +39,12 @@ include 'installer.asm'
 ; this is the start of the actual application
 	app_start cesium_name, cesium_copyright
 cesium_start:
+	ld	hl,$F80818
+	ld	(hl),h
+	ld	(hl),$44
+	ld	(hl),$21
+	ld	l,h
+	ld	(hl),$01
 	cesium_code.run
 
 relocate cesium_code, cesium_execution_base
@@ -70,4 +76,3 @@ include 'execute.asm'
 include 'flash.asm'
 include 'hooks.asm'
 include 'data.asm'
-

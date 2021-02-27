@@ -5616,7 +5616,7 @@ namespace ti?
 ?tCubicR			:= 2Eh
 ?tQuartR			:= 2Fh
 
-;Number Tokens 
+;Number Tokens
 ;---------------------------------------
 ?NUMS			:= 30h
 ;

@@ -1,19 +1,19 @@
-; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
-; 
+; Copyright 2015-2021 Matt "MateoConLechuga" Waltz
+;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions are met:
-; 
+;
 ; 1. Redistributions of source code must retain the above copyright notice,
 ;    this list of conditions and the following disclaimer.
-; 
+;
 ; 2. Redistributions in binary form must reproduce the above copyright notice,
 ;    this list of conditions and the following disclaimer in the documentation
 ;    and/or other materials provided with the distribution.
-; 
+;
 ; 3. Neither the name of the copyright holder nor the names of its contributors
 ;    may be used to endorse or promote products derived from this software
 ;    without specific prior written permission.
-; 
+;
 ; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 ; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 ; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,6 +27,8 @@
 ; POSSIBILITY OF SUCH DAMAGE.
 
 ; routines for accessing flash drive data on usb
+
+usb_default_init := 36108
 
 usb_device_ptr:
 	dl	0
@@ -91,9 +93,9 @@ usb_init:
 	ld	iy,ti.flags
 	jq	nz,usb_not_available.libload
 
-	ld	bc,4
+	ld	bc,usb_default_init
 	push	bc
-	ld	c,0
+	ld	bc,0
 	push	bc
 	push	bc
 	ld	bc,usb_handle_event
@@ -128,7 +130,7 @@ usb_init:
 	push	bc
 	ld	bc,msd_struct
 	push	bc
-	call	lib_msd_Init
+	call	lib_msd_Open
 	ld	iy,ti.flags
 	pop	bc,bc,bc
 	ld	a,l
@@ -144,7 +146,7 @@ usb_init:
 	push	bc
 	ld	bc,msd_struct
 	push	bc
-	call	lib_fat_Find
+	call	lib_fat_FindPartitions
 	ld	iy,ti.flags
 	pop	bc,bc,bc,bc
 	ld	a,0
@@ -187,7 +189,7 @@ usb_selection := $ - 1
 	push	hl
 	ld	bc,fat_struct
 	push	bc
-	call	lib_fat_Init
+	call	lib_fat_OpenPartition
 	pop	bc,bc
 	compare_hl_zero
 	jr	z,.fat_init_completed
@@ -574,6 +576,7 @@ usb_open_tivar:
 	compare_hl_zero
 	jq	z,.error
 	call	usb_directory_previous
+	ld	de,fat_sector
 	call	fat_file_read_sector		; read the first sector to get the size information
 	jq	nz,.error
 	ld	hl,fat_sector + 70		; size of variable to create
@@ -593,11 +596,11 @@ usb_open_tivar:
 
 fat_file_read_sector:
 	push	de
-	ld	bc,fat_sector
+	ld	bc,1
 	push	bc
 	ld	bc,(fat_file)
 	push	bc
-	call	lib_fat_ReadSector
+	call	lib_fat_ReadSectors
 	ld	iy,ti.flags
 	pop	bc,bc
 	pop	de

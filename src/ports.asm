@@ -1,4 +1,4 @@
-; Copyright 2015-2020 Matt "MateoConLechuga" Waltz
+; Copyright 2015-2021 Matt "MateoConLechuga" Waltz
 ;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions are met:
