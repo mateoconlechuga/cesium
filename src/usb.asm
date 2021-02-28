@@ -53,25 +53,35 @@ usb_handle_event:
 	ld	iy,0
 	add	iy,sp
 	ld	a,(iy + 3)
-	cp	a,4
-	jq	nz,.notenabled
 	ld	hl,(iy + 6)
-	ld	(usb_device_ptr),hl
-	ld	a,$ff
-	ld	(usb_device_valid),a
-.notenabled:
-	cp	a,1
+	dec	a;1
 	jq	z,.invalidate
-	cp	a,3
+	dec	a;2
+	jq	z,.connected
+	dec	a;3
 	jq	z,.invalidate
+	dec	a;4
+	jq	z,.enabled
+.return:
 	xor	a,a
 	sbc	hl,hl
 	ld	iy,ti.flags
 	ret
+.enabled:
+	ld	(usb_device_ptr),hl
+	ld	a,$ff
+	ld	(usb_device_valid),a
+	jq	.return
 .invalidate:
 	xor	a,a
 	sbc	hl,hl
-	ld	(usb_device_valid),a			; if a disconnect event, go home
+	ld	(usb_device_valid),a
+	ld	(usb_device_ptr),hl
+	jq	.return
+.connected:
+	push	hl
+	call	lib_usb_ResetDevice
+	pop	bc
 	ld	iy,ti.flags
 	ret
 
@@ -536,7 +546,7 @@ fat_file_size := $-3
 	call	ti.CreateVar			; create the variable in ram
 
 	; now we need to do the fun part of copying the data into the variable
-	; the first and last sectors are annoying so be lazy
+	; the first and last sectors are annoying so be lazy and go by bytes
 
 	ld	a,(fat_sector + 69)
 	cp	a,$80				; check if archived
@@ -627,7 +637,10 @@ usb_copy_tivar:
 	ld	a,ixh
 	cp	a,2				; every 512 bytes read a sector
 	jr	nz,.no_read
+	push	de
+	ld	de,fat_sector
 	call	fat_file_read_sector
+	pop	de
 	jq	nz,.error
 	ld	ix,0
 	ld	hl,fat_sector

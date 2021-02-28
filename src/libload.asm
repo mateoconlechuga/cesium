@@ -88,6 +88,8 @@ lib_usb_Cleanup:
 	jp	3
 lib_usb_WaitForInterrupt:
 	jp	15
+lib_usb_ResetDevice:
+	jp	39
 
 ; fatdrvce library functions
 libload_fatdrvce:
@@ -130,6 +132,7 @@ lib_usbdrvce:
 	jp	0
 	jp	3
 	jp	15
+	jp	39
 .size := $ - lib_usbdrvce
 
 ; should match entry points for above jump table
