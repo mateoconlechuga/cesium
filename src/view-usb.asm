@@ -209,7 +209,7 @@ usb_filename_ptr := $-3
 	call	lcd_string
 	print	string_size, 199, 162
 
-	call	usb_get_file_size		; get size of file
+	call	usb_get_file_size		; get size of file (only lower)
 	call	lcd_num_6
 
 	print string_attributes, 199, 173

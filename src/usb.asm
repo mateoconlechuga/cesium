@@ -29,10 +29,11 @@
 ; routines for accessing flash drive data on usb
 
 usb_default_init := 36108
+usb_error_retry := 1000
 
 usb_device_ptr:
 	dl	0
-usb_device_valid:
+usb_enabled:
 	db	0
 msd_sector_buffer:
 	rb	512
@@ -59,7 +60,7 @@ usb_handle_event:
 	dec	a;2
 	jq	z,.connected
 	dec	a;3
-	jq	z,.invalidate
+	jq	z,.disabled
 	dec	a;4
 	jq	z,.enabled
 .return:
@@ -67,15 +68,10 @@ usb_handle_event:
 	sbc	hl,hl
 	ld	iy,ti.flags
 	ret
-.enabled:
-	ld	(usb_device_ptr),hl
-	ld	a,$ff
-	ld	(usb_device_valid),a
-	jq	.return
 .invalidate:
 	xor	a,a
 	sbc	hl,hl
-	ld	(usb_device_valid),a
+	ld	(usb_enabled),a
 	ld	(usb_device_ptr),hl
 	jq	.return
 .connected:
@@ -84,11 +80,27 @@ usb_handle_event:
 	pop	bc
 	ld	iy,ti.flags
 	ret
+.disabled:
+	call	.invalidate
+	ld	hl,usb_error_retry
+	ret
+.enabled:
+	ld	(usb_device_ptr),hl
+	ld	a,$ff
+	ld	(usb_enabled),a
+	jq	.return
 
 usb_init:
+	call	gui_draw_core
+	ld	iy,ti.flags
+	call	libload_load
+	ld	iy,ti.flags
+	jq	nz,usb_not_available.libload
+
+.try_to_initialize:
 	xor	a,a
 	sbc	hl,hl
-	ld	(usb_device_valid),a
+	ld	(usb_enabled),a
 	ld	(usb_selection),a
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
@@ -97,17 +109,10 @@ usb_init:
 	inc	hl
 	ld	(hl),a
 
-	call	gui_draw_core
-	ld	iy,ti.flags
-	call	libload_load
-	ld	iy,ti.flags
-	jq	nz,usb_not_available.libload
-
 	ld	bc,usb_default_init
 	push	bc
-	ld	bc,0
-	push	bc
-	push	bc
+	push	hl
+	push	hl
 	ld	bc,usb_handle_event
 	push	bc
 	call	lib_usb_Init
@@ -120,20 +125,26 @@ usb_init:
 	call	usb_wait_gui
 	call	util_setup_apd
 
-.notyetvalid:
-	call	lib_usb_WaitForInterrupt
-	ld	a,l
+.wait_for_enabled:
+	ld	a,(usb_enabled)
 	or	a,a
-	jq	nz,usb_detach				; if error, detach
+	jq	nz,.enabled
 
 	call	util_get_key_nonblocking
 	cp	a,ti.skClear
 	jq	z,usb_detach
 
-	ld	a,(usb_device_valid)
-	or	a,a
-	jq	z,.notyetvalid
+	call	lib_usb_WaitForInterrupt
+	ld	de,0
+	compare_hl_de
+	jq	z,.wait_for_enabled
 
+	ld	de,usb_error_retry
+	compare_hl_de
+	jq	z,.try_to_initialize
+	jq	usb_detach
+
+.enabled:
 	ld	bc,msd_sector_buffer
 	push	bc
 	ld	bc,(usb_device_ptr)
@@ -462,7 +473,8 @@ usb_check_directory:
 ; get the size from the entry
 usb_get_file_size:
 	ld	iy,(item_ptr)
-	ld	hl,(iy + 14)		; only gets the low bytes...
+	ld	hl,(iy + 14)
+	ld	e,(iy + 14 + 3)
 	ld	iy,ti.flags
 	ret
 
@@ -655,8 +667,7 @@ usb_copy_tivar:
 	call	ti.ChkFindSym
 	call	nc,ti.DelVarArc
 	call	ti.PopOP1
-	call	ti.OP1ToOP4
-	ret
+	jp	ti.OP1ToOP4
 
 fat_file_close:
 	ld	bc,(fat_file)

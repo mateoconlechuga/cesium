@@ -356,7 +356,6 @@ lcd_text_bg := $+2
 	pop	hl
 	ret
 
-; a = amount of characters to display
 lcd_num_7:
 	ld	a,1
 	jr	lcd_num

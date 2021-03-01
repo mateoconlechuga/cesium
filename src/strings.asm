@@ -151,6 +151,8 @@ string_setting_editor_prgm:
 	db	'Change program editor',0
 string_setting_usb_enable:
 	db	'Enable USB flash drive access',0
+string_setting_invert_mode:
+	db	'Enable dark mode (inverted colors)',0
 string_new_password:
 	db	'Set poweron password: ',0
 string_prgm_editor_name:
