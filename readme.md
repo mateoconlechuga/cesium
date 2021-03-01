@@ -49,7 +49,7 @@ you are concerned about flash wear, please moderate usage.
 ### USB Support
 
 Cesium has work-in-progress support for launching and transfering files on FAT32
-formatted drive.
+formatted drives.
 Future additions may be added depending on reported usage and feature requets in the
 issues board on GitHub.
 
