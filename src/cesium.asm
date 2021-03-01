@@ -27,7 +27,7 @@
 ; POSSIBILITY OF SUCH DAMAGE.
 
 cesium_name := 'Cesium'
-cesium_version := '3.4.0'
+cesium_version := '3.4.1'
 cesium_copyright := '(C)  2015-2021 Matt Waltz'
 
 include 'include/macros.inc'
@@ -39,12 +39,6 @@ include 'installer.asm'
 ; this is the start of the actual application
 	app_start cesium_name, cesium_copyright
 cesium_start:
-	ld	hl,$F80818
-	ld	(hl),h
-	ld	(hl),$44
-	ld	(hl),$21
-	ld	l,h
-	ld	(hl),$01
 	cesium_code.run
 
 relocate cesium_code, cesium_execution_base

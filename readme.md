@@ -41,6 +41,7 @@ Shortcuts are available from outside of the Cesium application.
 | `on` + `8`     | Backup RAM from TI-OS                                  |
 | `on` + `5`     | Remove latest RAM backup                               |
 | `on` + `2`     | Restore RAM from latest backup                         |
+| `on` + `sto->` | Activate dark mode (inverted colors)                   |
 
 The power-on password is set via the settings menu by pressing the `sto->`
 button. RAM backup is performed by copying RAM contents to flash memory, so if
@@ -49,7 +50,7 @@ you are concerned about flash wear, please moderate usage.
 ### USB Support
 
 Cesium has work-in-progress support for launching and transfering files on FAT32
-formatted drives.
+formatted drive.
 Future additions may be added depending on reported usage and feature requets in the
 issues board on GitHub.
 
