@@ -49,6 +49,8 @@ fat_path:
 	rb	260		; current path in fat filesystem
 fat_sector:
 	rb	512
+fat_tmp_size:
+	dl	0
 
 usb_handle_event:
 	ld	iy,0
@@ -475,6 +477,7 @@ usb_get_file_size:
 	ld	iy,(item_ptr)
 	ld	hl,(iy + 14)
 	ld	e,(iy + 14 + 3)
+	ld	(fat_tmp_size),hl
 	ld	iy,ti.flags
 	ret
 

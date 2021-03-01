@@ -72,16 +72,16 @@ execute_usb_check:
 	call	fat_get_directory_listing		; update the path
 	jq	main_start
 .not_directory:
-	;bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
-	;jq	z,main_loop
+	bit	item_is_prgm,(iy + item_flag)		; check if program and attempt to execute
+	jq	z,main_loop
 
 	; here are the considerations when executing from usb:
 	; assembly programs can be copied directly as normal
 	; basic programs must be copied to a temporary program to be executed
 
-	;call	usb_open_tivar
-	;call	usb_validate_tivar
-	;jq	z,execute_usb_program
+	call	usb_open_tivar
+	call	usb_validate_tivar
+	jq	z,execute_usb_program
 
 	jq	main_loop
 
@@ -108,6 +108,49 @@ execute_app_check:
 .new:
 	ld	(current_screen),a
 	jq	main_find				; abort!
+
+; when are some cases where this fails to work:
+; 1) compressed programs
+; 2) programs that use themselves
+; 3) subprograms
+execute_usb_program:
+	di
+	call	usb_get_file_size
+	ld	hl,(fat_tmp_size)
+	call	util_check_free_ram
+	jp	z,main_loop			; ensure enough ram
+	call	execute_ram_backup
+	call	lcd_normal
+	bit	setting_enable_shortcuts,(iy + settings_flag)
+	call	nz,ti.ClrGetKeyHook
+	ld	hl,fat_sector + 74
+	ld	a,(hl)
+	cp	a,ti.tExtTok			; is it an assembly program
+	jq	nz,.program_is_basic
+	inc	hl
+	ld	a,(hl)
+	cp	a,ti.tAsm84CeCmp
+	jq	nz,.program_is_basic		; is it a basic program
+.program_is_asm:
+	ld	hl,ti.userMem
+	ld	de,(ti.asm_prgm_size)
+	add	hl,de
+	ex	de,hl
+	ld	hl,(fat_tmp_size)
+	push	hl
+	call	ti.InsertMem			; insert memory into usermem + (ti.asm_prgm_size)
+	call	usb_copy_tivar_to_ram		; copy variable to ram
+	call	usb_detach_only			; shift assembly program to ti.userMem, detach usb & libload
+	pop	hl
+	ld	(ti.asm_prgm_size),hl		; reload size of the program
+	jq	execute_ti.asm_program_loaded
+.program_is_basic:
+	ld	hl,(fat_tmp_size)
+	ld	(prgm_real_size),hl
+	ld	de,(lcd_buffer)
+	ld	(prgm_data_ptr),de
+	call	usb_copy_tivar_to_ram		; copy variable to ram
+	jq	execute_ti.basic_program.from_temp
 
 execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
@@ -296,6 +339,7 @@ execute_ti.basic_program:
 	call	ti.DisableAPD
 	bit	prgm_archived,(iy + prgm_flag)
 	jr	z,.in_ram
+.from_temp:
 	ld	hl,util_temp_program_object
 	call	util_delete_var
 	ld	hl,(prgm_real_size)

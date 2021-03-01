@@ -7,14 +7,16 @@ Cesium is a shell for the TI-84 Plus CE / TI-83 Premium CE calculators.
 
 Cesium is installed by running the `CESIUM` program.
 This creates an application that can accessed via the `apps` button.
-The application cannot be transferred to other calculators, however the installer can be used instead.
+The application cannot be transferred to other calculators, however the
+installer can be used instead.
 
 A video showing off various features is available [here](https://youtu.be/hZDzV1CDN3k).
 
 ### Navigation
 
 Cesium supports alpha search for programs.
-Use any key with the green text above it to immediately switch to the programs starting with the corresponding letter.
+Use any key with the green text above it to immediately switch to the programs
+starting with the corresponding letter.
 
 | Combination     | Action                   |
 |-----------------|--------------------------|
@@ -40,12 +42,35 @@ Shortcuts are available from outside of the Cesium application.
 | `on` + `5`     | Remove latest RAM backup                               |
 | `on` + `2`     | Restore RAM from latest backup                         |
 
-The power-on password is set via the settings menu by pressing the `sto->` button.
-RAM backup is performed by copying RAM contents to flash memory, so if you are concerned about flash wear, please moderate usage.
+The power-on password is set via the settings menu by pressing the `sto->`
+button. RAM backup is performed by copying RAM contents to flash memory, so if
+you are concerned about flash wear, please moderate usage.
+
+### USB Support
+
+Cesium has work-in-progress support for launching and transfering files on FAT32
+formatted drive.
+Future additions may be added depending on reported usage and feature requets in the
+issues board on GitHub.
+
+To transfer a variable from the drive to the calculator, use the `prgm` button.
+Running a program from the drive may not work as intended for many reasons, but
+may primarly be one of the following:
+
+* The program requires subprograms and/or AppVars in order to run.
+  You must transfer all subprograms/AppVars to the calculator.
+* The program uses an outdated compression mode for assembly and C applications.
+  There is no way around this other than updating the application or transfering
+  the program to the calculator.
+* The program modifies itself at runtime. This only applies to rare assembly and
+  C applications, and usually will never be encountered.
+  Transfer the application to the calculator.
+
 
 ### Uninstalling
 
-To uninstall Cesium in the event a new version is warranted, press `2nd` + `+` + `2` + `1` and delete the Cesium application and appvar.
+To uninstall Cesium in the event a new version is warranted, press
+`2nd` + `+` + `2` + `1` and delete the Cesium application and appvar.
 You can also delete the Cesium application from within Cesium.
 
 ### Building
