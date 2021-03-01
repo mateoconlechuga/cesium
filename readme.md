@@ -43,7 +43,7 @@ Shortcuts are available from outside of the Cesium application.
 The power-on password is set via the settings menu by pressing the `sto->` button.
 RAM backup is performed by copying RAM contents to flash memory, so if you are concerned about flash wear, please moderate usage.
 
-### Uninstalling 
+### Uninstalling
 
 To uninstall Cesium in the event a new version is warranted, press `2nd` + `+` + `2` + `1` and delete the Cesium application and appvar.
 You can also delete the Cesium application from within Cesium.
@@ -79,8 +79,6 @@ If you would like to add support for another language, feel free to make a PR.
 
 ### Credits
 
-© 2015 - 2020 Matt "MateoConLechuga" Waltz
+© 2015 - 2021 Matt "MateoConLechuga" Waltz
 
 Licensed under BSD 3 Clause.
-
-
