@@ -42,6 +42,7 @@ Shortcuts are available from outside of the Cesium application.
 | `on` + `5`     | Remove latest RAM backup                               |
 | `on` + `2`     | Restore RAM from latest backup                         |
 | `on` + `sto->` | Activate dark mode (inverted colors)                   |
+| `on` + `ln`    | Activate normal mode (uninverted colors)               |
 
 The power-on password is set via the settings menu by pressing the `sto->`
 button. RAM backup is performed by copying RAM contents to flash memory, so if

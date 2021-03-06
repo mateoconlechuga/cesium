@@ -121,6 +121,8 @@ hook_get_key:
 	jq	z,hook_restore_ram
 	cp	a,ti.skStore
 	jq	z,hook_invert_colors
+	cp	a,ti.skLn
+	jq	z,hook_uninvert_colors
 	ret
 
 hook_invert_colors:
@@ -129,6 +131,19 @@ hook_invert_colors:
 	ld	(hl),h
 	ld	(hl),$44
 	ld	(hl),$21
+	ld	l,h
+	ld	(hl),$01
+	pop	hl
+	xor	a,a
+	inc	a
+	ret
+
+hook_uninvert_colors:
+	push	hl
+	ld	hl,$F80818
+	ld	(hl),h
+	ld	(hl),$44
+	ld	(hl),$20
 	ld	l,h
 	ld	(hl),$01
 	pop	hl
