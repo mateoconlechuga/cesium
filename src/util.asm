@@ -436,6 +436,13 @@ util_get_var_name_input:
 	or	a,a
 	jq	z,.get_name
 .okay:
+	ld	a,(.mode)
+	or	a,a
+	jr	nz,.nospace
+	ld	a,e
+	cp	a,32				; don't allow space in prgm
+	jq	z,.get_name
+.nospace:
 	call	.get_offset
 	inc	a
 	ld	(.cursor_position),a

@@ -34,12 +34,12 @@ main_cesium:
 	jq	z,.okay
 .invalid_os:
 	call	ti.ClrScrn
-	jp	ti.HomeUp
+	jq	ti.HomeUp
 	ld	hl,str_invalid_os
 	call	ti.PutS
 	call	ti.GetKey
 	call	ti.ClrScrn
-	jp	ti.HomeUp
+	jq	ti.HomeUp
 .okay:
 	call	lcd_init
 	call	main_init
@@ -53,41 +53,47 @@ main_start:
 main_loop:
 	call	util_get_key
 	cp	a,ti.skClear
-	jp	z,.check_exit
+	jq	z,.check_exit
 	cp	a,ti.skMode
-	jp	z,settings_show
+	jq	z,settings_show
 	cp	a,ti.skUp
-	jp	z,main_move_up_return
+	jq	z,main_move_up_return
 	cp	a,ti.skDown
-	jp	z,main_move_down_return
-	cp	a,ti.skPrgm
-	jp	z,fat_file_transfer_from_device
+	jq	z,main_move_down_return
 	cp	a,ti.sk2nd
-	jp	z,execute_item
+	jq	z,execute_item
 	cp	a,ti.skEnter
-	jp	z,execute_item_alternate
+	jq	z,execute_item_alternate
 	cp	a,ti.skGraph
-	jp	z,feature_item_rename
+	jq	z,feature_item_rename
 	cp	a,ti.skYequ
-	jp	z,feature_item_new
+	jq	z,feature_item_new
 	cp	a,ti.skAlpha
-	jp	z,feature_item_attributes
+	jq	z,feature_item_attributes
 	cp	a,ti.skZoom
-	jp	z,feature_item_edit
+	jq	z,feature_item_edit
 	cp	a,ti.skDel
-	jp	z,feature_item_delete
+	jq	z,feature_item_delete
+	ld	e,a
+	ld	a,(current_screen)
+	cp	a,screen_usb
+	ld	a,e
+	jq	nz,.not_usb
+	cp	a,ti.skPrgm
+	jq	z,fat_file_transfer_from_device
+.not_usb:
 	sub	a,ti.skAdd
 	jp	c,main_loop
 	cp	a,ti.skMath - ti.skAdd + 1
-	jp	nc,main_loop
+	jq	nc,main_loop
 	call	search_alpha_item
-	jp	z,main_loop
-	jp	main_start
+	jq	z,main_loop
+	jq	main_start
 .check_exit:
 	ld	a,(current_screen)
 	cp	a,screen_usb
-	jp	z,usb_detach
-	jp	exit_full
+	jq	z,usb_detach
+	jq	exit_full
 
 main_move_up_return:
 	ld	hl,main_start
@@ -100,7 +106,7 @@ main_move_up:
 	ld	(current_selection_absolute),hl
 	ld	a,(current_selection)
 	or	a,a
-	jr	nz,.dont_scroll
+	jq	nz,.dont_scroll
 	ld	hl,(scroll_amount)
 	dec	hl
 	ld	(scroll_amount),hl
