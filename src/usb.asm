@@ -426,7 +426,7 @@ usb_detach:						; detach the fat library hooks
 	ld	(current_selection_absolute),hl
 	ld	a,l
 	ld	(current_selection),a
-	jp	main_find
+	jp	main_settings
 
 usb_wait_gui:
 	set_normal_text
@@ -552,7 +552,7 @@ fat_file_transfer_from_device:
 	ld	hl,0
 fat_file_size := $-3
 	call	util_check_free_ram
-	jp	c,main_start
+	jp	c,main_settings
 
 	call	usb_validate_tivar
 	jp	nz,main_start
