@@ -221,10 +221,10 @@ feature_item_delete:
 	call	.getinput
 	jq	fat_file_delete
 .notfatfile:
-	call	feature_check_valid
 	ld	a,(current_screen)
 	cp	a,screen_apps
 	jr	z,.delete_app
+	call	feature_check_valid
 .delete_program:
 	call	util_check_if_vat_page_directory
 	jp	z,main_start
