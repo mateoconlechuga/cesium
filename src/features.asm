@@ -58,6 +58,8 @@ feature_item_rename:
 	ld	de,name_buffer
 	ld	bc,9
 	ldir
+	xor	a,a
+	ld	(de),a
 	res	item_is_hidden,(iy + item_flag)
 	ld	hl,name_buffer + 1
 	ld	a,(hl)
