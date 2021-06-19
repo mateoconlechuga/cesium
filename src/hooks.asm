@@ -755,7 +755,7 @@ helper_num_convert:
 	inc	de
 	ret
 
-relocate hooks_ports, cesium_execution_base
+relocate hooks_ports, ti.pixelShadow2
 define hooks
 namespace hooks
 	include 'ports.asm'
