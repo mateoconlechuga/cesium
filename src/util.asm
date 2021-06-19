@@ -131,6 +131,24 @@ util_set_primary:
 	ld	(color_primary),a
 	ret
 
+util_clear_shadows:
+	call	ti.ClrTxtShd
+	ld	hl,ti.textShadow
+	ld	de,ti.cmdShadow
+	ld	bc,$104
+	ldir
+	ld	hl,ti.pixelShadow
+	ld	de,ti.pixelShadow + 1
+	ld	bc,8400 - 1
+	ld	(hl),0
+	ldir
+	ld	hl,ti.cmdPixelShadow
+	ld	de,ti.cmdPixelShadow + 1
+	ld	bc,8400 - 1
+	ld	(hl),0
+	ldir
+	ret
+
 util_restore_primary:
 	ld	a,0
 .color := $-1

@@ -438,6 +438,7 @@ execute_setup_vectors:
 	call	ti.ForceFullScreen
 	call	ti.ClrScrn
 	call	ti.HomeUp
+	call	util_clear_shadows
 	ld	hl,execute_error
 	jp	ti.PushErrorHandler
 

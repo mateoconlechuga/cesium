@@ -40,6 +40,7 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal
+	call	util_clear_shadows
 	call	hook_restore_parser
 	call	ti.ClrAppChangeHook
 	call	util_setup_shortcuts
