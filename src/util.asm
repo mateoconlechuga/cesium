@@ -234,7 +234,7 @@ util_get_key:
 	call	ti.DisableAPD			; disable os apd and use our own
 	call	util_show_time
 	call	lcd_blit
-	call	ti.GetCSC			; avoid using getcsc for usb
+	call	ti.GetCSC
 	or	a,a
 	jr	z,.run
 	ret
@@ -246,7 +246,7 @@ util_get_key_nonblocking:
 	call	ti.DisableAPD			; disable os apd and use our own
 	call	util_show_time
 	call	lcd_blit
-	jq	ti.GetCSC			; avoid using getcsc for usb
+	jq	ti.GetCSC
 
 util_setup_apd:
 	ld	hl,$b0ff

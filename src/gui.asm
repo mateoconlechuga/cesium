@@ -501,7 +501,7 @@ end if
 	call	lcd_string
 	di
 .debounce:
-	call	ti.GetCSC			; avoid using getcsc for usb
+	call	ti.GetCSC
 	or	a,a
 	jr	nz,.debounce
 .getkey:
@@ -509,7 +509,7 @@ end if
 	ld	iy,ti.flags
 	call	ti.DisableAPD			; disable os apd and use our own
 	call	util_show_time
-	call	ti.GetCSC			; avoid using getcsc for usb
+	call	ti.GetCSC
 	or	a,a
 	jr	z,.getkey
 	ld	hl,vRamBuffer
