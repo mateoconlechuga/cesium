@@ -147,6 +147,10 @@ util_clear_shadows:
 	ld	bc,8400 - 1
 	ld	(hl),0
 	ldir
+	push	iy
+	ld	iy,ti.flags
+	set	ti.graphDraw,(iy + ti.graphFlags)
+	pop	iy
 	ret
 
 util_restore_primary:
