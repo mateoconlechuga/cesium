@@ -430,6 +430,7 @@ execute_setup_vectors:
 	call	lcd_normal
 	xor	a,a
 	ld	(ti.appErr1),a
+	ld	(ti.kbdGetKy),a
 	ld	hl,execute_hook
 	call	ti.SetHomescreenHook
 	ld	hl,execute_vectors
