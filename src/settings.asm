@@ -253,7 +253,7 @@ setting_up:
 
 setting_left:
 	ld	a,(ix)
-	cp	a,7
+	cp	a,8
 	jq	z,setting_brightness_down
 	jq	settings_switch_page
 
@@ -265,7 +265,7 @@ setting_brightness_down:
 
 setting_right:
 	ld	a,(ix)
-	cp	a,7
+	cp	a,8
 	jq	z,setting_brightness_up
 	jq	settings_switch_page
 
