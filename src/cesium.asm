@@ -27,7 +27,7 @@
 ; POSSIBILITY OF SUCH DAMAGE.
 
 cesium_name := 'Cesium'
-cesium_version := '3.4.1'
+cesium_version := '3.4.2'
 cesium_copyright := '(C)  2015-2021 Matt Waltz'
 
 include 'include/macros.inc'
