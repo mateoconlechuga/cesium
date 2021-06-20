@@ -126,7 +126,7 @@ hook_get_key:
 	ret
 
 hook_invert_colors:
-	push	hl,de
+	push	hl,de,bc
 	call	hook_port_code_copy
 	call	hooks.lcd_spi_open
 	ld	hl,$F80818
@@ -135,14 +135,13 @@ hook_invert_colors:
 	ld	(hl),$21
 	ld	l,h
 	ld	(hl),$01
-	call	hooks.lcd_spi_close
-	pop	de,hl
+	pop	bc,de,hl
 	xor	a,a
 	inc	a
 	ret
 
 hook_uninvert_colors:
-	push	hl,de
+	push	hl,de,bc
 	call	hook_port_code_copy
 	call	hooks.lcd_spi_open
 	ld	hl,$F80818
@@ -151,8 +150,7 @@ hook_uninvert_colors:
 	ld	(hl),$20
 	ld	l,h
 	ld	(hl),$01
-	call	hooks.lcd_spi_close
-	pop	de,hl
+	pop	bc,de,hl
 	xor	a,a
 	inc	a
 	ret
@@ -787,27 +785,18 @@ lcd_spi_open:
 	call	port_unlock
 	ld	bc,9
 	call	port_read
-	ld	(lcd_spi_close.gpio_a),a
 	res	4,a
 	call	port_write
 	call	port_lock
-	ld	hl,$F80000
+	ld	hl,ti.mpSpiCtrl0
 	ld	de,ti.bmSpiClkPolarity or ti.bmSpiClkPhase or ti.bmSpiMasterMono or ti.bmSpiFlash or ti.bmSpiFrFmt
 	ld	(hl),de
-	ld	de,(12 shl 0) or (3 shl 16)
-	ld	l,$4
+	ld	l,ti.spiCtrl1
+	ld	de,(12-1) shl ti.bSpiClkDiv or (3-1) shl ti.bSpiDataWidth or 0 shl ti.bSpiPadWidth
 	ld	(hl),de
+	ld	l,ti.spiCtrl2
 	ld	de,ti.bmSpiChipEn or ti.bmSpiTxEn or ti.bmSpiTxDataOutEn
-	ld	l,$8
 	ld	(hl),de
-	ret
-lcd_spi_close:
-	call	port_unlock
-	ld	a,0
-.gpio_a := $-1
-	ld	bc,9
-	call	port_write
-	call	port_lock
 	ret
 end namespace
 end relocate
