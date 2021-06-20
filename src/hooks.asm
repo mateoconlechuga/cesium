@@ -151,7 +151,9 @@ hook_uninvert_colors:
 	inc	a
 	ret
 
-label_number := ti.cursorImage + 3
+edit_cursor := ti.cursorImage + 3
+edit_tail := edit_cursor + 3
+label_number := edit_tail + 3
 label_number_of_pages := label_number + 3
 label_page := label_number_of_pages + 3
 label_name := label_page + 3
@@ -172,6 +174,10 @@ hook_show_labels:
 	inc	l
 	inc	l
 	ld	(label_number),hl
+	ld	hl,(ti.editTail)
+	ld	(edit_tail),hl
+	ld	hl,(ti.editCursor)
+	ld	(edit_cursor),hl
 	call	ti.ClrTxtShd
 	call	ti.BufToTop
 
@@ -232,6 +238,10 @@ hook_show_labels:
 	jq	z,.prevpage
 	cp	a,ti.skRight
 	jq	z,.nextpage
+	cp	a,ti.skClear
+	jq	z,.return
+	cp	a,ti.skMode
+	jq	z,.return
 	jq	.getkey
 
 .movetolabel:
@@ -298,6 +308,13 @@ hook_show_labels:
 	call	ti.CursorOn
 	call	ti.DrawStatusBar
 	jq	hook_get_key_none
+
+.return:
+	ld	hl,(edit_tail)
+	ld	(ti.editTail),hl
+	ld	hl,(edit_cursor)
+	ld	(ti.editCursor),hl
+	jq	.gotoeditor
 
 .nextpage:
 	ld	hl,(label_page)
