@@ -125,41 +125,17 @@ hook_get_key:
 	jq	z,hook_uninvert_colors
 	ret
 
-lcd_spi_gpio_a := ti.cursorImage
-
-hook_lcd_spi_open:
-	call	hook_port_code_copy
-	call	hooks.port_unlock
-	in0	a,(9)
-	ld	(lcd_spi_gpio_a),a
-	res	4,a
-	out0	(9),a
-	call	hooks.port_lock
-	ld	hl,$F80000
-	ld	de,ti.bmSpiClkPolarity or ti.bmSpiClkPhase or ti.bmSpiMasterMono or ti.bmSpiFlash or ti.bmSpiFrFmt
-	ld	(hl),de
-	ld	de,(12 shl 0) or (3 shl 16)
-	ld	l,$4
-	ld	(hl),de
-	ret
-
-hook_lcd_spi_close:
-	call	hooks.port_unlock
-	ld	a,(lcd_spi_gpio_a)
-	out0	(9),a
-	call	hooks.port_lock
-	ret
-
 hook_invert_colors:
 	push	hl,de
-	call	hook_lcd_spi_open
+	call	hook_port_code_copy
+	call	hooks.lcd_spi_open
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
 	ld	(hl),$21
 	ld	l,h
 	ld	(hl),$01
-	call	hook_lcd_spi_close
+	call	hooks.lcd_spi_close
 	pop	de,hl
 	xor	a,a
 	inc	a
@@ -167,14 +143,15 @@ hook_invert_colors:
 
 hook_uninvert_colors:
 	push	hl,de
-	call	hook_lcd_spi_open
+	call	hook_port_code_copy
+	call	hooks.lcd_spi_open
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
 	ld	(hl),$20
 	ld	l,h
 	ld	(hl),$01
-	call	hook_lcd_spi_close
+	call	hooks.lcd_spi_close
 	pop	de,hl
 	xor	a,a
 	inc	a
@@ -806,5 +783,31 @@ define hooks
 namespace hooks
 	include 'ports.asm'
 	include 'flash.asm'
+lcd_spi_open:
+	call	port_unlock
+	ld	bc,9
+	call	port_read
+	ld	(lcd_spi_close.gpio_a),a
+	res	4,a
+	call	port_write
+	call	port_lock
+	ld	hl,$F80000
+	ld	de,ti.bmSpiClkPolarity or ti.bmSpiClkPhase or ti.bmSpiMasterMono or ti.bmSpiFlash or ti.bmSpiFrFmt
+	ld	(hl),de
+	ld	de,(12 shl 0) or (3 shl 16)
+	ld	l,$4
+	ld	(hl),de
+	ld	de,ti.bmSpiChipEn or ti.bmSpiTxEn or ti.bmSpiTxDataOutEn
+	ld	l,$8
+	ld	(hl),de
+	ret
+lcd_spi_close:
+	call	port_unlock
+	ld	a,0
+.gpio_a := $-1
+	ld	bc,9
+	call	port_write
+	call	port_lock
+	ret
 end namespace
 end relocate

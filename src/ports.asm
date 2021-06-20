@@ -185,16 +185,26 @@ port_os560:
 	out0	($22),a
 	ret
 
+port_read:
+	push	de,bc,hl
+	call	port_ospre55.read
+	jq	port_lock.pop
+
+port_write:
+	push	de,bc,hl
+	call	port_ospre55.write
+	jq	port_lock.pop
+
 port_unlock:
+	push	de,bc,hl
+	call	0
+.code := $-3
+	jq	port_lock.pop
+
+port_lock:
 	push	de,bc,hl
 	call	0
 .code := $-3
 .pop:
 	pop	hl,bc,de
 	ret
-
-port_lock:
-	push	de,bc,hl
-	call	0
-.code := $-3
-	jq	port_unlock.pop
