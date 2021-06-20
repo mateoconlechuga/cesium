@@ -110,7 +110,7 @@ hook_get_key:
 	cp	a,ti.skStat
 	jp	z,hook_password
 	cp	a,ti.skGraph
-	jr	z,hook_show_labels
+	jq	z,hook_show_labels
 	cp	a,ti.skPrgm
 	jq	z,hook_execute_cesium
 	cp	a,ti.sk8
@@ -125,28 +125,57 @@ hook_get_key:
 	jq	z,hook_uninvert_colors
 	ret
 
+lcd_spi_gpio_a := ti.cursorImage
+
+hook_lcd_spi_open:
+	call	hook_port_code_copy
+	call	hooks.port_unlock
+	in0	a,(9)
+	ld	(lcd_spi_gpio_a),a
+	res	4,a
+	out0	(9),a
+	call	hooks.port_lock
+	ld	hl,$F80000
+	ld	de,ti.bmSpiClkPolarity or ti.bmSpiClkPhase or ti.bmSpiMasterMono or ti.bmSpiFlash or ti.bmSpiFrFmt
+	ld	(hl),de
+	ld	de,(12 shl 0) or (3 shl 16)
+	ld	l,$4
+	ld	(hl),de
+	ret
+
+hook_lcd_spi_close:
+	call	hooks.port_unlock
+	ld	a,(lcd_spi_gpio_a)
+	out0	(9),a
+	call	hooks.port_lock
+	ret
+
 hook_invert_colors:
-	push	hl
+	push	hl,de
+	call	hook_lcd_spi_open
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
 	ld	(hl),$21
 	ld	l,h
 	ld	(hl),$01
-	pop	hl
+	call	hook_lcd_spi_close
+	pop	de,hl
 	xor	a,a
 	inc	a
 	ret
 
 hook_uninvert_colors:
-	push	hl
+	push	hl,de
+	call	hook_lcd_spi_open
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
 	ld	(hl),$20
 	ld	l,h
 	ld	(hl),$01
-	pop	hl
+	call	hook_lcd_spi_close
+	pop	de,hl
 	xor	a,a
 	inc	a
 	ret
@@ -532,7 +561,7 @@ relocate hook_strings, ti.plotSScreen
 	db	"1:PRGM BOTTOM",0
 end relocate
 
-hook_flash_code_copy:
+hook_port_code_copy:
 	hooks_ports.copy
 	call	hooks.port_setup
 	or	a,a
@@ -541,7 +570,7 @@ hook_flash_code_copy:
 	jq	hook_get_key_none
 
 hook_clear_backup:
-	call	hook_flash_code_copy
+	call	hook_port_code_copy
 	call	hooks.flash_clear_backup
 	jr	hook_get_key_none
 
@@ -573,7 +602,7 @@ hook_backup_ram:
 	call	ti.os.ClearStatusBarLow
 	ld	hl,string_ram_backup
 	call	helper_vputs_toolbar
-	call	hook_flash_code_copy
+	call	hook_port_code_copy
 	call	hooks.flash_backup_ram
 	call	ti.DrawStatusBar
 	jr	hook_get_key_none
