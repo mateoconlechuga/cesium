@@ -28,8 +28,11 @@
 
 ; lookup tables for characters
 
-lut_basic_icon:
+lut_dcs_icon:
 	db	$3e,$44,$43,$53,$3f,$2a
+
+lut_dcs6_icon:
+	db	$3e,$44,$43,$53,$36,$3f,$2a
 
 lut_color_basic:
 	db	$ff,$18,$e0,$00,$f8,$24,$e3,$61,$09,$13,$e6,$ff,$b5,$6b,$6a,$4a

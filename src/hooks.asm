@@ -788,15 +788,12 @@ lcd_spi_open:
 	res	4,a
 	call	port_write
 	call	port_lock
-	ld	hl,ti.mpSpiCtrl0
-	ld	de,ti.bmSpiClkPolarity or ti.bmSpiClkPhase or ti.bmSpiMasterMono or ti.bmSpiFlash or ti.bmSpiFrFmt
-	ld	(hl),de
-	ld	l,ti.spiCtrl1
-	ld	de,(12-1) shl ti.bSpiClkDiv or (3-1) shl ti.bSpiDataWidth or 0 shl ti.bSpiPadWidth
-	ld	(hl),de
-	ld	l,ti.spiCtrl2
-	ld	de,ti.bmSpiChipEn or ti.bmSpiTxEn or ti.bmSpiTxDataOutEn
-	ld	(hl),de
+	ld	de,ti.mpSpiCtrl0
+	ld	hl,.ports
+	ld	bc,12
+	ldir
 	ret
+.ports:
+	db	$2B,$18,$00,$00,$0B,$00,$02,$00,$01,$01,$00,$00
 end namespace
 end relocate

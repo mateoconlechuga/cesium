@@ -286,7 +286,7 @@ file_editable:
 	push	de
 	push	hl
 	ld	hl,(temp_prgm_data_ptr)
-	ld	de,lut_basic_icon
+	ld	de,lut_dcs_icon
 	ld	b,6
 .verify_icon:
 	ld	a,(de)
