@@ -50,14 +50,13 @@ you are concerned about flash wear, please moderate usage.
 
 ### USB Support
 
-Cesium has work-in-progress support for launching and transfering files on FAT32
-formatted drive.
-Future additions may be added depending on reported usage and feature requets in the
-issues board on GitHub.
+Cesium has support for launching and transfering files on FAT32 formatted drive.
+Future additions may be added depending on reported usage and feature requets
+in the issues board on GitHub.
 
 To transfer a variable from the drive to the calculator, use the `prgm` button.
-Running a program from the drive may not work as intended for many reasons, but
-may primarly be one of the following:
+Running a program from the drive directly may not work -- and may crash your
+calculator if the program does any of the following:
 
 * The program requires subprograms and/or AppVars in order to run.
   You must transfer all subprograms/AppVars to the calculator.
@@ -68,6 +67,8 @@ may primarly be one of the following:
   C applications, and usually will never be encountered.
   Transfer the application to the calculator.
 
+To avoid crashes it is recommended to simply transfer the file with the `prgm`
+button instead.
 
 ### Uninstalling
 
