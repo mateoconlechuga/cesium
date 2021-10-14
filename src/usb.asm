@@ -28,29 +28,36 @@
 
 ; routines for accessing flash drive data on usb
 
-usb_default_init := 36108
+USB_DEFAULT_INIT_VALUE := 36106
 usb_error_retry := 1000
 
 usb_device_ptr:
 	dl	0
-usb_enabled:
-	db	0
+
 msd_sector_buffer:
 	rb	512
 msd_struct:
-	rb	30
+	rb	1024
+msd_partitions:
+	rb	8*10
+
 fat_struct:
-	rb	80
-fat_partitions:
-	rb	80
-fat_file:
-	dl	0
+	rb	1041
+fat_file_struct:
+	rb	64
 fat_path:
-	rb	260		; current path in fat filesystem
+	rb	512		; current path in fat filesystem
 fat_sector:
 	rb	512
 fat_tmp_size:
 	dl	0
+
+usb_enabled:
+	db	0
+fat_enabled:
+	db	0
+msd_enabled:
+	db	0
 
 usb_handle_event:
 	ld	iy,0
@@ -74,6 +81,8 @@ usb_handle_event:
 	xor	a,a
 	sbc	hl,hl
 	ld	(usb_enabled),a
+	ld	(fat_enabled),a
+	ld	(msd_enabled),a
 	ld	(usb_device_ptr),hl
 	jq	.return
 .connected:
@@ -103,6 +112,8 @@ usb_init:
 	xor	a,a
 	sbc	hl,hl
 	ld	(usb_enabled),a
+	ld	(fat_enabled),a
+	ld	(msd_enabled),a
 	ld	(usb_selection),a
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
@@ -111,7 +122,7 @@ usb_init:
 	inc	hl
 	ld	(hl),a
 
-	ld	bc,usb_default_init
+	ld	bc,USB_DEFAULT_INIT_VALUE
 	push	bc
 	push	hl
 	push	hl
@@ -137,6 +148,7 @@ usb_init:
 	jq	z,usb_detach
 
 	call	lib_usb_WaitForInterrupt
+	ld	iy,ti.flags
 	ld	de,0
 	compare_hl_de
 	jq	z,.wait_for_enabled
@@ -147,33 +159,30 @@ usb_init:
 	jq	usb_detach
 
 .enabled:
-	ld	bc,msd_sector_buffer
-	push	bc
 	ld	bc,(usb_device_ptr)
 	push	bc
 	ld	bc,msd_struct
 	push	bc
 	call	lib_msd_Open
 	ld	iy,ti.flags
-	pop	bc,bc,bc
+	pop	bc,bc
 	ld	a,l
 	or	a,a
 	jq	nz,usb_invaliddevice
 
+	ld	a,$ff
+	ld	(msd_enabled),a
+
 .initedmsd:
-	ld	bc,8			; gets up to 8 available partitions on the device
+	ld	bc,8				; gets up to 8 available partitions on the device
 	push	bc
-	ld	bc,fat_partition_num
-	push	bc
-	ld	bc,fat_partitions
+	ld	bc,msd_partitions
 	push	bc
 	ld	bc,msd_struct
 	push	bc
-	call	lib_fat_FindPartitions
+	call	lib_msd_FindPartitions
 	ld	iy,ti.flags
-	pop	bc,bc,bc,bc
-	ld	a,0
-fat_partition_num := $-1
+	pop	bc,bc,bc
 	or	a,a
 	jq	z,usb_invaliddevice
 	sbc	hl,hl
@@ -205,30 +214,41 @@ select_valid_partition:
 	sbc	hl,hl
 	ld	l,0
 usb_selection := $ - 1
-	ld	h,7					; partition structure is 7 bytes
+	ld	h,8					; partition structure is 8 bytes
 	mlt	hl
-	ld	bc,fat_partitions
-	add	hl,bc
-	push	hl
+	ld	bc,msd_partitions
+	add	hl,bc					; pointer to first (4 bytes) then last (4 bytes)
+	ld	iy,fat_struct
+	lea	de,iy + 9
+	ld	bc,8
+	ldir
+	ld	hl,lib_msd_Read
+	ld	(iy + 0),hl				; read
+	ld	hl,lib_msd_Write
+	ld	(iy + 3),hl				; write
+	ld	hl,msd_struct
+	ld	(iy + 6),hl				; usr
+	ld	iy,ti.flags
 	ld	bc,fat_struct
 	push	bc
-	call	lib_fat_OpenPartition
-	pop	bc,bc
+	call	lib_fat_Init
+	pop	bc
+	ld	iy,ti.flags
 	compare_hl_zero
 	jr	z,.fat_init_completed
 
-	push	af					; check for an error during initialization
+	push	hl					; check for an error during initialization
+	call	gui_draw_core
 	set_normal_text
 	print	string_fat_init_error_0, 10, 30
 	print	string_fat_init_error_1, 10, 50
-	pop	af
-	or	a,a
-	sbc	hl,hl
-	ld	l,a
+	pop	hl
 	call	lcd_num_3
 	jq	usb_not_available.wait
 
 .fat_init_completed:
+	ld	a,$ff
+	ld	(fat_enabled),a
 	ld	a,screen_usb
 	ld	(current_screen),a
 	call	fat_get_directory_listing		; start with root directory
@@ -403,6 +423,24 @@ usb_check_extensions:
 	ret
 
 usb_detach_only:
+	ld	a,(fat_enabled)
+	or	a,a
+	jr	z,.no_fat
+	ld	bc,fat_struct
+	push	bc
+	call	lib_fat_Deinit
+	pop	bc
+	ld	iy,ti.flags
+.no_fat:
+	ld	a,(msd_enabled)
+	or	a,a
+	jr	z,.no_msd
+	ld	bc,msd_struct
+	push	bc
+	call	lib_msd_Close
+	pop	bc
+	ld	iy,ti.flags
+.no_msd:
 	call	lib_usb_Cleanup
 	ld	iy,ti.flags
 	call	libload_unload
@@ -453,7 +491,7 @@ usb_not_available:
 	print	string_usb_info_1, 10, 50
 	print	string_usb_info_2, 10, 70
 	print	string_usb_info_3, 10, 90
-	print	string_usb_info_4, 10, 110
+	print	string_usb_info_4, 10, 120
 	print	string_usb_info_5, 10, 150
 .wait:
 	call	lcd_blit
@@ -567,6 +605,7 @@ fat_file_size := $-3
 	cp	a,$80				; check if archived
 	push	af
 	call	usb_copy_tivar
+	jr	nz,.error
 	call	ti.OP4ToOP1
 	pop	af
 	jr	nz,.notarchived
@@ -574,6 +613,16 @@ fat_file_size := $-3
 	call	cesium.Arc_Unarc
 .notarchived:
 
+	call	util_delay_one_second
+	jp	main_start
+
+.error:
+	call	ti.PushOP1
+	call	ti.OP4ToOP1
+	call	ti.ChkFindSym
+	call	nc,ti.DelVarArc
+	call	ti.PopOP1
+	call	ti.OP1ToOP4
 	call	util_delay_one_second
 	jp	main_start
 
@@ -588,18 +637,17 @@ usb_open_tivar:
 	ld	hl,(item_ptr)
 .entry:
 	call	usb_append_fat_path
-	ld	bc,1
-	push	bc
-	ld	bc,fat_path			; open the file for reading
+	ld	bc,fat_path
 	push	bc
 	ld	bc,fat_struct
+	push	bc
+	ld	bc,fat_file_struct
 	push	bc
 	call	lib_fat_Open
 	ld	iy,ti.flags
 	pop	bc,bc,bc
-	ld	(fat_file),hl
 	compare_hl_zero
-	jq	z,.error
+	jq	nz,.error
 	call	usb_directory_previous
 	ld	de,fat_sector
 	call	fat_file_read_sector		; read the first sector to get the size information
@@ -609,6 +657,8 @@ usb_open_tivar:
 	ld	e,(hl)
 	inc	hl
 	ld	d,(hl)
+	dec	de
+	dec	de				; remove size bytes
 	ld	(fat_file_size),de
 	ld	hl,fat_sector + 59		; name / type of variable
 	call	ti.Mov9ToOP1
@@ -623,28 +673,33 @@ fat_file_read_sector:
 	push	de
 	ld	bc,1
 	push	bc
-	ld	bc,(fat_file)
+	ld	bc,fat_file_struct
 	push	bc
-	call	lib_fat_ReadSectors
+	call	lib_fat_Read
 	ld	iy,ti.flags
 	pop	bc,bc
 	pop	de
 	ld	a,l
-	or	a,a
+	dec	a
 	ret
 
 ; de -> destination
 ; fat_file_size = size
 ; fat_file = file descriptor
 ; must have read first sector of variable by this point
-usb_copy_tivar_to_ram:
+usb_copy_asm_var_to_ram:
 	ld	ix,76 - 1
 	ld	hl,fat_sector + 76
+	jr	usb_copy_tivar.entry
+usb_copy_var_to_ram:
+	ld	ix,74 - 1
+	ld	hl,fat_sector + 74
 	jr	usb_copy_tivar.entry
 usb_copy_tivar:
 	ld	ix,72 - 1
 	ld	hl,fat_sector + 72
 .entry:
+	di
 	ld	bc,(fat_file_size)
 .not_done:
 	push	bc
@@ -663,17 +718,17 @@ usb_copy_tivar:
 	pop	bc
 	ldi
 	jq	pe,.not_done
-	jq	fat_file_close
+	call	fat_file_close
+	xor	a,a
+	ret
 .error:
-	call	ti.PushOP1
-	call	ti.OP4ToOP1
-	call	ti.ChkFindSym
-	call	nc,ti.DelVarArc
-	call	ti.PopOP1
-	jp	ti.OP1ToOP4
+	call	fat_file_close
+	xor	a,a
+	inc	a
+	ret
 
 fat_file_close:
-	ld	bc,(fat_file)
+	ld	bc,fat_file_struct
 	push	bc
 	call	lib_fat_Close
 	ld	iy,ti.flags

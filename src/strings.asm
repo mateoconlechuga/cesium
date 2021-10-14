@@ -164,9 +164,9 @@ string_usb_info_1:
 string_usb_info_2:
 	db	'You will need to install LibLoad',0
 string_usb_info_3:
-	db	'and the FATDRVCE/USBDRVCE library from:',0
+	db	'and USBDRVCE/MSDDRVCE/FATDRVCE:',0
 string_usb_info_4:
-	db	'http://tiny.cc/clibs',0
+	db	'Link: http://tiny.cc/clibs',0
 string_usb_info_5:
 	db	'Press ',$7e,'enter] to retry.',0
 string_usb_info_6:
@@ -304,9 +304,9 @@ string_usb_info_1:
 string_usb_info_2:
 	db	'Vous devrez installer LibLoad',0
 string_usb_info_3:
-	db	'et la lib FATDRVCE/USBDRVCE depuis ici :',0
+	db	'et la lib USBDRVCE/MSDDRVCE/FATDRVCE :',0
 string_usb_info_4:
-	db	'http://tiny.cc/clibs',0
+	db	'hyperlien: http://tiny.cc/clibs',0
 string_usb_info_5:
 	db	'Appuyez sur ',$7e,'entrer] pour retenter.',0
 string_usb_info_6:
@@ -444,7 +444,7 @@ string_usb_info_1:
 string_usb_info_2:
 	db	'Installeer de volgende bibliotheken:',0
 string_usb_info_3:
-	db	'-LibLoad, FATDRVCE/USBDRVCE',0
+	db	'-LibLoad, USBDRVCE/MSDDRVCE/FATDRVCE',0
 string_usb_info_4:
 	db	'http://tiny.cc/clibs',0
 string_usb_info_5:

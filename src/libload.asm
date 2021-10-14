@@ -39,13 +39,18 @@ libload_load:
 	ld	hl,lib_fatdrvce
 	ld	bc,lib_fatdrvce.size
 	ldir
+	ld	de,lib_msddrvce_tbl	; initialize default fatdrvce jump locations
+	ld	hl,lib_msddrvce
+	ld	bc,lib_msddrvce.size
+	ldir
 	ld	a,$c0
 	ld	(libload_libload),a
 	ld	(libload_usbdrvce),a
+	ld	(libload_msddrvce),a
 	ld	(libload_fatdrvce),a	; reset loaded libraries that libload destroyed
 	jq	.try
 .inram:
-	call	cesium.Arc_Unarc
+	call	cesium.Arc_Unarcp
 .try:
 	ld	hl,libload_name
 	call	ti.Mov9ToOP1
@@ -66,6 +71,7 @@ libload_load:
 	ld	bc,$aa55aa		; tell libload to not show an error screen
 	jp	(hl)			; jump to the loader -- it should take care of everything else
 .notfound:
+	call	libload_unload
 	call	lcd_init.setup
 	xor	a,a
 	inc	a
@@ -75,11 +81,11 @@ libload_load:
 
 ; default libload library
 libload_libload:
-	db	$c0,"LibLoad",0,31
+	db	$C0,"LibLoad",0,31
 
 ; usbdrvce library functions
 libload_usbdrvce:
-	db	$c0,"USBDRVCE",0,0
+	db	$C0,"USBDRVCE",0,0
 
 lib_usbdrvce_tbl:
 lib_usb_Init:
@@ -91,43 +97,63 @@ lib_usb_WaitForInterrupt:
 lib_usb_ResetDevice:
 	jp	39
 
-; fatdrvce library functions
-libload_fatdrvce:
-	db	$c0,"FATDRVCE",0,0
+; msddrvce library functions
+libload_msddrvce:
+	db	$C0,"MSDDRVCE",0,0
 
-lib_fatdrvce_tbl:
+lib_msddrvce_tbl:
 lib_msd_Open:
 	jp	0
 lib_msd_Close:
 	jp	3
-lib_fat_FindPartitions:
-	jp	18
-lib_fat_OpenPartition:
-	jp	21
-fat_ClosePartition:
+lib_msd_Info:
+	jp	9
+lib_msd_Read:
+	jp	12
+lib_msd_Write:
+	jp	15
+lib_msd_FindPartitions:
 	jp	24
+
+; fatdrvce library functions
+libload_fatdrvce:
+	db	$C0,"FATDRVCE",0,0
+
+lib_fatdrvce_tbl:
+lib_fat_Init:
+	jp	0
+lib_fat_Deinit:
+	jp	3
 lib_fat_DirList:
-	jp	27
+	jp	6
 lib_fat_Open:
-	jp	33
+	jp	12
 lib_fat_Close:
-	jp	36
+	jp	15
+lib_fat_SetSize:
+	jp	18
+lib_fat_SetAttrib:
+	jp	24
 lib_fat_GetAttrib:
-	jp	48
-lib_fat_ReadSectors:
-	jp	57
-lib_fat_WriteSectors:
-	jp	60
+	jp	27
+lib_fat_SetPos:
+	jp	30
+lib_fat_GetPos:
+	jp	33
+lib_fat_Read:
+	jp	36
+lib_fat_Write:
+	jp	39
 lib_fat_Create:
-	jp	63
+	jp	42
 lib_fat_Delete:
-	jp	66
+	jp	45
 
 	xor	a,a		; return z (loaded)
 	pop	hl		; pop error return
 	ret
 
-; should match entry points for above jump table
+; should match above entry points!
 lib_usbdrvce:
 	jp	0
 	jp	3
@@ -135,21 +161,32 @@ lib_usbdrvce:
 	jp	39
 .size := $ - lib_usbdrvce
 
-; should match entry points for above jump table
+; should match above entry points!
+lib_msddrvce:
+	jp	0
+	jp	3
+	jp	9
+	jp	12
+	jp	15
+	jp	24
+.size := $ - lib_msddrvce
+
+; should match above entry points!
 lib_fatdrvce:
 	jp	0
 	jp	3
+	jp	6
+	jp	12
+	jp	15
 	jp	18
-	jp	21
 	jp	24
 	jp	27
+	jp	30
 	jp	33
 	jp	36
-	jp	48
-	jp	57
-	jp	60
-	jp	63
-	jp	66
+	jp	39
+	jp	42
+	jp	45
 .size := $ - lib_fatdrvce
 
 ; remove loaded libraries from usermem

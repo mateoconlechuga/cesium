@@ -323,6 +323,10 @@ util_backup_prgm_name:
 	ld	de,backup_prgm_name
 	jp	ti.Mov9b
 
+util_clear_backup_prgm_name:
+	ld	hl,backup_prgm_name
+	jp	ti.ZeroOP
+
 util_set_more_items_flag:
 	set	scroll_down_available,(iy + item_flag)
 	ret

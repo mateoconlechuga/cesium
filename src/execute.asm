@@ -80,6 +80,7 @@ execute_usb_check:
 	; basic programs must be copied to a temporary program to be executed
 
 	call	usb_open_tivar
+	jq	nz,main_loop
 	call	usb_validate_tivar
 	jq	z,execute_usb_program
 
@@ -104,7 +105,7 @@ execute_app_check:
 	ld	a,screen_appvars
 	dec	hl
 	compare_hl_zero
-	jr	nz,execute_app
+	jq	nz,execute_app
 .new:
 	ld	(current_screen),a
 	jq	main_find				; abort!
@@ -115,12 +116,11 @@ execute_app_check:
 ; 3) subprograms
 execute_usb_program:
 	di
-	call	usb_get_file_size
-	ld	hl,(fat_tmp_size)
+	call	util_clear_backup_prgm_name
+	ld	hl,(fat_file_size)
 	call	util_check_free_ram
 	jp	z,main_loop			; ensure enough ram
 	call	execute_ram_backup
-	call	lcd_normal
 	bit	setting_enable_shortcuts,(iy + settings_flag)
 	call	nz,ti.ClrGetKeyHook
 	ld	hl,fat_sector + 74
@@ -136,21 +136,39 @@ execute_usb_program:
 	ld	de,(ti.asm_prgm_size)
 	add	hl,de
 	ex	de,hl
-	ld	hl,(fat_tmp_size)
+	ld	hl,(fat_file_size)
 	push	hl
+	push	de
 	call	ti.InsertMem			; insert memory into usermem + (ti.asm_prgm_size)
-	call	usb_copy_tivar_to_ram		; copy variable to ram
-	call	usb_detach_only			; shift assembly program to ti.userMem, detach usb & libload
+	pop	hl
+	push	de
+	ld	bc,(fat_file_size)
+	xor	a,a
+	call	ti.MemSet			; zeroize just to be safe
+	pop	de
+	call	usb_copy_asm_var_to_ram		; copy variable to ram
+	push	af
+	call	usb_detach_only
+	pop	af
+	jr	nz,.fail_asm_copy
 	pop	hl
 	ld	(ti.asm_prgm_size),hl		; reload size of the program
 	jq	execute_ti.asm_program_loaded
+.fail_asm_copy:
+	jp	main_loop
 .program_is_basic:
-	ld	hl,(fat_tmp_size)
+	ld	hl,(fat_file_size)
 	ld	(prgm_real_size),hl
 	ld	de,(lcd_buffer)
 	ld	(prgm_data_ptr),de
-	call	usb_copy_tivar_to_ram		; copy variable to ram
+	call	usb_copy_var_to_ram		; copy variable to ram
+	push	af
+	call	usb_detach_only
+	pop	af
+	jr	nz,.fail_basic_copy
 	jq	execute_ti.basic_program.from_temp
+.fail_basic_copy:
+	jp	main_loop
 
 execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
