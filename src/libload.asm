@@ -50,7 +50,7 @@ libload_load:
 	ld	(libload_fatdrvce),a	; reset loaded libraries that libload destroyed
 	jq	.try
 .inram:
-	call	cesium.Arc_Unarcp
+	call	cesium.Arc_Unarc
 .try:
 	ld	hl,libload_name
 	call	ti.Mov9ToOP1
