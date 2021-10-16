@@ -281,10 +281,7 @@ temp_prgm_data_ptr := $-3
 	pop	de					; de -> language string
 	jp	draw_listed_program
 
-file_editable:
-	push	bc
-	push	de
-	push	hl
+check_dcs_icon:
 	ld	hl,(temp_prgm_data_ptr)
 	ld	de,lut_dcs_icon
 	ld	b,6
@@ -293,17 +290,73 @@ file_editable:
 	cp	a,(hl)
 	inc	hl
 	inc	de
-	jr	nz,.no_custom_icon
+	ret	nz
 	djnz	.verify_icon
+	ret
+check_dcs6_icon:
+	ld	hl,(temp_prgm_data_ptr)
+	ld	de,lut_dcs6_icon
+	ld	b,7
+	jr	check_dcs_icon.verify_icon
+
+file_editable:
+	push	bc
+	push	de
+	push	hl
+	call	check_dcs_icon
+	jr	z,.dcs_icon
+	call	check_dcs6_icon
+	jr	z,.dcs_icon
+	jr	.no_custom_icon
+.dcs_icon:
 	pop	de					; remove default icon
+	push	hl
+	ld	hl,sprite_temp+2
+	ld	(hl),224
+	push	hl
+	pop	de
+	inc	de
+	ld	bc,256-1
+	ldir
+	pop	hl
 	ld	de,sprite_temp
 	ld	a,16
 	ld	(de),a
 	inc	de
 	ld	(de),a
-	inc	de					; save the size of the sprite
+	inc	de
+	push	hl
+	push	hl					; save the size of the sprite
+	ld	bc,256
+	ld	a,ti.tEnter				; now determine if it is a 8x8 monochrome, 16x16 monochrome, or 16x16 color icon
+	cpir
+	pop	bc
+	or	a,a
+	sbc	hl,bc					; number of bytes read
+	ld	bc,17
+	or	a,a
+	sbc	hl,bc
+	add	hl,bc					; monochrome 8x8
+	jq	z,monochrome_8x8
+	ld	bc,65
+	or	a,a
+	sbc	hl,bc
+	add	hl,bc					; monochrome 16x16
+	jq	z,monochrome_16x16
+	jq	color_16x16
+.return_icon:
+	ld	hl,sprite_temp				; yay, a custom icon
+	push	hl
+.no_custom_icon:
+	pop	hl
+	pop	de
+	pop	bc
+	jq	draw_listed_program
+
+color_16x16:
+	pop	hl
 	ld	b,0
-.get_icon:						; okay, now loop 256 times to do the squish
+.loop:							; okay, now loop 256 times to do the squish
 	ld	a,(hl)
 	sub	a,$30
 	cp	a,$11
@@ -318,14 +371,89 @@ file_editable:
 	ld	(de),a
 	inc	de
 	inc	hl
-	djnz	.get_icon				; collect all the values
-	ld	hl,sprite_temp				; yay, a custom icon
-	push	hl
-.no_custom_icon:
+	djnz	.loop					; collect all the values
+	jq	file_editable.return_icon
+
+monochrome_8x8:
 	pop	hl
+	ex	de,hl
+	ld	b,8
+.loop:
+	ld	a,(de)					; high nibble
+	inc	de
+	call	util_ascii_nibble_to_byte
+	add	a,a
+	add	a,a
+	add	a,a
+	add	a,a
+	ld	c,a
+	ld	a,(de)					; high nibble
+	inc	de
+	call	util_ascii_nibble_to_byte
+	add	a,c					; byte :)
+	ld	c,a
+	push	bc
+	push	hl
+	ld	b,8
+.inner_byte:
+	rl	c
+	ld	a,107
+	jr	c,.set
+.not_set:
+	ld	a,(color_senary)
+.set:
+	ld	(hl),a
+	inc	hl
+	ld	(hl),a
+	inc	hl
+	djnz	.inner_byte
+	push	hl
+	pop	bc
+	pop	hl
+	push	de
+	push	bc
+	pop	de
+	ld	bc,16
+	ldir
+	ex	de,hl
 	pop	de
 	pop	bc
-	;jq	draw_listed_program
+	djnz	.loop
+	jq	file_editable.return_icon
+
+monochrome_16x16:
+	pop	hl
+	ex	de,hl
+	ld	b,64
+.loop:
+	ld	a,(de)					; high nibble
+	inc	de
+	call	util_ascii_nibble_to_byte
+	add	a,a
+	add	a,a
+	add	a,a
+	add	a,a
+	ld	c,a
+	ld	a,(de)					; high nibble
+	inc	de
+	call	util_ascii_nibble_to_byte
+	add	a,c					; byte :)
+	ld	c,a
+	push	bc
+	ld	b,8
+.inner_byte:
+	rl	c
+	ld	a,107
+	jr	c,.set
+.not_set:
+	ld	a,(color_senary)
+.set:
+	ld	(hl),a
+	inc	hl
+	djnz	.inner_byte
+	pop	bc
+	djnz	.loop
+	jq	file_editable.return_icon
 
 draw_listed_program:
 	ld	a,(lcd_y)

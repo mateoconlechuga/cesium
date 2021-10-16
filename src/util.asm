@@ -405,6 +405,38 @@ util_num_convert:
 	inc	de
 	ret
 
+util_squishy_convert_byte:
+	push	bc
+	push	hl
+	ld	a,d
+	call	ti.ShlACC
+	add	a,e
+	pop	hl
+	pop	bc
+	ret
+
+util_squishy_check_byte:
+	cp	a,$30
+	jp	c,ti.ErrSyntax
+	cp	a,$3A
+	jr	nc,.skip
+	sub	a,$30
+	ret
+.skip:
+	cp	a,$41
+	jp	c,ti.ErrSyntax
+	cp	a,$47
+	jp	nc,ti.ErrSyntax
+	sub	a,$37
+	ret
+
+util_ascii_nibble_to_byte:
+	sub	a,48
+	cp	a,16
+	ret	c
+	sub	a,55-48
+	ret
+
 util_get_var_name_input:
 .prgm:
 	ld	a,0

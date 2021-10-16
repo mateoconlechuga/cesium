@@ -316,41 +316,18 @@ execute_ti.basic_program:
 	cp	a,$3f
 	jr	z,.squish_me
 	push	de
-	call	.squishy_check_byte
+	call	util_squishy_check_byte
 	ld	d,a
 	ld	a,(hl)
 	inc	hl
-	call	.squishy_check_byte
+	call	util_squishy_convert_byte
 	ld	e,a
-	call	.squishy_convert_byte
+	call	util_squishy_convert_byte
 	pop	de
 	ld	(de),a
 	inc	de
 	dec	bc
 	jr	.squish_me
-.squishy_convert_byte:
-	push	bc
-	push	hl
-	ld	a,d
-	call	ti.ShlACC
-	add	a,e
-	pop	hl
-	pop	bc
-	ret
-.squishy_check_byte:
-	cp	a,$30
-	jp	c,ti.ErrSyntax
-	cp	a,$3A
-	jr	nc,.skip
-	sub	a,$30
-	ret
-.skip:
-	cp	a,$41
-	jp	c,ti.ErrSyntax
-	cp	a,$47
-	jp	nc,ti.ErrSyntax
-	sub	a,$37
-	ret
 .no_squish:
 	call	ti.RunIndicOn
 	bit	setting_basic_indicator,(iy + settings_flag)
