@@ -69,6 +69,7 @@ execute_usb_check:
 	sbc	hl,hl
 	ld	(current_selection),a
 	ld	(current_selection_absolute),hl
+	ld	(scroll_amount),hl
 	call	fat_get_directory_listing		; update the path
 	jq	main_start
 .not_directory:
