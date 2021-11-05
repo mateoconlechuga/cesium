@@ -57,7 +57,7 @@ lcd_init:
 
 lcd_normal:
 	ld	hl,ti.vRam
-	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) - 1
+	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) + 0
 	ld	a,255
 	call	ti.MemSet
 	ld	a,$2d
@@ -66,12 +66,12 @@ lcd_normal:
 
 lcd_clear:
 	ld	hl,ti.vRam
-	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) - 1
+	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) + 0
 	jr	lcd_fill.clear
 
 lcd_fill:
 	ld	hl,vRamBuffer
-	ld	bc,ti.lcdWidth * ti.lcdHeight - 1
+	ld	bc,ti.lcdWidth * ti.lcdHeight
 .clear:
 	ld	a,(color_senary)
 	jp	ti.MemSet
