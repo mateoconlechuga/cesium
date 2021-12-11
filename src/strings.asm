@@ -265,15 +265,15 @@ string_setting_page1:
 string_setting_page2:
 	db	'Press <> arrow keys to switch pages  ',$7e,'2 of 2]',0
 string_setting_screen_brightness:
-	db	'Change screen brightness',0
+	db	'Modifier la luminosite de l'ecran',0
 string_setting_show_battery:
-	db	'Display battery status',0
+	db	'Afficher statut de la batterie',0
 string_setting_show_hidden:
-	db	'Hide hidden programs',0
+	db	'Cacher les programmes caches',0
 string_setting_poweron_password:
 	db	'Change poweron password',0
 string_setting_editor_prgm:
-	db	'Change program editor',0
+	db	'Changer l',$27,'editeur de prgms',0
 string_new_password:
 	db	'Set poweron password: ',0
 string_prgm_editor_name:
@@ -283,7 +283,7 @@ string_setting_delete_confirm:
 string_setting_usb_enable:
 	db	'Activer le support de cl',$82,'s USB',0
 string_setting_clock:
-	db	'Afficher l',$27,'horloge',0
+	db	'Afficher l',$27,'heure',0
 string_setting_ram_backup:
 	db	'Sauver la RAM avant de lancer des prgms',0
 string_setting_special_directories:
