@@ -201,7 +201,7 @@ end if
 if config_french
 
 string_mode_select:
-	db	': Press ',$7e,'MODE] to set',0
+	db	':',$7e,'MODE] pour changer',0
 string_primary_color:
 	db	'Couleur primaire',0
 string_secondary_color:
@@ -225,7 +225,7 @@ string_locked:
 string_size:
 	db	'Taille : ',0
 string_min_version:
-	db	'Min Version:',0
+	db	'Version Min:',0
 string_ram_free:
 	db	'RAM Libre : ',0
 string_rom_free:
