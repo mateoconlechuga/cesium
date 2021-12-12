@@ -261,23 +261,23 @@ string_setting_indicator:
 string_setting_list_count:
 	db	'Afficher le nombre de programmes',0
 string_setting_page1:
-	db	'Appuyer <> flèches pour changer page  ',$7e,'1 sur 2]',0
+	db	'Appuyer fleches <> pour changer page  ',$7e,'1 sur 2]',0
 string_setting_page2:
-	db	'Appuyer <> flèches pour changer page  ',$7e,'2 sur 2]',0
+	db	'Appuyer fleches <> pour changer page  ',$7e,'2 sur 2]',0
 string_setting_screen_brightness:
-	db	'Modifier la luminosite de l'ecran',0
+	db	'Modifier la luminosit',$82,' de l',$27,$82,'cran',0
 string_setting_show_battery:
 	db	'Afficher statut de la batterie',0
 string_setting_show_hidden:
-	db	'Cacher les programmes caches',0
+	db	'Cacher les programmes cach',$82,'s',0
 string_setting_poweron_password:
-	db	'Definir mot de passe au demarrage',0
+	db	'D',$82,'finir mot de passe au d',$82,'marrage',0
 string_setting_editor_prgm:
-	db	'Changer l',$27,'editeur de programmes',0
+	db	'Changer l',$27,$82,'diteur de programmes',0
 string_new_password:
 	db	'Nouveau mot de passe: ',0
 string_prgm_editor_name:
-	db	'Nom de l',$27,'editeur de programmes: ',0
+	db	'Nom de l',$27,$82,'diteur de programmes: ',0
 string_setting_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_setting_usb_enable:
