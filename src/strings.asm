@@ -201,7 +201,7 @@ end if
 if config_french
 
 string_mode_select:
-	db	': Press ',$7e,'MODE] to set',0
+	db	':',$7e,'MODE] pour changer',0
 string_primary_color:
 	db	'Couleur primaire',0
 string_secondary_color:
@@ -225,7 +225,7 @@ string_locked:
 string_size:
 	db	'Taille : ',0
 string_min_version:
-	db	'Min Version:',0
+	db	'Version Min:',0
 string_ram_free:
 	db	'RAM Libre : ',0
 string_rom_free:
@@ -261,29 +261,29 @@ string_setting_indicator:
 string_setting_list_count:
 	db	'Afficher le nombre de programmes',0
 string_setting_page1:
-	db	'Press <> arrow keys to switch pages  ',$7e,'1 of 2]',0
+	db	'Appuyer fleches <> pour changer page  ',$7e,'1 sur 2]',0
 string_setting_page2:
-	db	'Press <> arrow keys to switch pages  ',$7e,'2 of 2]',0
+	db	'Appuyer fleches <> pour changer page  ',$7e,'2 sur 2]',0
 string_setting_screen_brightness:
-	db	'Change screen brightness',0
+	db	'Modifier la luminosit',$82,' de l',$27,$82,'cran',0
 string_setting_show_battery:
-	db	'Display battery status',0
+	db	'Afficher statut de la batterie',0
 string_setting_show_hidden:
-	db	'Hide hidden programs',0
+	db	'Cacher les programmes cach',$82,'s',0
 string_setting_poweron_password:
-	db	'Change poweron password',0
+	db	'D',$82,'finir mot de passe au d',$82,'marrage',0
 string_setting_editor_prgm:
-	db	'Change program editor',0
+	db	'Changer l',$27,$82,'diteur de programmes',0
 string_new_password:
-	db	'Set poweron password: ',0
+	db	'Nouveau mot de passe: ',0
 string_prgm_editor_name:
-	db	'Program editor name: ',0
+	db	'Nom de l',$27,$82,'diteur de programmes: ',0
 string_setting_delete_confirm:
 	db	'Afficher l',$27,'invite de suppression',0
 string_setting_usb_enable:
 	db	'Activer le support de cl',$82,'s USB',0
 string_setting_clock:
-	db	'Afficher l',$27,'horloge',0
+	db	'Afficher l',$27,'heure',0
 string_setting_ram_backup:
 	db	'Sauver la RAM avant de lancer des prgms',0
 string_setting_special_directories:
