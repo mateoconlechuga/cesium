@@ -123,7 +123,7 @@ str_delete_installer:
 	db	'del - ja',0
 end if
 
-relocate installer_ports, cesium_execution_base
+relocate installer_ports, ti.saveSScreen
 define installer
 namespace installer
 	include 'ports.asm'

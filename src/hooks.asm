@@ -519,7 +519,7 @@ hook_show_labels:
 	pop	bc
 	ret
 
-relocate hook_strings, ti.plotSScreen
+relocate hook_strings, ti.cursorImage + 32
 .program_string:
 	db	"PROGRAM:",0
 .page_string:

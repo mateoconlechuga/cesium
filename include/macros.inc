@@ -197,10 +197,6 @@ macro draw_highlighted_option? Lx, Ty, index
 	draw_highlightable_option Lx, Ty, index
 end macro
 
-; general
-
-cesium_execution_base := $d09466
-
 ; file management
 
 file_asm := 0
@@ -222,7 +218,7 @@ byte_dir := file_dir
 byte_usb_dir := file_usb_dir
 byte_edit_return := $aa
 
-item_location_base := ti.pixelShadow2
+item_location_base := ti.saveSScreen + 8400
 
 ; lcd
 

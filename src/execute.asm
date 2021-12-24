@@ -44,6 +44,9 @@ execute_item:
 	jq	z,execute_app_check
 
 execute_usb_check:
+	ld	hl,(number_of_items)
+	compare_hl_zero
+	jq	z,main_loop
 	ld	hl,(item_ptr)
 	call	usb_check_directory
 	jq	z,.not_directory			; if not a directory, check extension
@@ -434,7 +437,14 @@ execute_setup_vectors:
 	call	ti.ForceFullScreen
 	call	ti.ClrScrn
 	call	ti.HomeUp
-	call	util_clear_shadows
+	ld	hl,ti.pixelShadow
+	ld	bc,8400 * 3
+	call	ti.MemClear
+	call	ti.ClrTxtShd
+	ld	hl,ti.textShadow
+	ld	de,ti.cmdShadow
+	ld	bc,$104
+	ldir
 	ld	hl,execute_error
 	jp	ti.PushErrorHandler
 

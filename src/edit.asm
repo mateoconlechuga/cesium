@@ -137,6 +137,9 @@ edit_basic_program:
 	dec	hl
 	ld	de,ti.basic_prog
 	call	ti.Mov9b
+	edit_helper.run
+
+relocate edit_helper, ti.cursorImage + 256
 	ld	a,ti.cxPrgmEdit
 	call	ti.NewContext
 	xor	a,a
@@ -207,6 +210,7 @@ error_offset := $-3
 	jr	.loop
 .goto_new_line_next:
 	jp	ti.BufRight
+end relocate
 
 compute_error_offset:
 	ld	hl,(ti.curPC)

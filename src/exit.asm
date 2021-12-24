@@ -40,7 +40,6 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
 	call	lcd_normal
-	call	util_clear_shadows
 	call	hook_restore_parser
 	call	ti.ClrAppChangeHook
 	call	util_setup_shortcuts
@@ -50,9 +49,13 @@ relocate exit_cleanup, ti.mpLcdCrsrImage + 500
 	res	ti.onInterrupt,(iy + ti.onFlags)
 	set	ti.graphDraw,(iy + ti.graphFlags)
 	ld	hl,ti.pixelShadow
-	ld	bc,69090
+	ld	bc,8400 * 3
 	call	ti.MemClear
-	call	ti.ClrTxtShd				; clear text shadow
+	call	ti.ClrTxtShd
+	ld	hl,ti.textShadow
+	ld	de,ti.cmdShadow
+	ld	bc,$104
+	ldir
 	bit	3,(iy + $25)
 	jr	z,.no_defrag
 	ld	a,ti.cxErase

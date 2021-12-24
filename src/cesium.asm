@@ -41,7 +41,7 @@ include 'installer.asm'
 cesium_start:
 	cesium_code.run
 
-relocate cesium_code, cesium_execution_base
+relocate cesium_code, ti.pixelShadow
 	include 'main.asm'
 	include 'exit.asm'
 	include 'edit.asm'
@@ -53,7 +53,6 @@ relocate cesium_code, cesium_execution_base
 	include 'settings.asm'
 	include 'gui.asm'
 	include 'lcd.asm'
-	include 'util.asm'
 	include 'libload.asm'
 	include 'usb.asm'
 	include 'find.asm'
@@ -61,12 +60,21 @@ relocate cesium_code, cesium_execution_base
 	include 'luts.asm'
 	include 'ports.asm'
 	include 'sprites.asm'
+	include 'util.asm'
 	include 'strings.asm'
 end relocate
-
 
 ; we want to keep these things in flash
 include 'execute.asm'
 include 'flash.asm'
 include 'hooks.asm'
 include 'data.asm'
+
+macro print_size msg, offset
+	display msg
+	repeat 1,x:offset
+		display `x, 10
+	end repeat
+end macro
+
+print_size "cesium_code.length: ", cesium_code.length
