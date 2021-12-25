@@ -28,6 +28,9 @@
 
 ; lookup tables for characters
 
+lut_description_icon:
+	db	$3e,$2a
+
 lut_dcs_icon:
 	db	$3e,$44,$43,$53,$3f,$2a
 

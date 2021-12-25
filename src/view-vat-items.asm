@@ -216,11 +216,11 @@ color_save := $-1
 	set	temp_prgm_is_basic,(iy + temp_prgm_flag)
 	ld	de,string_ice_source
 	cp	a,file_ice_source
-	jp	z,file_editable
+	jq	z,file_editable
 	ld	de,string_basic
 	ld	hl,sprite_file_basic
 	cp	a,file_basic
-	jr	z,file_editable
+	jq	z,file_editable
 	jp	exit_full		; abort
 
 file_usb_directory:
@@ -231,7 +231,7 @@ file_directory:
 	sbc	hl,hl
 	ld	(prgm_size),hl
 	pop	hl
-	jp	draw_listed_program
+	jp	draw_listed_entry
 
 file_uneditable:
 	push	de
@@ -279,7 +279,7 @@ temp_prgm_data_ptr := $-3
 	pop	hl					; hl -> icon
 .icon:
 	pop	de					; de -> language string
-	jp	draw_listed_program
+	jp	draw_listed_entry
 
 check_dcs_icon:
 	ld	hl,(temp_prgm_data_ptr)
@@ -298,11 +298,24 @@ check_dcs6_icon:
 	ld	de,lut_dcs6_icon
 	ld	b,7
 	jr	check_dcs_icon.verify_icon
+check_mos_dcs_icon:
+	ld	hl,(temp_prgm_data_ptr)
+	ld	de,lut_dcs6_icon
+	ld	b,7
+	jr	check_dcs_icon.verify_icon
+check_description_icon:
+	ld	hl,(temp_prgm_data_ptr)
+.enter:
+	ld	de,lut_description_icon
+	ld	b,2
+	jr	check_dcs_icon.verify_icon
 
 file_editable:
 	push	bc
 	push	de
 	push	hl
+	call	check_description_icon
+	jq	z,description_icon
 	call	check_dcs_icon
 	jr	z,.dcs_icon
 	call	check_dcs6_icon
@@ -351,7 +364,7 @@ file_editable:
 	pop	hl
 	pop	de
 	pop	bc
-	jq	draw_listed_program
+	jq	draw_listed_entry
 
 color_16x16:
 	pop	hl
@@ -455,7 +468,55 @@ monochrome_16x16:
 	djnz	.loop
 	jq	file_editable.return_icon
 
-draw_listed_program:
+description_icon:
+	ld	de,sprite_temp
+	xor	a,a
+.next_token:
+	push	hl
+	push	de
+	push	af
+	ld	a,(hl)
+	cp	a,$3F
+	jr	z,.done_get_icon
+	call	ti.Get_Tok_Strng
+	ld	c,a
+	pop	af
+	add	a,c
+	cp	a,25
+	jr	nc,.fail
+	pop	de
+	pop	hl
+	push	af
+	ld	a,(hl)
+	call	ti.Isa2ByteTok
+	jr	nz,.not2byte
+	inc	hl
+.not2byte:
+	inc	hl
+	push	hl
+	ld	hl,ti.OP3
+	ldir
+	pop	hl
+	pop	af
+	jr	.next_token
+.done_get_icon:
+	xor	a,a
+	ld	(de),a
+	pop	bc,bc,bc
+	inc	hl
+	push	hl
+	ld	hl,sprite_temp
+	bit	drawing_selected,(iy + item_flag)
+	call	nz,gui_show_description
+	pop	hl
+	call	check_description_icon.enter
+	jq	nz,file_editable.no_custom_icon
+	jq	file_editable.dcs_icon
+.fail:
+	pop	bc,bc
+	jq	file_editable.no_custom_icon
+
+draw_listed_entry:
 	ld	a,(lcd_y)
 	push	af
 	ld	ix,(lcd_x)
@@ -564,4 +625,4 @@ tmp_y := $-1
 	sbc	hl,hl
 	ld	(prgm_size),hl
 	pop	hl
-	jp	draw_listed_program
+	jp	draw_listed_entry
