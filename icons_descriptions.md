@@ -12,7 +12,7 @@ https://ce-programming.github.io/toolchain/static/makefile-options.html#icon
 ## TI-BASIC Headers
 
 TI-BASIC programs can have custom icons and descriptions.
-Note that '0' indicates a transparent color in the following hex strings.
+The '0' character indicates a transparent color in the following hex strings.
 
 I recommend using TIFreak's icon creator, available at the following URL:
 https://www.ticalc.org/archives/files/fileinfo/460/46035.html
