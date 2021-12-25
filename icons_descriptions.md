@@ -1,4 +1,4 @@
-# Program Headers
+# Program Icons / Descriptions
 
 Program headers can be added to the start of your program to support icon and/or
 description displaying from within Cesium.
