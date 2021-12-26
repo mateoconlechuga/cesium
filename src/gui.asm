@@ -58,6 +58,8 @@ gui_draw_core:
 	print string_cesium, 5, 7
 	bit	setting_show_battery,(iy + settings_flag)
 	ret	z
+	ld	a,(color_senary)
+	draw_rectangle_color 291, 6, 314, 15
 	call	ti.usb_IsBusPowered
 	ld	a,$e5
 	jr	nz,.draw_battery
