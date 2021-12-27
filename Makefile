@@ -64,7 +64,9 @@ release: all
 	mv $(BIN_FRENCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_FRENCH)
 	mv $(BIN_DUTCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_DUTCH)
 	cp readme.md $(RELEASE_DIR)/readme.md
+	cp icons_descriptions.md $(RELEASE_DIR)/icons_descriptions.md
 	zip -9r $(RELEASE_ZIP) $(RELEASE_DIR)
+	rm -rf  $(RELEASE_DIR)
 
 clean:
 	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(RELEASE_ZIP)
