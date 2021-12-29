@@ -261,9 +261,9 @@ string_setting_indicator:
 string_setting_list_count:
 	db	'Afficher le nombre de programmes',0
 string_setting_page1:
-	db	'Appuyer fleches <> pour changer page  ',$7e,'1 sur 2]',0
+	db	'Appuyer fl',$8A,'ches <> pour changer page  ',$7e,'1/2]',0
 string_setting_page2:
-	db	'Appuyer fleches <> pour changer page  ',$7e,'2 sur 2]',0
+	db	'Appuyer fl',$8A,'ches <> pour changer page  ',$7e,'2/2]',0
 string_setting_screen_brightness:
 	db	'Modifier la luminosit',$82,' de l',$27,$82,'cran',0
 string_setting_show_battery:
