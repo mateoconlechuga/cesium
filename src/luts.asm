@@ -58,7 +58,7 @@ lut_character_numbers:
 	db	0,0,0,0,0,0,0   		; + - × ÷ ^ undef
 	db	0,'369',0,0,0,0 		; (-) 3 6 9 ) TAN VARS undef
 	db	0,'258',0,0,0,0			; . 2 5 8 ( COS PRGM STAT
-	db	'0147',0,0,0,0,0		; 0 1 4 7 , SIN APPS XT?n undef
+	db	'0147',0,0,0,'X',0		; 0 1 4 7 , SIN APPS XT?n undef
 	db	0,0,0,0,0,0,0			; STO LN LOG x2 x-1 MATH
 
 lut_character_spacing:
