@@ -247,13 +247,6 @@ setting_enable_usb := 2
 settings_default := (1 shl setting_show_battery) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_basic_indicator)
 settings_adv_default := (1 shl setting_special_directories)
 
-; sorting flags
-
-sort_flag := $21
-sort_first_item_found := 0
-sort_first_hidden := 1
-sort_second_hidden := 2
-
 ; cesium flags
 
 cesium_flag := $21

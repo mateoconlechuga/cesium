@@ -31,39 +31,34 @@
 ;
 ; uses insertion sort to sort the vat alphabetically
 
-sort_first_item_found_ptr := ti.mpLcdCrsrImage
-sort_end_of_part_ptr := ti.mpLcdCrsrImage + 3
-sort_vat_entry_size := ti.mpLcdCrsrImage + 6
-sort_vat_entry_new_loc := ti.mpLcdCrsrImage + 9
-sort_vat_entry_temp_end := ti.mpLcdCrsrImage + 12 + 15
-
 sort_vat:
-	ld	iy,ti.flags
-	ld	a,(iy + sort_flag)
-	push	af
-	call	sort_vat_internal
-	pop	af
-	ld	(iy + sort_flag),a
-	ret
-
-sort_vat_internal:
-	res	sort_first_item_found,(iy + sort_flag)
+	ld	a,$30
+	ld	(sort_next.smc_jump),a
 	ld	hl,(ti.progPtr)
-.sort_next:
-	call	.find_next_item
+sort_next:
+	call	sort_find_next_item
 	ret	nc
 .found_item:
-	bit	sort_first_item_found,(iy + sort_flag)
-	jp	z,.first_found
+	jr	nc,.already_found_first_item
+.smc_jump := $-2
+	ld	(.smc_first_item_found_ptr),hl		; to make it only execute once
+	call	sort_skip_name
+	ld	(.smc_end_of_part_ptr),hl
+	ld	a,$18
+	ld	(sort_next.smc_jump),a
+	jr	sort_next
+.already_found_first_item:
 	push	hl
-	call	.skip_name
+	call	sort_skip_name
 	pop	de
 	push	hl					; to continue from later on
-	ld	hl,(sort_first_item_found_ptr)
+	ld	hl,0
+.smc_first_item_found_ptr := $-3
 	jr	.search_next_start			; could speed up sorted list by first checking if it's the last item (not neccessary)
 .search_next:
-	call	.skip_name
-	ld	bc,(sort_end_of_part_ptr)
+	call	sort_skip_name
+	ld	bc,0
+.smc_end_of_part_ptr := $-3
 	or	a,a					; reset carry flag
 	push	hl
 	sbc	hl,bc
@@ -74,7 +69,7 @@ sort_vat_internal:
 .search_next_start:
 	push	hl
 	push	de
-	call	.compare_names
+	call	sort_compare_names
 	pop	de
 	pop	hl
 	jr	nc,.search_next
@@ -88,8 +83,8 @@ sort_vat_internal:
 	ld	bc,6					; rewind six bytes
 	add	hl,bc					; a = number of bytes to move
 	ld	c,a					; hl -> bytes to move
-	ld	(sort_vat_entry_size),bc		; de -> move to location
-	ld	(sort_vat_entry_new_loc),de
+	ld	(.smc_vat_entry_size),bc		; de -> move to location
+	ld	(.smc_vat_entry_new_loc),de
 	push	de
 	push	hl
 	or	a,a
@@ -98,10 +93,11 @@ sort_vat_internal:
 	pop	de
 	jr	z,.no_move_needed
 	push	hl
-	ld	de,sort_vat_entry_temp_end
-	lddr						; copy entry to move to sort_vat_entry_temp_end
+	ld	de,sort_temp_entry
+	lddr						; copy entry to move to sort_temp_entry
 
-	ld	hl,(sort_vat_entry_new_loc)
+	ld	hl,0
+.smc_vat_entry_new_loc := $-3
 	pop	bc
 	push	bc
 	or	a,a
@@ -111,43 +107,30 @@ sort_vat_internal:
 	pop	hl
 	inc	hl
 	push	hl
-	ld	de,(sort_vat_entry_size)
+	ld	de,0
+.smc_vat_entry_size := $-3
 	or	a,a
 	sbc	hl,de
 	ex	de,hl
 	pop	hl
 	ldir
-
-	ld	hl,sort_vat_entry_temp_end
-	ld	bc,(sort_vat_entry_size)
-	ld	de,(sort_vat_entry_new_loc)
+	ld	hl,sort_temp_entry
+	ld	bc,(.smc_vat_entry_size)
+	ld	de,(.smc_vat_entry_new_loc)
 	lddr
-	ld	hl,(sort_end_of_part_ptr)
-	ld	bc,(sort_vat_entry_size)
+	ld	hl,(.smc_end_of_part_ptr)
+	ld	bc,(.smc_vat_entry_size)
 	or	a,a
 	sbc	hl,bc
-	ld	(sort_end_of_part_ptr),hl
+	ld	(.smc_end_of_part_ptr),hl
 	pop	hl					; pointer to continue from
-	jp	.sort_next				; to skip name and rest of entry
-
+	jp	sort_next				; to skip name and rest of entry
 .no_move_needed:
 	pop	hl
-	ld	(sort_end_of_part_ptr),hl
-	jp	.sort_next
+	ld	(.smc_end_of_part_ptr),hl
+	jp	sort_next
 
-.first_found:
-	set	sort_first_item_found,(iy + sort_flag)
-	ld	(sort_first_item_found_ptr),hl		; to make it only execute once
-	call	.skip_name
-	ld	(sort_end_of_part_ptr),hl
-	jp	.sort_next
-
-.skip_to_next:
-	ld	bc,-6
-	add	hl,bc
-	call	.skip_name
-	jp	.find_next_item				; look for next item
-.skip_name:
+sort_skip_name:
 	ld	bc,0
 	ld	c,(hl)					; number of bytes in name
 	inc	c					; to get pointer to data type byte of next entry
@@ -155,74 +138,48 @@ sort_vat_internal:
 	sbc	hl,bc
 	ret
 
-.compare_names:						; hl and de pointers to strings output=carry if de is first
-	res	sort_first_hidden,(iy + sort_flag)
-	res	sort_second_hidden,(iy + sort_flag)
-
-	dec	hl
-	dec	de
-	ld	b,64
-	ld	a,(hl)
-	cp	a,b
-	jr	nc,.first_not_hidden			; check if files are hidden
-	add	a,b
-	ld	(hl),a
-	set	sort_first_hidden,(iy + sort_flag)
-.first_not_hidden:
-	ld	a,(de)
-	cp	a,b
-	jr	nc,.second_not_hidden
-	add	a,b
-	ld	(de),a
-	set	sort_second_hidden,(iy + sort_flag)
-.second_not_hidden:
-	push	hl
-	push	de
-	inc	hl
-	inc	de
+sort_compare_names:					; hl and de pointers to strings output=carry if de is first
 	ld	b,(hl)
 	ld	a,(de)
 	ld	c,0
 	cp	a,b					; check if same length
-	jr	z,.compare_names_continue
-	jr	nc,.compare_names_continue		; b = smaller than a
+	jr	z,.hl_longer
+	jr	nc,.hl_longer				; b = smaller than a
 	inc	c					; to remember that b was larger
 	ld	b,a					; b was larger than a
-.compare_names_continue:
+.hl_longer:
+	push	bc
+	ld	b,64
+	dec	hl
+	dec	de
+	ld	a,(hl)
+	cp	a,b
+	jr	nc,.first_not_hidden			; check if files are hidden
+	add	a,b
+.first_not_hidden:
+	ld	c,a
+	ld	a,(de)
+	cp	a,b
+	jr	nc,.second_not_hidden
+	add	a,b
+.second_not_hidden:
+	cp	a,c
+	pop	bc
+	jr	.start
+.loop:
 	dec	hl
 	dec	de
 	ld	a,(de)
 	cp	a,(hl)
-	jr	nz,.match
-	djnz	.compare_names_continue
-	pop	de
-	pop	hl
-	call	.reset_hidden_flags
+.start:
+	ret	nz
+	djnz	.loop
 	dec	c
 	ret	nz
 	ccf
 	ret
-.match:
-	pop	de
-	pop	hl
-.reset_hidden_flags:
-	push	af
-	bit	sort_first_hidden,(iy + sort_flag)
-	jr	z,.first_not_hidden_check
-	ld	a,(hl)
-	sub	a,64
-	ld	(hl),a
-.first_not_hidden_check:
-	bit	sort_second_hidden,(iy + sort_flag)
-	jr	z,.second_not_hidden_check
-	ld	a,(de)
-	sub	a,64
-	ld	(de),a
-.second_not_hidden_check:
-	pop	af
-	ret
 
-.find_next_item:					; carry = found, nc = notfound
+sort_find_next_item:					; carry = found, nc = notfound
 	ex	de,hl
 	ld	hl,(ti.pTemp)
 	or	a,a					; reset carry flag
@@ -231,12 +188,17 @@ sort_vat_internal:
 	ex	de,hl					; load progptr into hl
 	ld	a,(hl)
 	and	a,$1f					; mask out state bytes
-	push	hl
-	ld	hl,sort_types
-	ld	bc,sort_types.length
-	cpir
-	pop	hl
-	jp	nz,.skip_to_next			; skip to next entry
+	cp	a,ti.ProgObj
+	jr	z,.noskip
+	cp	a,ti.ProtProgObj
+	jr	z,.noskip
+	cp	a,ti.AppVarObj
+	jr	z,.noskip
+	ld	bc,-6
+	add	hl,bc
+	call	sort_skip_name
+	jr	sort_find_next_item			; look for next item
+.noskip:
 	dec	hl					; add check for folders here if needed
 	dec	hl
 	dec	hl					; to pointer
@@ -245,10 +207,10 @@ sort_vat_internal:
 	ld	d,(hl)					; pointer now in de
 	dec	hl
 	ld	a,(hl)					; high byte now in a
-	dec	hl					; add check: do I need to sort this program (not necessary)
+	dec	hl					; add check: do I need to sort this program
 	scf
 	ret
 
-sort_types:
-	db	ti.ProgObj, ti.ProtProgObj, ti.AppVarObj
-.length := $-.
+	db	0,0,0,0,0,0,0,0
+	db	0,0,0,0,0,0,0,0
+sort_temp_entry:

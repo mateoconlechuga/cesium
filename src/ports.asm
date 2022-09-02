@@ -137,24 +137,24 @@ port_new:
 	ret
 
 port_read:
-	push	de,bc,hl
+	push	iy,de,bc,hl
 	call	port_old.read
-	jq	port_lock.pop
+	jr	port_lock.pop
 
 port_write:
-	push	de,bc,hl
+	push	iy,de,bc,hl
 	call	port_old.write
-	jq	port_lock.pop
+	jr	port_lock.pop
 
 port_unlock:
-	push	de,bc,hl
+	push	iy,de,bc,hl
 	call	0
 .code := $-3
-	jq	port_lock.pop
+	jr	port_lock.pop
 
 port_lock:
-	push	de,bc,hl
+	push	iy,de,bc,hl
 	call	port_new.lock
 .pop:
-	pop	hl,bc,de
+	pop	hl,bc,de,iy
 	ret
