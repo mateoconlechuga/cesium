@@ -127,8 +127,7 @@ hook_get_key:
 
 hook_invert_colors:
 	push	hl,de,bc
-	call	hook_port_code_copy
-	call	hooks.lcd_spi_open
+	call	ti.boot.InitializeHardware
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
@@ -142,8 +141,7 @@ hook_invert_colors:
 
 hook_uninvert_colors:
 	push	hl,de,bc
-	call	hook_port_code_copy
-	call	hooks.lcd_spi_open
+	call	ti.boot.InitializeHardware
 	ld	hl,$F80818
 	ld	(hl),h
 	ld	(hl),$44
@@ -781,42 +779,5 @@ define hooks
 namespace hooks
 	include 'ports.asm'
 	include 'flash.asm'
-lcd_spi_open:
-	call	port_unlock
-	ld	bc,7
-	call	port_read
-	set	2,a
-	call	port_write
-	ld	bc,9
-	call	port_read
-	set	2,a
-	res	4,a
-	call	port_write
-	ld	a,16
-	call	ti.DelayTenTimesAms
-	ld	bc,$D006
-	ld	a,$02
-	call	port_write
-	ld	bc,$D001
-	ld	a,$18
-	call	port_write
-	ld	bc,$D000
-	ld	a,$0B
-	call	port_write
-	ld	bc,$D004
-	ld	a,$0B
-	call	port_write
-	ld	bc,$D005
-	ld	a,$00
-	call	port_write
-	ld	bc,$D008
-	ld	a,$0C
-	call	port_write
-	ld	bc,$D009
-	ld	a,$01
-	call	port_write
-	call	port_lock
-	ld	a,16
-	jp	ti.DelayTenTimesAms
 end namespace
 end relocate
