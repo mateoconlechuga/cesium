@@ -31,15 +31,15 @@ Icon only format:
     ::DCS
     :"256 character hex string"
 
-Monochrome 8x8 icon format:
+Monochrome 8x8 icon format (no trailing double quotation mark):
 
     ::DCS
-    :"16 character hex string"
+    :"16 character hex string
 
-Monochrome 16x16 icon format:
+Monochrome 16x16 icon format (no trailing double quotation mark):
 
     ::DCS6
-    :"64 character hex string"
+    :"64 character hex string
 
 ## ICE Headers
 
