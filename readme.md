@@ -79,7 +79,7 @@ You can also delete the Cesium application from within Cesium.
 
 Clone with the following:
 
-    git clone --recurse-submodules https://github.com/mateoconlechuga/cesium.git
+    git clone https://github.com/mateoconlechuga/cesium.git
 
 Download fasmg, available near the bottom of [this page](https://flatassembler.net/download.php).
 Place fasmg in the project root or add it to the global path.
