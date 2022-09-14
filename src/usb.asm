@@ -442,10 +442,7 @@ usb_detach_only:
 	ld	iy,ti.flags
 .no_msd:
 	call	lib_usb_Cleanup
-	ld	iy,ti.flags
-	call	libload_unload
-	ld	iy,ti.flags
-	ret
+	jp	libload_unload
 
 usb_detach:						; detach the fat library hooks
 	call	usb_detach_only
@@ -585,7 +582,7 @@ fat_file_transfer_from_device:
 
 	call	ti.PushOP1
 	call	ti.ChkFindSym
-	call	nc,ti.DelVarArc
+	call	nc,ti.DelVarArc			; maybe add prompt if overwriting?
 	call	ti.PopOP1
 	ld	hl,0
 fat_file_size := $-3
@@ -607,13 +604,9 @@ fat_file_size := $-3
 	call	usb_copy_tivar
 	jr	nz,.error
 	call	ti.OP4ToOP1
-	pop	af
-	jr	nz,.notarchived
-	call	ti.ChkFindSym
-	call	cesium.Arc_Unarc
-.notarchived:
-
 	call	util_delay_one_second
+	pop	af
+	call	z,cesium.Arc_Unarc
 	jp	main_start
 
 .error:
@@ -647,18 +640,16 @@ usb_open_tivar:
 	ld	iy,ti.flags
 	pop	bc,bc,bc
 	compare_hl_zero
-	jq	nz,.error
+	jr	nz,.error
 	call	usb_directory_previous
 	ld	de,fat_sector
 	call	fat_file_read_sector		; read the first sector to get the size information
-	jq	nz,.error
+	jr	nz,.error
 	ld	hl,fat_sector + 70		; size of variable to create
 	ld	de,0
 	ld	e,(hl)
 	inc	hl
 	ld	d,(hl)
-	dec	de
-	dec	de				; remove size bytes
 	ld	(fat_file_size),de
 	ld	hl,fat_sector + 59		; name / type of variable
 	call	ti.Mov9ToOP1
@@ -667,20 +658,6 @@ usb_open_tivar:
 .error:
 	xor	a,a
 	inc	a
-	ret
-
-fat_file_read_sector:
-	push	de
-	ld	bc,1
-	push	bc
-	ld	bc,fat_file_struct
-	push	bc
-	call	lib_fat_Read
-	ld	iy,ti.flags
-	pop	bc,bc
-	pop	de
-	ld	a,l
-	dec	a
 	ret
 
 ; de -> destination
@@ -725,6 +702,20 @@ usb_copy_tivar:
 	call	fat_file_close
 	xor	a,a
 	inc	a
+	ret
+
+fat_file_read_sector:
+	push	de
+	ld	bc,1
+	push	bc
+	ld	bc,fat_file_struct
+	push	bc
+	call	lib_fat_Read
+	ld	iy,ti.flags
+	pop	bc,bc
+	pop	de
+	ld	a,l
+	dec	a
 	ret
 
 fat_file_close:

@@ -69,7 +69,6 @@ cesium.Arc_Unarc:
 	call	ti.Arc_Unarc
 	call	ti.PopErrorHandler
 data_lcd_init:
-	call	ti.boot.ClearVRAM
 	ld	a,ti.lcdBpp8
 	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ld	hl,ti.mpLcdPalette

@@ -149,6 +149,8 @@ lib_fat_Create:
 lib_fat_Delete:
 	jp	45
 
+	ld	hl,(ti.asm_prgm_size)
+	ld	(libload_unload.size),hl
 	xor	a,a		; return z (loaded)
 	pop	hl		; pop error return
 	ret
@@ -191,7 +193,22 @@ lib_fatdrvce:
 
 ; remove loaded libraries from usermem
 libload_unload:
-	jp	util_delete_prgm_from_usermem
+	ld	iy,ti.flags
+	ld	hl,0
+.size := $-3
+	compare_hl_zero
+	ret	z
+	ex	de,hl
+	ld	hl,(ti.asm_prgm_size)
+	or	a,a
+	sbc	hl,de
+	ld	(ti.asm_prgm_size),hl		; just remove libload
+	ld	hl,ti.userMem
+	call	ti.DelMem
+	or	a,a
+	sbc	hl,hl
+	ld	(.size),hl
+	ret
 
 libload_name:
 	db	ti.AppVarObj, "LibLoad", 0
