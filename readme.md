@@ -1,4 +1,4 @@
-## Cesium
+# Cesium
 
 Cesium is a shell for the TI-84 Plus CE / TI-83 Premium CE calculators.
 
@@ -12,7 +12,7 @@ installer can be used instead.
 
 A video showing off various features is available [here](https://youtu.be/hZDzV1CDN3k).
 
-### Navigation
+## Navigation
 
 Cesium supports alpha search for programs.
 Use any key with the green text above it to immediately switch to the programs
@@ -29,7 +29,7 @@ starting with the corresponding letter.
 | `arrow keys`    | Move places              |
 | `green letters` | Alpha search for program |
 
-### Shortcuts
+## Shortcuts
 
 Shortcuts are available from outside of the Cesium application:
 
@@ -47,7 +47,7 @@ Shortcuts are available from outside of the Cesium application:
 The RAM backup is performed by copying RAM contents to flash memory, so if
 you are concerned about flash wear, please moderate usage.
 
-### USB Support
+## USB Support
 
 Cesium has support for launching and transfering files on FAT32 formatted drive.
 Future additions may be added depending on reported usage and feature requets
@@ -69,13 +69,13 @@ calculator if the program does any of the following:
 To avoid crashes it is recommended to simply transfer the file with the `prgm`
 button instead.
 
-### Uninstalling
+## Uninstalling
 
 To uninstall Cesium in the event a new version is warranted, press
 `2nd` + `+` + `2` + `1` and delete the Cesium application and appvar.
 You can also delete the Cesium application from within Cesium.
 
-### Building
+## Building
 
 Clone with the following:
 
@@ -88,7 +88,7 @@ Build with the command:
 
     make -j
 
-### Bug Reports and Feature Requests
+## Bug Reports and Feature Requests
 
 Make a bug report [here](https://github.com/mateoconlechuga/cesium/issues).
 
@@ -96,7 +96,7 @@ Source code is available [here](https://github.com/mateoconlechuga/cesium).
 
 If you encounter a bug, no matter how small, please report it.
 
-#### Language Translations
+## Language Translations
 
 If you would like to add support for another language, feel free to make a PR.
 
@@ -104,8 +104,8 @@ If you would like to add support for another language, feel free to make a PR.
 
 **Dutch**: Created by Privacy_Dragon
 
-### Credits
+## Credits
 
-© 2015 - 2021 Matt "MateoConLechuga" Waltz
+© 2015 - 2022 Matt "MateoConLechuga" Waltz
 
 Licensed under BSD 3 Clause.
