@@ -31,7 +31,7 @@ starting with the corresponding letter.
 
 ### Shortcuts
 
-Shortcuts are available from outside of the Cesium application.
+Shortcuts are available from outside of the Cesium application:
 
 | Combination    | Action                                                 |
 |----------------|--------------------------------------------------------|
@@ -44,8 +44,7 @@ Shortcuts are available from outside of the Cesium application.
 | `on` + `sto->` | Activate dark mode (inverted colors)                   |
 | `on` + `ln`    | Activate normal mode (uninverted colors)               |
 
-The power-on password is set via the settings menu by pressing the `sto->`
-button. RAM backup is performed by copying RAM contents to flash memory, so if
+The RAM backup is performed by copying RAM contents to flash memory, so if
 you are concerned about flash wear, please moderate usage.
 
 ### USB Support
