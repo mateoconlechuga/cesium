@@ -39,22 +39,24 @@ sort_vat_entry_temp_end := ti.mpLcdCrsrImage + 12 + 15
 
 sort_vat:
 	ld	iy,ti.flags
-	ld	a,(iy + sort_flag)
-	push	af
-	call	sort_vat_internal
-	pop	af
-	ld	(iy + sort_flag),a
-	ret
-
-sort_vat_internal:
-	res	sort_first_item_found,(iy + sort_flag)
+	or	a,a
+	sbc	hl,hl
+	ld	(sort_first_item_found_ptr),hl
 	ld	hl,(ti.progPtr)
 .sort_next:
 	call	.find_next_item
 	ret	nc
 .found_item:
-	bit	sort_first_item_found,(iy + sort_flag)
-	jp	z,.first_found
+	push	hl
+	ld	hl,(sort_first_item_found_ptr)
+	compare_hl_zero
+	pop	hl
+	jr	nz,.not_first
+	ld	(sort_first_item_found_ptr),hl		; to make it only execute once
+	call	.skip_name
+	ld	(sort_end_of_part_ptr),hl
+	jr	.sort_next
+.not_first:
 	push	hl
 	call	.skip_name
 	pop	de
@@ -135,13 +137,6 @@ sort_vat_internal:
 	ld	(sort_end_of_part_ptr),hl
 	jp	.sort_next
 
-.first_found:
-	set	sort_first_item_found,(iy + sort_flag)
-	ld	(sort_first_item_found_ptr),hl		; to make it only execute once
-	call	.skip_name
-	ld	(sort_end_of_part_ptr),hl
-	jp	.sort_next
-
 .skip_to_next:
 	ld	bc,-6
 	add	hl,bc
@@ -156,70 +151,44 @@ sort_vat_internal:
 	ret
 
 .compare_names:						; hl and de pointers to strings output=carry if de is first
-	res	sort_first_hidden,(iy + sort_flag)
-	res	sort_second_hidden,(iy + sort_flag)
-
-	dec	hl
-	dec	de
-	ld	b,64
-	ld	a,(hl)
-	cp	a,b
-	jr	nc,.first_not_hidden			; check if files are hidden
-	add	a,b
-	ld	(hl),a
-	set	sort_first_hidden,(iy + sort_flag)
-.first_not_hidden:
-	ld	a,(de)
-	cp	a,b
-	jr	nc,.second_not_hidden
-	add	a,b
-	ld	(de),a
-	set	sort_second_hidden,(iy + sort_flag)
-.second_not_hidden:
-	push	hl
-	push	de
-	inc	hl
-	inc	de
 	ld	b,(hl)
 	ld	a,(de)
 	ld	c,0
 	cp	a,b					; check if same length
-	jr	z,.compare_names_continue
-	jr	nc,.compare_names_continue		; b = smaller than a
+	jr	z,.hl_longer
+	jr	nc,.hl_longer				; b = smaller than a
 	inc	c					; to remember that b was larger
 	ld	b,a					; b was larger than a
-.compare_names_continue:
+.hl_longer:
+	push	bc
+	ld	b,64
+	dec	hl
+	dec	de
+	ld	a,(hl)
+	cp	a,b
+	jr	nc,.first_not_hidden			; check if files are hidden
+	add	a,b
+.first_not_hidden:
+	ld	c,a
+	ld	a,(de)
+	cp	a,b
+	jr	nc,.second_not_hidden
+	add	a,b
+.second_not_hidden:
+	cp	a,c
+	pop	bc
+	jr	.start
+.loop:
 	dec	hl
 	dec	de
 	ld	a,(de)
 	cp	a,(hl)
-	jr	nz,.match
-	djnz	.compare_names_continue
-	pop	de
-	pop	hl
-	call	.reset_hidden_flags
+.start:
+	ret	nz
+	djnz	.loop
 	dec	c
 	ret	nz
 	ccf
-	ret
-.match:
-	pop	de
-	pop	hl
-.reset_hidden_flags:
-	push	af
-	bit	sort_first_hidden,(iy + sort_flag)
-	jr	z,.first_not_hidden_check
-	ld	a,(hl)
-	sub	a,64
-	ld	(hl),a
-.first_not_hidden_check:
-	bit	sort_second_hidden,(iy + sort_flag)
-	jr	z,.second_not_hidden_check
-	ld	a,(de)
-	sub	a,64
-	ld	(de),a
-.second_not_hidden_check:
-	pop	af
 	ret
 
 .find_next_item:					; carry = found, nc = notfound
