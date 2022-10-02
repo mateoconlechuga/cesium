@@ -31,21 +31,6 @@
 view_vat_items:
 	call	gui_show_item_count
 	set_normal_text
-	compare_hl_zero
-	jr	nz,.can_view
-	ld	a,(iy + settings_adv_flag)
-	and	a,(1 shl setting_special_directories) or (1 shl setting_enable_usb)
-	jr	nz,.can_view				; can't show anything
-	call	gui_draw_static_options
-	ld	hl,sprite_egg
-	draw_sprite_2x 120, 57
-	print	string_new_prgm, 199, 195
-	ld	de,287
-.no_new:
-	ld	(lcd_x),de
-	inc	hl
-	call	lcd_string
-.can_view:
 	set_cursor 24, 30
 	xor	a,a
 	sbc	hl,hl
@@ -114,6 +99,7 @@ current_prgm_drawing := $-1
 .in_ram:
 	call	ti.LoadDEInd_s
 	ld	(temp_prgm_data_ptr),hl
+	ld	(tmp_prgm_real_size),de
 	bit	drawing_selected,(iy + item_flag)
 	jr	z,.not_drawing_selected
 	ld	(prgm_data_ptr),hl
@@ -285,89 +271,84 @@ check_dcs_icon:
 	ld	hl,(temp_prgm_data_ptr)
 	ld	de,lut_dcs_icon
 	ld	b,6
-.verify_icon:
+.verify:
 	ld	a,(de)
 	cp	a,(hl)
 	inc	hl
 	inc	de
 	ret	nz
-	djnz	.verify_icon
+	djnz	.verify
 	ret
 check_dcs6_icon:
 	ld	hl,(temp_prgm_data_ptr)
 	ld	de,lut_dcs6_icon
 	ld	b,7
-	jr	check_dcs_icon.verify_icon
+	jr	check_dcs_icon.verify
 check_mos_dcs_icon:
 	ld	hl,(temp_prgm_data_ptr)
 	ld	de,lut_dcs6_icon
 	ld	b,7
-	jr	check_dcs_icon.verify_icon
+	jr	check_dcs_icon.verify
 check_description_icon:
 	ld	hl,(temp_prgm_data_ptr)
 .enter:
 	ld	de,lut_description_icon
 	ld	b,2
-	jr	check_dcs_icon.verify_icon
+	jr	check_dcs_icon.verify
 
 file_editable:
-	push	bc
-	push	de
-	push	hl
+	push	bc,de,hl
 	call	check_description_icon
 	jq	z,description_icon
 	call	check_dcs_icon
 	jr	z,.dcs_icon
 	call	check_dcs6_icon
 	jr	z,.dcs_icon
-	jr	.no_custom_icon
+	jr	.return
 .dcs_icon:
-	pop	de					; remove default icon
-	push	hl
-	ld	hl,sprite_temp+2
-	ld	(hl),224
-	push	hl
-	pop	de
-	inc	de
-	ld	bc,256-1
-	ldir
-	pop	hl
-	ld	de,sprite_temp
+	ld	de,sprite_temp				; setup new icon
 	ld	a,16
 	ld	(de),a
 	inc	de
 	ld	(de),a
-	inc	de
-	push	hl
-	push	hl					; save the size of the sprite
+
+	ld	bc,16
+	add	hl,bc
+	ld	a,(hl)
+	sbc	hl,bc
+	cp	a,ti.tString
+	jp	z,monochrome_8x8
+	cp	a,ti.tEnter
+	jp	z,monochrome_8x8
+
+	ld	bc,64
+	add	hl,bc
+	ld	a,(hl)
+	sbc	hl,bc
+	cp	a,ti.tString
+	jp	z,monochrome_16x16
+	cp	a,ti.tEnter
+	jp	z,monochrome_16x16
+
 	ld	bc,256
-	ld	a,ti.tEnter				; now determine if it is a 8x8 monochrome, 16x16 monochrome, or 16x16 color icon
-	cpir
-	pop	bc
-	or	a,a
-	sbc	hl,bc					; number of bytes read
-	ld	bc,17
-	or	a,a
+	add	hl,bc
+	ld	a,(hl)
 	sbc	hl,bc
-	add	hl,bc					; monochrome 8x8
-	jq	z,monochrome_8x8
-	ld	bc,65
-	or	a,a
-	sbc	hl,bc
-	add	hl,bc					; monochrome 16x16
-	jq	z,monochrome_16x16
-	jq	color_16x16
-.return_icon:
-	ld	hl,sprite_temp				; yay, a custom icon
-	push	hl
-.no_custom_icon:
-	pop	hl
-	pop	de
-	pop	bc
+	cp	a,ti.tString
+	jr	z,color_16x16
+	cp	a,ti.tEnter
+	jr	z,color_16x16
+
+.return:
+	pop	hl,de,bc
 	jq	draw_listed_entry
 
 color_16x16:
-	pop	hl
+	pop	bc
+	ld	de,sprite_temp				; push new icon
+	push	de
+	inc	de
+	inc	de
 	ld	b,0
 .loop:							; okay, now loop 256 times to do the squish
 	ld	a,(hl)
@@ -385,10 +366,14 @@ color_16x16:
 	inc	de
 	inc	hl
 	djnz	.loop					; collect all the values
-	jq	file_editable.return_icon
+	jq	file_editable.return
 
 monochrome_8x8:
-	pop	hl
+	pop	bc
+	ld	de,sprite_temp				; push new icon
+	push	de
+	inc	de
+	inc	de
 	ex	de,hl
 	ld	b,8
 .loop:
@@ -432,10 +417,14 @@ monochrome_8x8:
 	pop	de
 	pop	bc
 	djnz	.loop
-	jq	file_editable.return_icon
+	jq	file_editable.return
 
 monochrome_16x16:
-	pop	hl
+	pop	bc
+	ld	de,sprite_temp				; push new icon
+	push	de
+	inc	de
+	inc	de
 	ex	de,hl
 	ld	b,64
 .loop:
@@ -466,24 +455,44 @@ monochrome_16x16:
 	djnz	.inner_byte
 	pop	bc
 	djnz	.loop
-	jq	file_editable.return_icon
+	jq	file_editable.return
 
 description_icon:
+	push	hl
+	ld	hl,0
+tmp_prgm_real_size := $-3
+	dec	hl
+	ld	(.smc_prgm_real_size),hl
+	compare_hl_zero
+	pop	hl
 	ld	de,sprite_temp
+	jr	z,.done_get_icon
 	xor	a,a
 .next_token:
 	push	hl
 	push	de
 	push	af
 	ld	a,(hl)
-	cp	a,$3F
+	cp	a,ti.tEnter
 	jr	z,.done_get_icon
+	inc	hl
+	cp	a,ti.tString
+	jr	z,.done_get_icon
+	dec	hl
+	push	hl
+	ld	hl,0
+.smc_prgm_real_size := $-3
+	dec	hl
+	ld	(.smc_prgm_real_size),hl
+	compare_hl_zero
+	pop	hl
+	jr	z,.no_icon
 	call	ti.Get_Tok_Strng
 	ld	c,a
 	pop	af
 	add	a,c
 	cp	a,25
-	jr	nc,.fail
+	jr	nc,.no_icon
 	pop	de
 	pop	hl
 	push	af
@@ -500,9 +509,9 @@ description_icon:
 	pop	af
 	jr	.next_token
 .done_get_icon:
+	pop	bc,bc,bc
 	xor	a,a
 	ld	(de),a
-	pop	bc,bc,bc
 	inc	hl
 	push	hl
 	ld	hl,sprite_temp
@@ -510,11 +519,16 @@ description_icon:
 	call	nz,gui_show_description
 	pop	hl
 	call	check_description_icon.enter
-	jq	nz,file_editable.no_custom_icon
+	jq	nz,file_editable.return
 	jq	file_editable.dcs_icon
-.fail:
-	pop	bc,bc
-	jq	file_editable.no_custom_icon
+.no_icon:
+	pop	bc,bc,bc
+	xor	a,a
+	ld	(de),a
+	ld	hl,sprite_temp
+	bit	drawing_selected,(iy + item_flag)
+	call	nz,gui_show_description
+	jq	file_editable.return
 
 draw_listed_entry:
 	ld	a,(lcd_y)
