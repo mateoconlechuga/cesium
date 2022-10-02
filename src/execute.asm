@@ -94,9 +94,9 @@ execute_vat_check:
 	xor	a,a
 	ld	(return_info),a
 	bit	prgm_is_usb_directory,(iy + prgm_flag)
-	jq	nz,usb_init
+	jp	nz,usb_init
 	bit	setting_special_directories,(iy + settings_adv_flag)
-	jq	z,execute_program
+	jp	z,execute_program
 	compare_hl_zero
 	jq	nz,execute_program			; check if on directory
 	ld	a,screen_apps

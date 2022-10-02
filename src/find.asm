@@ -346,7 +346,7 @@ find_application_directory_name:
 	dl	.ptr bswap 3
 	db	0,0,$ff
 find_program_directory_name:
-	db	0,0,0,"All Programs",0
+	db	0,0,0,"Programs",0
 .ptr:
 	dl	.ptr bswap 3
 	db	0,0,4
