@@ -298,7 +298,8 @@ edit_goto := return_edit			; edit_mode
 
 ; location of variables
 
-edit_status := ti.appData
+hook_chain := ti.appData
+edit_status := hook_chain + 4
 edit_mode := edit_status + 1
 return_info := edit_mode			; yes this is right
 backup_prgm_name := edit_mode + 1

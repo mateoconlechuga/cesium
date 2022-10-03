@@ -31,13 +31,13 @@ hook_parser:
 	db	$83			; hook signifier
 	push	af
 	cp	a,2
-	jq	z,.maybe_stop
+	jr	z,.maybe_stop
 .chain:
-	ld	a,(ti.appErr2)
+	ld	a,(hook_chain)
 	cp	a,$7f
-	jq	nz,.no_chain
+	jr	nz,.no_chain
 	pop	af
-	ld	ix,(ti.appErr2 + 1)
+	ld	ix,(hook_chain + 1)
 	jp	(ix)
 .no_chain:
 	pop	af
@@ -46,11 +46,11 @@ hook_parser:
 .maybe_stop:
 	ld	a,hook_token_stop	; check if stop token
 	cp	a,b
-	jq	nz,.chain
+	jr	nz,.chain
 .stop:
 	pop	af
-	ld	a,ti.E_AppErr1
-	jq	ti.JError
+	xor	a,a			; sets ti.errNo to 0
+	jp	ti.JError
 
 hook_app_change:
 	db	$83
@@ -61,7 +61,7 @@ hook_app_change:
 	ret	nz
 	ld	a,c
 	or	a,a
-	jq	z,.close_editor
+	jr	z,.close_editor
 	cp	a,ti.cxMode
 	ret	z
 	cp	a,ti.cxFormat
@@ -686,7 +686,7 @@ hook_password:
 
 hook_chain_parser:
 	xor	a,a
-	ld	(ti.appErr2),a
+	ld	(hook_chain),a
 	bit	ti.parserHookActive,(iy + ti.hookflags4)
 	jq	z,.no_chain
 	ld	hl,(ti.parserHookPtr)
@@ -701,13 +701,13 @@ hook_chain_parser:
 	jq	nz,.no_chain
 	ex	de,hl
 	inc	de
-	ld	hl,ti.appErr2
+	ld	hl,hook_chain
 	ld	(hl),$7f
 	inc	hl
 	ld	(hl),de
 	jq	.no_chain
 .check_if_bad_exit:
-	ld	hl,ti.appErr2
+	ld	hl,hook_chain
 	ld	a,(hl)
 	cp	a,$7f
 	jq	nz,.no_chain
@@ -728,7 +728,7 @@ hook_restore_parser:
 	sbc	hl,de
 	add	hl,de
 	ret	nz
-	ld	hl,ti.appErr2
+	ld	hl,hook_chain
 	ld	a,(hl)
 	cp	a,$7f
 	jq	nz,.clear_parser
@@ -736,7 +736,7 @@ hook_restore_parser:
 	ld	hl,(hl)
 	dec	hl
 	xor	a,a
-	ld	(ti.appErr2),a
+	ld	(hook_chain),a
 	jq	ti.SetParserHook
 .clear_parser:
 	jq	ti.ClrParserHook

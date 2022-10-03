@@ -478,8 +478,8 @@ execute_show_error_screen:
 	xor	a,a
 	ld	(ti.menuCurrent),a
 	ld	a,(ti.errNo)
-	cp	a,ti.E_AppErr1
-	ret	z			; if stop token, ignore
+	or	a,a
+	ret	z
 	call	ti.boot.ClearVRAM
 	ld	a,$2d
 	ld	(ti.mpLcdCtrl),a
