@@ -49,20 +49,20 @@ dutch:
 	fasmg $(FLAGS_DUTCH) $(SRC) $(BIN_DUTCH)
 
 compress: english french dutch
-	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_ENGLISH) --output $(BIN_ENGLISH).zx7b.8xp
-	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_FRENCH) --output $(BIN_FRENCH).zx7b.8xp
-	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_DUTCH) --output $(BIN_DUTCH).zx7b.8xp
+	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_ENGLISH) -o $(BIN_ENGLISH).compressed.8xp
+	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_FRENCH) -o $(BIN_FRENCH).compressed.8xp
+	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_DUTCH) -o $(BIN_DUTCH).compressed.8xp
 
 release: all
-	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_ENGLISH) --output $(BIN_ENGLISH).zx7b.8xp
-	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_FRENCH) --output $(BIN_FRENCH).zx7b.8xp
-	convbin --oformat 8xp-auto-decompress --uppercase --name CESIUM --iformat 8x --input $(BIN_DUTCH) --output $(BIN_DUTCH).zx7b.8xp
+	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_ENGLISH) -o $(BIN_ENGLISH).compressed.8xp
+	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_FRENCH) -o $(BIN_FRENCH).compressed.8xp
+	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_DUTCH) -o $(BIN_DUTCH).compressed.8xp
 	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(RELEASE_ZIP)
 	rm -rf  $(RELEASE_DIR)
 	mkdir -p  $(RELEASE_DIR)
-	mv $(BIN_ENGLISH).zx7b.8xp $(RELEASE_DIR)/$(BIN_ENGLISH)
-	mv $(BIN_FRENCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_FRENCH)
-	mv $(BIN_DUTCH).zx7b.8xp $(RELEASE_DIR)/$(BIN_DUTCH)
+	mv $(BIN_ENGLISH).compressed.8xp $(RELEASE_DIR)/$(BIN_ENGLISH)
+	mv $(BIN_FRENCH).compressed.8xp $(RELEASE_DIR)/$(BIN_FRENCH)
+	mv $(BIN_DUTCH).compressed.8xp $(RELEASE_DIR)/$(BIN_DUTCH)
 	cp readme.md $(RELEASE_DIR)/readme.md
 	cp icons_descriptions.md $(RELEASE_DIR)/icons_descriptions.md
 	zip -9r $(RELEASE_ZIP) $(RELEASE_DIR)
