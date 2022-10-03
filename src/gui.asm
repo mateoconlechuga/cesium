@@ -59,7 +59,7 @@ gui_draw_core:
 	bit	setting_show_battery,(iy + settings_flag)
 	ret	z
 	ld	a,(color_senary)
-	draw_rectangle_color 292, 6, 314, 16
+	draw_rectangle_color 292, 6, 314, 15
 	call	ti.usb_IsBusPowered
 	ld	a,$e5
 	jr	nz,.draw_battery
@@ -70,7 +70,7 @@ battery_status := $-1
 	jr	z,.draw_battery
 	ld	a,$95
 .draw_battery:
-	draw_rectangle_outline_color 292, 5, 314, 16
+	draw_rectangle_outline_color 292, 5, 314, 15
 	ld	a,(battery_status)
 	or	a,a
 	ret	z
@@ -81,18 +81,18 @@ battery_status := $-1
 	dec	a
 	jr	z,.battery_3
 	ld	a,$25
-	draw_rectangle_color 294, 7, 297, 15
+	draw_rectangle_color 294, 7, 297, 14
 .battery_3:
 	ld	a,$25
-	draw_rectangle_color 298, 7, 301, 15
+	draw_rectangle_color 298, 7, 301, 14
 	ld	a,$25
-	draw_rectangle_color 302, 7, 305, 15
+	draw_rectangle_color 302, 7, 305, 14
 .battery_2:
 	ld	a,$25
-	draw_rectangle_color 306, 7, 309, 15
+	draw_rectangle_color 306, 7, 309, 14
 .battery_1:
 	ld	a,$25
-	draw_rectangle_color 310, 7, 313, 15
+	draw_rectangle_color 310, 7, 313, 14
 	ret
 
 gui_draw_cesium_info:
