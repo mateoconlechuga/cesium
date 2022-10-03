@@ -59,7 +59,7 @@ gui_draw_core:
 	bit	setting_show_battery,(iy + settings_flag)
 	ret	z
 	ld	a,(color_senary)
-	draw_rectangle_color 291, 6, 314, 15
+	draw_rectangle_color 292, 6, 314, 16
 	call	ti.usb_IsBusPowered
 	ld	a,$e5
 	jr	nz,.draw_battery
@@ -70,18 +70,7 @@ battery_status := $-1
 	jr	z,.draw_battery
 	ld	a,$95
 .draw_battery:
-	draw_rectangle_outline_color 290, 5, 314, 15
-	draw_vert 289, 7, 7
-	draw_vert 288, 9, 3
-	ld	(vRamBuffer + (291) + (320*6)),a
-	ld	(vRamBuffer + (291) + (320*14)),a
-	ld	(vRamBuffer + (313) + (320*6)),a
-	ld	(vRamBuffer + (313) + (320*14)),a
-	ld	a,(color_secondary)
-	ld	(vRamBuffer + (290) + (320*5)),a
-	ld	(vRamBuffer + (290) + (320*15)),a
-	ld	(vRamBuffer + (314) + (320*5)),a
-	ld	(vRamBuffer + (314) + (320*15)),a
+	draw_rectangle_outline_color 292, 5, 314, 16
 	ld	a,(battery_status)
 	or	a,a
 	ret	z
@@ -92,22 +81,18 @@ battery_status := $-1
 	dec	a
 	jr	z,.battery_3
 	ld	a,$25
-	draw_vert 292, 8, 5
-	ld	a,$25
-	draw_rectangle_color 293, 7, 295 + 1, 13 + 1
+	draw_rectangle_color 294, 7, 297, 15
 .battery_3:
 	ld	a,$25
-	draw_rectangle_color 297, 7, 299 + 1, 13 + 1
+	draw_rectangle_color 298, 7, 301, 15
 	ld	a,$25
-	draw_rectangle_color 301, 7, 303 + 1, 13 + 1
+	draw_rectangle_color 302, 7, 305, 15
 .battery_2:
 	ld	a,$25
-	draw_rectangle_color 305, 7, 307 + 1, 13 + 1
+	draw_rectangle_color 306, 7, 309, 15
 .battery_1:
 	ld	a,$25
-	draw_rectangle_color 309, 7, 311 + 1, 13 + 1
-	ld	a,$25
-	draw_vert 312, 8, 5
+	draw_rectangle_color 310, 7, 313, 15
 	ret
 
 gui_draw_cesium_info:
