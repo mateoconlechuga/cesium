@@ -157,8 +157,7 @@ relocate edit_helper, ti.cursorImage + 256
 	compare_hl_de
 	jr	nz,.goto_end
 
-	ld	bc,0
-error_offset := $-3
+	ld	bc,(error_offset)
 	call	ti.ChkBCIs0
 	jr	z,.goto_end
 	ld	hl,(ti.editTail)

@@ -328,6 +328,7 @@ prgm_real_size := prgm_size + 3
 prgm_type := prgm_real_size + 3
 item_ptr := prgm_type + 1;
 number_of_items := item_ptr + 3
+error_offset := number_of_items + 3
 
 sprite_temp := ti.mpLcdCrsrImage
 string_temp := ti.mpLcdCrsrImage
