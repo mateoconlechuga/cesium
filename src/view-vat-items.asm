@@ -269,6 +269,7 @@ temp_prgm_data_ptr := $-3
 
 check_dcs_icon:
 	ld	hl,(temp_prgm_data_ptr)
+.enter:
 	ld	de,lut_dcs_icon
 	ld	b,6
 .verify:
@@ -281,11 +282,13 @@ check_dcs_icon:
 	ret
 check_dcs6_icon:
 	ld	hl,(temp_prgm_data_ptr)
+.enter:
 	ld	de,lut_dcs6_icon
 	ld	b,7
 	jr	check_dcs_icon.verify
 check_mos_dcs_icon:
 	ld	hl,(temp_prgm_data_ptr)
+.enter:
 	ld	de,lut_dcs6_icon
 	ld	b,7
 	jr	check_dcs_icon.verify
@@ -457,6 +460,7 @@ monochrome_16x16:
 	djnz	.loop
 	jq	file_editable.return
 
+description_temp := sprite_temp
 description_icon:
 	push	hl
 	ld	hl,0
@@ -465,7 +469,7 @@ tmp_prgm_real_size := $-3
 	ld	(.smc_prgm_real_size),hl
 	compare_hl_zero
 	pop	hl
-	ld	de,sprite_temp
+	ld	de,description_temp
 	jr	z,.done_get_icon
 	xor	a,a
 .next_token:
@@ -475,6 +479,8 @@ tmp_prgm_real_size := $-3
 	ld	a,(hl)
 	cp	a,ti.tEnter
 	jr	z,.done_get_icon
+	cp	a,ti.tStore
+	jr	z,.done_with_store
 	inc	hl
 	cp	a,ti.tString
 	jr	z,.done_get_icon
@@ -491,8 +497,7 @@ tmp_prgm_real_size := $-3
 	ld	c,a
 	pop	af
 	add	a,c
-	cp	a,25
-	jr	nc,.no_icon
+	cp	a,35
 	pop	de
 	pop	hl
 	push	af
@@ -502,30 +507,57 @@ tmp_prgm_real_size := $-3
 	inc	hl
 .not2byte:
 	inc	hl
+	pop	af
+	jr	nc,.next_token		; don't append if over size
 	push	hl
 	ld	hl,ti.OP3
 	ldir
 	pop	hl
-	pop	af
 	jr	.next_token
 .done_get_icon:
-	pop	bc,bc,bc
+	pop	bc,de,bc
+.done_get_icon_pop:
 	xor	a,a
 	ld	(de),a
 	inc	hl
 	push	hl
-	ld	hl,sprite_temp
+	ld	hl,description_temp
 	bit	drawing_selected,(iy + item_flag)
 	call	nz,gui_show_description
 	pop	hl
+	ld	(.smc_icon_ptr),hl
+	call	check_dcs_icon.enter
+	jp	z,file_editable.dcs_icon
+	ld	hl,0
+.smc_icon_ptr := $-3
+	call	check_dcs6_icon.enter
+	jp	z,file_editable.dcs_icon
+	ld	hl,(.smc_icon_ptr)
 	call	check_description_icon.enter
-	jq	nz,file_editable.return
-	jq	file_editable.dcs_icon
+	jp	z,file_editable.dcs_icon
+	jp	file_editable.return
+.done_with_store:
+	pop	bc,de,hl
+.store_loop:
+	ld	a,(hl)
+	cp	a,ti.tEnter
+	jr	z,.done_get_icon_pop
+	inc	hl
+	push	hl
+	ld	hl,(.smc_prgm_real_size)
+	compare_hl_zero
+	jr	z,.no_icon_end
+	dec	hl
+	ld	(.smc_prgm_real_size),hl
+	pop	hl
+	jr	.store_loop
 .no_icon:
-	pop	bc,bc,bc
+	pop	bc,de
+.no_icon_end:
+	pop	bc
 	xor	a,a
 	ld	(de),a
-	ld	hl,sprite_temp
+	ld	hl,description_temp
 	bit	drawing_selected,(iy + item_flag)
 	call	nz,gui_show_description
 	jq	file_editable.return
