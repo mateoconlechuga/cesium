@@ -31,7 +31,7 @@ starting with the corresponding letter.
 
 ## Shortcuts
 
-Shortcuts are available from outside the Cesium application:
+Shortcuts are available from outside the Cesium application.
 
 | Combination    | Action                                                 |
 |----------------|--------------------------------------------------------|
