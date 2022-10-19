@@ -6,7 +6,7 @@ Cesium is a shell for the TI-84 Plus CE / TI-83 Premium CE calculators.
 ![screenshot apps](https://github.com/mateoconlechuga/cesium/blob/master/screenshots/screenshot_app.png?raw=true)
 
 Cesium is installed by running the `CESIUM` program.
-This creates an application that can accessed via the `apps` button.
+This creates an application that can be accessed via the `apps` button.
 The application cannot be transferred to other calculators, however the
 installer can be used instead.
 
