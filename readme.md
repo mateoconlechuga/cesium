@@ -50,7 +50,7 @@ you are concerned about flash wear, please moderate usage.
 ## USB Support
 
 Cesium has support for launching and transfering files on FAT32 formatted drive.
-Future additions may be added depending on reported usage and feature requets
+Future additions may be added depending on reported usage and feature requests
 in the issues board on GitHub.
 
 To transfer a variable from the drive to the calculator, use the `prgm` button.
@@ -72,7 +72,7 @@ button instead.
 ## Uninstalling
 
 To uninstall Cesium in the event a new version is warranted, press
-`2nd` + `+` + `2` + `1` and delete the Cesium application and appvar.
+`2nd` + `+` + `2` + `1` and delete the Cesium application and AppVar.
 You can also delete the Cesium application from within Cesium.
 
 ## Building
