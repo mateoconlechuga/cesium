@@ -17,14 +17,14 @@ The '0' character indicates a transparent color in the following hex strings.
 I recommend using TIFreak's icon creator, available at the following URL:
 https://www.ticalc.org/archives/files/fileinfo/460/46035.html
 
-    ::"Description                   (no closing quote)
+    ::"Description
     ::"256 character hex string"
 
 Additional icons and description formats are as follows:
 
 Description only format:
 
-    ::"Description                   (no closing quote)
+    ::"Description
 
 Icon only format:
 
