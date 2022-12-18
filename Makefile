@@ -72,4 +72,4 @@ clean:
 	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(RELEASE_ZIP)
 	rm -rf  $(RELEASE_DIR)
 
-.PHONY: all english french dutch clean release
+.PHONY: all english french dutch compress clean release

@@ -43,7 +43,7 @@ libload_load:
 	ld	hl,lib_msddrvce
 	ld	bc,lib_msddrvce.size
 	ldir
-	ld	a,$c0
+	ld	a,$C0
 	ld	(libload_libload),a
 	ld	(libload_usbdrvce),a
 	ld	(libload_msddrvce),a
@@ -99,7 +99,7 @@ lib_usb_ResetDevice:
 
 ; msddrvce library functions
 libload_msddrvce:
-	db	$C0,"MSDDRVCE",0,0
+	db	$C0,"MSDDRVCE",0,1
 
 lib_msddrvce_tbl:
 lib_msd_Open:
@@ -117,37 +117,43 @@ lib_msd_FindPartitions:
 
 ; fatdrvce library functions
 libload_fatdrvce:
-	db	$C0,"FATDRVCE",0,0
+	db	$C0,"FATDRVCE",0,2
 
 lib_fatdrvce_tbl:
-lib_fat_Init:
-	jp	0
-lib_fat_Deinit:
-	jp	3
-lib_fat_DirList:
-	jp	6
 lib_fat_Open:
-	jp	12
+	jp	0
 lib_fat_Close:
+	jp	3
+lib_fat_OpenDir:
+	jp	6
+lib_fat_ReadDir:
+	jp	9
+lib_fat_CloseDir:
+	jp	12
+lib_fat_OpenFile:
 	jp	15
-lib_fat_SetSize:
+lib_fat_CloseFile:
 	jp	18
-lib_fat_SetAttrib:
+lib_fat_SetFileSize:
+	jp	21
+lib_fat_GetFileSize:
 	jp	24
-lib_fat_GetAttrib:
+lib_fat_SetAttrib:
 	jp	27
-lib_fat_SetPos:
+lib_fat_GetAttrib:
 	jp	30
-lib_fat_GetPos:
+lib_fat_SetFileBlockOffset:
 	jp	33
-lib_fat_Read:
+lib_fat_GetFileBlockOffset:
 	jp	36
-lib_fat_Write:
+lib_fat_ReadFile:
 	jp	39
-lib_fat_Create:
+lib_fat_WriteFile:
 	jp	42
-lib_fat_Delete:
+lib_fat_Create:
 	jp	45
+lib_fat_Delete:
+	jp	48
 
 	ld	hl,(ti.asm_prgm_size)
 	ld	(libload_unload.size),hl
@@ -178,9 +184,11 @@ lib_fatdrvce:
 	jp	0
 	jp	3
 	jp	6
+	jp	9
 	jp	12
 	jp	15
 	jp	18
+	jp	21
 	jp	24
 	jp	27
 	jp	30
@@ -189,6 +197,7 @@ lib_fatdrvce:
 	jp	39
 	jp	42
 	jp	45
+	jp	48
 .size := $ - lib_fatdrvce
 
 ; remove loaded libraries from usermem

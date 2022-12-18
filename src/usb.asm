@@ -42,7 +42,9 @@ msd_partitions:
 	rb	8*10
 
 fat_struct:
-	rb	1041
+	rb	768
+fat_dir_struct:
+	rb	32
 fat_file_struct:
 	rb	64
 fat_path:
@@ -217,22 +219,24 @@ usb_selection := $ - 1
 	ld	h,8					; partition structure is 8 bytes
 	mlt	hl
 	ld	bc,msd_partitions
-	add	hl,bc					; pointer to first (4 bytes) then last (4 bytes)
-	ld	iy,fat_struct
-	lea	de,iy + 9
-	ld	bc,8
-	ldir
-	ld	hl,lib_msd_Read
-	ld	(iy + 0),hl				; read
-	ld	hl,lib_msd_Write
-	ld	(iy + 3),hl				; write
+	add	hl,bc					; pointer to first lba (4 bytes)
+	ld	de,(hl)
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	hl,(hl)
+	push	hl
+	push	de
 	ld	hl,msd_struct
-	ld	(iy + 6),hl				; usr
-	ld	iy,ti.flags
-	ld	bc,fat_struct
-	push	bc
-	call	lib_fat_Init
-	pop	bc
+	push	hl
+	ld	hl,lib_msd_Write
+	push	hl
+	ld	hl,lib_msd_Read
+	push	hl
+	ld	hl,fat_struct
+	push	hl
+	call	lib_fat_Open
+	pop	bc, bc, bc, bc, bc, bc
 	ld	iy,ti.flags
 	compare_hl_zero
 	jr	z,.fat_init_completed
@@ -288,52 +292,48 @@ fat_get_directory_listing:
 	jr	nz,.notroot				; if at root show exit directory
 
 .notroot:
-	ld	bc,0					; don't skip any
-	push	bc
-	ld	b,2					; allow for maximum of 512 directories
-	push	bc
-	ld	bc,item_location_base			; place to store
-	push	bc
-	ld	bc,1					; get directories first
+	ld	bc,fat_dir_struct
 	push	bc
 	ld	bc,fat_path				; path
 	push	bc
 	ld	bc,fat_struct				; global fat state
 	push	bc
-	call	lib_fat_DirList
+	call	lib_fat_OpenDir
 	ld	iy,ti.flags
-	pop	bc,bc,bc,bc,bc,bc
-	inc	hl
+	pop	bc, bc, bc
 	compare_hl_zero
-	dec	hl
-	jq	z,.error
-	ld	(number_of_items),hl
+	jq	nz,.error
+	ld	hl,(number_of_items)
+.loop:
 	ld	bc,18					; each entry is 18 bytes
 	call	ti._imulu
 	ld	de,item_location_base
 	add	hl,de
-.find_files:
-	ld	bc,0					; don't skip any
-	push	bc
-	ld	b,3					; allow for maximum of 768 files
-	push	bc
 	push	hl
-	ld	c,0					; get files
+	push	hl
+	ld	bc,fat_dir_struct
 	push	bc
-	ld	bc,fat_path				; path
-	push	bc
-	ld	bc,fat_struct				; global fat state
-	push	bc
-	call	lib_fat_DirList
+	call	lib_fat_ReadDir
 	ld	iy,ti.flags
-	pop	bc,bc,bc,bc,bc,bc
-	inc	hl
+	pop	bc, bc
 	compare_hl_zero
-	dec	hl
-	jq	z,.error
-	ld	bc,(number_of_items)
-	add	hl,bc
-	ld	(number_of_items),hl			; number of items in directory
+	pop	hl
+	jq	nz,.error
+	ld	a,(hl)					; check if name[0] = 0
+	or	a,a
+	jr	z,.return
+	ld	hl,(number_of_items)
+	inc	hl
+	ld	(number_of_items),hl
+	ld	de,768
+	compare_hl_de
+	jr	nz,.loop
+.return:
+	ld	bc,fat_dir_struct
+	push	bc
+	call	lib_fat_CloseDir
+	ld	iy,ti.flags
+	pop	bc
 	ret
 .error:
 	xor	a,a
@@ -428,9 +428,9 @@ usb_detach_only:
 	jr	z,.no_fat
 	ld	bc,fat_struct
 	push	bc
-	call	lib_fat_Deinit
-	pop	bc
+	call	lib_fat_Close
 	ld	iy,ti.flags
+	pop	bc
 .no_fat:
 	ld	a,(msd_enabled)
 	or	a,a
@@ -438,10 +438,11 @@ usb_detach_only:
 	ld	bc,msd_struct
 	push	bc
 	call	lib_msd_Close
-	pop	bc
 	ld	iy,ti.flags
+	pop	bc
 .no_msd:
 	call	lib_usb_Cleanup
+	ld	iy,ti.flags
 	jp	libload_unload
 
 usb_detach:						; detach the fat library hooks
@@ -630,15 +631,17 @@ usb_open_tivar:
 	ld	hl,(item_ptr)
 .entry:
 	call	usb_append_fat_path
+	ld	bc,fat_file_struct
+	push	bc
+	ld	bc,0
+	push	bc
 	ld	bc,fat_path
 	push	bc
 	ld	bc,fat_struct
 	push	bc
-	ld	bc,fat_file_struct
-	push	bc
-	call	lib_fat_Open
+	call	lib_fat_OpenFile
 	ld	iy,ti.flags
-	pop	bc,bc,bc
+	pop	bc,bc,bc,bc
 	compare_hl_zero
 	jr	nz,.error
 	call	usb_directory_previous
@@ -710,7 +713,7 @@ fat_file_read_sector:
 	push	bc
 	ld	bc,fat_file_struct
 	push	bc
-	call	lib_fat_Read
+	call	lib_fat_ReadFile
 	ld	iy,ti.flags
 	pop	bc,bc
 	pop	de
@@ -721,7 +724,7 @@ fat_file_read_sector:
 fat_file_close:
 	ld	bc,fat_file_struct
 	push	bc
-	call	lib_fat_Close
+	call	lib_fat_CloseFile
 	ld	iy,ti.flags
 	pop	bc
 	ret

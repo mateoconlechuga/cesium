@@ -245,7 +245,7 @@ setting_list_count := 1
 setting_enable_usb := 2
 
 settings_default := (1 shl setting_show_battery) or (1 shl setting_enable_shortcuts) or (1 shl setting_delete_confirm) or (1 shl setting_basic_indicator)
-settings_adv_default := (1 shl setting_special_directories)
+settings_adv_default := (1 shl setting_special_directories) or (1 shl setting_enable_usb)
 
 ; cesium flags
 
