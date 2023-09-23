@@ -69,8 +69,9 @@ cesium.Arc_Unarc:
 	call	ti.Arc_Unarc
 	call	ti.PopErrorHandler
 data_lcd_init:
-	ld	a,ti.lcdBpp8
-	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
+	call	ti.RunIndicOff
+	di					; turn off indicator
+	call	ti.boot.ClearVRAM
 	ld	hl,ti.mpLcdPalette
 	ld	b,0
 .loop:
@@ -90,6 +91,12 @@ data_lcd_init:
 	inc	b
 	jr	nz,.loop
 	pop	af
+	ld	hl,ti.vRam
+	ld	bc,((ti.lcdWidth * ti.lcdHeight) * 2) + 0
+	ld	a,0xff
+	call	ti.MemSet
+	ld	a,ti.lcdBpp8
+	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ret
 
 data_cesium_appvar:

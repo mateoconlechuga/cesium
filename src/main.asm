@@ -41,8 +41,10 @@ main_cesium:
 	call	ti.ClrScrn
 	jq	ti.HomeUp
 .okay:
-	call	lcd_init
 	call	main_init
+	call	settings_load
+	call	lcd_init
+	jr	main_find
 main_settings:
 	call	settings_load
 main_find:

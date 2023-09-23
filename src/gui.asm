@@ -27,7 +27,6 @@
 ; POSSIBILITY OF SUCH DAMAGE.
 
 gui_main:
-	call	lcd_init.setup
 	call	gui_draw_core
 	call	gui_information_box
 	ld	a,(current_screen)

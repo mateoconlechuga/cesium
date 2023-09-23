@@ -31,10 +31,8 @@
 lcd_init:
 	call	ti.RunIndicOff
 	di					; turn off indicator
-	call	lcd_clear
+	call	ti.boot.ClearVRAM
 .setup:
-	ld	a,ti.lcdBpp8
-	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ld	hl,ti.mpLcdPalette
 	ld	b,0
 .loop:
@@ -53,6 +51,9 @@ lcd_init:
 	inc	hl
 	inc	b
 	jr	nz,.loop
+    call	lcd_clear
+	ld	a,ti.lcdBpp8
+	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ret
 
 lcd_normal:
