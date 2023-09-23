@@ -51,7 +51,7 @@ lcd_init:
 	inc	hl
 	inc	b
 	jr	nz,.loop
-    call	lcd_clear
+	call	lcd_clear
 	ld	a,ti.lcdBpp8
 	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ret
