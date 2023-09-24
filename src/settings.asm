@@ -117,9 +117,7 @@ settings_save:
 	ld	a,(iy + settings_flag)
 	ld	(setting_config),a
 	ld	a,(iy + settings_adv_flag)
-	and	a,(1 shl setting_special_directories) or \
-                  (1 shl setting_enable_usb) or \
-                  (1 shl setting_list_count)
+	and	a,(1 shl setting_special_directories) or (1 shl setting_enable_usb) or (1 shl setting_list_count)
 	ld	(setting_adv_config),a
 	ld	hl,settings_appvar
 	call	util_find_var
@@ -257,17 +255,23 @@ setting_left:
 	jq	z,setting_brightness_down
 	jq	settings_switch_page
 
-setting_brightness_down:
-	call	setting_brightness_get
-	sub	a,b
-	ld	(hl),a
-	ret
-
 setting_right:
 	ld	a,(ix)
 	cp	a,8
 	jq	z,setting_brightness_up
 	jq	settings_switch_page
+
+setting_brightness_down:
+	call	setting_brightness_get
+	add	a,b
+	ld	(hl),a
+	ret
+
+setting_brightness_up:
+	call	setting_brightness_get
+	sub	a,b
+	ld	(hl),a
+	ret
 
 settings_switch_page:
 	ld	a,(settings_page)
@@ -275,12 +279,6 @@ settings_switch_page:
 	ld	(settings_page),a
 	xor	a,a
 	ld	(current_option_selection),a
-	ret
-
-setting_brightness_up:
-	call	setting_brightness_get
-	add	a,b
-	ld	(hl),a
 	ret
 
 setting_brightness_get:
@@ -473,6 +471,17 @@ setting_draw_options:
 	print	string_setting_delete_confirm, 25, 189
 	print	string_setting_screen_brightness, 25, 209
 
+	ld	hl,settings_arrow_left
+	call	lcd_string
+	ld	a,(ti.mpBlLevel)
+	cpl
+	or	a,a
+	sbc	hl,hl
+	ld	l,a
+	call	lcd_num_3
+	ld	hl,settings_arrow_right
+	call	lcd_string
+
 	draw_highlighted_option 10, 48, 0
 	bit	setting_basic_indicator,(iy + settings_flag)
 	draw_highlightable_option 10, 68, 1
@@ -490,6 +499,12 @@ setting_draw_options:
 	draw_highlightable_option 10, 188, 7
 	draw_highlighted_option 10, 208, 8
 	ret
+
+settings_arrow_left:
+	db	" <",0
+
+settings_arrow_right:
+	db	">",0
 
 settings_set_prgm_editor:
 	pop	hl				; not returning to loop
