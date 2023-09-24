@@ -106,6 +106,6 @@ If you would like to add support for another language, feel free to make a PR.
 
 ## Credits
 
-© 2015 - 2022 Matt "MateoConLechuga" Waltz
+© 2015 - 2023 Matt "MateoConLechuga" Waltz
 
 Licensed under BSD 3 Clause.
