@@ -27,8 +27,26 @@
 ; POSSIBILITY OF SUCH DAMAGE.
 
 	jp	installer_start
-
-	db byte_description, 'Cesium Installer Version ', cesium_version, 0
+; icon
+	db	$01
+	db	$10, $10
+	db	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $20, $20, $20, $20, $FF, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $20, $20, $20, $20, $20, $44, $6D, $6D, $44, $20, $20, $FF, $FF, $FF
+	db	$FF, $20, $23, $44, $6D, $23, $23, $20, $23, $23, $6D, $44, $44, $20, $FF, $FF
+	db	$FF, $20, $6D, $23, $23, $44, $6D, $44, $44, $23, $23, $6D, $44, $44, $20, $FF
+	db	$20, $23, $23, $44, $44, $6D, $6D, $6D, $44, $44, $23, $23, $23, $20, $20, $FF
+	db	$20, $20, $44, $44, $44, $6D, $CE, $6D, $6D, $23, $44, $44, $44, $6D, $20, $FF
+	db	$20, $23, $44, $6D, $44, $6D, $6D, $8E, $6D, $44, $44, $6D, $6D, $23, $44, $20
+	db	$20, $23, $CE, $6D, $6D, $44, $6D, $8E, $6D, $6D, $8E, $6D, $23, $6D, $6D, $20
+	db	$20, $44, $6D, $8E, $6D, $44, $6D, $CE, $8E, $CE, $6D, $44, $6D, $CE, $6D, $20
+	db	$20, $23, $44, $CE, $6D, $6D, $8E, $CE, $6D, $6D, $44, $6D, $8E, $6D, $44, $20
+	db	$FF, $20, $23, $44, $CE, $6D, $8E, $F7, $6D, $44, $6D, $CE, $6D, $8E, $20, $FF
+	db	$FF, $20, $A5, $23, $44, $F7, $8E, $F7, $6D, $44, $F7, $8E, $8E, $A5, $20, $FF
+	db	$FF, $FF, $20, $A5, $CE, $F7, $CE, $F7, $CE, $CE, $F7, $CE, $A5, $20, $FF, $FF
+	db	$FF, $FF, $FF, $20, $A5, $CE, $F7, $CE, $F7, $CE, $A5, $A5, $20, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $20, $A5, $A5, $A5, $A5, $A5, $20, $20, $FF, $FF, $FF, $FF
+	db	$FF, $FF, $FF, $FF, $FF, $20, $20, $20, $20, $20, $FF, $FF, $FF, $FF, $FF, $FF
+	db	'Cesium Installer Version ', cesium_version, 0
 
 installer_start:
 	call	.clear_screen

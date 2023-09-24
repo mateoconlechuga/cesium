@@ -69,11 +69,16 @@ hook_app_change:
 	cp	a,ti.cxTableSet
 	ret	z
 	call	.close_editor
-	ld	a,return_prgm
+	ld	a,return_edit
 	ld	(return_info),a
 	jp	cesium_start
 .close_editor:
 	push	af, bc, hl
+	ld	hl,(backup_app_change_hook_location)
+	ld	(ti.appChangeHookPtr),hl
+	or	a,a
+	sbc	hl,de
+	call	z,ti.ClrAppChangeHook
 	call	ti.CursorOff
 	call	ti.CloseEditEqu
 	call	ti.PopOP1
@@ -83,6 +88,7 @@ hook_app_change:
 	or	a,a
 	call	nz,cesium.Arc_Unarc
 .noarc:
+	call	cesium_cleanup
 	pop	hl, bc, af
 	ret
 

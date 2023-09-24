@@ -121,6 +121,8 @@ edit_basic_program:
 	ld	(edit_status),a
 	call	cesium.Arc_Unarc
 .not_archived:
+	ld	hl,(ti.appChangeHookPtr)
+	ld	(backup_app_change_hook_location),hl
 	ld	hl,hook_app_change
 	call	ti.SetAppChangeHook
 	call	util_setup_shortcuts
@@ -129,6 +131,7 @@ edit_basic_program:
 	call	ti.CursorOff
 	call	ti.RunIndicOff
 	call	lcd_normal
+	call	ti.DrawStatusBar
 	ld	hl,string_temp			; contains OP1
 	push	hl
 	ld	de,ti.progToEdit

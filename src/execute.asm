@@ -177,8 +177,9 @@ execute_usb_program:
 execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
-	call	lcd_normal
-	call	ti.ClrAppChangeHook
+	call	execute_prepare
+	call	ti.EnableAPD
+	call	ti.ClrHomescreenHook
 	call	util_setup_shortcuts
 	res	ti.useTokensInString,(iy + ti.clockFlags)
 	res	ti.onInterrupt,(iy + ti.onFlags)
@@ -391,7 +392,6 @@ execute_quit:
 	ld	(return_info),a
 	call	ti.ReloadAppEntryVecs
 	call	ti.ClrHomescreenHook
-	call	ti.ClrAppChangeHook
 	call	ti.ForceFullScreen
 	call	hook_restore_parser
 	ld	de,(ti.asm_prgm_size)
@@ -425,26 +425,15 @@ execute_hook:
 	ld	(ti.cxCurApp),a
 	ret
 
-execute_setup_vectors:
+execute_prepare:
 	call	lcd_normal
-	xor	a,a
-	ld	(ti.appErr1),a
-	ld	(ti.kbdGetKy),a
-	ld	hl,execute_hook
-	call	ti.SetHomescreenHook
+	call	ti.DrawStatusBar
+	jp	cesium_cleanup
+
+execute_setup_vectors:
+	call	execute_prepare
 	ld	hl,execute_vectors
 	call	ti.AppInit
-	call	ti.ForceFullScreen
-	call	ti.ClrScrn
-	call	ti.HomeUp
-	ld	hl,ti.pixelShadow
-	ld	bc,8400 * 3
-	call	ti.MemClear
-	call	ti.ClrTxtShd
-	ld	hl,ti.textShadow
-	ld	de,ti.cmdShadow
-	ld	bc,$104
-	ldir
 	ld	hl,execute_error
 	jp	ti.PushErrorHandler
 

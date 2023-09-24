@@ -99,6 +99,23 @@ data_lcd_init:
 	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
 	ret
 
+cesium_cleanup:
+	ld	a,$25
+	ld	($D02687),a
+	xor	a,a
+	ld	(ti.menuCurrent),a
+	ld	(ti.appErr1),a
+	ld	(ti.kbdGetKy),a
+	ld	hl,ti.textShadow
+	ld	de,ti.cmdShadow
+	ld	bc,$104
+	ldir
+	ld	hl,ti.pixelShadow
+	ld	bc,8400 * 3
+	call	ti.MemClear
+    call	ti.ForceFullScreen
+	jp	ti.ClrWindow
+
 data_cesium_appvar:
 	db	ti.AppVarObj
 data_string_cesium_name:

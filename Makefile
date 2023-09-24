@@ -39,6 +39,9 @@ RELEASE_ZIP := cesium.zip
 
 all: english french dutch
 
+icon:
+	convimg --icon icon.png --icon-output icon.asm --icon-format asm
+
 english:
 	fasmg $(FLAGS_ENGLISH) $(SRC) $(BIN_ENGLISH)
 

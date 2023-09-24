@@ -63,7 +63,7 @@ lcd_normal:
 	call	ti.MemSet
 	ld	a,$2d
 	ld	(ti.mpLcdCtrl),a
-	jp	ti.DrawStatusBar
+	ret
 
 lcd_clear:
 	ld	hl,ti.vRam
