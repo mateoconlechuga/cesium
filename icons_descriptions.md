@@ -15,7 +15,7 @@ TI-BASIC programs can have custom icons and descriptions.
 The '0' character indicates a transparent color in the following hex strings.
 
 I recommend using TIFreak's icon creator, available at the following URL:
-https://www.ticalc.org/archives/files/fileinfo/460/46035.html
+https://www.ticalc.org/archives/files/fileinfo/455/45564.html
 
     ::"Description
     ::"256 character hex string"
