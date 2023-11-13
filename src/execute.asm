@@ -177,10 +177,10 @@ execute_usb_program:
 execute_app:
 	bit	setting_ram_backup,(iy + settings_flag)
 	call	nz,flash_clear_backup
-	call	execute_prepare
-	call	ti.EnableAPD
 	call	ti.ClrHomescreenHook
 	call	util_setup_shortcuts
+	call	execute_prepare
+	call	ti.EnableAPD
 	res	ti.useTokensInString,(iy + ti.clockFlags)
 	res	ti.onInterrupt,(iy + ti.onFlags)
 	set	ti.graphDraw,(iy + ti.graphFlags)
