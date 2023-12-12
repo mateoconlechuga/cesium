@@ -33,27 +33,29 @@ lcd_init:
 	di					; turn off indicator
 	call	ti.boot.ClearVRAM
 .setup:
-	ld	hl,ti.mpLcdPalette
-	ld	b,0
+	ld	de,ti.mpLcdPalette	; address of mmio palette
+	ld	b,e			; b = 0
 .loop:
-	ld	d,b
 	ld	a,b
-	and	a,192
-	srl	d
+	rrca
+	xor	a,b
+	and	a,224
+	xor	a,b
+	ld	(de),a
+	inc	de
+	ld	a,b
+	rla
+	rla
+	rla
+	ld	a,b
 	rra
-	ld	e,a
-	ld	a,31
-	and	a,b
-	or	a,e
-	ld	(hl),a
-	inc	hl
-	ld	(hl),d
-	inc	hl
+	ld	(de),a
+	inc	de
 	inc	b
-	jr	nz,.loop
+	jr	nz,.loop		; loop for 256 times to fill palette
 	call	lcd_clear
 	ld	a,ti.lcdBpp8
-	ld	(ti.mpLcdCtrl),a		; operate in 8bpp
+	ld	(ti.mpLcdCtrl),a	; operate in 8bpp
 	ret
 
 lcd_normal:
