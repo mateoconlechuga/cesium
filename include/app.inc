@@ -62,9 +62,9 @@ macro app_private
 		db $81,$12,$13,$0f
 		db $81,$2d,lengthof min_version + 1,min_version,$00
 		db $81,$32,$59,$00
-		db $81,lengthof name,name
+		db $81,$40 or lengthof name,name
 		db $81,$a1,$07
-		db $03,$26,$09,$00
+		db $03,$26,$09,$04
 		db $21,$bb,$6e,$dc
 		freespace := 247-$+app.start
 		db $00,$0d,freespace
