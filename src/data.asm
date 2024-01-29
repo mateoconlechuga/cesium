@@ -128,6 +128,8 @@ if config_english
 	db	'Password:',0
 else if config_french
 	db	'Mot de passe:',0
+else if config_italian
+	db	'Parola d',$27,'ordine:',0
 else
     db  'Wachtwoord:',0
 end if

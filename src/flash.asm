@@ -79,3 +79,8 @@ if config_dutch
 string_ram_backup:
 	db	'Backup wordt gemaakt...',0
 end if
+
+if config_italian
+string_ram_backup:
+	db	'Effettuando il backup...',0
+end if

@@ -477,3 +477,145 @@ str_cannot_hide:
 	db	'Kan geen programma in archief verbergen',0
 
 end if
+
+if config_italian
+
+string_mode_select:
+	db	': Premi ',$7e,'MODE] per impostare',0
+string_primary_color:
+	db	'Colore primario',0
+string_secondary_color:
+	db	'Colore secondario',0
+string_tertiary_color:
+	db	'Colore dell',$27,'evidenziazione',0
+string_quaternary_color:
+	db	'Colore dell',$27,'inversione',0
+string_quinary_color:
+	db	'Colore programma nascosto',0
+string_senary_color:
+	db	'Colore di sfondo',0
+string_language:
+	db	'Tipo: ',0
+string_archived:
+	db	'Archiviato',0
+string_read_only:
+	db	'Sola lettura',0
+string_hidden:
+	db	'Nascosto',0
+string_system:
+	db	'Sistema',0
+string_locked:
+	db	'Bloccato',0
+string_size:
+	db	'Grandez.     ',0
+string_min_version:
+	db	'Versione minima:',0
+string_ram_free:
+	db	'RAM Libera: ',0
+string_rom_free:
+	db	'ROM libera: ',0
+string_file_information:
+	db	'Informazioni',0
+string_settings:
+	db	'Prefer. ',0
+	db	$7e,'MODE]',0
+string_delete:
+	db	'Elimina',0
+	db	$7e,'DEL]',0
+string_attributes:
+	db	'Attrib.',0
+	db	$7e,'ALPHA]',0
+string_rename:
+	db	'Rinomina',0
+	db	$7e,'GRAPH]',0
+string_transfer:
+	db	'Transferisci',0
+	db	$7e,'PRGM]',0
+string_edit_prgm:
+	db	'Modifica',0
+	db	$7e,'ZOOM]'
+string_new_prgm:
+	db	'Nuovo Prgm',0
+	db	$7e,'Y=]'
+string_editor_name:
+	db	'Prgm Editor',0
+string_delete_confirmation:
+	db	'Eliminare?: ',$7e,'ZOOM]-Si  ',$7e,'GRAPH]-No',0
+string_setting_page1:
+	db	'Premi i tasti <> per cambiare pagina  ',$7e,'1 di 2]',0
+string_setting_page2:
+	db	'Premi i tasti <> per cambiare pagina  ',$7e,'2 di 2]',0
+string_setting_color:
+	db	'Cambia i colori di Cesium',0
+string_setting_indicator:
+	db	'Disab. spia dei processi nei prgm in esec.',0
+string_setting_clock:
+	db	'Mostra l',$27,'orologio',0
+string_setting_show_battery:
+	db	'Mostra stato della batteria',0
+string_setting_show_hidden:
+	db	'Nascondi i programmi nascosti',0
+string_setting_ram_backup:
+	db	'Esegui backup prima di avviare un prgm',0
+string_setting_enable_shortcuts:
+	db	'Abilita scorciatoie ',$7e,'ON]',0
+string_setting_delete_confirm:
+	db	'Chiedi prima di eliminare',0
+string_setting_screen_brightness:
+	db	'Modifica retroilluminazione',0
+string_setting_special_directories:
+	db	'Mostra cartelle speciali',0
+string_setting_list_count:
+	db	'Mostra la quantita di file in una cartel.',0
+string_setting_poweron_password:
+	db	'Cambia password d',$27,'accensione',0
+string_setting_editor_prgm:
+	db	'Cambia editor di programmi',0
+string_setting_usb_enable:
+	db	'Abilita i flash drive USB',0
+string_setting_invert_mode:
+	db	'Abilita modalita notte (colori invertiti)',0
+string_new_password:
+	db	'Imposta password di accensione: ',0
+string_prgm_editor_name:
+	db	'Nome editor di programmi: ',0
+string_usb_info_0:
+	db	'Usa un drive USB formattato in FAT32',0
+string_usb_info_1:
+	db	'da utilizzare come memoria esterna.',0
+string_usb_info_2:
+	db	'Devi installare LibLoad',0
+string_usb_info_3:
+	db	'e USBDRVCE/MSDDRVCE/FATDRVCE:',0
+string_usb_info_4:
+	db	'Link: http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Premi ',$7e,'enter] per riprovare.',0
+string_usb_info_6:
+	db	'Premi ',$7e,'clear] per annullare.',0
+string_usb_waiting:
+	db	'Attendo connessione USB...',0
+string_usb_no_partitions:
+	db	'Nessuna partizione FAT32 rilevata!',0
+string_insert_fat32:
+	db	'inserisci un drive formattato in FAT32.',0
+string_partition:
+	db	'Partizione ',0
+string_select_partition_0:
+	db	'Questo drive ha moleplici partizioni.',0
+string_select_partition_1:
+	db	'Scegline uno dalla lista.',0
+string_fat_init_error_0:
+	db	'Errore del setup della partizione.',0
+string_fat_init_error_1:
+	db	'Codice errore: ',0
+string_fat_transferring:
+	db	'Trasferimento...',0
+string_ram_error:
+	db	'RAM libera insufficiente',0
+str_invalid_os:
+	db	'Impossibile usare questo OS',0
+str_cannot_hide:
+	db	'Impossibile mostrare/nascondere programmi archiviati',0
+
+end if
