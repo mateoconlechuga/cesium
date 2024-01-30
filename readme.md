@@ -88,6 +88,10 @@ Build with the command:
 
     make -j
 
+Individual languages can be built by running the below command, substituting the supported language:
+
+    make english -j
+
 ## Bug Reports and Feature Requests
 
 Make a bug report [here](https://github.com/mateoconlechuga/cesium/issues).

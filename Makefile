@@ -28,6 +28,10 @@
 
 languages = english french dutch italian
 
+ifeq (release,$(filter release,$(MAKECMDGOALS)))
+compress = zx0
+endif
+
 all: $(languages)
 
 $(languages):
@@ -40,7 +44,6 @@ endif
 clean:
 	rm -rf build
 
-release: compress = zx0
 release: | clean all
 	mkdir -p build/cesium
 	cp $(addsuffix .$(compress).8xp,$(addprefix build/cesium_,$(languages))) build/cesium
