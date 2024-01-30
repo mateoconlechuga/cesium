@@ -56,7 +56,7 @@ string_min_os_version:
 	db	'5.0.0.0.0',0
 .length := $-.
 
-if config_english
+if language eq "english"
 
 string_mode_select:
 	db	': Press ',$7e,'MODE] to set',0
@@ -198,7 +198,7 @@ str_cannot_hide:
 
 end if
 
-if config_french
+if language eq "french"
 
 string_mode_select:
 	db	':',$7e,'MODE] pour changer',0
@@ -338,7 +338,7 @@ str_cannot_hide:
 
 end if
 
-if config_dutch
+if language eq "dutch"
 
 string_mode_select:
 	db	': ',$7e,'MODE] - volgende',0
@@ -478,7 +478,7 @@ str_cannot_hide:
 
 end if
 
-if config_italian
+if language eq "italian"
 
 string_mode_select:
 	db	': Premi ',$7e,'MODE] per impostare',0

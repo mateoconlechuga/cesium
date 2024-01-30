@@ -26,61 +26,25 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-SRC := src/cesium.asm
+languages = english french dutch italian
+compress = zx7
 
-FLAGS_ENGLISH := -i 'config_english := 1' -i 'config_french := 0' -i 'config_dutch := 0' -i 'config_italian := 0'
-FLAGS_FRENCH := -i 'config_english := 0' -i 'config_french := 1' -i 'config_dutch := 0' -i 'config_italian := 0'
-FLAGS_DUTCH := -i 'config_english := 0' -i 'config_french := 0' -i 'config_dutch := 1' -i 'config_italian := 0'
-FLAGS_ITALIAN := -i 'config_english := 0' -i 'config_french := 0' -i 'config_dutch := 0' -i 'config_italian := 1'
-BIN_ENGLISH := cesium.8xp
-BIN_FRENCH := cesium_french.8xp
-BIN_DUTCH := cesium_dutch.8xp
-BIN_ITALIAN := cesium_italian.8xp
-RELEASE_DIR := cesium
-RELEASE_ZIP := cesium.zip
+all: $(languages)
 
-all: english french dutch italian
-
-icon:
-	convimg --icon icon.png --icon-output icon.asm --icon-format asm
-
-english:
-	fasmg $(FLAGS_ENGLISH) $(SRC) $(BIN_ENGLISH)
-
-french:
-	fasmg $(FLAGS_FRENCH) $(SRC) $(BIN_FRENCH)
-
-dutch:
-	fasmg $(FLAGS_DUTCH) $(SRC) $(BIN_DUTCH)
-
-italian:
-	fasmg $(FLAGS_ITALIAN) $(SRC) $(BIN_ITALIAN)
-
-compress: english french dutch italian
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_ENGLISH) -o $(BIN_ENGLISH).compressed.8xp
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_FRENCH) -o $(BIN_FRENCH).compressed.8xp
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_DUTCH) -o $(BIN_DUTCH).compressed.8xp
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_ITALIAN) -o $(BIN_ITALIAN).compressed.8xp
-
-release: all
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_ENGLISH) -o $(BIN_ENGLISH).compressed.8xp
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_FRENCH) -o $(BIN_FRENCH).compressed.8xp
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_DUTCH) -o $(BIN_DUTCH).compressed.8xp
-	convbin -k 8xp-compressed -e zx0 -u -n CESIUM -j 8x -i $(BIN_DUTCH) -o $(BIN_ITALIAN).compressed.8xp
-	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(BIN_ITALIAN)$(RELEASE_ZIP)
-	rm -rf  $(RELEASE_DIR)
-	mkdir -p  $(RELEASE_DIR)
-	mv $(BIN_ENGLISH).compressed.8xp $(RELEASE_DIR)/$(BIN_ENGLISH)
-	mv $(BIN_FRENCH).compressed.8xp $(RELEASE_DIR)/$(BIN_FRENCH)
-	mv $(BIN_DUTCH).compressed.8xp $(RELEASE_DIR)/$(BIN_DUTCH)
-	mv $(BIN_DUTCH).compressed.8xp $(RELEASE_DIR)/$(BIN_ITALIAN)
-	cp readme.md $(RELEASE_DIR)/readme.md
-	cp icons_descriptions.md $(RELEASE_DIR)/icons_descriptions.md
-	zip -9r $(RELEASE_ZIP) $(RELEASE_DIR)
-	rm -rf  $(RELEASE_DIR)
+$(languages):
+	mkdir -p build
+	fasmg  -i 'language := "$@"' src/cesium.asm build/cesium_$@.8xp
+	convbin -k 8xp-compressed -e $(compress) -u -n CESIUM -j 8x -i build/cesium_$@.8xp -o build/cesium_$@.$(compress).8xp
 
 clean:
-	rm -f $(BIN_ENGLISH) $(BIN_FRENCH) $(BIN_DUTCH) $(BIN_ITALIAN) $(RELEASE_ZIP)
-	rm -rf  $(RELEASE_DIR)
+	rm -rf build
 
-.PHONY: all english french dutch italian compress clean release
+release: compress = zx0
+release: | clean all
+	mkdir -p build/cesium
+	cp $(addsuffix .$(compress).8xp,$(addprefix build/cesium_,$(languages))) build/cesium
+	cp readme.md build/cesium/readme.md
+	cp creating_icons.md build/cesium/creating_icons.md
+	cd build && zip -r9 cesium.zip cesium
+
+.PHONY: all clean release $(languages)

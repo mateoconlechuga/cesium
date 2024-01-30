@@ -127,9 +127,7 @@ gui_draw_static_options:
 	cp	a,screen_programs
 	ret	z
 	print	string_delete, 199, 195
-if config_english
-	ld	de,278
-else if config_french
+if language eq "french"
 	ld	de,262
 else
 	ld	de,278
@@ -451,7 +449,7 @@ gui_fixup_sprites:
 gui_backup_ram_to_flash:
 	ld	a,(color_senary)
 	call	util_set_primary
-if config_english
+if language eq "english"
 	draw_rectangle 114, 105, 206, 121
 	draw_rectangle_outline 113, 104, 207, 121
 	set_cursor 119, 109
@@ -472,7 +470,7 @@ gui_show_cannot_hide:
 	ld	(lcd_buffer),hl
 	ld	a,(color_senary)
 	call	util_set_primary
-if config_english
+if language eq "english"
 	draw_rectangle 38, 105, 285, 121
 	draw_rectangle_outline 37, 104, 286, 121
 	set_cursor 44, 109

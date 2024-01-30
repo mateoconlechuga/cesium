@@ -105,7 +105,7 @@ relocate installer_execute_cesium, ti.mpLcdCrsrImage
 
 end relocate
 
-if config_english
+if language eq "english"
 str_invalid_os_install:
 	db  'Cannot use this OS',0
 str_cesium_installed:
@@ -117,7 +117,7 @@ str_delete_installer:
 	db 'del - yes',0
 end if
 
-if config_french
+if language eq "french"
 str_invalid_os_install:
 	db  'Mauvaise version d''OS',0
 str_cesium_installed:
@@ -129,7 +129,7 @@ str_delete_installer:
 	db 'suppr - oui',0
 end if
 
-if config_dutch
+if language eq "dutch"
 str_invalid_os_install:
 	db	'Geen ondersteunde OS versie',0
 str_cesium_installed:
@@ -141,7 +141,7 @@ str_delete_installer:
 	db	'del - ja',0
 end if
 
-if config_italian
+if language eq "italian"
 str_invalid_os_install:
 	db  'Impossibile usare questo OS',0
 str_cesium_installed:

@@ -104,8 +104,10 @@ If you would like to add support for another language, feel free to make a PR.
 
 **Dutch**: Created by Privacy_Dragon
 
+**Italian**: Created by Nutpile
+
 ## Credits
 
-© 2015 - 2023 Matt "MateoConLechuga" Waltz
+© 2015 - 2024 Matt "MateoConLechuga" Waltz
 
 Licensed under BSD 3 Clause.

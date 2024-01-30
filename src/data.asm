@@ -123,15 +123,25 @@ data_cesium_appvar:
 data_string_cesium_name:
 	db	cesium_name,0
 
+
+if language eq "english"
 data_string_password:
-if config_english
 	db	'Password:',0
-else if config_french
+end if
+
+if language eq "french"
+data_string_password:
 	db	'Mot de passe:',0
-else if config_italian
-	db	'Parola d',$27,'ordine:',0
-else
+end if
+
+if language eq "dutch"
+data_string_password:
     db  'Wachtwoord:',0
+end if
+
+if language eq "italian"
+data_string_password:
+	db	'Parola d',$27,'ordine:',0
 end if
 
 data_string_quit1:

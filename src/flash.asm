@@ -65,22 +65,22 @@ flash_clear_backup:
 	call	ti.WriteFlashByte		; clear old backup
 	jp	port_lock
 
-if config_english
+if language eq "english"
 string_ram_backup:
 	db	'Backing up...',0
 end if
 
-if config_french
+if language eq "french"
 string_ram_backup:
 	db	'Sauvegarde en cours...',0
 end if
 
-if config_dutch
+if language eq "dutch"
 string_ram_backup:
 	db	'Backup wordt gemaakt...',0
 end if
 
-if config_italian
+if language eq "italian"
 string_ram_backup:
 	db	'Effettuando il backup...',0
 end if
