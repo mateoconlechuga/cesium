@@ -147,7 +147,7 @@ str_invalid_os_install:
 str_cesium_installed:
 	db 'Installato nel menu ',$C1,'apps]',0
 str_cesium_exists_error:
-	db 'Cesium è già installato, eliminalo prima di reinstallarlo.',0
+	db 'Cesium e gia installato,  eliminalo prima di reinstallarlo.',0
 str_delete_installer:
 	db 'Eliminare l',$27,'installer?', 0
 	db 'del - si',0
