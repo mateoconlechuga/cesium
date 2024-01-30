@@ -1,4 +1,4 @@
-; Copyright 2015-2023 Matt "MateoConLechuga" Waltz
+; Copyright 2015-2024 Matt "MateoConLechuga" Waltz
 ;
 ; Redistribution and use in source and binary forms, with or without
 ; modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
 
 cesium_name := 'Cesium'
 cesium_version := '3.6.7'
-cesium_copyright := '(C)  2015-2023  MATTHEW  WALTZ'
+cesium_copyright := '(C)  2015-2024  MATTHEW  WALTZ'
 
 include 'include/macros.inc'
 
