@@ -27,14 +27,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 languages = english french dutch italian
-compress = zx7
 
 all: $(languages)
 
 $(languages):
 	mkdir -p build
 	fasmg  -i 'language := "$@"' src/cesium.asm build/cesium_$@.8xp
+ifneq ($(compress),)
 	convbin -k 8xp-compressed -e $(compress) -u -n CESIUM -j 8x -i build/cesium_$@.8xp -o build/cesium_$@.$(compress).8xp
+endif
 
 clean:
 	rm -rf build
