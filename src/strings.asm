@@ -529,7 +529,7 @@ string_rename:
 	db	'Rinomina',0
 	db	$7e,'GRAPH]',0
 string_transfer:
-	db	'Transferisci',0
+	db	'Transf.',0
 	db	$7e,'PRGM]',0
 string_edit_prgm:
 	db	'Modifica',0
@@ -552,7 +552,7 @@ string_setting_indicator:
 string_setting_clock:
 	db	'Mostra l',$27,'orologio',0
 string_setting_show_battery:
-	db	'Mostra stato della batteria',0
+	db	'Mostra lo stato della batteria',0
 string_setting_show_hidden:
 	db	'Nascondi i programmi nascosti',0
 string_setting_ram_backup:
@@ -616,6 +616,6 @@ string_ram_error:
 str_invalid_os:
 	db	'Impossibile usare questo OS',0
 str_cannot_hide:
-	db	'Impossibile mostrare/nascondere programmi archiviati',0
+	db	'Impos. mostrare/nascondere prgm archiv.',0
 
 end if
