@@ -108,7 +108,7 @@ If you would like to add support for another language, feel free to make a PR.
 
 **Dutch**: Created by Privacy_Dragon
 
-**Italian**: Created by Nutpile
+**Italian**: Created by Valerio "Nutpile" Casalino
 
 ## Credits
 
