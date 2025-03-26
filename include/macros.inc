@@ -226,7 +226,7 @@ vRamBuffer := ti.vRam + ((ti.vRamEnd - ti.vRam) / 2)
 
 ; password
 
-password_max_length := 10
+password_max_length := 30
 
 ; settings flags
 
@@ -317,6 +317,7 @@ setting_adv_config := setting_config + 1
 setting_brightness := setting_adv_config + 1
 setting_editor_name := setting_brightness + 1
 setting_password := setting_editor_name + 10
+setting_password := setting_editor_name + 30
 current_option_selection := setting_password + password_max_length + 1
 current_selection_absolute := current_option_selection + 1
 current_selection := current_selection_absolute + 3
