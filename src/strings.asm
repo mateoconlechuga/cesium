@@ -623,7 +623,7 @@ end if
 if language eq "turkish"
 
 string_mode_select:
-	db	': Ayarlamak icin ',$7e,'MODE].',0
+	db	': Devami icin ',$7e,'MODE].',0
 string_primary_color:
 	db	'Birincil renk',0
 string_secondary_color:
