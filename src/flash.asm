@@ -84,3 +84,8 @@ if language eq "italian"
 string_ram_backup:
 	db	'Effettuando il backup...',0
 end if
+
+if language eq "turkish"
+string_ram_backup:
+	db	'Yedekleniyor...',0
+end if
