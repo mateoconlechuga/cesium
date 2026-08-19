@@ -153,6 +153,18 @@ str_delete_installer:
 	db 'del - si',0
 end if
 
+if language eq "turkish"
+str_invalid_os_install:
+	db  'Isletim sisteminin bu versiyonuna kurulamaz.',0
+str_cesium_installed:
+	db $C1,'apps] menusune kuruldu.',0
+str_cesium_exists_error:
+	db 'Cesium zaten kurulu. Lutfen once silin.',0
+str_delete_installer:
+	db 'Kurucu silinsin mi?', 0
+	db 'del - evet',0
+end if
+
 relocate installer_ports, ti.saveSScreen
 define installer
 namespace installer

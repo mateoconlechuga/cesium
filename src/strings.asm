@@ -619,3 +619,145 @@ str_cannot_hide:
 	db	'Impos. mostrare/nascondere prgm archiv.',0
 
 end if
+
+if language eq "turkish"
+
+string_mode_select:
+	db	': Ayarlamak icin ',$7e,'MODE].',0
+string_primary_color:
+	db	'Birincil renk',0
+string_secondary_color:
+	db	'Ikincil renk',0
+string_tertiary_color:
+	db	'Vurgu rengi',0
+string_quaternary_color:
+	db	'Ters renk',0
+string_quinary_color:
+	db	'Gizli program rengi',0
+string_senary_color:
+	db	'Arkaplan rengi',0
+string_language:
+	db	'Tur: ',0
+string_archived:
+	db	'Arsivde',0
+string_read_only:
+	db	'Salt okunur',0
+string_hidden:
+	db	'Gizli',0
+string_system:
+	db	'Sistem',0
+string_locked:
+	db	'Kilitli',0
+string_size:
+	db	'Boyut: ',0
+string_min_version:
+	db	'Min Versiyon:',0
+string_ram_free:
+	db	'Bos RAM: ',0
+string_rom_free:
+	db	'Bos ROM: ',0
+string_file_information:
+	db	'Dosya Bilgisi',0
+string_settings:
+	db	'Ayarlar',0
+	db	$7e,'MODE]',0
+string_delete:
+	db	'Sil',0
+	db	$7e,'DEL]',0
+string_attributes:
+	db	'Ozllklr',0
+	db	$7e,'ALPHA]',0
+string_rename:
+	db	'Adlandir',0
+	db	$7e,'GRAPH]',0
+string_transfer:
+	db	'Tasi',0
+	db	$7e,'PRGM]',0
+string_edit_prgm:
+	db	'Duzenle',0
+	db	$7e,'ZOOM]'
+string_new_prgm:
+	db	'Yeni Prgm',0
+	db	$7e,'Y=]'
+string_editor_name:
+	db	'Prgm Duzenleyici',0
+string_delete_confirmation:
+	db	'Sil?: ',$7e,'ZOOM]-Evet  ',$7e,'GRAPH]-Hayir',0
+string_setting_page1:
+	db	'<> Ok tuslariyla sayfa degistir  ',$7e,'1 / 2]',0
+string_setting_page2:
+	db	'<> Ok tuslariyla sayfa degistir  ',$7e,'2 / 2]',0
+string_setting_color:
+	db	'Cesium renklerini degistir',0
+string_setting_indicator:
+	db	'Mesgul gostergesini devre disi birak',0
+string_setting_clock:
+	db	'Saati goster',0
+string_setting_show_battery:
+	db	'Pil durumunu goster',0
+string_setting_show_hidden:
+	db	'Gizli programlari gizle',0
+string_setting_ram_backup:
+	db	'Program calistirmadan once RAMi yedekle',0
+string_setting_enable_shortcuts:
+	db	$7e,'ON] tusu kisayollarini ac',0
+string_setting_delete_confirm:
+	db	'Silme dogrulama ekranini goster',0
+string_setting_screen_brightness:
+	db	'Ekran parlakligini degistir',0
+string_setting_special_directories:
+	db	'Ozel dizinleri goster',0
+string_setting_list_count:
+	db	'Oge sayisini goster',0
+string_setting_poweron_password:
+	db	'Acilis parolasini degistir',0
+string_setting_editor_prgm:
+	db	'Program duzenleyiciyi degistir',0
+string_setting_usb_enable:
+	db	'USB flas bellek erisimine izin ver',0
+string_setting_invert_mode:
+	db	'Koyu modu ac (ters renkler)',0
+string_new_password:
+	db	'Acilis parolasini ayarla: ',0
+string_prgm_editor_name:
+	db	'Program duzenleyici adi: ',0
+string_usb_info_0:
+	db	'Harici depolama ve aktarim icin',0
+string_usb_info_1:
+	db	'hernangi bir FAT32 USB flas bellek kullanin.',0
+string_usb_info_2:
+	db	'Asagidaki kutuphaneleri kurun:',0
+string_usb_info_3:
+	db	'LibLoad, USBDRVCE/MSDDRVCE/FATDRVCE:',0
+string_usb_info_4:
+	db	'Link: http://tiny.cc/clibs',0
+string_usb_info_5:
+	db	'Yeniden denemek icin ',$7e,'enter]a basin.',0
+string_usb_info_6:
+	db	'Iptal etmek icin',$7e,'clear]a basin.',0
+string_usb_waiting:
+	db	'USB baglantisi bekleniyor...',0
+string_usb_no_partitions:
+	db	'Herhangi bir FAT32 bolumu bulunamadi!',0
+string_insert_fat32:
+	db	'Lutfen FAT32 formatli bir bellek takin.',0
+string_partition:
+	db	'Parca ',0
+string_select_partition_0:
+	db	'Bu bellek birden fazla parca iceriyor.',0
+string_select_partition_1:
+	db	'Yukaridaki listeden secin.',0
+string_fat_init_error_0:
+	db	'FAT parcasi baglanamadi.',0
+string_fat_init_error_1:
+	db	'Hata kodu: ',0
+string_fat_transferring:
+	db	'Aktariliyor...',0
+string_ram_error:
+	db	'Yeterli bos RAM yok',0
+str_invalid_os:
+	db	'Isletim sisteminin bu versiyonunda kullanilamaz.',0
+str_cannot_hide:
+	db	'Arsivdeki programlar gizlenemez/gosterilemez.',0
+
+end if
