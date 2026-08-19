@@ -110,7 +110,7 @@ If you would like to add support for another language, feel free to make a PR.
 
 **Italian**: Created by Valerio "Nutpile" Casalino
 
-**Turkish**: Created by voltie_dev
+**Turkish**: Created by mstfbil
 
 ## Credits
 
