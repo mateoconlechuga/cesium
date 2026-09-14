@@ -144,6 +144,11 @@ data_string_password:
 	db	'Parola d',$27,'ordine:',0
 end if
 
+if language eq "turkish"
+data_string_password:
+	db	'Parola:',0
+end if
+
 data_string_quit1:
 	db	'1:',0,'Quit',0
 data_string_quit2:

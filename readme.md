@@ -110,6 +110,8 @@ If you would like to add support for another language, feel free to make a PR.
 
 **Italian**: Created by Valerio "Nutpile" Casalino
 
+**Turkish**: Created by mstfbil
+
 ## Credits
 
 © 2015 - 2024 Matt "MateoConLechuga" Waltz

@@ -26,7 +26,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-languages = english french dutch italian
+languages = english french dutch italian turkish
 
 ifeq (release,$(filter release,$(MAKECMDGOALS)))
 compress = zx0
