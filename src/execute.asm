@@ -373,6 +373,10 @@ execute_return:
 	xor	a,a
 execute_error:
 	push	af
+	ld	hl,ti.mpTmrCtrl + 1
+	ld	a,(hl)
+	and	a,l
+	ld	(hl),a
 	res	ti.progExecuting,(iy + ti.newDispF)
 	res	ti.cmdExec,(iy + ti.cmdFlags)
 	res	ti.allowProgTokens,(iy + ti.newDispF)
