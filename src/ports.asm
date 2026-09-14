@@ -28,103 +28,55 @@
 
 port_setup:
 	di
-	ld	b,1
-	or	a,a
-	sbc	hl,hl
-.find:
+	ld	hl,($000008 + 5)
 	ld	a,(hl)
-	inc	hl
-	cp	a,$80
-	jq	z,.found_80
-	cp	a,$ed
-	jq	nz,.find
-	ld	a,(hl)
-	sub	a,$41
-	jq	z,.found_ed41
-	cp	a,$73
-	jq	nz,.find
-	dec	b
-	dec	hl
-	ld	(port_new.target),hl
-	inc	hl
-	jq	.find
-.found_80:
-	ld	a,(hl)
-	cp	a,$0f
-	jq	nz,.find
-	and	a,b
+	cp	a,$cd
 	ret	nz
-	ld	hl,port_new.unlock
-	jq	.store_smc
-.found_ed41:
-	dec	hl
-	ld	(port_old.target),hl
 	inc	hl
+	ld	de,(hl)
+	ld	hl,(ti.CheckIfEmulated + 1)
+	sbc	hl,de
+	ret	nz
+	ld	hl,(ti.KeypadScanFull + 1)
+	ld	bc,10
+	add	hl,bc
 	push	hl
-	pop	ix
-	bit	0,(ix+4)
-	jq	nz,.find
-	ld	hl,port_old.unlock
-.store_smc:
-	ld	(port_unlock.code),hl
+	ld	b,port_pattern.size
+	ld	de,port_pattern
+	call	ti.StrCmpre
+	pop	hl
+	ret	nz
+	ld	(port_unlock.target), hl
+	xor	a,a
 	ret
 
-port_old:
-.unlock:
-	call	.unlockhelper
+port_pattern:
+	db	$ed,$79,$78,$fe,$a0,$28,$01,$cf
+.size := $-.
+
+port_unlock:
+	push	iy,de,bc,hl
+	call	ti._frameset0
+	ld	iy,.unlockfinish
+	ld	sp,ti._indcall + 7
+	ld	bc,$22
+	xor	a,a
+
+.target := $ + 1
+	jp	0
+
 .unlockfinish:
+	ld	sp,ix
+	pop	ix
 	ld	a,$8c
 	out0	($24),a
 	in0	a,($06)
 	or	a,4
 	out0	($06),a
-	ret
-.unlockhelper:
-	call	ti._frameset0
-	push	de
-	ld	bc,$0022
-	jp	0
-.target := $-3
-.write:
-	ld	de,$c979ed
-	ld	hl,ti.heapBot - 3
-	ld	(hl),de
-	jp	(hl)
-.read:
-	ld	de,$c978ed
-	ld	hl,ti.heapBot - 3
-	ld	(hl),de
-	jp	(hl)
+	jr	port_lock.pop
 
-port_new:
-.unlock:
-	ld	de,$d19881
-	push	de
-	or	a,a
-	sbc	hl,hl
-	push	hl
-	ld	de,$03d1
-	push	de
-	push	hl
-	call	.unlockhelper
-	ld	hl,12
-	add	hl,sp
-	ld	sp,hl
-	jq	port_old.unlockfinish
-.unlockhelper:
-	push	hl
-	ex	(sp),ix
-	add	ix,sp
-	push	hl
-	push	de
-	ld	de,$887c00
-	push	de
-	ld	bc,$10de
-	ld	de,$0f22
-	add	hl,sp
-	jp	0
-.target := $-3
-.lock:
+port_lock:
+	push	iy,de,bc,hl
 	xor	a,a
 	out0	($28),a
 	in0	a,($06)
@@ -134,27 +86,19 @@ port_new:
 	out0	($24),a
 	ld	a,$d1
 	out0	($22),a
-	ret
 
-port_read:
-	push	iy,de,bc,hl
-	call	port_old.read
-	jr	port_lock.pop
-
-port_write:
-	push	iy,de,bc,hl
-	call	port_old.write
-	jr	port_lock.pop
-
-port_unlock:
-	push	iy,de,bc,hl
-	call	0
-.code := $-3
-	jr	port_lock.pop
-
-port_lock:
-	push	iy,de,bc,hl
-	call	port_new.lock
 .pop:
 	pop	hl,bc,de,iy
 	ret
+
+port_write:
+	ld de,$c979ed
+	ld hl,ti.heapBot - 3
+	ld (hl),de
+	jp (hl)
+
+port_read:
+	ld	de,$c978ed
+	ld	hl,ti.heapBot - 3
+	ld	(hl),de
+	jp	(hl)
